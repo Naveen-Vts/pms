@@ -24,8 +24,8 @@ public class HeaderDaoImpl implements HeaderDao {
 
 	private static final String LOGINTYPELIST = "select logintype,logindesc from login_type ";
 	private static final String NOTIFICATIONLISTALL ="SELECT empid,notificationby,notificationdate,notificationmessage,notificationurl FROM rfpwizard_notification WHERE  empid=:empid ORDER BY notificationdate";
-	private static final String EMPDETAILES="SELECT CONCAT(IFNULL(CONCAT(b.title,' '),''), b.empname) AS 'empname', c.formrolename, b.empno,b.labcode FROM login a,employee b,form_role c WHERE a.empid=b.empid AND a.formroleid=c.formroleid AND a.loginid=:loginid";
-	private static final String DIVISIONNAME="select divisioncode from division_master where divisionid=:divisionid";
+	private static final String EMPDETAILES="SELECT CONCAT(IFNULL(CONCAT(b.title,' '),''), b.emp_name) AS 'empname', c.formrolename, b.emp_no,b.lab_code FROM login a,employee b,form_role c WHERE a.empid=b.emp_id AND a.formroleid=c.formroleid AND a.loginid=:loginid";
+	private static final String DIVISIONNAME="select division_code from division_master where division_id=:divisionid";
 	
 	//private static final String NOTIFICATIONLIST="select empid,notificationby,notificationdate,notificationmessage,notificationurl,notificationid from pfms_notification where isactive='1' and empid=:empid ORDER BY notificationdate DESC";
 	// new query
@@ -38,16 +38,16 @@ public class HeaderDaoImpl implements HeaderDao {
 	private static final String GANTTCHARTLIST="SELECT milestoneactivityid,projectid,activityname,milestoneno,orgstartdate,orgenddate,startdate,enddate,progressstatus,revisionno FROM milestone_activity WHERE isactive=1 AND projectid=:projectid";
 	private static final String PROJECTMASTER="SELECT a.projectid,a.projectcode,a.projectname FROM project_master a WHERE  a.isactive='1'";
 	private static final String PROJECTDETAILS="SELECT a.projectid,a.projectcode,a.projectname FROM project_master a WHERE a.projectid=:projectid and  a.isactive='1'";
-	private static final String LABDETAILS ="SELECT labid,clusterid,labcity FROM lab_master WHERE labcode=:labcode"; 
+	private static final String LABDETAILS ="SELECT lab_id,cluster_id,lab_city FROM lab_master WHERE lab_code=:labcode"; 
 	
-	private static final String HEADERSCHEDULELIST ="SELECT a.formname,a.formurl FROM pfms_form_detail a , pfms_form_role_access b WHERE a.formdetailid=b.formdetailid AND a.formmoduleid=:formmoduleid AND b.logintype=:logintype AND b.isactive=1 AND CASE WHEN 'Y'= (SELECT iscluster FROM lab_master WHERE labcode=:labcode) THEN labhq IN ('H','B') ELSE labhq IN ('L','B') END AND a.isactive=1 ORDER BY a.formserialno";
-	private static final String FROMMODULELIST = "SELECT DISTINCT a.formmoduleid, a.formmodulename, a.moduleurl, a.isnav  FROM pfms_form_module a, pfms_form_detail b, pfms_form_role_access c WHERE a.isactive='1' AND a.formmoduleid=b.formmoduleid AND b.formdetailid=c.formdetailid AND c.logintype=:logintype AND c.isactive=1 AND CASE WHEN 'Y'= (SELECT iscluster FROM lab_master WHERE labcode=:labcode) THEN labhq IN ('H','B') ELSE labhq IN ('L','B') END ORDER BY FIELD(a.FormModuleName, 'Road Map','Admin','Master','Approvals','Closure') , FIELD(a.formmoduleid, '18', a.formmoduleid), a.formmoduleid";
-	private static final String PROJECTINTILIST="SELECT a.initiationid,a.projectprogramme,b.projecttypeshort,c.classification,a.projectshortname,a.projecttitle,a.projectcost,a.projectduration,a.ismain FROM pfms_initiation a,project_type b, pfms_security_classification c WHERE a.empid=:empid AND a.classificationid=c.classificationid  AND a.projecttypeid=b.projecttypeid AND a.isactive='1' ";
+	private static final String HEADERSCHEDULELIST ="SELECT a.formname,a.formurl FROM pfms_form_detail a , pfms_form_role_access b WHERE a.formdetailid=b.formdetailid AND a.formmoduleid=:formmoduleid AND b.logintype=:logintype AND b.isactive=1 AND CASE WHEN 'Y'= (SELECT is_cluster FROM lab_master WHERE lab_code=:labcode) THEN labhq IN ('H','B') ELSE labhq IN ('L','B') END AND a.isactive=1 ORDER BY a.formserialno";
+	private static final String FROMMODULELIST = "SELECT DISTINCT a.formmoduleid, a.formmodulename, a.moduleurl, a.isnav  FROM pfms_form_module a, pfms_form_detail b, pfms_form_role_access c WHERE a.isactive='1' AND a.formmoduleid=b.formmoduleid AND b.formdetailid=c.formdetailid AND c.logintype=:logintype AND c.isactive=1 AND CASE WHEN 'Y'= (SELECT is_cluster FROM lab_master WHERE lab_code=:labcode) THEN labhq IN ('H','B') ELSE labhq IN ('L','B') END ORDER BY FIELD(a.FormModuleName, 'Road Map','Admin','Master','Approvals','Closure') , FIELD(a.formmoduleid, '18', a.formmoduleid), a.formmoduleid";
+	private static final String PROJECTINTILIST="SELECT a.initiationid,a.projectprogramme,b.project_type_short,c.classification,a.projectshortname,a.projecttitle,a.projectcost,a.projectduration,a.ismain FROM pfms_initiation a,project_type b, pfms_security_classification c WHERE a.empid=:empid AND a.classificationid=c.classification_id  AND a.projecttypeid=b.project_type_id AND a.isactive='1' ";
 	private static final String MALIST="SELECT a.milestoneactivityid,0 AS 'parentactivityid', a.activityname,a.orgstartdate,a.orgenddate,a.startdate,a.enddate,a.progressstatus,a.revisionno,(SELECT MAX(b.enddate) FROM milestone_activity b WHERE b.projectid= :ProjectId )AS 'lastEnddate' FROM milestone_activity a WHERE  a.isactive=1 AND a.projectid=:ProjectId";
 	private static final String MILEACTIVITYLEVEL="SELECT a.activityid ,a.parentactivityid, a.activityname,a.orgstartdate,a.orgenddate , a.startdate, a.enddate,  a.progressstatus,a.revision  FROM milestone_activity_level a WHERE a.parentactivityid=:id AND a.activitylevelid=:levelid ";
 	private static final String QUICKLINKLIST="SELECT a.formname,a.formurl FROM pfms_form_detail a , pfms_form_role_access b WHERE a.formdetailid=b.formdetailid AND a.formmoduleid=13 AND b.logintype=:logintype AND b.isactive=1";
-	private static final String LABCODE= "SELECT b.labcode FROM login a,employee b WHERE a.empid=b.empid AND a.username=:empid";
-	private static final String LABMASTERLIST="SELECT a.labname,a.labcode,a.iscluster FROM lab_master a WHERE CASE WHEN :clusterid=9 THEN 1=1 AND  clusterid<>9  ELSE clusterid=:clusterid END ORDER BY labcode";
+	private static final String LABCODE= "SELECT b.lab_code FROM login a,employee b WHERE a.empid=b.emp_id AND a.username=:empid";
+	private static final String LABMASTERLIST="SELECT a.lab_name,a.lab_code,a.is_cluster FROM lab_master a WHERE CASE WHEN :clusterid=9 THEN 1=1 AND  cluster_id<>9  ELSE cluster_id=:clusterid END ORDER BY lab_code";
 	
 	
 	@PersistenceContext

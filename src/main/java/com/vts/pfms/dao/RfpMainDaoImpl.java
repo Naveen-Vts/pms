@@ -32,17 +32,17 @@ public class RfpMainDaoImpl implements RfpMainDao {
 	private static final Logger logger=LogManager.getLogger(RfpMainDaoImpl.class);
 	
 	private static final String DASHBOARDFORMURLLIST = "select a.formdispname,a.formurl,a.formcolor from form_detail a,form_role_access b,login c where c.loginid=:loginid and a.formmoduleid=:formmoduleid AND b.formroleid=c.formroleid AND a.formdetailid=b.formdetailid AND a.isactive='1' AND b.isactive='1' ORDER BY a.FormSerialNo  ";
-	private static final String USERMANAGELIST = "select a.loginid, a.username, b.divisionname,c.formrolename  from login a , division_master b , formrole c where a.divisionid=b.divisionid and a.formroleid=c.formroleid and a.isactive=1";
+	private static final String USERMANAGELIST = "select a.loginid, a.username, b.division_name,c.formrolename  from login a , division_master b , formrole c where a.divisionid=b.division_id and a.formroleid=c.formroleid and a.isactive=1";
 	private static final String LASTLOGINEMPID = "select a.auditstampingid from  auditstamping a where a.auditstampingid=(select max(b.auditstampingid) from auditstamping b WHERE b.loginid=:loginid)";
-	private static final String DESGID="select desigid from employee where  empid=:empid";
+	private static final String DESGID="select desig_id from employee where  emp_id=:empid";
 	private static final String LABDETAILS="select labmasterid, labcode, labname, lablogo from lab_master";
 	
 	private static final String NOTICEEDITDATA="SELECT * FROM pfms_notice WHERE NoticeId=:NOTICEID AND IsActive=1" ;
 	private static final String SELFACTIONSLIST="SELECT ActionId,EmpId,ActionItem,ActionDate,ActionTime,ActionType FROM pfms_action_self WHERE isactive='1'AND actiondate=CURDATE() AND empid=:empid ORDER BY createddate ASC";	
 	private static final String NOTICEDATEWOSE= "SELECT noticeid, notice, fromdate,todate,noticeby,createdby,createddate FROM pfms_notice WHERE NoticeBy=:EMPID AND IsActive=1 AND ( (FromDate BETWEEN :FROMDATE AND :TODATE) OR  (todate BETWEEN :FROMDATE  AND :TODATE )   OR( fromdate < :FROMDATE  AND todate > :TODATE  ))";
 	private static final String NOTICELIST="SELECT * FROM pfms_notice WHERE NoticeBy=:empid AND IsActive=1 AND MONTH(CreatedDate) = MONTH(CURRENT_DATE())";
-	private static final String NOTICE="SELECT n.noticeid,n.notice, e.EmpName FROM pfms_notice n, employee e   WHERE   DATE(NOW()) >=n.FromDate AND DATE(NOW()) <= n.ToDate AND e.EmpId=n.NoticeBy AND n.IsActive=1 AND n.labcode=:labcode ORDER BY n.NoticeId DESC";	
-	private static final String getEmpNoQuery="SELECT empno FROM employee WHERE empid =:empid";	
+	private static final String NOTICE="SELECT n.noticeid,n.notice, e.emp_name FROM pfms_notice n, employee e   WHERE   DATE(NOW()) >=n.FromDate AND DATE(NOW()) <= n.ToDate AND e.emp_id=n.NoticeBy AND n.IsActive=1 AND n.labcode=:labcode ORDER BY n.NoticeId DESC";	
+	private static final String getEmpNoQuery="SELECT emp_no FROM employee WHERE emp_id =:empid";	
 	private static final String PROJECTLIST="SELECT a.projectid AS id,a.projectcode,a.projectname,a.projectmainid,a.projecttype,b.empname AS 'project_director',b.mobileno,a.projectdirector,a.sanctiondate,a.pdc FROM project_master a , employee b WHERE a.projectdirector=b.empid AND a.isactive=1 AND a.labcode = (SELECT labcode FROM employee WHERE empid=:empid)";
 	private static final String QUATERS="SELECT a.sanctiondate, a.pdc, TIMESTAMPDIFF(YEAR,a.sanctiondate,a.pdc)+1 FROM project_master a WHERE a.projectid=:projectid";
 	private static final String MILEQUATER="CALL Pfms_Milestone_Quarter(:proid,:Quater,:yr)"; 
@@ -333,6 +333,8 @@ public class RfpMainDaoImpl implements RfpMainDao {
 		query.setParameter("logintype", logintype);
 		query.setParameter("labcode", LabCode);
 		List<Object[]> ProjectEmployeeList=(List<Object[]>)query.getResultList();
+		
+		System.out.println(ProjectEmployeeList.size()+"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 		return ProjectEmployeeList;
 	}
 	

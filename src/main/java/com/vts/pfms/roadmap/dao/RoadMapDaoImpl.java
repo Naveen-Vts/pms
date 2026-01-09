@@ -50,7 +50,7 @@ public class RoadMapDaoImpl implements RoadMapDao{
 
 	}
 	
-	private static final String DIVISIONLIST = "SELECT DivisionId,DivisionCode,DivisionName FROM division_master WHERE IsActive=1 AND LabCode=:LabCode";
+	private static final String DIVISIONLIST = "SELECT division_id,division_code,division_name FROM division_master WHERE is_active=1 AND lab_code=:LabCode";
 	@Override
 	public List<Object[]> divisionList(String labCode) throws Exception {
 		try {
@@ -302,7 +302,7 @@ public class RoadMapDaoImpl implements RoadMapDao{
 		}
 	}
 	
-	private static final String ROADMAPASPLIST = "SELECT a.RoadMapId,a.InitiationDate,a.RoadMapType,a.ProjectId,a.InitiationId,a.DivisionId,a.ProjectTitle,a.AimObjectives,a.StartDate,a.EndDate,a.Duration,a.Reference,a.Scope,b.DivisionName,a.MovedToASP,c.RoadMapStatus,c.RoadMapStatusColor,c.RoadMapStatusCode FROM pfms_road_map a,division_master b,pfms_road_map_status c WHERE a.IsActive=1 AND a.DivisionId=b.DivisionId AND a.RoadMapStatusCode=c.RoadMapStatusCode AND a.MovedToASP='Y' ORDER BY a.RoadMapId DESC";
+	private static final String ROADMAPASPLIST = "SELECT a.RoadMapId,a.InitiationDate,a.RoadMapType,a.ProjectId,a.InitiationId,a.DivisionId,a.ProjectTitle,a.AimObjectives,a.StartDate,a.EndDate,a.Duration,a.Reference,a.Scope,b.division_name,a.MovedToASP,c.RoadMapStatus,c.RoadMapStatusColor,c.RoadMapStatusCode FROM pfms_road_map a,division_master b,pfms_road_map_status c WHERE a.IsActive=1 AND a.DivisionId=b.division_id AND a.RoadMapStatusCode=c.RoadMapStatusCode AND a.MovedToASP='Y' ORDER BY a.RoadMapId DESC";
 	@Override
 	public List<Object[]> roadMapASPList() throws Exception {
 		try {

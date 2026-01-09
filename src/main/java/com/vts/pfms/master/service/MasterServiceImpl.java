@@ -263,8 +263,7 @@ public class MasterServiceImpl implements MasterService {
 		  Long empIdL=Long.parseLong(data[1].toString()); 
 		  result= dao.updateAllSeniority(empIdL, ++newSeniorityNumberL);
 		}
-		
-		return result;
+		return 1;
 	}
 	
 	

@@ -42,15 +42,15 @@ public class ProjectClosureDaoImpl implements ProjectClosureDao{
 	@PersistenceContext
 	EntityManager manager;
 	
-	private static final String PROJECTCLOSURELIST = "SELECT a.ProjectId,a.ProjectMainId,a.ProjectCode,a.ProjectShortName,a.ProjectName,a.TotalSanctionCost,a.IsMainWC,a.SanctionDate,a.PDC,b.EmpName,c.Designation,\r\n"
-			+ "	(SELECT d.ClosureStatusCode FROM pfms_closure cl,pfms_closure_approval_status d WHERE cl.ProjectId=a.ProjectId AND cl.ClosureStatusCode=d.ClosureStatusCode AND cl.IsActive=1 LIMIT 1) AS 'statuscode',\r\n"
-			+ "	(SELECT d.ClosureStatus FROM pfms_closure cl,pfms_closure_approval_status d WHERE cl.ProjectId=a.ProjectId AND cl.ClosureStatusCode=d.ClosureStatusCode AND cl.IsActive=1 LIMIT 1) AS 'apprstatus',\r\n"
-			+ "	(SELECT d.ClosureStatusColor FROM pfms_closure cl,pfms_closure_approval_status d WHERE cl.ProjectId=a.ProjectId AND cl.ClosureStatusCode=d.ClosureStatusCode AND cl.IsActive=1 LIMIT 1) AS 'statuscolor',\r\n"
-			+ "	(SELECT cl.ClosureId FROM pfms_closure cl WHERE cl.ProjectId=a.ProjectId AND cl.IsActive=1 LIMIT 1) AS 'closureid',\r\n"
-			+ "	(SELECT cl.ApprovalFor FROM pfms_closure cl WHERE cl.ProjectId=a.ProjectId AND cl.IsActive=1 LIMIT 1) AS 'approvalfor',\r\n"
-			+ "	(SELECT cl.ClosureCategory FROM pfms_closure cl WHERE cl.ProjectId=a.ProjectId AND cl.IsActive=1 LIMIT 1) AS 'closurecategory'\r\n"
+	private static final String PROJECTCLOSURELIST = "SELECT a.project_id,a.project_main_id,a.project_code,a.project_short_name,a.project_name,a.total_sanction_cost,a.is_main_wc,a.sanction_date,a.pdc,b.emp_name,c.designation,\r\n"
+			+ "	(SELECT d.ClosureStatusCode FROM pfms_closure cl,pfms_closure_approval_status d WHERE cl.ProjectId=a.project_id AND cl.ClosureStatusCode=d.ClosureStatusCode AND cl.IsActive=1 LIMIT 1) AS 'statuscode',\r\n"
+			+ "	(SELECT d.ClosureStatus FROM pfms_closure cl,pfms_closure_approval_status d WHERE cl.ProjectId=a.project_id AND cl.ClosureStatusCode=d.ClosureStatusCode AND cl.IsActive=1 LIMIT 1) AS 'apprstatus',\r\n"
+			+ "	(SELECT d.ClosureStatusColor FROM pfms_closure cl,pfms_closure_approval_status d WHERE cl.ProjectId=a.project_id AND cl.ClosureStatusCode=d.ClosureStatusCode AND cl.IsActive=1 LIMIT 1) AS 'statuscolor',\r\n"
+			+ "	(SELECT cl.ClosureId FROM pfms_closure cl WHERE cl.ProjectId=a.project_id AND cl.IsActive=1 LIMIT 1) AS 'closureid',\r\n"
+			+ "	(SELECT cl.ApprovalFor FROM pfms_closure cl WHERE cl.ProjectId=a.project_id AND cl.IsActive=1 LIMIT 1) AS 'approvalfor',\r\n"
+			+ "	(SELECT cl.ClosureCategory FROM pfms_closure cl WHERE cl.ProjectId=a.project_id AND cl.IsActive=1 LIMIT 1) AS 'closurecategory'\r\n"
 			+ "	FROM project_master a, employee b, employee_desig c \r\n"
-			+ "	WHERE a.IsActive=1 AND a.ProjectDirector=b.EmpId AND b.DesigId=c.DesigId AND a.LabCode=:LabCode AND (CASE WHEN :LoginType IN ('A','Z','E','L') THEN 1=1 ELSE a.ProjectDirector=:EmpId END) ORDER BY a.ProjectId DESC";
+			+ "	WHERE a.is_active=1 AND a.project_director=b.emp_id AND b.desig_id=c.desig_id AND a.lab_code=:LabCode AND (CASE WHEN :LoginType IN ('A','Z','E','L') THEN 1=1 ELSE a.project_director=:EmpId END) ORDER BY a.project_id DESC";
 	@Override
 	public List<Object[]> projectClosureList(String EmpId, String labcode, String LoginType) throws Exception {
 		try {
@@ -218,7 +218,7 @@ public class ProjectClosureDaoImpl implements ProjectClosureDao{
 		return list;
 	}
 	
-	private static final String GETEMPGDDETAILS  ="SELECT a.EmpId,a.EmpName,b.Designation FROM employee a,employee_desig b WHERE a.DesigId = b.DesigId AND a.EmpId = (SELECT dm.DivisionHeadId FROM employee emp,division_master dm WHERE dm.DivisionId = emp.DivisionId AND emp.EmpId=:EmpId AND emp.IsActive=1 LIMIT 1)";
+	private static final String GETEMPGDDETAILS  ="SELECT a.EmpId,a.EmpName,b.Designation FROM employee a,employee_desig b WHERE a.DesigId = b.DesigId AND a.EmpId = (SELECT dm.division_head_id FROM employee emp,division_master dm WHERE dm.division_id = emp.DivisionId AND emp.EmpId=:EmpId AND emp.IsActive=1 LIMIT 1)";
 	@Override
 	public Object[] getEmpGDDetails(String empId) throws Exception
 	{

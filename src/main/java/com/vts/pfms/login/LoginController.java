@@ -882,6 +882,8 @@ public class LoginController {
 					headerservice.LabMasterList(ClusterId).stream().filter(e -> "Y".equalsIgnoreCase(e[2].toString()))
 							.collect(Collectors.toList()).get(0)[1].toString())
 					.orElse("");
+			
+			System.out.println("DGName&&&&&&"+DGName);
 
 			String IsDG = "No";
 			System.out.println("DGName" + DGName + "LoginType" + LoginType);

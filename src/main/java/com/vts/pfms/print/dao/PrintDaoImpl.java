@@ -1268,7 +1268,7 @@ public class PrintDaoImpl implements PrintDao {
 					return  0;
 				}
 			}
-			private static final String GETDIVISIONHEADLIST = "SELECT DivisionHeadId,DivisionId FROM division_master WHERE IsActive='1'";
+			private static final String GETDIVISIONHEADLIST = "SELECT division_head_id,division_id FROM division_master WHERE is_active='1'";
 			
 			@Override
 			public List<Object[]> getDivisionHeadList() throws Exception {
@@ -1281,7 +1281,7 @@ public class PrintDaoImpl implements PrintDao {
 				}
 				return null;
 			}
-			private static final String GETDHID = "SELECT DivisionHeadId,DivisionId FROM division_master WHERE DivisionId IN (SELECT DivisionId FROM employee WHERE EmpId IN(SELECT ProjectDirector FROM  project_master WHERE ProjectId=:projectid))";
+			private static final String GETDHID = "SELECT division_head_id,division_id FROM division_master WHERE division_id IN (SELECT DivisionId FROM employee WHERE EmpId IN(SELECT ProjectDirector FROM  project_master WHERE ProjectId=:projectid))";
 			
 			@Override
 			public Object[] getDHId(String projectid) throws Exception {
@@ -1295,7 +1295,7 @@ public class PrintDaoImpl implements PrintDao {
 					return null;
 				}
 			}
-			private static final String GETGHID = "SELECT GroupHeadId,GroupId FROM division_group WHERE GroupId IN(SELECT GroupId FROM division_master WHERE DivisionId IN (SELECT DivisionId FROM employee WHERE EmpId IN(SELECT ProjectDirector FROM  project_master WHERE ProjectId=:projectid)))";
+			private static final String GETGHID = "SELECT group_head_id,group_id FROM division_group WHERE group_id IN(SELECT group_id FROM division_master WHERE division_id IN (SELECT DivisionId FROM employee WHERE EmpId IN(SELECT ProjectDirector FROM  project_master WHERE ProjectId=:projectid)))";
 			@Override
 			public Object getGHId(String projectid) throws Exception {
 				try {

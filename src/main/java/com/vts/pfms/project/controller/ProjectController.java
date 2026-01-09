@@ -4030,7 +4030,8 @@ public class ProjectController
 			req.setAttribute("ProjectMainList", service.ProjectMainList());
 			req.setAttribute("Onboarding", onboard);
 		}catch (Exception e) {
-			e.printStackTrace(); logger.error(new Date() +" Inside ProjectMain.htm "+Username, e);
+			e.printStackTrace(); 
+			logger.error(new Date() +" Inside ProjectMain.htm "+Username, e);
 		}
 		return "project/ProjectMainList";
 

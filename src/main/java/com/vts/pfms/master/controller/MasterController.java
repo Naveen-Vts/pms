@@ -387,12 +387,16 @@ public class MasterController {
 		logger.info(new Date() +" Inside UpdateSenioritySubmit "+UserId);
 		String empid= req.getParameter("empid");
 		String newSeniorityNumber=req.getParameter("UpdatedSrNo");
+		try{
 		int result= service.updateSeniorityNumber(empid,newSeniorityNumber);
 		if(result>0) {
 			redir.addAttribute("result", "Officer Edited Successfully ");
 		}
 		else {
 			redir.addAttribute("resultfail", "Officer Edit Unsuccessful");
+		}
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		return "redirect:/Officer.htm";
@@ -927,6 +931,7 @@ public class MasterController {
 	            response.put("valid", true);
 	        }
 	    } catch (Exception e) {
+	    	e.printStackTrace();
 	        response.put("valid", false);
 	        response.put("message", "Error validating status");
 	        logger.error("Error in GroupMasterEditSubmitCheck", e);
@@ -1455,6 +1460,7 @@ private boolean isValidFileType(MultipartFile file) {
 	            return "master/TDMasterEdit";
 	        }
 	    } catch (Exception e) {
+	    	e.printStackTrace();
 	        redir.addAttribute("resultfail", "Technical Issue");
 	        logger.error(new Date() + " Inside TDMaster.htm " + UserId, e);
 	    }
