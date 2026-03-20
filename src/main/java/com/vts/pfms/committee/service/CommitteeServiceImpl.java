@@ -1230,7 +1230,7 @@ public class CommitteeServiceImpl implements CommitteeService{
 		Object[] maxslno=dao.InvitationMaxSerialNo(committeeinvitationdto.getCommitteeScheduleId());
 		if(maxslno[1]!=null && Long.parseLong(maxslno[1].toString())>0) 
 		{
-			slno=Long.parseLong(maxslno[1].toString())+1;
+			slno=Long.parseLong(maxslno[1].toString());
 		}
 	
 		for(int i=0;i<committeeinvitationdto.getEmpIdList().size();i++) 
@@ -1272,13 +1272,15 @@ public class CommitteeServiceImpl implements CommitteeService{
 					}else if(MemberType[1].equalsIgnoreCase("CS")) {
 						committeeinvitation.setSerialNo(committeeinvitationdto.getEmpIdList().size());
 					}else {
-						committeeinvitation.setSerialNo(MemberType.length>3?Integer.parseInt(MemberType[3]):slno);
+						committeeinvitation.setSerialNo(MemberType.length>3 && Integer.parseInt(MemberType[3])>0?Integer.parseInt(MemberType[3]):++slno);
+						
 					}
 				}else {
-					committeeinvitation.setSerialNo(slno);
+					committeeinvitation.setSerialNo(++slno);
+					
 				}
 
-				slno++;
+				
 				ret=dao.CommitteeInvitationCreate(committeeinvitation);
 			}
 			

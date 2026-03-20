@@ -1,4 +1,6 @@
 
+<%@page import="java.time.LocalDate"%>
+<%@page import="java.util.stream.Collectors"%>
 <%@page import="org.apache.commons.text.StringEscapeUtils"%>
 <%@page import="com.vts.pfms.FormatConverter"%>
 <%@page import="com.ibm.icu.text.DecimalFormat"%>
@@ -24,6 +26,63 @@
   List<Object[]> ProjectList=(List<Object[]>)request.getAttribute("ProjectList");
   List<Object[]> ganttchartlist=(List<Object[]>)request.getAttribute("ganttchartlist");
   String ProjectId=(String)request.getAttribute("ProjectId");
+  List<Boolean> isDateMatching =
+	        ganttchartlist != null
+	                ? ganttchartlist.stream().map(row -> {
+
+	                    String fromDate = row[4] != null ? row[4].toString() : "";
+	                    String toDate = row[5] != null ? row[5].toString() : "";
+	                    String revisedFromDate = row[6] != null ? row[6].toString() : "";
+	                    String revisedToDate = row[7] != null ? row[7].toString() : "";
+
+	                    return toDate.equalsIgnoreCase(revisedToDate)
+	                            && fromDate.equalsIgnoreCase(revisedFromDate);
+	                }).collect(Collectors.toList())
+	                : new ArrayList<>();
+
+
+	List<Boolean> isDatePassed =
+	        ganttchartlist != null
+	                ? ganttchartlist.stream().map(row -> {
+
+	                    String fromDate = row[4] != null ? row[4].toString() : "";
+	                    String toDate = row[5] != null ? row[5].toString() : "";
+	                    String revisedFromDate = row[6] != null ? row[6].toString() : "";
+	                    String revisedToDate = row[7] != null ? row[7].toString() : "";
+
+	                    String dateStr = !toDate.isEmpty() ? toDate : toDate;
+
+	                    if (dateStr.isEmpty()) {
+	                        return false;
+	                    }
+
+	                    LocalDate compDate = LocalDate.parse(dateStr);
+	                    return compDate.isBefore(LocalDate.now());
+
+	                }).collect(Collectors.toList())
+	                : new ArrayList<>();
+	
+	List<Boolean> isRevisedDatePassed =
+	        ganttchartlist != null
+	                ? ganttchartlist.stream().map(row -> {
+
+	                    String fromDate = row[4] != null ? row[4].toString() : "";
+	                    String toDate = row[5] != null ? row[5].toString() : "";
+	                    String revisedFromDate = row[6] != null ? row[6].toString() : "";
+	                    String revisedToDate = row[7] != null ? row[7].toString() : "";
+
+	                    String dateStr = !revisedToDate.isEmpty() ? revisedToDate : toDate;
+
+	                    if (dateStr.isEmpty()) {
+	                        return false;
+	                    }
+
+	                    LocalDate compDate = LocalDate.parse(dateStr);
+	                    return compDate.isBefore(LocalDate.now());
+
+	                }).collect(Collectors.toList())
+	                : new ArrayList<>();
+
 
  %>
 <div class="container-fluid">
@@ -42,8 +101,9 @@
                             	<label>Project : &nbsp;&nbsp;&nbsp; </label>
                             	<select class="form-control selectdee w-220" id="ProjectId" required="required" name="ProjectId">
     									<option disabled="true"  selected value="">Choose...</option>
-    										<% for (Object[] obj : ProjectList) {%>
-										<option value="<%=obj[0]%>" <%if(obj[0].toString().equalsIgnoreCase(ProjectId)){ %>selected="selected" <%} %>> <%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - "%> </option>
+    										<% for (Object[] obj : ProjectList) {
+    										String projectshortName=(obj[3]!=null)?" ( "+obj[3].toString()+" ) ":"";%>
+										<option value="<%=obj[0]%>" <%if(obj[0].toString().equalsIgnoreCase(ProjectId)){ %>selected="selected" <%} %>> <%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - "%> <%= projectshortName!=null?StringEscapeUtils.escapeHtml4(projectshortName):" - " %></option>
 											<%} %>
   								</select>
                             	<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> 
@@ -94,6 +154,7 @@
 												<span class="text-margin" >Original :&ensp; <span class="text-padding bg-blue" ></span></span>
 												<span class="text-margin">Ongoing :&ensp; <span class="text-padding bg-success" ></span></span>
 												<span class="text-margin">Revised :&ensp; <span class="text-padding bg-orange" ></span></span>
+												<span class="text-margin">Delay Ongoing :&ensp; <span class="text-padding bg-danger" ></span></span>
 											</div>
 										</div>
 									</div>
@@ -117,34 +178,48 @@
 								    	  
 									function chartprint(type,interval){
 								    	  var data = [
-								    		  <%int count=1; for(Object[] obj : ganttchartlist){ %>
-								    		  
-								    		  {
-								    		    id: "<%=obj[3]%>",
-								    		    name: "<%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()): ""%>",
-								    		    <%if(!obj[9].toString().equalsIgnoreCase("0") && !obj[9].toString().equalsIgnoreCase("1")){ %>
-								    		   	baselineStart: "<%=obj[6]%>",
-								    		    baselineEnd: "<%=obj[7]%>", 
-								    		    baseline: {fill: "#F5A623 0.5", stroke: "0.0 #F5A623"},
-								    		    actualStart: "<%=obj[4]%>",
-								    		    actualEnd: "<%=obj[5]%>",
-								    		    actual: {fill: "#4A90E2", stroke: "0.8 #4A90E2"},
-								    		    baselineProgressValue: "<%= Math.round((int)obj[8])%>%",
-								    		    progress: {fill: "#7ED321 0.0", stroke: "0.0 #150e56"},
-								    		    progressValue: "<%= Math.round((int)obj[8])%>% ", 
-								    		    <%} else{%>
-							    		   		<%-- baselineStart: "<%=obj[6]%>",
-								    		    baselineEnd: "<%=obj[7]%>",  --%>
-								    		    baselineStart: "<%=obj[4]%>",
-								    		    baselineEnd: "<%=obj[5]%>", 
-								    		    baseline: {fill: "#4A90E2", stroke: "0.8 #4A90E2"},
-								    		    baselineProgressValue: "<%= Math.round((int)obj[8])%>%",
-								    		    progress: {fill: "#7ED321 0.0", stroke: "0.0 #150e56"},
-								    		    progressValue: "<%= Math.round((int)obj[8])%>% ", 
-								    		    <%}%>
-								    		    rowHeight: "55",
-								    		  },
-								    		  <%}%>
+								    		  <%int count=1;
+								    		  int index =0;
+								    		  for(Object[] obj : ganttchartlist){
+								    			  boolean datePassed = isDatePassed != null 
+								    	                     && index < isDatePassed.size() 
+								    	                     && Boolean.TRUE.equals(isDatePassed.get(index));
+								    			  boolean revisedDatePassed = isRevisedDatePassed != null 
+								    	                     && index < isRevisedDatePassed.size() 
+								    	                     && Boolean.TRUE.equals(isRevisedDatePassed.get(index));
+											    	String progressColor = !revisedDatePassed ? "#059212" : "#D0021B";
+											    	String progresscolor2 = datePassed ? "" :"";
+											    	%>
+											    	{
+											    		id: "<%=obj[3]%>",
+										    		    name: "<%=obj[2]%>",
+										    		    <%if(!obj[9].toString().equalsIgnoreCase("0") && !obj[9].toString().equalsIgnoreCase("1") && !isDateMatching.get(index)){ %>
+										    		   	baselineStart: "<%=obj[6]%>",
+										    		    baselineEnd: "<%=obj[7]%>", 
+										    		    baseline: {fill: "#F5A623 0.5", stroke: "0.0 #F5A623"},
+										    		    actualStart: "<%=obj[4]%>",
+										    		    actualEnd: "<%=obj[5]%>",
+										    		    actual: {fill: "#4A90E2", stroke: "0.8 #4A90E2"},
+										    		    baselineProgress: {fill: "<%=progressColor%> 0.8", stroke: "0.8 <%=progressColor%>"},
+										    		    baselineProgressValue: "<%= Math.round((int)obj[8])%>%",
+										    		    progress: {fill: "#7ED321 0.0", stroke: "0.0 #150e56"},
+										    		    progressValue: "<%= Math.round((int)obj[8])%>% ", 
+										    		    <%} else{%>
+									    		   		<%-- baselineStart: "<%=obj[6]%>",
+										    		    baselineEnd: "<%=obj[7]%>",  --%>
+										    		    baselineStart: "<%=obj[4]%>",
+										    		    baselineEnd: "<%=obj[5]%>", 
+										    		    baseline: {fill: "#4A90E2", stroke: "0.8 #4A90E2"},
+										    		    baselineProgress: {fill: "<%=progressColor%> 0.8", stroke: "0.8 <%=progressColor%>"},
+										    		    baselineProgressValue: "<%= Math.round((int)obj[8])%>%",
+										    		    progress: {fill: "#7ED321 0.0", stroke: "0.0 #150e56"},
+										    		    progressValue: "<%= Math.round((int)obj[8])%>% ", 
+			
+											    	  <% } %>
+			
+											    	  rowHeight: "55"
+											    	},
+								    		  <% index++; }%>
 								    		  ];
 								    		// create a data tree
 								    		var treeData = anychart.data.tree(data, "as-tree");

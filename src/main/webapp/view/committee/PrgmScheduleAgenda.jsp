@@ -115,11 +115,11 @@
 																	<input form="inlineeditform_<%=count%>" type="text" class="form-control" name="remarks" value="<%=obj[6].toString()%>"  maxlength="255" >
 																</td>
 																<td> 
-																<select form="inlineeditform_<%=count%>" class="form-control items PresLabCode width-200px" name="groupname" id="groupName_<%=count%>"  required="required" data-live-search="true" data-container="body">
-																		<option disabled="disabled"  selected value="">Group Name</option>
+																<select form="inlineeditform_<%=count%>" class="form-control items PresLabCode width-200px" name="groupname" id="groupName_<%=count%>"  data-live-search="true" data-container="body">
+																		<option selected value="">None</option>
 																		<% for(String gn : groupNames){ %>
 																			<option value="<%=gn%>" <%if(obj[15]!=null && obj[15].toString().equalsIgnoreCase(gn)){ %>selected="selected" <%} %> ><%=StringEscapeUtils.escapeHtml4(gn) %></option>
-																		<%} %>	
+																		<%} %>
 																	</select> 
 																	<%-- <input form="inlineeditform_<%=count%>" type="text" class="form-control" name="groupname" value="<%=obj[15]!=null?obj[15].toString():""%>"  maxlength="255" placeholder="Enter Group Name">--%> 
 																</td>
@@ -247,10 +247,10 @@
 												</td>
 												<td>
 												 <select class="form-control items PresLabCode width-200px" name="groupname" id="groupName_<%=count%>" required="required" data-live-search="true" data-container="body" >
-														<option disabled="disabled"  selected value="">Group Name</option>
 														<% for(String gn : groupNames){ %>
 															<option value="<%=gn%>" ><%=StringEscapeUtils.escapeHtml4(gn) %></option>
 														<%} %>	
+														<option selected value="">None</option>
 													</select> 
 												<%-- <input type="text" class="form-control" name="groupname" value="" maxlength="255" placeholder="Enter Group Name" /> --%> 												
 												</td>	
@@ -316,10 +316,10 @@
 												</td>
 												<td>
 												 <select class="form-control items PresLabCode width-200px" name="groupname" id="groupName_DH_0" required="required" data-live-search="true" data-container="body" >
-														<option disabled="disabled"  selected value="">Group Name</option>
 														<% for(String gn : groupNames){ %>
 															<option value="<%=gn%>" ><%=StringEscapeUtils.escapeHtml4(gn) %></option>
-														<%} %>	
+														<%} %>
+														<option selected value="">None</option>
 													</select> 
 													<%--	<input type="text" class="form-control" name="groupname" value="" maxlength="255" placeholder="Enter Group Name" />  --%>
 												</td>	
@@ -580,7 +580,7 @@ var filexcount=0;
             if (this.id) {            	
             	fileidarr.push(this.id);
             }
-        });
+        
 		for(var z=0; z<fileidarr.length;z++)
 		{
 			if(document.getElementById(fileidarr[z]).files.length !=0 ){
@@ -1146,7 +1146,7 @@ function getEmployeeForDH(ele){
 	
 }
 
-let index = 1000;
+let cloneIndex = 1000;
 
 $(document).on("click", ".btn-remove", function () {
     let row = $(this).closest("tr");
@@ -1184,7 +1184,7 @@ $(document).on("click", ".btn-clone", function () {
     });
 
     let clone = row.clone(false, false);
-    //let index = row.closest("table").find("tr").length;
+    let index = cloneIndex++;
 
     // Restore Select2 on original row
     row.find("select").select2({
@@ -1211,7 +1211,7 @@ $(document).on("click", ".btn-clone", function () {
         
         let onchange = $(this).attr("onchange");
         if (onchange) {
-            let newOnchange = onchange.replace(/\('\d+'\)/, "('" + index++ + "')");
+            let newOnchange = onchange.replace(/\('\d+'\)/, "('" + index + "')");
             $(this).attr("onchange", newOnchange);
         }
     });

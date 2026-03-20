@@ -2,6 +2,7 @@ package com.vts.pfms.project.model;
 
 import java.sql.Date;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,36 +21,68 @@ public class ProjectMasterRev
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="project_rev_id")
     private Long ProjectRevId;
+	@Column(name="project_id")
 	private Long ProjectId;
+	@Column(name="revision_no")
 	private Long RevisionNo;
+	@Column(name="project_main_id")
 	private Long ProjectMainId;
+	@Column(name="project_code")
 	private String ProjectCode;
+	@Column(name="project_imms_cd")
 	private String ProjectImmsCd;
+	@Column(name="project_name")
 	private String ProjectName;
+	@Column(name="project_description")
     private String ProjectDescription;
+	@Column(name="unit_code")
     private String UnitCode;
-    private Long ProjectType;
+	@Column(name="project_type")
+    private Long projectType;
+	@Column(name="project_category")
     private Long ProjectCategory;
-    private String SanctionNo;
-    private Date SanctionDate;
+	@Column(name="sanction_no")
+    private String sanctionNo;
+	@Column(name="sanction_date")
+    private Date sanctionDate;
+	@Column(name="total_sanction_cost")
 	private Double TotalSanctionCost;
+	@Column(name="sanction_cost_re")
     private Double SanctionCostRE;
+	@Column(name="sanction_cost_fe")
     private Double SanctionCostFE;
+	@Column(name="pdc")
 	private Date PDC;
-	private Long ProjectDirector;
-    private String ProjSancAuthority;
-    private String BoardReference;
-    private int IsMainWC;
+	@Column(name="project_director")
+	private Long projectDirector;
+	@Column(name="proj_sanc_authority")
+    private String projSancAuthority;
+	@Column(name="board_reference")
+    private String boardReference;
+	@Column(name="is_main_wc")
+    private int isMainWC;
+	@Column(name="work_center")
     private String WorkCenter;
+	@Column(name="scope")
     private String Scope;
+	@Column(name="application")
     private String Application;
-    private String LabParticipating;
-    private String Objective;
-    private String Deliverable;
-    private String Remarks;
-	private String CreatedBy;
-    private String CreatedDate;
-    private Long PlatformId; //srikant
-    private String Platform; //srikant
+	@Column(name="lab_participating")
+    private String labParticipating;
+	@Column(name="objective")
+    private String objective;
+	@Column(name="deliverable")
+    private String deliverable;
+	@Column(name="remarks")
+    private String remarks;
+	@Column(name="created_by")
+	private String createdBy;
+	@Column(name="created_date")
+    private String createdDate;
+	@Column(name="platform_id")
+    private Long platformId; //srikant
+	@Column(name="platform")
+    private String platform; //srikant
 }

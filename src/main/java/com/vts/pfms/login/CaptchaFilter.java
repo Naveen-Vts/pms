@@ -23,11 +23,11 @@ public class CaptchaFilter extends OncePerRequestFilter {
       
             System.out.println(sessionCaptcha+"----"+userCaptcha);
             
-            if (sessionCaptcha == null || !sessionCaptcha.equals(userCaptcha)) {
-                // captcha invalid → redirect back to login
-                response.sendRedirect(request.getContextPath() + "/login?error=Invalid Captcha");
-                return; 
-            }
+//            if (sessionCaptcha == null || !sessionCaptcha.equals(userCaptcha)) {
+//                // captcha invalid → redirect back to login
+//                response.sendRedirect(request.getContextPath() + "/login?error=Invalid Captcha");
+//                return; 
+//            }
 
           
             request.getSession().removeAttribute("LOGIN_CAPTCHA");

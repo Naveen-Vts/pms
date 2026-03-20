@@ -23,6 +23,8 @@
 
 List<Object[]> groupheadlist=(List<Object[]>)request.getAttribute("groupheadlist");
 List<Object[]> tdaddlist=(List<Object[]>)request.getAttribute("tdaddlist");
+List<Object[]> lablist = (List<Object[]>)request.getAttribute("lablist");
+String labCode  = (String) session.getAttribute("labcode");
 
 %>
 
@@ -76,21 +78,29 @@ List<Object[]> tdaddlist=(List<Object[]>)request.getAttribute("tdaddlist");
                             		<input  class="form-control alphanum-no-leading-space"  type="text" name="gName" id="groupName"  required="required" maxlength="100"  > 
                         		</div>
                     		</div>
-                    		<div class="col-md-4">
+                    		<div class="col-md-2">
+                        		<div class="form-group">
+                            		<label class="control-label">Lab Code</label>
+                              		<select class="custom-select selectdee" name="labCode" onChange="showEmployees(this.value)">		
+                              		<option value="" selected="selected" disabled="disabled">Select Labcode</option>											
+											<% for (  Object[] obj : lablist){ %>
+											<option value=<%=obj[2]%> <%if(labCode.equalsIgnoreCase(obj[2].toString())){ %> selected="selected" <%} %> ><%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):"-"%></option>
+											<%} %>
+									</select> 
+                        		</div>
+                    		</div>
+                    		<div class="col-md-3">
                         		<div class="form-group">
                             		<label class="control-label">Group Head Name</label><span class="mandatory">*</span>
                               		<select class="custom-select" id="ghempid" required="required" name="ghempid">
-													<option disabled  selected value="">---Select---</option>
-													
-													<% for (  Object[] obj : groupheadlist){ %>
-											
-													<option value=<%=obj[0]%>><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):"-"%>, <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):"-"%></option>
-												
-													<%} %>
+											<option disabled  selected value="">---Select---</option>													
+											<% for (  Object[] obj : groupheadlist){ %>											
+											<option value=<%=obj[0]%>><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):"-"%>, <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):"-"%></option>
+											<%} %> 
 									</select>
                         		</div>
                     		</div>
-                    	<div class="col-md-3">
+                    	<div class="col-md-2">
                         	<div class="form-group">
                             	<label class="control-label">TD Name</label><span class="mandatory">*</span>
                             	<select class="custom-select" id="tdId" required="required" name="tdId">
@@ -198,6 +208,34 @@ function groupcheck(frmid){
 			}		
 		}
 	});	
+}
+
+function showEmployees(labcode){
+	if(labcode !=""){
+		$.ajax({		
+		type : "GET",
+		url : "EmployeeOnLabCode.htm",
+		data : {
+			labcode : labcode,
+		},
+		datatype : 'json',
+		success : function(result) {
+	
+			var result = JSON.parse(result);	
+			var values = Object.keys(result).map(function(e) {
+									 return result[e]
+						});
+							
+			var s = '<option value="" selected disabled>---Select---</option>';
+			for (i = 0; i < values.length; i++) {									
+				s += '<option value="'+values[i][0]+'">'
+					+values[i][1].replaceAll("<","").replaceAll(">","") + " (" +values[i][2].replaceAll("<","").replaceAll(">","")+")" 
+					+ '</option>';
+			} 
+			$('#ghempid').html(s);
+		}
+		});
+	}
 }
 
 </script>

@@ -145,7 +145,7 @@ Kindly note that only the Project Director, the Admin, and the OICs of the Paren
 </div>
   <a class="navbar-brand"></a>
   <form class="form-inline"  method="POST" action="MilestoneActivityList.htm">
-    <%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].toString()).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A")  ){ %>
+    <%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].	toString()).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A")  ){ %>
    <%if(getMA[13]!=null){ %>
     <input type="submit" class="btn btn-primary btn-sm submit " id="baseLineBtn"  value="Set Base Line ( <%=RevisionCount %> )" onclick="return confirm('Are You Sure To Submit ?')" formaction="M-A-Set-BaseLine.htm" > 
   
@@ -311,7 +311,7 @@ renderEmployeeList('2','M', '<%=getMA[9]!=null?StringEscapeUtils.escapeHtml4(get
 </div>
 <div class="col-md-12">
 <%
-
+changes.add(getMA[20]!=null? getMA[20].toString():"0");
 
 if(MilestoneActivityA!=null&&MilestoneActivityA.size()>0){
 	int countA=1;

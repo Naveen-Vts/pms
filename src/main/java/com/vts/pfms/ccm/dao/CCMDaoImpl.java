@@ -114,7 +114,7 @@ public class CCMDaoImpl implements CCMDao{
 	private static final String GETCCMSCHEDULEAGENDALISTBYCCMSCHEDULEID = "SELECT b.ScheduleAgendaId, b.ScheduleId, b.ParentScheduleAgendaId, b.AgendaPriority, b.AgendaItem, b.PresentorLabCode, b.PresenterId, b.Duration, b.FileName,\r\n"
 			+ "	(CASE WHEN b.PresentorLabCode='@EXP' THEN (SELECT CONCAT(IFNULL(CONCAT(c.Title,' '), (IFNULL(CONCAT(c.Salutation, ' '), '')) ), c.ExpertName, ', Expert') FROM expert c, employee_desig d WHERE c.ExpertId=b.PresenterId AND c.DesigId=d.DesigId LIMIT 1)\r\n"
 			+ "	ELSE (SELECT CONCAT(IFNULL(CONCAT(c.Title,' '),(IFNULL(CONCAT(c.Salutation, ' '), ''))), c.EmpName, ', ', d.Designation) FROM employee c, employee_desig d WHERE c.EmpId=b.PresenterId AND c.DesigId=d.DesigId LIMIT 1) END) AS 'Presenter',\r\n"
-			+ "	(SELECT d.DesigId FROM employee c, employee_desig d WHERE c.EmpId=b.PresenterId AND c.DesigId=d.DesigId LIMIT 1) AS 'DesigId'\r\n"
+			+ "	(SELECT d.DesigId FROM employee c, employee_desig d WHERE c.emp_id=b.PresenterId AND c.desig_id=d.DesigId LIMIT 1) AS 'DesigId'\r\n"
 			+ "	FROM committee_schedule a, committee_schedules_agenda b\r\n"
 			+ "	WHERE a.ScheduleId=b.ScheduleId AND b.IsActive=1 AND a.ScheduleId=:ScheduleId ORDER BY b.AgendaPriority";
 	@Override

@@ -175,7 +175,7 @@ String seslabid=(String)session.getAttribute("labid");
 
 <div class="col-md-3">
               <div class="form-group">
-					<label >Division:<span class="mandatory" >*</span></label>
+					<label >Division:<!-- <span class="mandatory" >*</span> --></label>
 					<select class="form-control selectdee" name="Division" id="Division" data-container="body" data-live-search="true"  required="required">
 									<option value="0">--Select--</option>
 										<%  for ( Object[]  obj :DivisionList) {%>

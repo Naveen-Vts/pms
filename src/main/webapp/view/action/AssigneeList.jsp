@@ -100,12 +100,12 @@
 															<td class="center"><%=count %></td>
 															<td><%=obj[9]!=null?StringEscapeUtils.escapeHtml4(obj[9].toString()):" - " %></td>
 															<td>
-															<%if(obj[5]!=null && obj[5].toString().length()>100){ %>
-																<%=StringEscapeUtils.escapeHtml4(obj[5].toString()).substring(0, 100) %>
+															<%if(obj[5]!=null && obj[5].toString().length()>75){ %>
+																<%=obj[5].toString().substring(0, 75) %>
 																<textarea style="display: none!important;" id="td<%=obj[0].toString()%>"><%=obj[5].toString()%></textarea>
 																 <span class="modified-span" onclick="showAction('<%=obj[0].toString()%>','<%=obj[9].toString()%>')">show more..</span>
 															<%}else { %>
-																<%=obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()):" - " %>
+																<%=obj[5]!=null?obj[5].toString():" - " %>
 															<%} %>
 															</td>
 															<td class="text-center"><span <%if(LocalDate.now().toString().equalsIgnoreCase(obj[4].toString())) {%>class="text-primary spans"<%} %>
@@ -170,7 +170,7 @@
 														</tr>
 												<% count++; } }else{%>
 												<tr>
-													<td colspan="6" class="text-center">No List Found</td>
+													<td colspan="8" class="text-center">No List Found</td>
 												</tr>
 												<%} %>
 											</tbody>

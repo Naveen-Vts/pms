@@ -88,12 +88,12 @@
 	    		<div class="card-header custom-card-header" >
       				  <h6 class="custom-h6 " align="left"> Action : <%if(Assignee!=null && Assignee[5]!=null){%> 
       				  <%if(Assignee[5]!=null && Assignee[5].toString().length()>100){ %>
-	      				  <%=StringEscapeUtils.escapeHtml4(Assignee[5].toString()).substring(0,100) %> 
+	      				  <%=Assignee[5].toString().substring(0,100) %> 
 	      				  <input type="hidden" id="actionValue" value='"<%=Assignee[5].toString()%>"'>
 	      				  <span class="custom-span" onclick="showAction('<%=actiono.toString()%>')">show more..</span>
       				  (<%=actiono!=null?StringEscapeUtils.escapeHtml4(actiono):" - " %>)
       				  <%}else{ %>
-      				  <%=Assignee[5]!=null?StringEscapeUtils.escapeHtml4(Assignee[5].toString()):" - " %> (<%=actiono!=null?StringEscapeUtils.escapeHtml4(actiono):" - " %>)<%}}%>
+      				  <%=Assignee[5]!=null?Assignee[5].toString():" - " %> (<%=actiono!=null?StringEscapeUtils.escapeHtml4(actiono):" - " %>)<%}}%>
       				  
                      	<span class="span-stl">Assigner :<%if(Assignee!=null && Assignee[1]!=null){%> <%=Assignee[1] %><%}%> </span>
                       </h6>

@@ -46,4 +46,5 @@ public interface PFTSDao {
 	public Object[] getpftsProjectDate(String projectId)throws Exception;
 	public List<Object[]> getpftsFileOrder(String fileId)throws Exception;
 	public List<Object[]> getprocurementMilestoneDetails(String pftsid)throws Exception;
+	public Object[] ProjectDataByPrjCode(String projectCode) throws Exception;
 }

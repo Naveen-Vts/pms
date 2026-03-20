@@ -43,5 +43,6 @@ public interface PFTSService {
 	public Object[] getpftsActualDate(String pftsFileId)throws Exception;
 	public Object[] getpftsProjectDate(String projectId)throws Exception;
 	public List<Object[]> getprocurementMilestoneDetails(String parameter)throws Exception;
+	public Object[] ProjectDataByPrjCode(String projectCode) throws Exception;
 
 }

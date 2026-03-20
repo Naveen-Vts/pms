@@ -411,7 +411,7 @@
 														onclick="return confirm('Are you sure to Update?')">
 											            	<i class="fa fa-lg fa-edit" style="padding: 0px;color: darkorange;font-size: 25px;" aria-hidden="true"></i>
 											       		</button>
-											        	<button type="submit" class="editable-clicko" formaction="IRSFieldDescDelete.htm" formmethod="post" data-toggle="tooltip" title="Delete"
+											        	<button type="submit" class="editable-clicko" formaction="IRSFieldDescDelete.htm" formmethod="post" formnovalidate="formnovalidate" data-toggle="tooltip" title="Delete"
 											       	 	onclick="return confirm('Are you sure to Delete?')">
 											            	<i class="fa fa-lg fa-trash" style="padding: 0px;color: red;font-size: 25px;" aria-hidden="true"></i>
 											        	</button>
@@ -447,7 +447,7 @@
 														onclick="return confirm('Are you sure to Update?')">
 											            	<i class="fa fa-lg fa-edit" style="padding: 0px;color: darkorange;font-size: 25px;" aria-hidden="true"></i>
 											       		</button>
-											        	<button type="submit" class="editable-clicko" formaction="IRSFieldDescDelete.htm" formmethod="post" data-toggle="tooltip" title="Delete"
+											        	<button type="submit" class="editable-clicko" formaction="IRSFieldDescDelete.htm" formmethod="post" formnovalidate="formnovalidate" data-toggle="tooltip" title="Delete"
 											       	 	onclick="return confirm('Are you sure to Delete?')">
 											            	<i class="fa fa-lg fa-trash" style="padding: 0px;color: red;font-size: 25px;" aria-hidden="true"></i>
 											        	</button>

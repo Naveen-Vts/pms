@@ -107,7 +107,7 @@
 															<%=obj[5].toString().substring(0,75) %>
 															 <span class="custom-span" onclick="showAction('<%=obj[5].toString()%>')">show more..</span>
 															<%}else if(obj[5].toString().length()<=75){ %>
-															<%= StringEscapeUtils.escapeHtml4(obj[5].toString()) %>
+															<%= obj[5].toString() %>
 															<%}else{ %> -- <%} %>
 															</td>
 															

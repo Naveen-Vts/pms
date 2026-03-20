@@ -21,6 +21,8 @@ List<Object[]> divisionemplist=(List<Object[]>) request.getAttribute("divisionem
 List<Object[]> empoyeelist=(List<Object[]>) request.getAttribute("empoyeelist");
 Object[] divisiondata=(Object[]) request.getAttribute("divisiondata");
 String divisionid=divisiondata[0].toString();
+List<Object[]> lablist = (List<Object[]>) request.getAttribute("lablist");
+String labcode = (String) session.getAttribute("labcode");
 
 //divisiondata[2]="<h1>sdgfsgf</h1>";
 
@@ -108,6 +110,7 @@ String divisionid=divisiondata[0].toString();
 	  
 	   <th >Employee Name</th>
 	  <th>Designation</th>
+	  <th>Lab</th>
 	  
 	  
 	  </tr>
@@ -120,8 +123,9 @@ String divisionid=divisiondata[0].toString();
 	    <tr>
 	  <td><input type="radio" name="divisionempid" value=<%=obj[0]!=null?StringEscapeUtils.escapeHtml4(obj[0].toString()):" - "%>></td>
 	    
-        <td class="tdData" ><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):"-"%> </td>
+        <td class="tdData"><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):"-"%> </td>
         <td class="tdData"><%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):"-"%> </td>
+        <td class="tdData"><%=obj[4]!=null?StringEscapeUtils.escapeHtml4(obj[4].toString()):"-"%></td>
 	    </tr>
 	    <%} } else if(divisionemplist == null) {%>
 	     <tr class="center">     
@@ -162,6 +166,31 @@ String divisionid=divisiondata[0].toString();
   <form action="DivisionAssignSubmit.htm" method="POST" name="frm2" >
     <div class="row rowDiv" >
       <div class="col-md-12">
+      <div class="table-responsive" >
+	   <table class="table table-bordered table-hover table-striped table-condensed"  > 
+	   <thead>
+	   <tr>
+	   <th colspan="2">Select Labcode </th>
+	  </tr>
+	 </thead>
+    <tbody>
+	    <tr>
+	    
+	     <td colspan="2">
+					<select class="form-control form-control" name="labcode"  data-placeholder="Select Labcode" id= "labcode" onChange="showEmployees(this.value)"  >
+					<option value="" selected="selected" disabled="disabled">Select Labcode</option>
+			        <%if(empoyeelist != null){ 
+			             for(Object[] obj:lablist){ %> 
+			           
+			            <option value="<%=obj[3] %>" <%if(labcode.equalsIgnoreCase(obj[3].toString())){ %> selected="selected" <%} %>>
+				        	<%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()):"-"%></option>
+			        <% }} %>	  	
+				 	</select>
+	    </td>
+	    </tr>
+	    </tbody>
+</table>
+</div>
     <div class="table-responsive" >
 	   <table class="table table-bordered table-hover table-striped table-condensed"  > 
 	   <thead>
@@ -211,7 +240,7 @@ String divisionid=divisiondata[0].toString();
     $(document).ready(function(){
     	$('#name').select2();
     	$('#LogInId').select2();
-    	
+    	$('#labcode').select2();
     });
   
   </script>
@@ -239,6 +268,38 @@ function Edit(myfrm){
 					}
 			
 			}
+			
+function showEmployees(labcode){
+	
+	var divisionId = $('#name').val();
+	
+	if(labcode !=""){
+		$.ajax({		
+		type : "GET",
+		url : "EmployeeOnDivisionCode.htm",
+		data : {
+			labcode : labcode,
+			divisionId: divisionId,
+		},
+		datatype : 'json',
+		success : function(result) {
+	
+			var result = JSON.parse(result);	
+			var values = Object.keys(result).map(function(e) {
+									 return result[e]
+						});
+							
+			var s = '';
+			for (i = 0; i < values.length; i++) {									
+				s += '<option value="'+values[i][0]+'">'
+					+values[i][1].replaceAll("<","").replaceAll(">","") + " (" +values[i][2].replaceAll("<","").replaceAll(">","")+")" 
+					+ '</option>';
+			} 
+			$('#LogInId').html(s);
+		}
+		});
+	}
+}
 </script>
 
 <script>

@@ -58,6 +58,7 @@ List<Object[]> committeeMemberreplist=(List<Object[]>)request.getAttribute("comm
 
 String LabCode = (String)request.getAttribute("LabCode");
 
+String LoginType =(String) session.getAttribute("LoginType");
 
 Object[]CommitteMainEnoteList = (Object[])request.getAttribute("CommitteMainEnoteList");
 %>
@@ -432,7 +433,8 @@ String logintype = (String)session.getAttribute("LoginType");
 						              	 </form>
 				             		</td>	
 				             		<td>
-				             		<%if( proposedmainid==null){ %>             		
+				             		<%if( proposedmainid==null ){
+				             			if(LabCode.equalsIgnoreCase("LRDE") && (LoginType.equalsIgnoreCase("A") || LoginType.equalsIgnoreCase("P"))){%>             		
 										<form  method="post" action="CommitteeDetails.htm">
 											<button  type="submit" class="btn btn-sm add">CONSTITUTE NEW COMMITTEE</button>
 											<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />     
@@ -444,14 +446,15 @@ String logintype = (String)session.getAttribute("LoginType");
 										</form>
 											
 											
-									<%}else if(!proposedmainid.equals(committeemainid)  ){ %>
+									<%}}else if(!proposedmainid.equals(committeemainid)  ){ 
+									if(LabCode.equalsIgnoreCase("LRDE") && (LoginType.equalsIgnoreCase("A") || LoginType.equalsIgnoreCase("P"))) {%>
 										<form  method="post" action="CommitteeMainMembers.htm">
 											<button  type="submit" class="btn btn-sm add">PROPOSED COMMITTEE</button>
 											<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />     
 											<input type="hidden" name="committeemainid" value="<%=proposedcommitteemainid[0]%>"> 											
 										</form>
 					             		
-				             		<%} %>
+				             		<%} }%>
 				             		</td>
 			             		
 										
@@ -830,7 +833,7 @@ String logintype = (String)session.getAttribute("LoginType");
 													</td>
 													<td class="width-20"> 		  					
 														<%if(status.equals("A") || (status.equals("P") && (approvaldata[5].toString().equals("RTDO") || approvaldata[5].toString().equals("CCR"))) ){ %>
-										     	  		<button class="btn  btn-sm submit" type="submit"  onclick="return confirm('Are you Sure to Add this Representatives(s)');" >SUBMIT</button>
+										     	  		<button class="btn  btn-sm submit" type="submit"  onclick="return handleRepClick()" >SUBMIT</button>
 										     	  		<%} %>
 										     	   </td>
 									     	   </tr>							
@@ -1460,7 +1463,21 @@ function memberrepdelete(memrepid){
 					});
 				}
 			}
+function handleRepClick() {
+    var repSelect = $('#repids').val(); 
 
+    if (!repSelect || repSelect.length === 0) {
+        alert("Please Select Representative");
+        return false;
+    }
+
+    if (repSelect.includes("0")) {
+        alert("Please Remove Add New Option");
+        return false;
+    }
+
+    return confirm('Are you sure to Add this Representative(s)?');
+}
 
 
 function replacerepdd(){

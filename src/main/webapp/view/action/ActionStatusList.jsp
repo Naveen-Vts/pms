@@ -135,7 +135,7 @@
  																			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> 
 																			</form> 
                                                                         </td>
-																		<td> <%=obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()):" - "%></td>
+																		<td> <%=obj[5]!=null?obj[5].toString():" - "%></td>
 																		<td><%=obj[3]!=null ? sdf.format(obj[3]):" - "%></td>
 																		<td><%=obj[4]!=null ? sdf.format(obj[4]):" - "%></td>																		
 																		<td><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):" - "%>, <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):" - "%></td>

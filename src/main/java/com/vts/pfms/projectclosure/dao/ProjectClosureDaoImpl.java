@@ -176,12 +176,12 @@ public class ProjectClosureDaoImpl implements ProjectClosureDao{
 	}
 	
 	private static final String PROJECTCLOSURETRANSAPPROVALDATABYTYPE = "SELECT a.ClosureTransId,\r\n"
-			+ "	(SELECT empno FROM pfms_closure_trans t , employee e  WHERE e.EmpId = t.ActionBy AND t.ClosureStatusCode =  b.ClosureStatusCode AND t.ClosureId=d.ClosureId ORDER BY t.ClosureTransId DESC LIMIT 1) AS 'empno',\r\n"
-			+ "	(SELECT empname FROM pfms_closure_trans t , employee e  WHERE e.EmpId = t.ActionBy AND t.ClosureStatusCode =  b.ClosureStatusCode AND t.ClosureId=d.ClosureId ORDER BY t.ClosureTransId DESC LIMIT 1) AS 'empname',\r\n"
-			+ "	(SELECT designation FROM pfms_closure_trans t , employee e,employee_desig des WHERE e.EmpId = t.ActionBy AND e.desigid=des.desigid AND t.ClosureStatusCode = b.ClosureStatusCode AND t.ClosureId=d.ClosureId ORDER BY t.ClosureTransId DESC LIMIT 1) AS 'Designation',\r\n"
+			+ "	(SELECT emp_no FROM pfms_closure_trans t , employee e  WHERE e.emp_id = t.ActionBy AND t.ClosureStatusCode =  b.ClosureStatusCode AND t.ClosureId=d.ClosureId ORDER BY t.ClosureTransId DESC LIMIT 1) AS 'empno',\r\n"
+			+ "	(SELECT emp_name FROM pfms_closure_trans t , employee e  WHERE e.emp_id = t.ActionBy AND t.ClosureStatusCode =  b.ClosureStatusCode AND t.ClosureId=d.ClosureId ORDER BY t.ClosureTransId DESC LIMIT 1) AS 'empname',\r\n"
+			+ "	(SELECT des.designation FROM pfms_closure_trans t , employee e,employee_desig des WHERE e.emp_id = t.ActionBy AND e.desig_id=des.desig_id AND t.ClosureStatusCode = b.ClosureStatusCode AND t.ClosureId=d.ClosureId ORDER BY t.ClosureTransId DESC LIMIT 1) AS 'Designation',\r\n"
 			+ "	MAX(a.ActionDate) AS ActionDate,a.Remarks,b.ClosureStatus,b.ClosureStatusColor,b.ClosureStatusCode\r\n"
 			+ "	FROM pfms_closure_trans a,pfms_closure_approval_status b,employee c,pfms_closure d\r\n"
-			+ "	WHERE a.ClosureId=d.ClosureId AND a.ClosureStatusCode =b.ClosureStatusCode  AND a.Actionby=c.EmpId AND b.ClosureForward=:ClosureForward AND a.ClosureForm=:ClosureForm AND d.ClosureId=:ClosureId GROUP BY b.ClosureStatusCode,a.ClosureTransId,b.ClosureStatus,b.ClosureStatusColor ORDER BY a.ClosureTransId ASC";
+			+ "	WHERE a.ClosureId=d.ClosureId AND a.ClosureStatusCode =b.ClosureStatusCode  AND a.Actionby=c.emp_id AND b.ClosureForward=:ClosureForward AND a.ClosureForm=:ClosureForm AND d.ClosureId=:ClosureId GROUP BY b.ClosureStatusCode,a.ClosureTransId,b.ClosureStatus,b.ClosureStatusColor ORDER BY a.ClosureTransId ASC";
 	@Override
 	public List<Object[]> projectClosureApprovalDataByType(String closureId, String closureForward, String closureForm) throws Exception{
 
@@ -199,7 +199,7 @@ public class ProjectClosureDaoImpl implements ProjectClosureDao{
 
 	}
 	
-	private static final String PROJECTCLOSUREREMARKSHISTORYBYTYPE  ="SELECT b.ClosureId,b.Remarks,a.ClosureStatusCode,d.EmpName,e.Designation FROM pfms_closure_approval_status a,pfms_closure_trans b,pfms_closure c,employee d,employee_desig e WHERE b.ActionBy = d.EmpId AND d.DesigId = e.DesigId AND a.ClosureStatusCode = b.ClosureStatusCode AND c.ClosureId = b.ClosureId AND TRIM(b.Remarks)<>'' AND a.ClosureForward=:ClosureForward AND b.ClosureForm=:ClosureForm AND c.ClosureId=:ClosureId ORDER BY b.ClosureTransId ASC";
+	private static final String PROJECTCLOSUREREMARKSHISTORYBYTYPE  ="SELECT b.ClosureId,b.Remarks,a.ClosureStatusCode,d.emp_name,e.Designation FROM pfms_closure_approval_status a,pfms_closure_trans b,pfms_closure c,employee d,employee_desig e WHERE b.ActionBy = d.emp_id AND d.desig_id = e.desig_id AND a.ClosureStatusCode = b.ClosureStatusCode AND c.ClosureId = b.ClosureId AND TRIM(b.Remarks)<>'' AND a.ClosureForward=:ClosureForward AND b.ClosureForm=:ClosureForm AND c.ClosureId=:ClosureId ORDER BY b.ClosureTransId ASC";
 	@Override
 	public List<Object[]> projectClosureRemarksHistoryByType(String closureId, String closureForward, String closureForm) throws Exception
 	{
@@ -218,7 +218,7 @@ public class ProjectClosureDaoImpl implements ProjectClosureDao{
 		return list;
 	}
 	
-	private static final String GETEMPGDDETAILS  ="SELECT a.EmpId,a.EmpName,b.Designation FROM employee a,employee_desig b WHERE a.DesigId = b.DesigId AND a.EmpId = (SELECT dm.division_head_id FROM employee emp,division_master dm WHERE dm.division_id = emp.DivisionId AND emp.EmpId=:EmpId AND emp.IsActive=1 LIMIT 1)";
+	private static final String GETEMPGDDETAILS  ="SELECT a.emp_id,a.emp_name,b.Designation FROM employee a,employee_desig b WHERE a.desig_id = b.desig_id AND a.emp_id = (SELECT dm.division_head_id FROM employee emp,division_master dm WHERE dm.division_id = emp.division_id AND emp.emp_id=:EmpId AND emp.is_active=1 LIMIT 1)";
 	@Override
 	public Object[] getEmpGDDetails(String empId) throws Exception
 	{
@@ -562,13 +562,13 @@ public class ProjectClosureDaoImpl implements ProjectClosureDao{
 		}
 	}
 	
-	private static final String PROJECTORIGINALANDREVISIONDETAILS = "SELECT pt.ProjectType AS Category, pm.SanctionCostRE AS pmSanctionCostRE, pm.SanctionCostFE AS pmSanctionCostFE, pm.TotalSanctionCost AS pmTotalSanctionCost,\r\n"
-			+ "    pmr.SanctionCostRE AS pmrevSanctionCostRE, pmr.SanctionCostFE AS pmrevSanctionCostFE, pmr.TotalSanctionCost AS pmrevTotalSanctionCost, pm.PDC AS pmPDC, pmr.PDC AS pmrevPDC,\r\n"
-			+ "    ( SELECT COUNT(*) FROM project_master_rev WHERE ProjectId = :ProjectId ) AS NoOfRevisions\r\n"
+	private static final String PROJECTORIGINALANDREVISIONDETAILS = "SELECT pt.project_type AS Category, pm.sanction_cost_re AS pmSanctionCostRE, pm.sanction_cost_fe AS pmSanctionCostFE, pm.total_sanction_cost AS pmTotalSanctionCost,\r\n"
+			+ "pmr.sanction_cost_re AS pmrevSanctionCostRE, pmr.sanction_cost_fe AS pmrevSanctionCostFE, pmr.total_sanction_cost AS pmrevTotalSanctionCost, pm.pdc AS pmPDC, pmr.pdc AS pmrevPDC,\r\n"
+			+ "( SELECT COUNT(*) FROM project_master_rev WHERE project_id = :ProjectId ) AS NoOfRevisions\r\n"
 			+ "FROM project_master pm\r\n"
-			+ "LEFT JOIN project_type pt ON pt.ProjectTypeId = pm.ProjectCategory\r\n"
-			+ "LEFT JOIN ( SELECT * FROM project_master_rev WHERE ProjectId = :ProjectId ORDER BY ProjectRevId LIMIT 1 ) pmr ON 1 = 1\r\n"
-			+ "WHERE pm.ProjectId = :ProjectId AND pm.IsActive = 1";
+			+ "LEFT JOIN project_type pt ON pt.project_type_id = pm.project_category\r\n"
+			+ "LEFT JOIN ( SELECT * FROM project_master_rev WHERE project_id = :ProjectId ORDER BY project_rev_Id LIMIT 1 ) pmr ON 1 = 1\r\n"
+			+ "WHERE pm.project_id = :ProjectId AND pm.is_active = 1";
 	@Override
 	public Object[] projectOriginalAndRevisionDetails(String projectId) throws Exception
 	{
@@ -942,14 +942,14 @@ public class ProjectClosureDaoImpl implements ProjectClosureDao{
 	}
 
 	private static final String TECHCLOSUREDOCUMENTSUMMARY="SELECT a.AdditionalInformation,a.Abstract,a.Keywords,a.Distribution,a.reviewer,a.approver,\r\n"
-			+ "(SELECT CONCAT(IFNULL(CONCAT(e.title,' '),''), e.empname)FROM employee e WHERE e.empid=a.approver ) AS 'Approver1',\r\n"
-			+ "(SELECT CONCAT(IFNULL(CONCAT(e.title,' '),''), e.empname)FROM employee e WHERE e.empid=a.reviewer) AS 'Reviewer1',\r\n"
-			+ "a.summaryid,a.preparedby,(SELECT CONCAT(IFNULL(CONCAT(e.title,' '),''), e.empname)FROM \r\n"
-			+ "employee e WHERE e.empid=a.PreparedBy) AS 'PreparedBy1',\r\n"
-			+ "(SELECT p.ProjectDescription FROM project_master p WHERE p.ProjectId=b.ProjectId) AS 'ProjectNo',\r\n"
-			+ "(SELECT p.ProjectName FROM project_master p WHERE p.ProjectId=b.ProjectId) AS 'ProjectName',\r\n"
+			+ "(SELECT CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name)FROM employee e WHERE e.emp_id=a.approver ) AS 'Approver1',\r\n"
+			+ "(SELECT CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name)FROM employee e WHERE e.emp_id=a.reviewer) AS 'Reviewer1',\r\n"
+			+ "a.summaryid,a.preparedby,(SELECT CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name)FROM \r\n"
+			+ "employee e WHERE e.emp_id=a.PreparedBy) AS 'PreparedBy1',\r\n"
+			+ "(SELECT p.project_description FROM project_master p WHERE p.project_id=b.ProjectId) AS 'ProjectNo',\r\n"
+			+ "(SELECT p.project_name FROM project_master p WHERE p.project_id=b.ProjectId) AS 'ProjectName',\r\n"
 			+ "\r\n"
-			+ "(SELECT c.Classification FROM project_master p,pfms_security_classification c WHERE p.ProjectId=b.ProjectId AND p.ProjectCategory=c.ClassificationId) AS 'Projectcategory'\r\n"
+			+ "(SELECT c.Classification FROM project_master p,pfms_security_classification c WHERE p.project_id=b.ProjectId AND p.project_category=c.classification_id) AS 'Projectcategory'\r\n"
 			+ " FROM pfms_closure_technical_docsumary a,pfms_closure b  WHERE a.ClosureId=b.ClosureId AND \r\n"
 			+ " a.ClosureId =:closureId AND a.isactive='1'";
 	

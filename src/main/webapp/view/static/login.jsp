@@ -175,29 +175,7 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 																		
 												</div>
 
-														<%-- <div class="form-group">
-															<label for="captchaInput">Enter Captcha:</label>
-															<div style="display: flex; align-items: center;">
-																<input type="text" name="captchaInput" id="captchaInput"
-																	class="form-control" required
-																	style="max-width: 150px; margin-right: 10px;">
-																<span
-																	style="font-weight: bold; font-size: 20px; background: #f0f0f0; padding: 5px 10px; letter-spacing: 3px; user-select: none;">
-																	${captcha} </span>
-															</div>
-														</div> --%>
-																<div class="form-group w150" >
-																    <label for="captchaInput">Enter Captcha:</label>
-																    <div class="g2s">
-																        <input type="text" name="captchaInput" id="captchaInput"
-																               class="form-control" required
-																              >
-																        <img id="captchaImage" src="data:image/png;base64,${captcha}"
-																             alt="Captcha" >
-																        <button type="button" id="refreshCaptcha" class="btn btn-secondary">&#x21bb;</button>
-																    </div>
-																</div>
-
+									
 														<div class="form-submit">
 													<div class="row align-items-center mb-5">
 														<div class="col-md-5">
@@ -258,7 +236,7 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 
 </div>	
 
-   <div id="footer">
+   <div id="footer" class="fixed-bottom">
 	<footer class="footer"  >
 	
 		<section id="fontSize" class="clearfix f1s" >

@@ -24,7 +24,9 @@ public class PMSLogoUtil
 	public String getLabLogoAsBase64String(String LabCode) throws IOException
 	{
 		//String path = LabLogoPath+"/images/lablogos/"+LabCode.trim().toLowerCase()+".png";
+		System.out.println(LabCode);
 		String path = Paths.get(LabLogoPath, "images", "lablogos", LabCode.trim().toLowerCase()+".png").toString();
+		System.out.println(path);
 		String path2 = Paths.get(LabLogoPath, "images", "lablogos", "lablogo.png").toString();
 		try {
 			return Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(new File(path)));

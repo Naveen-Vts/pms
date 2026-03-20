@@ -427,11 +427,10 @@ String projectType=(String)request.getAttribute("projectType");
 							values = values.filter(e => e[4] == vendortype)
 						} 
 						console.log(values)
-						for (i = 0; i < values.length; i++) 
+						/* for (i = 0; i < values.length; i++) 
 						{
-
 							s += '<option value="'+values[i][0]+'">'+values[i][1] + ', ' +values[i][3] + '</option>';
-						} 
+						}  */
 						$('#assignee').html('');
 						$('#assignee').html(s);
 					 /* $('#ApprovingOfficer').val(''+value).trigger('change'); */ 

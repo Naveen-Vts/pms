@@ -39,7 +39,7 @@ public class MasterDaoImpl implements MasterDao {
 	private SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	private static final String OFFICERLIST="SELECT a.emp_id, a.emp_no, CONCAT(IFNULL(CONCAT(a.title,' '),(IFNULL(CONCAT(a.salutation, ' '), ''))), a.emp_name) AS 'empname' , b.designation, a.ext_no, a.email, (SELECT c.division_name FROM division_master c WHERE a.division_id= c.division_id LIMIT 1) AS 'divisionname', a.desig_id, a.division_id, a.sr_no, a.is_active,a.lab_code FROM employee a,employee_desig b WHERE a.desig_id= b.desig_id  ORDER BY a.sr_no=0,a.sr_no";
-	private static final String DESIGNATIONLIST="SELECT desig_id, desig_code, designation, desig_limit FROM employee_desig";
+	private static final String DESIGNATIONLIST="SELECT desig_id, desig_code, designation, desig_limit FROM employee_desig ORDER BY desig_sr";
 	private static final String OFFICERDIVISIONLIST="SELECT division_id, division_name FROM division_master where is_active='1'";
 	private static final String OFFICEREDITDATA="select emp_id,emp_no,emp_name,desig_id,ext_no,email,division_id, drona_email, internet_email,mobile_no , title , salutation, superior_officer, emp_status from employee  where emp_id=:empid"; 
 	private static final String EMPNOCHECK="SELECT emp_no FROM employee";
@@ -50,10 +50,12 @@ public class MasterDaoImpl implements MasterDao {
 	private static final String EXTERNALOFFICERMASTERUPDATE="UPDATE employee SET salutation=:salutation ,title=:title, labcode=:labcode,empno=:empno, empname=:empname, desigid=:desigid, extno=:extno, MobileNo=:mobileno, email=:email,DronaEmail=:dronaemail, InternetEmail=:internalemail , divisionid=:divisionid, modifiedby=:modifiedby, modifieddate=:modifieddate WHERE empid=:empid" ;
 
 
+
 	private static final String DIVISIONLIST="SELECT division_id,division_code,division_name FROM division_master WHERE isactive=1";
-	private static final String DIVISIONEMPLIST="SELECT de.divisionemployeeid,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) AS 'empname',ed.designation,de.divisionid  FROM division_employee de,employee e, employee_desig ed WHERE de.isactive=1 AND e.is_active=1 AND  de.empid=e.emp_id AND e.desig_id=ed.desig_id AND de.divisionid=:divisionid";
+	private static final String DIVISIONEMPLIST="SELECT de.divisionemployeeid,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) AS 'empname',ed.designation,de.divisionid,e.lab_code  FROM division_employee de,employee e, employee_desig ed WHERE de.isactive=1 AND e.is_active=1 AND  de.empid=e.emp_id AND e.desig_id=ed.desig_id AND de.divisionid=:divisionid";
 	private static final String DIVISIONNONEMPLIST ="SELECT e.emp_id, CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) AS 'empname',ed.designation,e.lab_code  FROM employee e,employee_desig ed  WHERE e.is_active=1 AND e.desig_id=ed.desig_id AND e.emp_id NOT IN  (SELECT de.empid FROM division_employee de WHERE de.isactive=1 AND divisionid=:divisionid) ORDER BY e.sr_no ASC ,ed.desig_sr ASC";
 	private static final String DIVISIONDATA ="SELECT division_id, division_code,division_name FROM division_master WHERE division_id=:divisionid";
+
 
 	private final static String OFFICERDETALIS="SELECT a.emp_id, a.emp_no,CONCAT(IFNULL(CONCAT(a.title,' '),(IFNULL(CONCAT(a.salutation, ' '), ''))), a.emp_name) AS 'empname' , b.designation, a.ext_no, a.email, (SELECT c.division_name FROM division_master c WHERE a.division_id= c.division_id LIMIT 1) AS 'divisionname', a.desig_id, a.division_id, a.sr_no FROM employee a,employee_desig b WHERE a.desig_id= b.desig_id AND a.is_active='1' AND a.emp_id=:officerid"; 
 	private final static String LISTOFSENIORITYNUMBER="SELECT sr_no, emp_id FROM employee WHERE sr_no !=0 ORDER BY sr_no ASC ";
@@ -63,11 +65,12 @@ public class MasterDaoImpl implements MasterDao {
 	private static final String GROUPLIST = "SELECT dg.group_id,dg.group_code,dg.group_name,dg.group_head_id,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) AS 'empname',ed.designation ,dg.lab_code,dt.tdcode FROM division_group dg,employee e, employee_desig ed, division_td dt WHERE e.is_active=1 AND dg.group_head_id=e.emp_id AND e.desig_id=ed.desig_id AND dg.td_id=dt.tdid  AND dg.is_active=1 AND dg.lab_code=:labcode ORDER BY dg.group_id DESC";
 	private static final String GROUPHEADLIST ="SELECT e.emp_id,CONCAT(IFNULL(e.title,''), e.emp_name)AS 'empname',ed.designation FROM employee e, employee_desig ed WHERE  e.desig_id=ed.desig_id AND e.is_active=1 AND e.lab_code=:labcode ORDER BY e.sr_no";
 	private static final String GROUPADDCHECK ="SELECT SUM(IF(group_code =:gcode,1,0))   AS 'dCode','0' AS 'codecount'FROM division_group WHERE is_active=1 ";
-	private static final String GROUPDATA = "SELECT dg.group_id,dg.group_code,dg.group_name,dg.group_head_id,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) AS 'empname',ed.designation,dg.is_active,dg.td_id FROM division_group dg,employee e, employee_desig ed WHERE e.is_active=1 AND dg.group_head_id=e.emp_id AND e.desig_id=ed.desig_id AND  dg.group_id=:groupid";
+	private static final String GROUPDATA = "SELECT dg.group_id,dg.group_code,dg.group_name,dg.group_head_id,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) AS 'empname',ed.designation,dg.is_active,dg.td_id,e.lab_code AS 'Group Head Labcode' FROM division_group dg,employee e, employee_desig ed WHERE e.is_active=1 AND dg.group_head_id=e.emp_id AND e.desig_id=ed.desig_id AND  dg.group_id=:groupid";
+
 	private static final String LABLIST="select labmasterid,labcode,labname,labunitcode,labaddress,labcity,labpin FROM lab_master";
 	private static final String EMPLOYEELIST="SELECT empid, CONCAT(IFNULL(CONCAT(title,' '),''), empname) AS 'empname' FROM employee WHERE isactive=1 ORDER BY srno ";
 	private static final String LABMASTEREDITDATA="select labmasterid,labcode,labname,labunitcode,labaddress,labcity,labpin,labtelno,labfaxno,labemail,labauthority,labauthorityid,labrfpemail,lablogo,labid from lab_master where labmasterid= :labmasterid";
-	private static final String LABSLIST="SELECT labid,clusterid,labname,labcode FROM cluster_lab";
+	private static final String LABSLIST="SELECT lab_id,cluster_id,lab_name,lab_code FROM cluster_lab";
 	private static final String EMPNOCHECKAJAX="SELECT emp_id, CONCAT(IFNULL(CONCAT(title,' '),''), emp_name) AS 'empname' , emp_no FROM employee WHERE emp_no=:empno"; 
 	private static final String EXTEMPNOCHECKAJAX="SELECT empid, empname , empno FROM employee_external WHERE empno=:empno";
 
@@ -567,7 +570,7 @@ public class MasterDaoImpl implements MasterDao {
 		List<Object[]> FeedbackList = (List<Object[]>) query.getResultList();
 		return FeedbackList;
 	}
-	private static final String FEEDBACKLISTFORUSER="SELECT a.feedbackid,b.empname,a.createddate , a.feedback , a.feedbacktype , a.status , a.remarks FROM pfms_feedback a,employee b WHERE a.isactive='1' AND a.empid=b.empid  AND CASE WHEN :empid<>'A' THEN a.empid=:empid ELSE 1=1 END AND MONTH(a.createddate)=MONTH(NOW())-1 AND b.labcode=:labcode UNION SELECT a.feedbackid,b.empname,a.createddate , a.feedback , a.feedbacktype , a.status , a.remarks FROM pfms_feedback a,employee b WHERE a.isactive='1' AND a.empid=b.empid AND CASE WHEN :empid<>'A' THEN a.empid=:empid ELSE 1=1 END  AND b.labcode=:labcode ORDER BY feedbackid DESC";
+	private static final String FEEDBACKLISTFORUSER="SELECT a.feedbackid,b.emp_name,a.createddate , a.feedback , a.feedbacktype , a.status , a.remarks FROM pfms_feedback a,employee b WHERE a.isactive='1' AND a.empid=b.emp_id  AND CASE WHEN :empid<>'A' THEN a.empid=:empid ELSE 1=1 END AND MONTH(a.createddate)=MONTH(NOW())-1 AND b.lab_code=:labcode UNION SELECT a.feedbackid,b.emp_name,a.createddate , a.feedback , a.feedbacktype , a.status , a.remarks FROM pfms_feedback a,employee b WHERE a.isactive='1' AND a.empid=b.emp_id AND CASE WHEN :empid<>'A' THEN a.empid=:empid ELSE 1=1 END  AND b.lab_code=:labcode ORDER BY feedbackid DESC";
 	@Override
 	public List<Object[]> FeedbackListForUser(String LabCode , String empid) throws Exception
 	{
@@ -578,7 +581,7 @@ public class MasterDaoImpl implements MasterDao {
 		return FeedbackList;
 	}
 
-	private static final String FEEDBACKCONTENT = "SELECT a.feedbackid,b.empname,a.createddate,a.feedback,a.EmpId, a.Status FROM pfms_feedback a,employee b WHERE a.isactive='1' AND a.empid=b.empid AND feedbackid=:feedbackid";
+	private static final String FEEDBACKCONTENT = "SELECT a.feedbackid,b.emp_name,a.createddate,a.feedback,a.EmpId, a.Status FROM pfms_feedback a,employee b WHERE a.isactive='1' AND a.empid=b.emp_id AND feedbackid=:feedbackid";
 	@Override
 	public Object[] FeedbackContent(String feedbackid)throws Exception
 	{		
@@ -968,8 +971,8 @@ public class MasterDaoImpl implements MasterDao {
 			return employee.getEmpId();
 		}
 
-		private static final String EMPWITHROLES ="SELECT b.Empid AS'Empid',a.Roleid,b.labcode AS 'Organization', CONCAT(IFNULL(CONCAT(b.title,' '),IFNULL(CONCAT(b.salutation,' '),'')), b.empname) AS 'empname' ,a.EmpRole,b.empno AS 'empno'  ,'I' AS 'emptype'\r\n"
-				+ "FROM  employee b  LEFT JOIN pfms_emp_roles a ON b.empno = a.empno\r\n"
+		private static final String EMPWITHROLES ="SELECT b.emp_id AS'Empid',a.Roleid,b.lab_code AS 'Organization', CONCAT(IFNULL(CONCAT(b.title,' '),IFNULL(CONCAT(b.salutation,' '),'')), b.emp_name) AS 'empname' ,a.EmpRole,b.emp_no AS 'empno'  ,'I' AS 'emptype'\r\n"
+				+ "FROM  employee b  LEFT JOIN pfms_emp_roles a ON b.emp_no = a.empno\r\n"
 				+ "UNION \r\n"
 				+ "SELECT b.ExpertId AS'Empid',a.Roleid,b.Organization AS 'Organization', CONCAT(IFNULL(CONCAT(b.title,' '),IFNULL(CONCAT(b.salutation,' '),'')), b.expertname) AS 'empname' ,a.EmpRole,b.ExpertNo AS 'empno'  ,'E' AS 'emptype'\r\n"
 				+ "FROM  expert b  LEFT JOIN pfms_emp_roles a ON b.ExpertNo = a.empno ORDER BY Empid;";
@@ -1020,7 +1023,7 @@ public class MasterDaoImpl implements MasterDao {
 			return (List<Object[]>)query.getResultList();
 		}
 		
-		private static final String GETFEEDBACKTRANSACTIONBYFEEDBACKID = "SELECT a.FeedbackTransId, a.FeedbackId, a.Comments, a.ActionBy, a.ActionDate, CONCAT(IFNULL(CONCAT(b.Title,' '),(IFNULL(CONCAT(b.Salutation, ' '), ''))), b.EmpName) AS 'EmpName', c.Designation FROM pfms_feedback_trans a LEFT JOIN employee b ON a.ActionBy = b.EmpId LEFT JOIN employee_desig c ON b.DesigId = c.DesigId WHERE a.FeedbackId=:FeedbackId";
+		private static final String GETFEEDBACKTRANSACTIONBYFEEDBACKID = "SELECT a.FeedbackTransId, a.FeedbackId, a.Comments, a.ActionBy, a.ActionDate, CONCAT(IFNULL(CONCAT(b.Title,' '),(IFNULL(CONCAT(b.Salutation, ' '), ''))), b.emp_name) AS 'EmpName', c.Designation FROM pfms_feedback_trans a LEFT JOIN employee b ON a.ActionBy = b.emp_id LEFT JOIN employee_desig c ON b.desig_id = c.desig_id WHERE a.FeedbackId=:FeedbackId";
 		@Override
 		public List<Object[]> getFeedbackTransByFeedbackId(String feedbackId)throws Exception
 		{
@@ -1048,7 +1051,7 @@ public class MasterDaoImpl implements MasterDao {
 		}
 		
 		/* **************************** Programme Master - Naveen R  - 16/07/2025 **************************************** */
-		private static final String PROGRAMMASTERLIST = "SELECT a.ProgrammeId, a.PrgmCode, a.PrgmName, a.PrgmDirector, a.SanctionedOn, CONCAT(IFNULL(CONCAT(b.Title,' '),(IFNULL(CONCAT(b.Salutation, ' '), ''))), b.EmpName) AS 'EmpName', c.Designation FROM pfms_programme_master a, employee b, employee_desig c WHERE a.IsActive = 1 AND a.PrgmDirector = b.EmpId AND b.DesigId= c.DesigId ORDER BY a.ProgrammeId DESC";
+		private static final String PROGRAMMASTERLIST = "SELECT a.ProgrammeId, a.PrgmCode, a.PrgmName, a.PrgmDirector, a.SanctionedOn, CONCAT(IFNULL(CONCAT(b.title,' '),(IFNULL(CONCAT(b.salutation, ' '), ''))), b.emp_name) AS 'EmpName', c.designation FROM pfms_programme_master a, employee b, employee_desig c WHERE a.IsActive = 1 AND a.PrgmDirector = b.emp_id AND b.desig_id= c.desig_id ORDER BY a.ProgrammeId DESC";
 		@Override
 		public List<Object[]> getProgramMasterList() throws Exception {
 			try {
@@ -1112,7 +1115,7 @@ public class MasterDaoImpl implements MasterDao {
 			}
 		}
 		
-		private static final String PROJECTLIST = "SELECT DISTINCT projectid, projectmainid, projectcode, projectname, ProjectShortName FROM project_master WHERE isactive=1 AND labcode=:labCode AND projectid NOT IN (SELECT projectid FROM pfms_programme_projects WHERE isActive=1)";
+		private static final String PROJECTLIST = "SELECT DISTINCT project_id, project_main_id, project_code, project_name, project_short_name FROM project_master WHERE is_active=1 AND lab_code=:labCode AND project_id NOT IN (SELECT projectid FROM pfms_programme_projects WHERE isActive=1)";
 		@Override
 		public List<Object[]> getProjectList(String labcode) throws Exception {
 			try {

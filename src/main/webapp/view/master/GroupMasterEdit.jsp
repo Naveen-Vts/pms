@@ -24,6 +24,7 @@
 List<Object[]> groupheadlist=(List<Object[]>)request.getAttribute("groupheadlist");
 List<Object[]> tdaddlist=(List<Object[]>)request.getAttribute("tdaddlist");
 Object[] groupsdata=(Object[])request.getAttribute("groupsdata");
+List<Object[]> lablist = (List<Object[]>)request.getAttribute("lablist");
 
 
 %>
@@ -84,21 +85,29 @@ Object[] groupsdata=(Object[])request.getAttribute("groupsdata");
                             		<input  class="form-control form-control " value="<%=groupsdata[2]!=null? StringEscapeUtils.escapeHtml4(groupsdata[2].toString()):"" %>"  type="text" name="groupname" id="groupName" required="required" maxlength="100"  > 
                         		</div>
                     		</div>
+                    		<div class="col-md-2">
+                        		<div class="form-group">
+                            		<label class="control-label">Lab Code</label>
+                              		<select class="custom-select selectdee" name="labCode" onChange="showEmployees(this.value)">			
+                              		<option value="" selected="selected" disabled="disabled">Select Labcode</option>														
+											<% for (  Object[] obj : lablist){ %>
+											<option value=<%=obj[2]%> <%if(obj[2].toString().equalsIgnoreCase(groupsdata[8].toString())) {%> selected="selected" <%} %>><%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):"-"%></option>
+											<%} %>
+									</select> 
+                        		</div>
+                    		</div>
                     		<div class="col-md-4">
                         		<div class="form-group">
                             		<label class="control-label">Group Head Name</label><span class="mandatory">*</span>
                               		<select class="custom-select" name="ghempid"  required="required" id ="ghempid" >
-													<option disabled="true"  selected value="">---Select---</option>
-													
-													<% for (  Object[] obj : groupheadlist){ %>
-											
-													<option value=<%=obj[0]%> <%if(obj[0].toString().equalsIgnoreCase(groupsdata[3].toString())) {%> selected="selected" <%} %>><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):"-"%>, <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):"-"%> </option>
-												
-													<%} %>
+											<option disabled="disabled" selected value="">---Select---</option>
+											 <% for (  Object[] obj : groupheadlist){ %>									
+											<option value=<%=obj[0]%> <%if(obj[0].toString().equalsIgnoreCase(groupsdata[3].toString())) {%> selected="selected" <%} %>><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):"-"%>, <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):"-"%> </option>
+											<%} %> 
 									</select>
                         		</div>
                     		</div>
-                    		<div class="col-md-4">
+                    		<div class="col-md-3">
                         		<div class="form-group">
                             		<label class="control-label">TD Name</label><span class="mandatory">*</span>
                               		<select class="custom-select" name="tdId"  required="required" id ="tdId" >
@@ -159,8 +168,6 @@ Object[] groupsdata=(Object[])request.getAttribute("groupsdata");
 	  $('#tdId').select2();
   });
   
-
-
   $(document).ready(function() {
 	    $('select[name="isActive"]').change(function() {
 	        var isActive = $(this).val();
@@ -198,5 +205,34 @@ Object[] groupsdata=(Object[])request.getAttribute("groupsdata");
 	        }
 	    });
 	});
+  
+
+  function showEmployees(labcode){
+  	if(labcode !=""){
+  		$.ajax({		
+  		type : "GET",
+  		url : "EmployeeOnLabCode.htm",
+  		data : {
+  			labcode : labcode,
+  		},
+  		datatype : 'json',
+  		success : function(result) {
+  	
+  			var result = JSON.parse(result);	
+  			var values = Object.keys(result).map(function(e) {
+  									 return result[e]
+  						});
+  							
+  			var s = '<option value="" selected disabled>---Select---</option>';
+  			for (i = 0; i < values.length; i++) {									
+  				s += '<option value="'+values[i][0]+'">'
+  					+values[i][1].replaceAll("<","").replaceAll(">","") + " (" +values[i][2].replaceAll("<","").replaceAll(">","")+")" 
+  					+ '</option>';
+  			} 
+  			$('#ghempid').html(s);
+  		}
+  		});
+  	}
+  }
 </script>
 </html>

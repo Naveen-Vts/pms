@@ -2204,7 +2204,19 @@ public class ProjectServiceImpl implements ProjectService {
 		master.setLabParticipating(main.getLabParticipating());
 		master.setPlatformId(main.getPlatformId()); 	//srikant
 		master.setIsCCS("N");
-		return dao.ProjectMasterAdd(master);
+		
+		Long result = dao.ProjectMasterAdd(master);
+
+		ProjectAssignDto proAssigndto=new ProjectAssignDto();
+		proAssigndto.setRoleMasterId("1");
+		proAssigndto.setCreatedBy(user);
+		proAssigndto.setProjectId(result.toString());;
+		proAssigndto.setCreatedDate(sdf1.format(new Date()));
+		proAssigndto.setEmpId(new String[]{master.getProjectDirector()+""});
+		
+		ProjectAssignAdd(proAssigndto);
+	
+		return result;
 	}
 
 	@Override

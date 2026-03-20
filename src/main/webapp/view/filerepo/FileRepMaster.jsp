@@ -28,6 +28,7 @@
 	Long empId = (Long) session.getAttribute("EmpId");
 	List<Object[]> filerepmasterlistall = (List<Object[]>) request.getAttribute("filerepmasterlistall");
 	List<Object[]> filerepdoclist = (List<Object[]>) request.getAttribute("filerepdoclist");
+	String labcode = (String) session.getAttribute("labcode");
  %>
 
 
@@ -344,6 +345,14 @@
 					        <select class="form-control dis-none hei-2-7" id="FileNameSelect" name="FileName"  >
 					            <option value="">-- Select Document --</option>
 					        </select>
+					        
+					        <%if(labcode.equalsIgnoreCase("PGAD")){ %>
+						        <div id="reportType" class="">
+							        <label class="control-label">Report Type</label>
+							        <input type="text" class="form-control hei-2-7" id="ReportTypeInput"
+							            onchange="checkDuplicsateFileName()" name="ReportType" required="required" />
+						         </div>
+					            <%} %>
 					    </div>
 					</div>
 					<div class="col-md-4 mt-3">
@@ -406,6 +415,9 @@
 
 
 <script type="text/javascript">
+
+var labcode = "<%= labcode %>";
+console.log(labcode);
 	function enableInlineEdit(id) {
 		document.getElementById("span_" + id).style.display = "none";
 		document.getElementById("input_" + id).style.display = "inline-block";
@@ -757,6 +769,7 @@
 
 <script type="text/javascript">
 
+
 $(document).ready(function(){
 	  const storedParentId = localStorage.getItem("showSubfolderAfterReload");
       if (storedParentId) {
@@ -775,6 +788,7 @@ function showUpload(type,name,id) {
     $('#uploadModal').data('folder-id', id).modal('show');
     $('#FileAttach').val('');
     $('#FileNameInput').val('');
+    $('#ReportTypeInput').val('');
 	$('#isnewver').prop('checked', true);
 	$('#isnonewver').prop('disabled', true);
     $('#submitversion').val('Upload Version 1.0');
@@ -784,9 +798,12 @@ function showUpload(type,name,id) {
     toggleUploadType("Y");
 }
 
+
 function toggleUploadType(value) {
     const inputField = document.getElementById("FileNameInput");
     const dropdown = document.getElementById("FileNameSelect");
+    const reportType = document.getElementById("ReportTypeInput");
+    const reportDiv = document.getElementById('reportType');
 
     $('.btn-group-toggle label').removeClass('active');
     if (value === 'Y') {
@@ -818,6 +835,10 @@ function toggleUploadType(value) {
     if (value === "Y") {
         inputField.classList.remove("d-none");
         inputField.required = true;
+        if(labcode && labcode==="PGAD"){
+        	reportDiv.classList.remove("d-none");
+        	reportType.required = true;
+        }
         dropdown.classList.add("d-none");
         dropdown.required = false;
     	$('#isnewver').prop('checked', true);
@@ -828,6 +849,10 @@ function toggleUploadType(value) {
         dropdown.required = true;
         inputField.classList.add("d-none");
         inputField.required = false;
+        if(labcode && labcode==="PGAD"){
+	       reportDiv.classList.add("d-none");
+	       reportType.required = false;
+        }
 		$('#isnewver').prop('checked', false);
 		$('#isnonewver').prop('checked', true);
 		$('#isnonewver').prop('disabled', false);
@@ -859,6 +884,7 @@ function toggleUploadType(value) {
             	        .attr('data-release', name[5])
             	    );
             	});
+            	$('#FileNameSelect').show();
             },
             error: function(err) {
                 alert("Failed to load document names.");
@@ -873,10 +899,12 @@ function submitUpload() {
 	event.preventDefault();
     const fileInput = document.getElementById("FileAttach");
     const textInput = document.getElementById("FileNameInput");
+    const reportType= document.getElementById('ReportTypeInput');
     const isnewversion = $('input[name="isnewversion"]:checked').val();
     const selectTab = $('input[name="isNewUpload"]:checked').val();
     const selectDropdown = $('#FileNameSelect').val();
     const file = fileInput.files[0];
+    const reportTypeText = labcode && labcode==="PGAD" ? reportType.value.trim() : "";
     const docName = textInput.value.trim();
     const folderId = $('#folderId').val();
     const fileType = $('#fileType').val();
@@ -940,6 +968,16 @@ function submitUpload() {
 	        textInput.value = ""; 
 	        return;
 	    }
+	    if(labcode && labcode==="PGAD" && !reportTypeText){
+	    	 Swal.fire({
+		            icon: 'error',
+		            title: 'Missing Report Type',
+		            text: 'Please enter a Report Type.',
+		            allowOutsideClick: false
+		        });
+	    	 	if(labcode && labcode==="PGAD")reportType.value = ""; 
+		        return;
+	    }
     }
 
     var projectId = <%=ProjectId %>;
@@ -947,6 +985,7 @@ function submitUpload() {
     const formData = new FormData();
     formData.append("fileAttach", file);
     formData.append("fileType", fileType);
+    formData.append('reportType',reportTypeText);
     formData.append("docName",  docName || selectDropdown);
     formData.append("fileRepId", repId);
     formData.append("projectId", projectId);

@@ -47,6 +47,9 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 	List<Object[]> ActionPlanSixMonths = (List<Object[]>)request.getAttribute("ActionPlanSixMonths");
 	String flagforView=(String)request.getAttribute("flagforView");
 	String labcode= (String) session.getAttribute("labcode");
+	List<List<Object[]>> overallfinance = (List<List<Object[]>>) request.getAttribute("overallfinance");
+	List<String> projectidlist = (List<String>)request.getAttribute("projectidlist");
+	List<Object[]> ProjectDetail = (List<Object[]>)request.getAttribute("ProjectDetails");
 %>
 <style type="text/css">
 
@@ -91,20 +94,20 @@ p{
           @top-left {
           	margin-top: 30px;
             margin-left: 10px;
-            content: "<%=committeescheduleeditdata[11]!=null?StringEscapeUtils.escapeHtml4(committeescheduleeditdata[1].toString()): " - " %>";
+            content: "<%=committeescheduleeditdata[11]!=null?StringEscapeUtils.escapeHtml4(committeescheduleeditdata[11].toString()): " - " %>";
             font-size: 13px;
           }            
           
           @top-center { 
           margin-top: 30px;
-          content: "<%=committeescheduleeditdata[15]!=null?StringEscapeUtils.escapeHtml4(committeescheduleeditdata[1].toString()): " - "%>"; 
+          content: "<%=committeescheduleeditdata[15]!=null?StringEscapeUtils.escapeHtml4(committeescheduleeditdata[15].toString()): " - "%>"; 
            font-size: 13px;
           
           }
          
           @bottom-center { 
 	          margin-bottom: 30px;
-	          content: "<%=committeescheduleeditdata[15]!=null?StringEscapeUtils.escapeHtml4(committeescheduleeditdata[1].toString()): " - "%>"; 
+	          content: "<%=committeescheduleeditdata[15]!=null?StringEscapeUtils.escapeHtml4(committeescheduleeditdata[15].toString()): " - "%>"; 
           
           }
           
@@ -140,7 +143,7 @@ p{
  
 </style>
 <meta charset="ISO-8859-1">
-<title><%=committeescheduleeditdata[8]!=null?StringEscapeUtils.escapeHtml4(committeescheduleeditdata[1].toString()): " - "%> Minutes View</title>
+<title><%=committeescheduleeditdata[8]!=null?StringEscapeUtils.escapeHtml4(committeescheduleeditdata[8].toString()): " - "%> Minutes View</title>
 </head>
 <body>
 	<%if(flagforView==null) { %>
@@ -240,8 +243,12 @@ p{
 													&nbsp;&nbsp;<%=obj[15]!=null?StringEscapeUtils.escapeHtml4(obj[15].toString()): " - " %>
 												<%} %>
 											</td>
-											<td class=""  style=" border: 1px solid black;text-align: center;"><%=obj[9]!=null?sdf.format(sdf1.parse(StringEscapeUtils.escapeHtml4(obj[9].toString()))):" - " %><br><%=obj[8]!=null?sdf.format(sdf1.parse(StringEscapeUtils.escapeHtml4(obj[8].toString()))):" - " %></td>
-											<td class=""  style=" border: 1px solid black;text-align: center;"><%=obj[17]!=null?StringEscapeUtils.escapeHtml4(obj[17].toString()): " - " %>%</td>											
+											<td class=""  style=" border: 1px solid black;text-align: center;">
+												<%=obj[9]!=null?fc.sdfTordf(obj[9].toString()):"-" %>
+												<%if(obj[8]!=null && obj[9]!=null && !LocalDate.parse(obj[8].toString()).isEqual(LocalDate.parse(obj[9].toString())) ) {%>
+													<br><%=obj[8]!=null?fc.sdfTordf(obj[8].toString()): " - "  %>
+												<%} %>
+											</td>											<td class=""  style=" border: 1px solid black;text-align: center;"><%=obj[17]!=null?StringEscapeUtils.escapeHtml4(obj[17].toString()): " - " %>%</td>											
 											<td class=""  style=" border: 1px solid black;text-align: left;"><%if(obj[23]!=null){%><%=StringEscapeUtils.escapeHtml4(obj[23].toString())%><%} %></td>
 										</tr>
 									<%milcount1++;}} %>
@@ -492,15 +499,22 @@ p{
 						<h1 class="break"></h1>
 						
 											<div align="center" style="text-decoration: underline">Annexure - C</div>		
-					<table style="  <% if(labcode.equalsIgnoreCase("ADE")){%>width:690px;<%}else{%> width:1020px<%}%> ; margin-top:5px;font-size: 16px;margin-left:8px; border-collapse: collapse;" >
+					<table style="  <% if(labcode.equalsIgnoreCase("ADE")){%>width:690px;<%}else{%> width:1020px<%}%> ; margin-top:5px;font-size: 16px;margin-left:8px;margin-bottom:8px; border-collapse: collapse;" >
 						<tr>
 							<th colspan="8" style="text-align: left; font-weight: 700;"><br>Financial Status presented during the review</th>
 						</tr>
 						<tr >
-							<td colspan="8" style="border: 1px solid black;" align="right">(Amount in Crores)</td>
+							<td colspan="8" align="right">(Amount in Crores)</td>
 						</tr>
-					</table>	
-					<%if(Long.parseLong(projectid) >0 && projectFinancialDetails!=null) { %>
+					</table>										
+					<% 
+					    double totSanctionCost=0,totReSanctionCost=0,totFESanctionCost=0;
+						double totExpenditure=0,totREExpenditure=0,totFEExpenditure=0;
+						double totCommitment=0,totRECommitment=0,totFECommitment=0,totalDIPL=0,totalREDIPL=0,totalFEDIPL=0;
+						double totBalance=0,totReBalance=0,totFeBalance=0,btotalRe=0,btotalFe=0;
+						
+						%>
+					<%if(Long.parseLong(projectid) >0 ) { %>
 							
 							<table style=" <% if(labcode.equalsIgnoreCase("ADE")){%>width:690px;<%}else{%> width:1020px<%}%> ; margin-top:5px;font-size: 16px; border-collapse: collapse;border: 1px solid black;margin-left:8px" >
 								    <thead>
@@ -530,14 +544,9 @@ p{
 										    <th class="std" style="border:1px solid black;">FE</th>
 								        </tr>
 									</thead>
+									<% if(projectFinancialDetails!=null && projectFinancialDetails.size() > 0) { %>
 									<tbody>
-									<% 
-								    double totSanctionCost=0,totReSanctionCost=0,totFESanctionCost=0;
-									double totExpenditure=0,totREExpenditure=0,totFEExpenditure=0;
-									double totCommitment=0,totRECommitment=0,totFECommitment=0,totalDIPL=0,totalREDIPL=0,totalFEDIPL=0;
-									double totBalance=0,totReBalance=0,totFeBalance=0,btotalRe=0,btotalFe=0;
-									int counts=1;
-									if(projectFinancialDetails!=null){
+										<% int counts=1;
 										for(ProjectFinancialDetails projectFinancialDetail:projectFinancialDetails){    %>
 									 
 									    	<tr>
@@ -568,7 +577,7 @@ p{
 													<td class="std"  align="right" style="text-align: right;border:1px solid black;"><%=projectFinancialDetail.getFeBalance()!=null?df.format(projectFinancialDetail.getFeBalance()):" - "%></td>
 												<%totFeBalance+=(projectFinancialDetail.getFeBalance());%>
 											</tr>
-										<%} }%>
+										<%} %>
 																
 											<tr>
 												<td class="std"  colspan="2"><b>Total</b></td>
@@ -595,6 +604,82 @@ p{
 												<td class="std"  colspan="2"  style="text-align: right;font-weight: bold;border:1px solid black;"><%=df.format(totReBalance+totFeBalance)%></td>
 											</tr>
 										</tbody>        
+										<%}else{ int z= 0;%>
+										<%-- <% char fch='a'; for (int z = 0; z < projectidlist.size(); z++) {%> --%>
+									     <tbody id="tbody">
+									     <%int count=0;
+									     if(overallfinance!=null && overallfinance.size()>0 && overallfinance.get(z)!=null && overallfinance.get(z).size()>0)  {
+									    	for(Object[]obj:overallfinance.get(z)){ 
+									    	 %>
+									    	 <tr>
+									   <td 	align="center"class="bp-74" style="border:1px solid black;padding:5px;"><%=++count %></td>
+										<td class="text-justify" style="border:1px solid black;padding:5px;"><b><%=obj[4].toString()%></b></td>
+										<td class="text-right" style="border:1px solid black;padding:5px;"><%=obj[5].toString()%></td>
+										<td class="text-right" style="border:1px solid black;padding:5px;"><%=obj[6].toString()%></td>
+										<td class="text-right" style="border:1px solid black;padding:5px;"><%=obj[7].toString()%></td>
+										<td class="text-right" style="border:1px solid black;padding:5px;"><%=obj[8].toString()%></td>
+										<td class="text-right" style="border:1px solid black;padding:5px;"><%=obj[9].toString()%></td>
+										<td class="text-right" style="border:1px solid black;padding:5px;"><%=obj[10].toString()%></td>
+										<td class="text-right" style="border:1px solid black;padding:5px;"><%=obj[11].toString()%></td>
+										<td class="text-right" style="border:1px solid black;padding:5px;"><%=obj[12].toString()%></td>
+										<td class="text-right" style="border:1px solid black;padding:5px;"><%=obj[13].toString()%></td>
+										<td class="text-right" style="border:1px solid black;padding:5px;"><%=obj[14].toString()%></td>
+										<td class="text-right" style="border:1px solid black;padding:5px;"><%=obj[15].toString()%></td>
+										<td class="text-right" style="border:1px solid black;padding:5px;"><%=obj[16].toString()%></td>
+										</tr>
+									     <%}%>
+									    	 	<tr>
+												<td colspan="2"><b>Total</b></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=overallfinance.get(z).get(0)[17].toString()%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=overallfinance.get(z).get(0)[18].toString()%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=overallfinance.get(z).get(0)[19].toString()%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=overallfinance.get(z).get(0)[20].toString()%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=overallfinance.get(z).get(0)[21].toString()%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=overallfinance.get(z).get(0)[22].toString()%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=overallfinance.get(z).get(0)[23].toString()%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=overallfinance.get(z).get(0)[24].toString()%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=overallfinance.get(z).get(0)[25].toString()%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=overallfinance.get(z).get(0)[26].toString()%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=overallfinance.get(z).get(0)[27].toString()%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=overallfinance.get(z).get(0)[28].toString()%></td>
+											</tr>
+									     	<tr>
+												<td colspan="2" style="border:1px solid black;padding:5px;"><b>GrandTotal</b></td>
+												<td colspan="2" align="right" class="text-right" style="border:1px solid black;padding:5px;"><b><%=Double.parseDouble(overallfinance.get(z).get(0)[17].toString())  +Double.parseDouble(overallfinance.get(z).get(0)[18].toString())%></b></td>
+												<td colspan="2" align="right" class="text-right" style="border:1px solid black;padding:5px;"><b><%=Double.parseDouble(overallfinance.get(z).get(0)[19].toString())  +Double.parseDouble(overallfinance.get(z).get(0)[20].toString())%></b></td>
+												<td colspan="2" align="right" class="text-right" style="border:1px solid black;padding:5px;"><b><%=Double.parseDouble(overallfinance.get(z).get(0)[21].toString())  +Double.parseDouble(overallfinance.get(z).get(0)[22].toString())%></b></td>
+												<td colspan="2" align="right" class="text-right" style="border:1px solid black;padding:5px;"><b><%=Double.parseDouble(overallfinance.get(z).get(0)[23].toString())  +Double.parseDouble(overallfinance.get(z).get(0)[24].toString())%></b></td>
+												<td colspan="2" align="right" class="text-right" style="border:1px solid black;padding:5px;"><b><%=Double.parseDouble(overallfinance.get(z).get(0)[25].toString())  +Double.parseDouble(overallfinance.get(z).get(0)[26].toString())%></b></td>
+												<td colspan="2" align="right" class="text-right" style="border:1px solid black;padding:5px;"><b><%=Double.parseDouble(overallfinance.get(z).get(0)[27].toString())  +Double.parseDouble(overallfinance.get(z).get(0)[28].toString())%></b></td>				     
+									     	</tr>
+									     <%}else{%> 
+									     	<tr>
+												<td colspan="2" style="border:1px solid black;padding:5px;"><b>Total</b></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=df.format(totReSanctionCost)%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=df.format(totFESanctionCost)%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=df.format(totREExpenditure)%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=df.format(totFEExpenditure)%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=df.format(totRECommitment)%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=df.format(totFECommitment)%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=df.format(btotalRe)%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=df.format(btotalFe)%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=df.format(totalREDIPL)%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=df.format(totalFEDIPL)%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=df.format(totReBalance)%></td>
+												<td align="right" class="text-right" style="border:1px solid black;padding:5px;"><%=df.format(totFeBalance)%></td>
+											</tr>
+											<tr>
+												<td colspan="2" style="border:1px solid black;padding:5px;"><b>GrandTotal</b></td>
+												<td colspan="2" align="right" class="text-right" style="border:1px solid black;padding:5px;"><b><%=df.format(totReSanctionCost+totFESanctionCost)%></b></td>
+												<td colspan="2" align="right" class="text-right" style="border:1px solid black;padding:5px;"><b><%=df.format(totREExpenditure+totFEExpenditure)%></b></td>
+												<td colspan="2" align="right" class="text-right" style="border:1px solid black;padding:5px;"><b><%=df.format(totRECommitment+totFECommitment)%></b></td>
+												<td colspan="2" align="right" class="text-right" style="border:1px solid black;padding:5px;"><b><%=df.format(btotalRe+btotalFe)%></b></td>
+												<td colspan="2" align="right" class="text-right" style="border:1px solid black;padding:5px;"><b><%=df.format(totalREDIPL+totalFEDIPL)%></b></td>
+												<td colspan="2" align="right" class="text-right" style="border:1px solid black;padding:5px;"><b><%=df.format(totReBalance+totFeBalance)%></b></td>
+											</tr>
+									     <%-- <% }%> --%>
+									     </tbody>
+									     <% }} %>
 									</table>
 														
 							
@@ -602,7 +687,7 @@ p{
 						
 						<table style=" <% if(labcode.equalsIgnoreCase("ADE")){%>width:690px;<%}else{%> width:1020px<%}%> ;font-size: 16px; border-collapse: collapse;margin-left:8px;" >
 						<tr >
-							<td colspan="8" style="border: 1px solid black;border-top:0px;font-weight: bold"  align="center">No Data Available</td>
+							<td colspan="8" style="border: 1px solid black;font-weight: bold"  align="center">No Data Available</td>
 						</tr>
 					</table>	
 							  

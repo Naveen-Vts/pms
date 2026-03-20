@@ -26,6 +26,7 @@ public class FileUploadDto {
 	private String DocumentName;
 	private String isNewVersion;
 	private String fileType;
+	private String ReportType;
   
 	
 	

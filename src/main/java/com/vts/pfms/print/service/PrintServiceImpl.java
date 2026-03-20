@@ -1214,4 +1214,22 @@ public List<Object[]> getMilestoneOpenActionListByProjectId(String projectId) th
 	return dao.getMilestoneOpenActionListByProjectId(projectId);
 }
 
+@Override
+public List<Object[]> getProjectMeetings(String committeeName) throws Exception {
+
+	return dao.getProjectMeetings(committeeName);
+}
+
+@Override
+public List<Object[]> getprojectListProjectDirectorWise() throws Exception {
+	
+	return dao.getprojectListProjectDirectorWise();
+}
+
+
+@Override
+public List<Object[]> getProjectClosureReport() throws Exception {
+	
+	return dao.getProjectClosureReport();
+}
 }

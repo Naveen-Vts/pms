@@ -413,6 +413,12 @@ public class LoginController {
 		return "static/login-wr";
 	}
 	
+    @RequestMapping(value = {"/TMDS"}, method = RequestMethod.GET)
+    public String welcomeFromTMDS(Model model,HttpServletRequest req,HttpSession ses) throws Exception {
+    	
+    	return "Hii";
+    }
+	
     @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
     public String welcome(Model model,HttpServletRequest req,HttpSession ses) throws Exception {
     	
@@ -425,7 +431,7 @@ public class LoginController {
 		    Object[] empdetails = headerservice.EmployeeDetailes(String.valueOf(LoginId)).get(0);
 
 		    ses.setAttribute("Username",req.getUserPrincipal().getName());
-		    ses.setAttribute("LoginId",LoginId ); 
+		    ses.setAttribute("LoginId",LoginId ); 	
 		    ses.setAttribute("Division", Repository.findByUsername(req.getUserPrincipal().getName()).getDivisionId()); 	
 		    ses.setAttribute("LoginType", Repository.findByUsername(req.getUserPrincipal().getName()).getLoginType()); 
 		    ses.setAttribute("EmpId", Repository.findByUsername(req.getUserPrincipal().getName()).getEmpId()); 
@@ -916,51 +922,8 @@ public class LoginController {
 			if (!LoginType.equalsIgnoreCase("U") || !LoginType.equalsIgnoreCase("K")) {
 
 				// code for pfms service call to get data for project pie chart
+				
 
-				final String localUri = uri + "/pfms_serv/pfms-chart-service?inType=" + LoginType + "&employeeNo="
-						+ empNo;
-
-				HttpHeaders headers = new HttpHeaders();
-				headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-				headers.add("labcode", LabCode);
-
-				String jsonResult = null;
-
-				try {
-
-					HttpEntity<String> entity = new HttpEntity<String>(headers);
-					ResponseEntity<String> response = restTemplate.exchange(localUri, HttpMethod.POST, entity,
-							String.class);
-					jsonResult = response.getBody();
-
-				} catch (HttpClientErrorException | ResourceAccessException e) {
-					logger.error(new Date() + " Inside MainDashboard.htm " + UserId, e);
-					e.printStackTrace();
-
-					req.setAttribute("budgetlist", new ArrayList<ProjectSanctionDetailsMaster>());
-					req.setAttribute("errorMsg", "IBAS Server Not Responding !!");
-
-				} catch (Exception e) {
-					logger.error(new Date() + " Inside MainDashboard.htm " + UserId, e);
-					e.printStackTrace();
-					req.setAttribute("budgetlist", new ArrayList<ProjectSanctionDetailsMaster>());
-					req.setAttribute("errorMsg", "IBAS Server Not Responding !!");
-				}
-
-				ObjectMapper mapper = new ObjectMapper();
-				List<ProjectSanctionDetailsMaster> projectDetails = null;
-				if (jsonResult != null) {
-					try {
-
-						projectDetails = mapper.readValue(jsonResult, mapper.getTypeFactory()
-								.constructCollectionType(List.class, ProjectSanctionDetailsMaster.class));
-						req.setAttribute("budgetlist", projectDetails);
-
-					} catch (JsonProcessingException e) {
-
-						e.printStackTrace();
-					}
-				}
 
 				// req.setAttribute("AllSchedulesCount",
 				// rfpmainservice.AllSchedulesCount(LoginType,LoginId));
@@ -968,18 +931,29 @@ public class LoginController {
 				req.setAttribute("ProjectList", rfpmainservice.ProjectList(LoginType, EmpId, LabCode));
 				req.setAttribute("ProjectMeetingCount", rfpmainservice.ProjectMeetingCount(LoginType, EmpId, LabCode));
 				req.setAttribute("ganttchartlist", rfpmainservice.GanttChartList());
+				
 				if(LabCode.equalsIgnoreCase("ADE")) {
-					LocalDate currentDate = LocalDate.now();
-					LocalDate firstDayOfYear = LocalDate.of(currentDate.getYear(), 1, 1);
-				     String fdate = firstDayOfYear.toString();
-				     LocalDate lastDayOfYear = LocalDate.of(currentDate.getYear(), 12, 31);
-					   String tdate=lastDayOfYear.toString();
+				
+				LocalDate currentDate = LocalDate.now();
+				LocalDate firstDayOfYear = LocalDate.of(currentDate.getYear(), 1, 1);
+				String fdate = firstDayOfYear.toString();
+				LocalDate lastDayOfYear = LocalDate.of(currentDate.getYear(), 12, 31);
+				String tdate=lastDayOfYear.toString();
 				req.setAttribute("rfaPendingCountList", Actservice.GetRfaActionList(EmpId,"A","A","A", tdate, tdate));
 				req.setAttribute("rfaForwardCount",Actservice.RfaForwardList(EmpId).size());
 				req.setAttribute("rfaInspectionCount",Actservice.RfaInspectionList(EmpId).size());
 				req.setAttribute("rfaInspectionAprCount",Actservice.RfaInspectionApprovalList(EmpId).size());
+				
 				}
-
+				long start = System.currentTimeMillis();
+				try {
+					req.setAttribute("budgetlist", PFMSServ.getDetailsOfSupplyOrder(LoginType, empNo));
+					System.out.println("Feign Call Success after " + (System.currentTimeMillis() - start) + "ms");
+					}catch (Exception e) {
+						System.out.println("Feign Call Failed after " + (System.currentTimeMillis() - start) + "ms");
+						e.printStackTrace();
+						req.setAttribute("budgetlist",new ArrayList<>());
+					}
 			}
 
 		} catch (Exception e) {
@@ -1254,50 +1228,34 @@ public class LoginController {
     @RequestMapping (value="ProjectHoaUpdate.htm", method=RequestMethod.GET)
     public String ProjectHoaUpdate(HttpSession ses, RedirectAttributes redir) throws Exception
     {
-    	
+    	long start = System.currentTimeMillis();
+		
     	String Empid= ses.getAttribute("EmpId").toString();
     	String UserId = (String) ses.getAttribute("Username");
     	String LabCode=(String)ses.getAttribute("labcode");
     	String ClusterId =(String)ses.getAttribute("clusterid");
     	logger.info(new Date() +"ProjectHoaUpdate.htm "+Empid);
-    
-    	// Calling pms_serv to update hoa data from ibas to pms
-    	final String localUri1=uri+"/pfms_serv/tblprojectdata?labcode="+LabCode;
-    	final String localUri2=uri+"/pfms_serv/pfms-finance-changes?projectCode=A&interval=M";
-    	final String localUri3=uri+"/pfms_serv/pfms-finance-changes?projectCode=A&interval=W";
-    	final String localUri4=uri+"/pfms_serv/pfms-finance-changes?projectCode=A&interval=T";
-    	final String localUri5=uri+"/pfms_serv/labdetails";
-//    	final String CCMDataURI=uri+"/pfms_serv/getCCMViewData";
-    	
-    	String MonthlyData=null;
-    	String WeeklyData=null;
-    	String TodayData=null;
-    	String HoaJsonData=null;
-    	String LabData= null;
-    	List<CCMView> CCMViewData=null;
+    	List<CCMView> CCMViewData=new ArrayList<CCMView>();
     	long count= 0L;
     	long ibasserveron=0L;
     	try {
-    		HttpHeaders headers = new HttpHeaders();
-	 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-	 		headers.set("labcode", LabCode);
-    		HttpEntity<String> entity = new HttpEntity<String>(headers);
-			ResponseEntity<String> response1=restTemplate.exchange(localUri1, HttpMethod.POST, entity, String.class);
-			HoaJsonData=response1.getBody();
+    	// Calling pms_serv to update hoa data from ibas to pms
+//    	final String localUri1=uri+"/pfms_serv/tblprojectdata?labcode="+LabCode;
+//    	final String localUri2=uri+"/pfms_serv/pfms-finance-changes?projectCode=A&interval=M";
+//    	final String localUri3=uri+"/pfms_serv/pfms-finance-changes?projectCode=A&interval=W";
+//    	final String localUri4=uri+"/pfms_serv/pfms-finance-changes?projectCode=A&interval=T";
+//    	final String localUri5=uri+"/pfms_serv/labdetails";
+//    	final String CCMDataURI=uri+"/pfms_serv/getCCMViewData";
+    	
+//    	String MonthlyData=null;
+//    	String WeeklyData=null;
+//    	String TodayData=null;
+//    	String HoaJsonData=null;
+//    	String LabData= null;
+    
+    	try {
 
-			ResponseEntity<String> monthlyresponse=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
-			ResponseEntity<String> weeklyresponse=restTemplate.exchange(localUri3, HttpMethod.POST, entity, String.class);
-			ResponseEntity<String> todayresponse=restTemplate.exchange(localUri4, HttpMethod.POST, entity, String.class);
-			ResponseEntity<String> labdata=restTemplate.exchange(localUri5, HttpMethod.POST, entity, String.class);
-//			ResponseEntity<List<CCMView>> CCMData=restTemplate.exchange(CCMDataURI, HttpMethod.POST,entity, new ParameterizedTypeReference<List<CCMView>>() {});
-//			List<CCMView> CCMData =PFMSServ.getCCMViewData();
-			
-			MonthlyData=monthlyresponse.getBody();
-			WeeklyData=weeklyresponse.getBody();
-			TodayData=todayresponse.getBody();
-			LabData=labdata.getBody();
 			CCMViewData= PFMSServ.getCCMViewData(LabCode);
-			
     	}
     	catch(HttpClientErrorException  | ResourceAccessException e) 
     	{
@@ -1311,42 +1269,41 @@ public class LoginController {
 			e.printStackTrace();
 		}
 
-		ObjectMapper mao = new ObjectMapper().configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-		List<ProjectHoa> projectDetails1=null;
-		List<FinanceChanges> FinanceDetailsMonthly=null;
-		List<FinanceChanges> FinanceDetailsWeekly=null;
-		List<FinanceChanges> FinanceDetailsToday=null;
-		List<IbasLabMaster> LabDetails=null;
+		List<ProjectHoa> projectDetails1=new ArrayList<>();
+		List<FinanceChanges> FinanceDetailsMonthly=new ArrayList<>();
+		List<FinanceChanges> FinanceDetailsWeekly=new ArrayList<>();
+		List<FinanceChanges> FinanceDetailsToday=new ArrayList<>();
+		List<IbasLabMaster> LabDetails=new ArrayList<>();
 		
-		if(HoaJsonData!=null) {
+
 			try {
 
-				projectDetails1 = mao.readValue(HoaJsonData, mao.getTypeFactory().constructCollectionType(List.class, ProjectHoa.class));
-				LabDetails = mao.readValue(LabData, mao.getTypeFactory().constructCollectionType(List.class, IbasLabMaster.class));
+				projectDetails1 = PFMSServ.ProjectHoaData(LabCode);
+				LabDetails = PFMSServ.LabDetails();
 				count = rfpmainservice.ProjectHoaUpdate(projectDetails1,UserId,LabDetails);
 				
 			} catch (JsonProcessingException e) {
 				
 				e.printStackTrace();
 			}
-		}
+
 		
-		if(MonthlyData!=null) {
+	
 			try {
-
-				FinanceDetailsMonthly = mao.readValue(MonthlyData, mao.getTypeFactory().constructCollectionType(List.class, FinanceChanges.class));
-				FinanceDetailsWeekly = mao.readValue(WeeklyData, mao.getTypeFactory().constructCollectionType(List.class, FinanceChanges.class));
-				FinanceDetailsToday = mao.readValue(TodayData, mao.getTypeFactory().constructCollectionType(List.class, FinanceChanges.class));
-				
-
-				rfpmainservice.ProjectFinanceChangesUpdate(FinanceDetailsMonthly,FinanceDetailsWeekly,FinanceDetailsToday,UserId,Empid);
-				
-			} catch (JsonProcessingException e) {
+// Commented  because we are not showing any where
+//				FinanceDetailsMonthly = PFMSServ.PfmsFinanceChanges("A", "M");
+//				FinanceDetailsWeekly  =  PFMSServ.PfmsFinanceChanges("A", "W");
+//				FinanceDetailsToday   =   PFMSServ.PfmsFinanceChanges("A", "T");
+//				
+//
+//				rfpmainservice.ProjectFinanceChangesUpdate(FinanceDetailsMonthly,FinanceDetailsWeekly,FinanceDetailsToday,UserId,Empid);
+//				
+			} catch (Exception e) {
 
 				logger.error(new Date() +" Inside ProjectHoaUpdate.htm "+UserId, e);
 				e.printStackTrace();
 			}
-		}
+		
 		
 		if(CCMViewData!=null && CCMViewData.size()>0)
 		{
@@ -1365,6 +1322,15 @@ public class LoginController {
 			
 			redir.addAttribute("resultfail","Project HOA and CCM Details Update Unsuccessful");
 		  }
+    	
+    	}catch(Exception e) {
+    		if(ibasserveron==1){
+        		redir.addAttribute("resultfail","IBAS Server Not Responding");
+        	}else {
+    		redir.addAttribute("resultfail","Project HOA and CCM Details Update Unsuccessful");
+        	}
+    	}
+    	System.out.println("Feign Call Success after " + (System.currentTimeMillis() - start) + "ms");
     	  return "redirect:/MainDashBoard.htm";
     }
     

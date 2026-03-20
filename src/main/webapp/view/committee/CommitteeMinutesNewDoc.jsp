@@ -696,8 +696,12 @@ for(Object[] temp : invitedlist){
 													&nbsp;&nbsp;<%=obj[15]!=null?obj[15].toString(): " - " %>
 												<%} %>
 											</td>
-											<td class=""  style=" border: 1px solid black;text-align: center;"><%=obj[10]!=null?sdf.format(sdf1.parse(obj[9].toString())): " - "  %><br><%=obj[10]!=null?sdf.format(sdf1.parse(obj[8].toString())): " - "  %></td>
-											<td class=""  style=" border: 1px solid black;text-align: center;"><%=obj[17]!=null?obj[17].toString(): " - " %>%</td>											
+											<td class=""  style=" border: 1px solid black;text-align: center;">
+												<%=obj[9]!=null?fc.sdfTordf(obj[9].toString()): " - "  %>
+												<%if(obj[8]!=null && obj[9]!=null && !LocalDate.parse(obj[8].toString()).isEqual(LocalDate.parse(obj[9].toString())) ) {%>
+													<br><%=obj[8]!=null?fc.sdfTordf(obj[8].toString()): " - "  %>
+												<%} %>
+											</td>											<td class=""  style=" border: 1px solid black;text-align: center;"><%=obj[17]!=null?obj[17].toString(): " - " %>%</td>											
 											<td class=""  style=" border: 1px solid black;text-align: left;"><%if(obj[23]!=null){%><%=obj[23].toString()%><%} %></td>
 										</tr>
 									<%milcount1++;}} %>

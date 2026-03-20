@@ -138,5 +138,8 @@ public interface PrintDao {
 	public List<Object[]> getrOverallFinance(String proid)throws Exception;
 	public List<Object[]> otherMeetingList(String projectid)throws Exception;
 	public List<Object[]> getMilestoneOpenActionListByProjectId(String projectId) throws Exception;
+	public List<Object[]> getProjectMeetings(String committeeName) throws Exception;
+	public List<Object[]> getprojectListProjectDirectorWise() throws Exception;
+	public List<Object[]> getProjectClosureReport() throws Exception;
 
 }

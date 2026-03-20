@@ -126,7 +126,7 @@ th, td
           
           @bottom-left {          		
         
-             content : "The information in this Document is proprietary of <%=labInfo.getLabCode()!=null?StringEscapeUtils.escapeHtml4(labInfo.getLabCode()): " - " %> /DRDO , MOD Government of India. Unauthorized possession/use is violating the Government procedure which may be liable for prosecution. ";
+             content : "The information in this Document is proprietary of <%=labInfo.getLabCode()!=null?(labInfo.getLabCode()): " - " %> /DRDO , MOD Government of India. Unauthorized possession/use is violating the Government procedure which may be liable for prosecution. ";
              margin-bottom: 30px;
              margin-right: 5px;
              font-size: 10px;
@@ -139,7 +139,7 @@ th, td
           }
            @top-right {
              
-             content: "<%= projectattributes.get(0)[12]!=null?StringEscapeUtils.escapeHtml4(projectattributes.get(0)[12].toString()): " - " %>";
+             content: "<%= projectattributes.get(0)[12]!=null?(projectattributes.get(0)[12].toString()): " - " %>";
              margin-top: 30px;
              margin-right: 50px;
           }
@@ -151,14 +151,14 @@ th, td
           }   --%>     
           
             @top-left {
-	          content: "Project: <%=ProjectCode!=null?StringEscapeUtils.escapeHtml4(ProjectCode): " - "%>"; 
+	          content: "Project: <%=ProjectCode!=null?(ProjectCode): " - "%>"; 
 			  margin-top: 30px;
               margin-left: 50px;
              
   			}   
   			
   			@top-center {
-	         content: "<%=CommitteeCode!=null?StringEscapeUtils.escapeHtml4(CommitteeCode): " - " %> #<%=Long.parseLong(committeeMetingsCount[1].toString())+1 %>"; 
+	         content: "<%=CommitteeCode!=null?(CommitteeCode): " - " %> #<%=Long.parseLong(committeeMetingsCount[1].toString())+1 %>"; 
 			
 			margin-top: 30px;
              
@@ -429,15 +429,15 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 		<%} %>
 		<!-- <div align="center" ><h2 style="color: #145374 !important">for</h2></div> -->
 		
-			<div align="center" ><h2 <%if(text!=null && text.equalsIgnoreCase("p")) {%>style="color: #4C9100 !important;"<%}else{ %> style="color: #145374 !important" <%} %>><%=CommitteeCode!=null?StringEscapeUtils.escapeHtml4(CommitteeCode): " - " %> #<%=Long.parseLong(committeeMetingsCount[1].toString())+1 %> Meeting </h2></div>
+			<div align="center" ><h2 <%if(text!=null && text.equalsIgnoreCase("p")) {%>style="color: #4C9100 !important;"<%}else{ %> style="color: #145374 !important" <%} %>><%=CommitteeCode!=null?(CommitteeCode): " - " %> #<%=Long.parseLong(committeeMetingsCount[1].toString())+1 %> Meeting </h2></div>
 		
-			<div align="center" ><h2 <%if(text!=null && text.equalsIgnoreCase("p")) {%>style="color: #4C9100 !important;"<%}else{ %> style="color: #145374 !important" <%} %>><%= projectattributes.get(0)[1]!=null?StringEscapeUtils.escapeHtml4(projectattributes.get(0)[1].toString()): " - " %> (<%= projectattributes.get(0)[0]!=null?StringEscapeUtils.escapeHtml4(projectattributes.get(0)[0].toString()): " - " %>)
+			<div align="center" ><h2 <%if(text!=null && text.equalsIgnoreCase("p")) {%>style="color: #4C9100 !important;"<%}else{ %> style="color: #145374 !important" <%} %>><%= projectattributes.get(0)[1]!=null?(projectattributes.get(0)[1].toString()): " - " %> (<%= projectattributes.get(0)[0]!=null?(projectattributes.get(0)[0].toString()): " - " %>)
 			
 			<%if(projectattributes.size()>1) {
 						for(int item=1;item<projectattributes.size();item++){
 						%>
 						 <br>
-						<span style="font-size: 1rem;"><%= projectattributes.get(item)[1]!=null?StringEscapeUtils.escapeHtml4(projectattributes.get(item)[1].toString()): " - " %> (<%= projectattributes.get(item)[0]!=null?StringEscapeUtils.escapeHtml4(projectattributes.get(item)[0].toString()): " - " %>) (SUB)</span>
+						<span style="font-size: 1rem;"><%= projectattributes.get(item)[1]!=null?(projectattributes.get(item)[1].toString()): " - " %> (<%= projectattributes.get(item)[0]!=null?(projectattributes.get(item)[0].toString()): " - " %>) (SUB)</span>
 						 <%}} %>
 			</h2></div>
 		
@@ -455,7 +455,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 							<table style="margin-left: auto;margin-right:auto; " >
 								<tr >
 									 <th  style="text-align: center; font-size: 20px;padding: 0px; "> <u>Meeting Id </u> </th></tr><tr>
-									 <th  style="text-align: center;  font-size: 20px;padding: 0px;  "> <%=nextMeetVenue[1]!=null?StringEscapeUtils.escapeHtml4(nextMeetVenue[1].toString()): " - " %> </th>				
+									 <th  style="text-align: center;  font-size: 20px;padding: 0px;  "> <%=nextMeetVenue[1]!=null?(nextMeetVenue[1].toString()): " - " %> </th>				
 								 </tr>
 							</table>
 							
@@ -467,13 +467,13 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								 <tr>
 								 	<%-- <%LocalTime starttime = LocalTime.parse(LocalTime.parse(nextMeetVenue[3].toString(),DateTimeFormatter.ofPattern("HH:mm:ss")).format( DateTimeFormatter.ofPattern("HH:mm") ));   %> --%>
 									 <td  style="text-align: center;  width: 50%;font-size: 20px ;padding: 0px;border:0px !important;"> <b><%=sdf.format(sdf1.parse(nextMeetVenue[2].toString()))%></b></td>
-									 <td  style="text-align: center;  width: 50%;font-size: 20px ;padding: 0px;border:0px !important;"> <b><%=nextMeetVenue[3]!=null?StringEscapeUtils.escapeHtml4(nextMeetVenue[3].toString()): " - "/* starttime.format( DateTimeFormatter.ofPattern("hh:mm a") ) */ %></b></td>
+									 <td  style="text-align: center;  width: 50%;font-size: 20px ;padding: 0px;border:0px !important;"> <b><%=nextMeetVenue[3]!=null?(nextMeetVenue[3].toString()): " - "/* starttime.format( DateTimeFormatter.ofPattern("hh:mm a") ) */ %></b></td>
 								 </tr>
 							 </table>
 							 <table style=" margin-left: auto;margin-right:auto; " >
 								<tr >
 									 <th  style="text-align: center; font-size: 20px;padding: 0px "> <u>Meeting Venue</u> </th></tr><tr>
-									 <th  style="text-align: center;  font-size: 20px;padding: 0px  "> <% if(nextMeetVenue[5]!=null){ %><%=StringEscapeUtils.escapeHtml4(nextMeetVenue[5].toString()) %> <%}else{ %> - <%} %></th>				
+									 <th  style="text-align: center;  font-size: 20px;padding: 0px  "> <% if(nextMeetVenue[5]!=null){ %><%=(nextMeetVenue[5].toString()) %> <%}else{ %> - <%} %></th>				
 								 </tr>
 							</table>
 							</div>
@@ -485,7 +485,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 		<table class="executive" style="align: center;margin-bottom:0px; margin-left: auto;margin-right:auto;  font-size: 16px;margin-top:0px;"  >
 		<% if(labInfo!=null){ %>
 			<tr>
-				<th colspan="8" style="text-align: center; font-weight: 700;font-size: 22px;padding-bottom: 0px;"><%if(labInfo.getLabName()!=null){ %><%=StringEscapeUtils.escapeHtml4(labInfo.getLabName())  %><%}else{ %>LAB NAME<%} %></th>
+				<th colspan="8" style="text-align: center; font-weight: 700;font-size: 22px;padding-bottom: 0px;"><%if(labInfo.getLabName()!=null){ %><%=(labInfo.getLabName())  %><%}else{ %>LAB NAME<%} %></th>
 			</tr>
 		<% } %>
 		<tr>
@@ -495,7 +495,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 			<th colspan="8" style="text-align: center; font-weight: 700;font-size:15px;padding-bottom: 0px;">Defence Research & Development Organization</th>
 		</tr>
 		<tr>
-			<th colspan="8" style="text-align: center; font-weight: 700;font-size:15px;padding-bottom: 0px;"><%if(labInfo.getLabAddress() !=null){ %><%=StringEscapeUtils.escapeHtml4(labInfo.getLabAddress())  %> , <%=labInfo.getLabCity()!=null?StringEscapeUtils.escapeHtml4(labInfo.getLabCity()): " - " %><%}else{ %>LAB ADDRESS<%} %></th>
+			<th colspan="8" style="text-align: center; font-weight: 700;font-size:15px;padding-bottom: 0px;"><%if(labInfo.getLabAddress() !=null){ %><%=(labInfo.getLabAddress())  %> , <%=labInfo.getLabCity()!=null?(labInfo.getLabCity()): " - " %><%}else{ %>LAB ADDRESS<%} %></th>
 		</tr>
 		</table>			
 		
@@ -516,7 +516,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 				<%-- <a class="sub-title" href="<%= HyperlinkPath+ "/ProjectSubmit.htm?ProjectId="+projectid + "&action=edit" %>" target="_top" rel="noopener noreferrer" >1. Project Attributes: </a> --%> 
 				<span class="sub-title"  >1<%if(projectidlist.size()>1) {%>(<%=(char)(ch++)%>)<%} %> . Project Attributes: </span>
 			</b>
-			<b><%=ProjectDetail.get(z)[1]!=null?StringEscapeUtils.escapeHtml4(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  </b>
+			<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  </b>
 			</div>
 			<%if(projectattributes.get(z)!=null){ %>
 			
@@ -524,17 +524,17 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										<tr>
 											 <td style="width: 5px !important; padding: 5px; padding-left: 10px">(a)</td>
 											 <th  style="width: 150px;padding: 5px; padding-left: 10px"><b>Project Title</b></th>
-											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"> <%=projectattributes.get(z)[1]!=null?StringEscapeUtils.escapeHtml4(projectattributes.get(z)[1].toString()): " - " %></td>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"> <%=projectattributes.get(z)[1]!=null?(projectattributes.get(z)[1].toString()): " - " %></td>
 										</tr>
 										<tr>
 											 <td  style="padding: 5px; padding-left: 10px">(b)</td>
 											 <th style="width: 150px;padding: 5px; padding-left: 10px"><b>Project Code </b></th>
-											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"> <%=projectattributes.get(z)[0]!=null?StringEscapeUtils.escapeHtml4(projectattributes.get(z)[0].toString()): " - "%> </td>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"> <%=projectattributes.get(z)[0]!=null?(projectattributes.get(z)[0].toString()): " - "%> </td>
 										</tr>
 										<tr>
 											 <td  style=" padding: 5px; padding-left: 10px">(c)</td>
 											 <th  style="width: 150px;padding: 5px; padding-left: 10px"><b>Category</b></th>
-											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"><%=projectattributes.get(z)[14]!=null?StringEscapeUtils.escapeHtml4(projectattributes.get(z)[14].toString()): " - "%></td>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"><%=projectattributes.get(z)[14]!=null?(projectattributes.get(z)[14].toString()): " - "%></td>
 										</tr>
 										<tr>
 											 <td  style="padding: 5px; padding-left: 10px">(d)</td>
@@ -544,17 +544,17 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										<tr>
 											 <td  style="width: 20px; padding: 5px; padding-left: 10px">(e)</td>
 											 <th  style="width: 150px;padding: 5px; padding-left: 10px"><b>Nodal and Participating Labs</b></th>
-											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"><%if(projectattributes.get(z)[15]!=null){ %><%=StringEscapeUtils.escapeHtml4(projectattributes.get(z)[15].toString())%><%} %></td>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"><%if(projectattributes.get(z)[15]!=null){ %><%=(projectattributes.get(z)[15].toString())%><%} %></td>
 										</tr>
 										<tr>
 											 <td  style=" padding: 5px; padding-left: 10px">(f)</td>
 											 <th  style="width: 150px;padding: 5px; padding-left: 10px"><b>Objective</b></th>
-											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px;text-align: justify"> <%=projectattributes.get(z)[4]!=null?StringEscapeUtils.escapeHtml4(projectattributes.get(z)[4].toString()): " - "%></td>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px;text-align: justify"> <%=projectattributes.get(z)[4]!=null?(projectattributes.get(z)[4].toString()): " - "%></td>
 										</tr>
 										<tr>
 											 <td  style="padding: 5px; padding-left: 10px">(g)</td>
 											 <th  style="width: 150px;padding: 5px; padding-left: 10px"><b>Deliverables</b></th>
-											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"> <%=projectattributes.get(z)[5]!=null?StringEscapeUtils.escapeHtml4(projectattributes.get(z)[5].toString()): " - "%></td>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"> <%=projectattributes.get(z)[5]!=null?(projectattributes.get(z)[5].toString()): " - "%></td>
 										</tr>
 										<tr>
 											 <td rowspan="2" style="padding: 5px; padding-left: 10px">(h)</td>
@@ -591,39 +591,39 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 											
 											<%if( ProjectRevList.get(z).size()>0 ){ %>
 													<td style="width: 10% !important" >RE Cost</td>
-													<td style="text-align: center;"><%=ProjectRevList.get(z).get(0)[17]!=null?StringEscapeUtils.escapeHtml4(ProjectRevList.get(z).get(0)[17].toString()): " - " %></td> 
-													<td colspan="2" style="text-align: center;"><%=projectattributes.get(z)[8]!=null?StringEscapeUtils.escapeHtml4(projectattributes.get(z)[8].toString()): " - " %></td>
+													<td style="text-align: center;"><%=ProjectRevList.get(z).get(0)[17]!=null?(ProjectRevList.get(z).get(0)[17].toString()): " - " %></td> 
+													<td colspan="2" style="text-align: center;"><%=projectattributes.get(z)[8]!=null?(projectattributes.get(z)[8].toString()): " - " %></td>
 												</tr>
 												
 												
 												<tr>
 													<td style="width: 10% !important">FE Cost</td>		
-													<td style="text-align: center;"><%=ProjectRevList.get(z).get(0)[16]!=null?StringEscapeUtils.escapeHtml4(ProjectRevList.get(z).get(0)[16].toString()): " - " %></td>					
-													<td colspan="2" style="text-align: center;"><%=projectattributes.get(z)[9]!=null?StringEscapeUtils.escapeHtml4(projectattributes.get(z)[9].toString()): " - " %></td>
+													<td style="text-align: center;"><%=ProjectRevList.get(z).get(0)[16]!=null?(ProjectRevList.get(z).get(0)[16].toString()): " - " %></td>					
+													<td colspan="2" style="text-align: center;"><%=projectattributes.get(z)[9]!=null?(projectattributes.get(z)[9].toString()): " - " %></td>
 												</tr>
 													
 												<tr>	
 													<td style="width: 10% !important">Total Cost</td>	
-													<td style="text-align: center;"><%=ProjectRevList.get(z).get(0)[11]!=null?StringEscapeUtils.escapeHtml4(ProjectRevList.get(z).get(0)[11].toString()): " - " %></td>
-											 		<td colspan="2" style="text-align: center;"><%=projectattributes.get(z)[7]!=null?StringEscapeUtils.escapeHtml4(projectattributes.get(z)[7].toString()): " - " %></td>
+													<td style="text-align: center;"><%=ProjectRevList.get(z).get(0)[11]!=null?(ProjectRevList.get(z).get(0)[11].toString()): " - " %></td>
+											 		<td colspan="2" style="text-align: center;"><%=projectattributes.get(z)[7]!=null?(projectattributes.get(z)[7].toString()): " - " %></td>
 												</tr> 
 														
 											<%}else{ %>
 													
 													<td style="width: 10% !important">RE Cost</td>
-													<td ><%=projectattributes.get(z)[8]!=null?StringEscapeUtils.escapeHtml4(projectattributes.get(z)[8].toString()): " - " %></td>
+													<td ><%=projectattributes.get(z)[8]!=null?(projectattributes.get(z)[8].toString()): " - " %></td>
 													<td colspan="2" ></td>
 												</tr>
 											
 												<tr>
 													<td style="width: 10% !important">FE Cost</td>		
-													<td ><%=projectattributes.get(z)[9]!=null?StringEscapeUtils.escapeHtml4(projectattributes.get(z)[9].toString()): " - " %></td>					
+													<td ><%=projectattributes.get(z)[9]!=null?(projectattributes.get(z)[9].toString()): " - " %></td>					
 													<td colspan="2"></td>
 												</tr>
 												
 												<tr>	
 													<td style="width: 10% !important" >Total Cost</td>	
-													<td ><%=projectattributes.get(z)[7]!=null?StringEscapeUtils.escapeHtml4(projectattributes.get(z)[7].toString()): " - " %></td>
+													<td ><%=projectattributes.get(z)[7]!=null?(projectattributes.get(z)[7].toString()): " - " %></td>
 													<td colspan="2"></td>			
 												</tr> 
 											<%} %>
@@ -636,16 +636,16 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 												<% if(ebandpmrccount!=null && ebandpmrccount.size()>0){
 													List<Object[]> ebandpmrcsub = ebandpmrccount.get(z); 
 													for(Object[] ebandpmrc: ebandpmrcsub) { %>
-												 	<b><%=ebandpmrc[0]!=null?StringEscapeUtils.escapeHtml4(ebandpmrc[0].toString()): " - " %> : </b>
-													<span><%=ebandpmrc[1]!=null?StringEscapeUtils.escapeHtml4(ebandpmrc[1].toString()): " - " %></span> &emsp;&emsp;
+												 	<b><%=ebandpmrc[0]!=null?(ebandpmrc[0].toString()): " - " %> : </b>
+													<span><%=ebandpmrc[1]!=null?(ebandpmrc[1].toString()): " - " %></span> &emsp;&emsp;
 												<%} }%>
 											</td>
 										</tr>
 										<tr>
 											<td  style="width: 20px; padding: 5px; padding-left: 10px">(k)</td>
 											<th  style="width: 210px;padding: 5px; padding-left: 10px"><b>Current Stage of Project</b></th>
-											<td colspan="4" style=" width: 200px;color:blue; padding: 5px; padding-left: 10px ; <%if(projectdatadetails.get(z)!=null){ %> background-color: <%=projectdatadetails.get(z)[11] !=null?StringEscapeUtils.escapeHtml4(projectdatadetails.get(z)[11].toString()): " - "%> ;   <%} %>" >
-													 <span> <%if(projectdatadetails.get(z)!=null){ %><b><%=StringEscapeUtils.escapeHtml4(projectdatadetails.get(z)[10].toString()) %> </b>  <%}else{ %>Data Not Found<%} %></span>
+											<td colspan="4" style=" width: 200px;color:blue; padding: 5px; padding-left: 10px ; <%if(projectdatadetails.get(z)!=null){ %> background-color: <%=projectdatadetails.get(z)[11] !=null?(projectdatadetails.get(z)[11].toString()): " - "%> ;   <%} %>" >
+													 <span> <%if(projectdatadetails.get(z)!=null){ %><b><%=(projectdatadetails.get(z)[10].toString()) %> </b>  <%}else{ %>Data Not Found<%} %></span>
 											</td> 
 										</tr>	
 			</table>
@@ -794,7 +794,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 															   						Approval 
 															   						<%}else { %>
 															   						Ratification
-															   						<%} %>  of <b>recommendations</b> of last <%=CommitteeCode!=null?StringEscapeUtils.escapeHtml4(CommitteeCode).toUpperCase(): " - "%> Meeting (if any)</b></div>
+															   						<%} %>  of <b>recommendations</b> of last <%=CommitteeCode!=null?(CommitteeCode).toUpperCase(): " - "%> Meeting (if any)</b></div>
 		
 		
 			<table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px; border-collapse:collapse;" >
@@ -838,7 +838,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										 key2=entry.getKey().toString();
 									 } }%>
 								
-								<%=committee.getCommitteeShortName()!=null?StringEscapeUtils.escapeHtml4(committee.getCommitteeShortName()).trim().toUpperCase():" - "+"-"+key2!=null?StringEscapeUtils.escapeHtml4(key2):" - "+"/"+obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()).split("/")[4]:" - " %>
+								<%=committee.getCommitteeShortName()!=null?(committee.getCommitteeShortName()).trim().toUpperCase():" - "+"-"+key2!=null?(key2):" - "+"/"+obj[5]!=null?(obj[5].toString()).split("/")[4]:" - " %>
 								
 								
 								</span>	
@@ -849,7 +849,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 							
 							
 							</td>
-							<td  style="text-align: justify; "><%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()): " - " %></td>
+							<td  style="text-align: justify; "><%=obj[2]!=null?(obj[2].toString()): " - " %></td>
 						
 							<td style="text-align: center;">
 								<%if(obj[8]!= null && !LocalDate.parse(obj[8].toString()).equals(LocalDate.parse(obj[7].toString())) ){ %><span style="color:black;font-weight: bold;"><%=sdf.format(sdf1.parse(obj[8].toString()))%></span><br><%} %>	
@@ -858,11 +858,11 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								</td>
 							<td>
 								<%if(obj[4]!= null){ %>  
-									<%=obj[12]!=null?StringEscapeUtils.escapeHtml4(obj[12].toString()): " - " %><%-- , <%=obj[13] %> --%>
+									<%=obj[12]!=null?(obj[12].toString()): " - " %><%-- , <%=obj[13] %> --%>
 								<%}else { %> <!-- <span class="notassign">NA</span>  --> <span class="">Not Assigned</span> <%} %> 
 							</td>
 						
-				<td ><%if(obj[19]!=null){%><%=StringEscapeUtils.escapeHtml4(obj[19].toString()) %><%} %></td>
+				<td ><%if(obj[19]!=null){%><%=(obj[19].toString()) %><%} %></td>
 					</tr>		
 					<%i++;}
 						}%>
@@ -876,7 +876,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 			
 		<% for(int z=0 ; z<1;z++) {   %>
 		<h1 class="break"></h1>
-				 	<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(b) Last <%=CommitteeCode!=null?StringEscapeUtils.escapeHtml4(CommitteeCode).toUpperCase(): " - "%>
+				 	<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(b) Last <%=CommitteeCode!=null?(CommitteeCode).toUpperCase(): " - "%>
 														   						Meeting action points with Probable Date of completion (PDC), Actual Date of Completion (ADC) and status.</b>
 					</div>
    							
@@ -894,7 +894,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								<th  style="width: 120px; ">ADC<br>PDC</th>
 						<!-- 		<th  style="width: 80px; "> ADC</th> -->
 								<th  style="width: 210px; "> Responsibility</th>
-								<!-- <th  style="width: 80px; ">Status</th> -->
+								<th  style="width: 80px; ">Status</th> 
 								<th  style="width: 205px; ">Remarks</th>			
 							</tr>
 						</thead>
@@ -904,8 +904,14 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								<tr><td colspan="7"  style="text-align: center;" > Nil</td></tr>
 								<%}
 								else if(lastpmrcactions.size()>0)
-								{int i=1;String key="";
-								for(Object[] obj:lastpmrcactions.get(z) ){ %>
+								{Map<String,List<Object[]>> list = lastpmrcactions.get(z)!=null ? lastpmrcactions.get(z).stream()
+										.collect(Collectors.groupingBy(array -> array[0].toString(), LinkedHashMap::new,Collectors.toList())) : new HashMap<>();
+							int i = 1;String key="";
+							for(Map.Entry<String, List<Object[]>> map : list.entrySet()){
+								int j=1;
+								List<Object[]> values = map.getValue();
+								int rowSpan = values.size();
+							for (Object[] obj : values) { %>
 								<tr>
 									<td  style="text-align: center;"><%=i %></td>
 									<td <%if(text!=null && text.equalsIgnoreCase("p")) {%>style="font-weight: bold;"<%} %>>	
@@ -917,10 +923,10 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 									 if(entry.getValue().equalsIgnoreCase(formattedDate)){
 										 key=entry.getKey().toString();
 									 } } %>
-								<%=committee.getCommitteeShortName()!=null?StringEscapeUtils.escapeHtml4(committee.getCommitteeShortName()).trim().toUpperCase():" - "+"-"+key!=null?StringEscapeUtils.escapeHtml4(key):" - "+"/"+obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()).split("/")[4]:" - " %>
+								<%=committee.getCommitteeShortName()!=null?(committee.getCommitteeShortName()).trim().toUpperCase():" - "+"-"+key!=null?(key):" - "+"/"+obj[1]!=null?(obj[1].toString()).split("/")[4]:" - " %>
 								<%}%> </span>
 								</td>
-									<td  style="text-align: justify ;"><%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()): " - " %></td>
+									<%if(j++==1){ %><td rowspan="<%=rowSpan%>" class="text-justify"> <%=obj[2].toString()%> </td> <%} %>
 					
 																	<td style="text-align: center;">
 									<%	String actionstatus = obj[9].toString();
@@ -950,12 +956,34 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 									</span>	
 									<%} %>
 								</td>
-									<td > <%=obj[11]!=null?StringEscapeUtils.escapeHtml4(obj[11].toString()): " - " %><%-- , <%=obj[12] %> --%> </td>
-
-									<td  style="text-align: justify ;"><%if(obj[16]!=null){%><%=StringEscapeUtils.escapeHtml4(obj[16].toString()) %><%} %></td>			
+									<td > <%=obj[11]!=null?(obj[11].toString()): " - " %><%-- , <%=obj[12] %> --%> </td>
+									<td  class="text-center" > 
+										<% if(lastdate!=null && actionstatus.equalsIgnoreCase("C") ){ %>
+										<%if(actionstatus.equals("C") && (pdcorg.isAfter(lastdate) || pdcorg.equals(lastdate))){%>
+										<span class="completed">CO</span>
+										<%}else if(actionstatus.equals("C") && pdcorg.isBefore(lastdate)){ %>	
+										<span class="completeddelay">CD (<%= ChronoUnit.DAYS.between(pdcorg, lastdate) %>) </span>
+										<%} %>	
+										<%}else{ %>
+										<%if(actionstatus.equals("F")  && (pdcorg.isAfter(lastdate) || pdcorg.isEqual(lastdate) )){ %>
+										<span class="ongoing">RC</span>												
+										<%}else if(actionstatus.equals("F")  && pdcorg.isBefore(lastdate)) { %>
+										<span class="delay">FD</span>
+										<%}else if(actionstatus.equals("A") && progress==0){  %>
+										<span class="assigned">AA <%if(pdcorg.isBefore(today)){ %> (<%= ChronoUnit.DAYS.between(pdcorg, today)  %>) <%} %></span>
+									    <%} else if(pdcorg.isAfter(today) || pdcorg.isEqual(today)){  %>
+										<span class="ongoing">OG</span>
+										<%}else if(pdcorg.isBefore(today)){  %>
+										<span class="delay">DO (<%= ChronoUnit.DAYS.between(pdcorg, today)  %>)  </span>
+										<%} %>					
+										<%} %>
+										
+						
+									</td>	
+									<td  style="text-align: justify ;"><%if(obj[16]!=null){%><%=(obj[16].toString()) %><%} %></td>			
 								</tr>			
 							<%i++;
-							}} %>
+							}}} %>
 							</tbody>
 									
 						</table> 
@@ -981,7 +1009,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 												for(Object[] obj : entry.getValue()){ %>
 													<tr>
 														<td >
-															<%=entry.getKey()!=null?StringEscapeUtils.escapeHtml4(entry.getKey()): " - "%> #<%=++i %>
+															<%=entry.getKey()!=null?(entry.getKey()): " - "%> #<%=++i %>
 														</td>												
 														<td style="text-align: center; " ><%= fc.sdfTordf(obj[3].toString())%></td>
 													</tr>				
@@ -998,7 +1026,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 						<div align="left"><table class="subtables" style="align: left; margin-top: 10px; margin-left: 25px; max-width: 350px; border-collapse: collapse;">
 						<thead><tr> <th style="width: 140px; ">Committee</th> <th  style="width: 140px; "> Date Held</th></tr></thead>
 						<%for(Object[]obj:otherMeetingList) {%>
-						<tbody><tr><td><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - "%></td>												
+						<tbody><tr><td><%=obj[3]!=null?(obj[3].toString()): " - "%></td>												
 								<td  style="text-align: center; " ><%= sdf.format(sdf1.parse(obj[1].toString()))%></td>
 								</tr>
 									</tbody><%}%></table></div> <%} %>		</div>
@@ -1010,7 +1038,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 		<div align="left" style="margin-left: 10px;">
 		
 			<%-- <a href="<%= HyperlinkPath+ "/MilestoneActivityList.htm?ProjectId="+projectid %>" target="_top" rel="noopener noreferrer" > --%>
-				<b class="sub-title">5. Milestones achieved prior to this <%=CommitteeCode!=null?StringEscapeUtils.escapeHtml4(CommitteeCode).toUpperCase(): " - " %> Meeting period.  </b>
+				<b class="sub-title">5. Milestones achieved prior to this <%=CommitteeCode!=null?(CommitteeCode).toUpperCase(): " - " %> Meeting period.  </b>
 			<!-- </a> -->
    		</div>
 
@@ -1039,6 +1067,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										<th  style="width: 30px; ">MS</th>
 										<th  style="width: 60px; ">L</th>
 										<th  style="width: 400px; ">System/ Subsystem/ Activities</th>
+										<th style="width: 120px; " >Start Date</th>
 										<th  style="width: 100px; "> ADC <br> PDC</th>
 									<!-- 	<th  style="width: 150px; "> ADC</th> -->
 										<th  style="width: 60px; "> Progress</th>
@@ -1062,7 +1091,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										%>
 										<tr>
 											<td style="text-align: center"><%=serial%></td>
-											<td>M<%=obj[0]!=null?StringEscapeUtils.escapeHtml4(obj[0].toString()): " - " %></td>
+											<td>M<%=obj[0]!=null?(obj[0].toString()): " - " %></td>
 											
 											<td style="text-align: center">
 												<%
@@ -1078,7 +1107,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 													// changed on 13th sept
 													for(Map.Entry<Integer,String>entry:treeMapLevOne.entrySet()){
 														if(entry.getKey().toString().equalsIgnoreCase(obj[2].toString())){%>
-															<%=entry.getValue()!=null?StringEscapeUtils.escapeHtml4(entry.getValue()): " - " %>
+															<%=entry.getValue()!=null?(entry.getValue()): " - " %>
 													<%}} 
 													
 													%>
@@ -1091,7 +1120,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 												}else if(obj[21].toString().equals("2")) {
 													for(Map.Entry<Integer,String>entry:treeMapLevTwo.entrySet()){
 														if(entry.getKey().toString().equalsIgnoreCase(obj[3].toString())){%>
-															<%=entry.getValue()!=null?StringEscapeUtils.escapeHtml4(entry.getValue()): " - " %>
+															<%=entry.getValue()!=null?(entry.getValue()): " - " %>
 													<%}}	
 													%>
 													<%-- B-<%=milcountB %> --%>
@@ -1117,19 +1146,20 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 
 											<td style="<%if(obj[21].toString().equals("0")) {%>font-weight: bold;<%}%>">
 												<%if(obj[21].toString().equals("0")) {%>
-													<%=obj[10]!=null?StringEscapeUtils.escapeHtml4(obj[10].toString()): " - " %>
+													<%=obj[10]!=null?(obj[10].toString()): " - " %>
 												<%}else if(obj[21].toString().equals("1")) { %>
-													&nbsp;&nbsp;<%=obj[11]!=null?StringEscapeUtils.escapeHtml4(obj[11].toString()): " - " %>
+													&nbsp;&nbsp;<%=obj[11]!=null?(obj[11].toString()): " - " %>
 												<%}else if(obj[21].toString().equals("2")) { %>
-													&nbsp;&nbsp;<%=obj[12]!=null?StringEscapeUtils.escapeHtml4(obj[12].toString()): " - " %>
+													&nbsp;&nbsp;<%=obj[12]!=null?(obj[12].toString()): " - " %>
 												<%}else if(obj[21].toString().equals("3")) { %>
-													&nbsp;&nbsp;<%=obj[13]!=null?StringEscapeUtils.escapeHtml4(obj[13].toString()): " - " %>
+													&nbsp;&nbsp;<%=obj[13]!=null?(obj[13].toString()): " - " %>
 												<%}else if(obj[21].toString().equals("4")) { %>
-													&nbsp;&nbsp;<%=obj[14]!=null?StringEscapeUtils.escapeHtml4(obj[14].toString()): " - " %>
+													&nbsp;&nbsp;<%=obj[14]!=null?(obj[14].toString()): " - " %>
 												<%}else if(obj[21].toString().equals("5")) { %>
-													&nbsp;&nbsp;<%=obj[15]!=null?StringEscapeUtils.escapeHtml4(obj[15].toString()): " - " %>
+													&nbsp;&nbsp;<%=obj[15]!=null?(obj[15].toString()): " - " %>
 												<%} %>
 											</td>
+												<td style="text-align: center" ><%= obj[7]!=null? sdf.format(sdf1.parse(obj[7].toString())) : " - " %></td>
 											<td style="text-align: center">
 											<% 
 												LocalDate StartDate = LocalDate.parse(obj[7].toString());
@@ -1169,7 +1199,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 											</td>
 
 
-											<td style="text-align: center"><%=obj[17]!=null?StringEscapeUtils.escapeHtml4(obj[17].toString()): " - "%>%</td>
+											<td style="text-align: center"><%=obj[17]!=null?(obj[17].toString()): " - "%>%</td>
 						
 											<td style="overflow-wrap: break-word !important; word-break: break-all !important; white-space: normal !important;"><%if(obj[23]!=null){%><%=obj[23]%><%} %></td>
 										</tr>
@@ -1188,7 +1218,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 						 <h1 class="break"></h1>
 <!-- ------------------------------------------------------------------------------------------------------------ -->
 
-		<div align="left" style="margin-left: 10px;"><b class="sub-title">6. Details of work and current status of sub system with major milestones ( since last <%= CommitteeCode!=null?StringEscapeUtils.escapeHtml4(CommitteeCode).toUpperCase():" - " %> meeting ) period </b></div> 
+		<div align="left" style="margin-left: 10px;"><b class="sub-title">6. Details of work and current status of sub system with major milestones ( since last <%= CommitteeCode!=null?(CommitteeCode).toUpperCase():" - " %> meeting ) period </b></div> 
 						
 			
 			<div align="left" style="margin-left: 15px;">
@@ -1213,6 +1243,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 									<th  style="width: 30px; ">MS</th>
 									<th  style="width: 30px; ">L</th>
 									<th  style="width: 400px; ">System/ Subsystem/ Activities</th>
+									<th style="width: 120px;'" >Start Date</th>
 									<th  style="width: 100px; "> PDC</th>
 									<th  style="width: 60px; "> Progress</th>
 <!-- 									<th  style="width: 50px; "> Status</th>
@@ -1233,7 +1264,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										%>
 										<tr>
 											<td style="text-align: center"><%=serial%></td>
-											<td style="text-align: center">M<%=obj[0]!=null?StringEscapeUtils.escapeHtml4(obj[0].toString()): " - " %></td>
+											<td style="text-align: center">M<%=obj[0]!=null?(obj[0].toString()): " - " %></td>
 									
 											<td style="text-align: center">
 												<%
@@ -1249,7 +1280,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 												//changed on 13th sept
 													for(Map.Entry<Integer,String>entry:treeMapLevOne.entrySet()){
 														if(entry.getKey().toString().equalsIgnoreCase(obj[2].toString())){%>
-															<%=entry.getValue()!=null?StringEscapeUtils.escapeHtml4(entry.getValue()): " - " %>
+															<%=entry.getValue()!=null?(entry.getValue()): " - " %>
 													<%}} 
 												 
 												%>
@@ -1262,7 +1293,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 												}else if(obj[21].toString().equals("2")) { 
 													for(Map.Entry<Integer,String>entry:treeMapLevTwo.entrySet()){
 														if(entry.getKey().toString().equalsIgnoreCase(obj[3].toString())){%>
-															<%=entry.getValue()!=null?StringEscapeUtils.escapeHtml4(entry.getValue()): " - " %>
+															<%=entry.getValue()!=null?(entry.getValue()): " - " %>
 													<%}}	
 												%>
 													<%-- B-<%=milcountB %> --%>
@@ -1288,19 +1319,20 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 
 											<td style="<%if(obj[21].toString().equals("0")) {%>font-weight: bold;<%}%>text-align: justify;">
 												<%if(obj[21].toString().equals("0")) {%>
-													<%=obj[10]!=null?StringEscapeUtils.escapeHtml4(obj[10].toString()): " - " %>
+													<%=obj[10]!=null?(obj[10].toString()): " - " %>
 												<%}else if(obj[21].toString().equals("1")) { %>
-													&nbsp;&nbsp;<%=obj[11]!=null?StringEscapeUtils.escapeHtml4(obj[11].toString()): " - " %>
+													&nbsp;&nbsp;<%=obj[11]!=null?(obj[11].toString()): " - " %>
 												<%}else if(obj[21].toString().equals("2")) { %>
-													&nbsp;&nbsp;<%=obj[12]!=null?StringEscapeUtils.escapeHtml4(obj[12].toString()): " - " %>
+													&nbsp;&nbsp;<%=obj[12]!=null?(obj[12].toString()): " - " %>
 												<%}else if(obj[21].toString().equals("3")) { %>
-													&nbsp;&nbsp;<%=obj[13]!=null?StringEscapeUtils.escapeHtml4(obj[13].toString()): " - " %>
+													&nbsp;&nbsp;<%=obj[13]!=null?(obj[13].toString()): " - " %>
 												<%}else if(obj[21].toString().equals("4")) { %>
-													&nbsp;&nbsp;<%=obj[14]!=null?StringEscapeUtils.escapeHtml4(obj[14].toString()): " - " %>
+													&nbsp;&nbsp;<%=obj[14]!=null?(obj[14].toString()): " - " %>
 												<%}else if(obj[21].toString().equals("5")) { %>
-													&nbsp;&nbsp;<%=obj[15]!=null?StringEscapeUtils.escapeHtml4(obj[15].toString()): " - " %>
+													&nbsp;&nbsp;<%=obj[15]!=null?(obj[15].toString()): " - " %>
 												<%} %>
 											</td>
+											<td style="text-align: center" ><%= obj[7]!=null? sdf.format(sdf1.parse(obj[7].toString())) : " - " %></td>
 											<td style="text-align: center;">
 												<%if(! LocalDate.parse(obj[8].toString()).isEqual(LocalDate.parse(obj[9].toString())) ){ %> 
 												<span style="color:black;font-weight: bold;"><%= sdf.format(sdf1.parse(obj[8].toString()))%></span>	<br> 
@@ -1315,9 +1347,9 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 												LocalDate CompletionDate =obj[24]!=null ? LocalDate.parse(obj[24].toString()) : null;
 												LocalDate Today = LocalDate.now();
 											%>
-											<td style="text-align: center"><%=obj[17]!=null?StringEscapeUtils.escapeHtml4(obj[17].toString()): " - " %>%</td>											
+											<td style="text-align: center"><%=obj[17]!=null?(obj[17].toString()): " - " %>%</td>											
 					
-											<td style="overflow-wrap: break-word !important; word-break: break-all !important; white-space: normal !important;text-align: justify;"><%if(obj[23]!=null){%><%=StringEscapeUtils.escapeHtml4(obj[23].toString())%><%} %></td>
+											<td style="overflow-wrap: break-word !important; word-break: break-all !important; white-space: normal !important;text-align: justify;"><%if(obj[23]!=null){%><%=(obj[23].toString())%><%} %></td>
 									</tr>
 									<%count1++; serial++;}} %>
 								<% } else{ %>
@@ -1418,14 +1450,14 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										String tempRisk=tempArray[tempArray.length-1];
 										%>
 										<span>
-										<%=tempRisk!=null?StringEscapeUtils.escapeHtml4(tempRisk): " - " %>
+										<%=tempRisk!=null?(tempRisk): " - " %>
 										</span>
 									<%}%>
 								</td>
 										
 										
 										<td style="text-align: justify;color: red; " colspan="3" >
-											<%=obj[0] %> <span style="color: #3D60FF;font-weight: bold;"> - <%=obj[23]!=null?StringEscapeUtils.escapeHtml4(obj[23].toString()): " - " %><%=obj[24]!=null?StringEscapeUtils.escapeHtml4(obj[24].toString()): " - "%></span>
+											<%=obj[0] %> <span style="color: #3D60FF;font-weight: bold;"> - <%=obj[23]!=null?(obj[23].toString()): " - " %><%=obj[24]!=null?(obj[24].toString()): " - "%></span>
 										</td>
 										<td style="text-align: center" rowspan="1">
 										<%	String actionstatus = obj[15].toString();
@@ -1458,16 +1490,16 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										
 										</td> -->
 													
-										<td rowspan="1"  ><%=obj[7]!=null?StringEscapeUtils.escapeHtml4(obj[7].toString()): " - " %><%-- ,&nbsp;<%=obj[8] %> --%></td>	
-										<td style="text-align: justify" colspan="2" rowspan="1"><%if(obj[19]!=null){ %> <%=StringEscapeUtils.escapeHtml4(obj[19].toString())%><%} %></td>
+										<td rowspan="1"  ><%=obj[7]!=null?(obj[7].toString()): " - " %><%-- ,&nbsp;<%=obj[8] %> --%></td>	
+										<td style="text-align: justify" colspan="2" rowspan="1"><%if(obj[19]!=null){ %> <%=(obj[19].toString())%><%} %></td>
 											
 									</tr>	
 									
 									<tr>
-										<td style="text-align: center;" ><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - " %></td>
-										<td style="text-align: center;" ><%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()): " - " %></td>
+										<td style="text-align: center;" ><%=obj[1]!=null?(obj[1].toString()): " - " %></td>
+										<td style="text-align: center;" ><%=obj[2]!=null?(obj[2].toString()): " - " %></td>
 										<td style="text-align: center;" >
-											<%=obj[22]!=null?StringEscapeUtils.escapeHtml4(obj[22].toString()): " - " %>
+											<%=obj[22]!=null?(obj[22].toString()): " - " %>
 											<% int RPN =Integer.parseInt(obj[22].toString());
 											if(RPN>=1 && RPN<=25){ %>(Low)
 											<%}else if(RPN>=26 && RPN<=50){ %>(Medium)
@@ -1476,8 +1508,8 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 											<%} %>
 											
 										</td>
-										<td style="text-align: justify;" colspan="2" ><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - " %></td>
-										<td style="text-align: justify;" colspan="2" ><%=obj[21]!=null?StringEscapeUtils.escapeHtml4(obj[21].toString()): " - " %></td>
+										<td style="text-align: justify;" colspan="2" ><%=obj[3]!=null?(obj[3].toString()): " - " %></td>
+										<td style="text-align: justify;" colspan="2" ><%=obj[21]!=null?(obj[21].toString()): " - " %></td>
 									</tr>
 												
 									<%if(riskmatirxdata.get(z).size() > i){ %>
@@ -1507,10 +1539,10 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 							if(RiskTypes!=null && !RiskTypes.isEmpty()){
 							for(Object[] risktype : RiskTypes ){ %>
 							<tr>
-								<td style="text-align: center;"><b>I<%=risktype[2]!=null?StringEscapeUtils.escapeHtml4(risktype[2].toString()): " - " %></b></td>
-								<td>Internal <%=risktype[1]!=null?StringEscapeUtils.escapeHtml4(risktype[1].toString()): " - " %></td>
-								<td style="text-align: center;"><b>E<%=risktype[2]!=null?StringEscapeUtils.escapeHtml4(risktype[2].toString()): " - " %></b></td>
-								<td>External <%=risktype[1]!=null?StringEscapeUtils.escapeHtml4(risktype[1].toString()): " - " %></td>
+								<td style="text-align: center;"><b>I<%=risktype[2]!=null?(risktype[2].toString()): " - " %></b></td>
+								<td>Internal <%=risktype[1]!=null?(risktype[1].toString()): " - " %></td>
+								<td style="text-align: center;"><b>E<%=risktype[2]!=null?(risktype[2].toString()): " - " %></b></td>
+								<td>External <%=risktype[1]!=null?(risktype[1].toString()): " - " %></td>
 								</tr>
 							</tr>
 							<%} }%>
@@ -1533,7 +1565,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										</tr>
 										 <tr>
 										 	<th colspan="11" class="std">Demand Details ( > &#8377; <% if (projectdatadetails.get(0) != null && projectdatadetails.get(0)[13] != null) { %>
-													<%=StringEscapeUtils.escapeHtml4(projectdatadetails.get(0)[13].toString()).replaceAll("\\.\\d+$", "")%> ) <% } else { %> - )<% } %>
+													<%=(projectdatadetails.get(0)[13].toString()).replaceAll("\\.\\d+$", "")%> ) <% } else { %> - )<% } %>
 												
 											</th>
 										</tr>
@@ -1556,12 +1588,12 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										    	k++; %>
 											<tr style="font-size: 14px;">
 												<td class="std"  style=" border: 1px solid black;"><%=k%></td>
-												<td class="std"  style=" border: 1px solid black;"><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - "%><br><%=sdf.format(sdf1.parse(obj[3].toString()))%></td>
+												<td class="std"  style=" border: 1px solid black;"><%=obj[1]!=null?(obj[1].toString()): " - "%><br><%=sdf.format(sdf1.parse(obj[3].toString()))%></td>
 <%-- 												<td class="std"  style=" border: 1px solid black;"><%=sdf.format(sdf1.parse(obj[3].toString()))%></td>
- --%>												<td class="std" colspan="4" ><%=obj[8]!=null?StringEscapeUtils.escapeHtml4(obj[8].toString()): " - "%></td>
+ --%>												<td class="std" colspan="4" ><%=obj[8]!=null?(obj[8].toString()): " - "%></td>
 												<td class="std" style=" text-align:right;"> <%=format.format(new BigDecimal(obj[5].toString())).substring(1)%></td>
-												<td class="std"  style=" border: 1px solid black;"> <%=obj[10]!=null?StringEscapeUtils.escapeHtml4(obj[10].toString()): " - "%> </td>
-												<td class="std" colspan="3" style=" border: 1px solid black;"><%=obj[11]!=null?StringEscapeUtils.escapeHtml4(obj[11].toString()): " - "%> </td>		
+												<td class="std"  style=" border: 1px solid black;"> <%=obj[10]!=null?(obj[10].toString()): " - "%> </td>
+												<td class="std" colspan="3" style=" border: 1px solid black;"><%=obj[11]!=null?(obj[11].toString()): " - "%> </td>		
 											</tr>		
 											<%
 											estcost += Double.parseDouble(obj[5].toString());
@@ -1599,10 +1631,10 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										    	a++; %>
 											<tr style="font-size: 14px;">
 												<td class="std"  style=" border: 1px solid black;"><%=a%></td>
-												<td class="std" colspan="4" style="border: 1px solid black;" ><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - "%></td>
+												<td class="std" colspan="4" style="border: 1px solid black;" ><%=obj[3]!=null?(obj[3].toString()): " - "%></td>
 												<td class="std" style="border: 1px solid black; text-align:right;"> <%=format.format(new BigDecimal(obj[2].toString())).substring(1)%></td>
-												<td class="std"  style=" border: 1px solid black;"> <%=obj[6]!=null?StringEscapeUtils.escapeHtml4(obj[6].toString()): " - "%> </td>
-												<td class="std" colspan="4" style="border: 1px solid black;"><%=obj[4]!=null?StringEscapeUtils.escapeHtml4(obj[4].toString()): " - "%> </td>		
+												<td class="std"  style=" border: 1px solid black;"> <%=obj[6]!=null?(obj[6].toString()): " - "%> </td>
+												<td class="std" colspan="4" style="border: 1px solid black;"><%=obj[4]!=null?(obj[4].toString()): " - "%> </td>		
 											</tr>		
 											<%
 												estcost += Double.parseDouble(obj[2].toString());
@@ -1623,7 +1655,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 											 <tr >
 											 
 												<th  class="std"  colspan="11">Orders Placed ( > &#8377; <% if (projectdatadetails.get(0) != null && projectdatadetails.get(0)[13] != null) { %>
-													<%=StringEscapeUtils.escapeHtml4(projectdatadetails.get(0)[13].toString()).replaceAll("\\.\\d+$", "")%> ) <% } else { %> - )<% } %>
+													<%=(projectdatadetails.get(0)[13].toString()).replaceAll("\\.\\d+$", "")%> ) <% } else { %> - )<% } %>
 												</th>
 											 </tr>
 										
@@ -1664,33 +1696,33 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 					<%} %>
 					</td>
 					<td <%if(!obj[1].toString().equalsIgnoreCase(demand)){ %> style="border: 1px solid black;border-bottom:none;"<%} else{ %> style="border: 1px solid black;border-bottom:none;border-top:none;"<%} %>>
-					<%if(!obj[1].toString().equalsIgnoreCase(demand)){ %><%if(obj[1]!=null) {%> <%=StringEscapeUtils.escapeHtml4(obj[1].toString())%><% }else{ %>-<%} %><br>
+					<%if(!obj[1].toString().equalsIgnoreCase(demand)){ %><%if(obj[1]!=null) {%> <%=(obj[1].toString())%><% }else{ %>-<%} %><br>
 					<%=sdf.format(sdf1.parse(obj[3].toString()))%>
 					<%} %>
 					</td>
 					<td colspan="2" <%if(!obj[1].toString().equalsIgnoreCase(demand)){ %> style="border: 1px solid black;border-bottom:none;"<%} else{ %> style="border: 1px solid black;border-bottom:none;border-top:none;"<%} %>>
 					<%if(!obj[1].toString().equalsIgnoreCase(demand)){ %>
-					<%=obj[8]!=null?StringEscapeUtils.escapeHtml4(obj[8].toString()): " - "%>
+					<%=obj[8]!=null?(obj[8].toString()): " - "%>
 					<%} %>
 					</td>
 				<td style="border: 1px solid black;text-align: center;">
-				<% if(obj[2]!=null){%> <%=StringEscapeUtils.escapeHtml4(obj[2].toString())%> <%}else{ %>-<%} %><br>
+				<% if(obj[2]!=null){%> <%=(obj[2].toString())%> <%}else{ %>-<%} %><br>
 				<%if(obj[16]!=null){%> <%=sdf.format(sdf1.parse(obj[16].toString()))%> <%}else{ %> - <%} %>
 				</td>
 				<td style="border: 1px solid black;text-align: right"><%if(obj[6]!=null){%> <%=format.format(new BigDecimal(obj[6].toString())).substring(1)%> <%} else{ %> - <%} %></td>
 				<td style="border: 1px solid black;">
 				<%if(obj[4]!=null){%> <%=sdf.format(sdf1.parse(obj[4].toString()))%> <%}else{ %> - <%} %><br>
 				<span style="text-align: center"><%if(obj[7]!=null){if(!obj[7].toString().equals("null")){%> <%=sdf.format(sdf1.parse(obj[7].toString()))%><%}}else{ %>-<%} %></span>	</td>
-					<td colspan="2" style="border: 1px solid black;"><%=obj[12]!=null?StringEscapeUtils.escapeHtml4(obj[12].toString()): " - " %> </td>
+					<td colspan="2" style="border: 1px solid black;"><%=obj[12]!=null?(obj[12].toString()): " - " %> </td>
 					<td <%if(!obj[1].toString().equalsIgnoreCase(demand)){ %> style="border: 1px solid black;border-bottom:none;"<%} else{ %> style="border: 1px solid black;border-bottom:none;border-top:none;"<%} %>>
 						<%if(!obj[1].toString().equalsIgnoreCase(demand)){ %>
-					<%=obj[10]!=null?StringEscapeUtils.escapeHtml4(obj[10].toString()): " - "%>
+					<%=obj[10]!=null?(obj[10].toString()): " - "%>
 					<%} %>
 					
 					</td>					
 					<td <%if(!obj[1].toString().equalsIgnoreCase(demand)){ %> style="border: 1px solid black;border-bottom:none;"<%} else{ %> style="border: 1px solid black;border-bottom:none;border-top:none;"<%} %>>
 						<%if(!obj[1].toString().equalsIgnoreCase(demand)){ %>
-					<%=obj[11]!=null?StringEscapeUtils.escapeHtml4(obj[11].toString()): " - "%>
+					<%=obj[11]!=null?(obj[11].toString()): " - "%>
 					<%} %>
 					
 					</td>
@@ -1745,11 +1777,11 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 											 if(obj.getProjectId().equalsIgnoreCase(projectid)){
 										 %>
 										   <tr>
-										      <td style="text-align: center;"><%=obj.getDemandCount()!=null?StringEscapeUtils.escapeHtml4(obj.getDemandCount()): " - " %></td>
-										      <td style="text-align: center;"><%=obj.getEstimatedCost()!=null?StringEscapeUtils.escapeHtml4(obj.getEstimatedCost()): " - " %></td>
-										      <td style="text-align: center;"><%=obj.getSupplyOrderCount()!=null?StringEscapeUtils.escapeHtml4(obj.getSupplyOrderCount()): " - "%></td>
-										      <td style="text-align: center;"><%=obj.getTotalOrderCost()!=null?StringEscapeUtils.escapeHtml4(obj.getTotalOrderCost()): " - " %></td>
-										      <td style="text-align: center;"><%=obj.getTotalExpenditure()!=null?StringEscapeUtils.escapeHtml4(obj.getTotalExpenditure()): " - " %></td>
+										      <td style="text-align: center;"><%=obj.getDemandCount()!=null?(obj.getDemandCount()): " - " %></td>
+										      <td style="text-align: center;"><%=obj.getEstimatedCost()!=null?(obj.getEstimatedCost()): " - " %></td>
+										      <td style="text-align: center;"><%=obj.getSupplyOrderCount()!=null?(obj.getSupplyOrderCount()): " - "%></td>
+										      <td style="text-align: center;"><%=obj.getTotalOrderCost()!=null?(obj.getTotalOrderCost()): " - " %></td>
+										      <td style="text-align: center;"><%=obj.getTotalExpenditure()!=null?(obj.getTotalExpenditure()): " - " %></td>
 										   </tr>
 										   <%}}}else{%>
 										   <tr>
@@ -1762,7 +1794,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 <!-- ----------------------------------------------7b. Procurement Status------------------------------------------------- -->								
 					  <h1 class="break"></h1>
 								
-								<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(b<%if(projectidlist.size()>1) {%><%="."+chapter2++%><%} %>) Procurement Status</b> 			<%if(projectidlist.size()>1) {%> (<b><%=ProjectDetail.get(z)[1]!=null?StringEscapeUtils.escapeHtml4(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  <%} %></b>) </b></div>
+								<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(b<%if(projectidlist.size()>1) {%><%="."+chapter2++%><%} %>) Procurement Status</b> 			<%if(projectidlist.size()>1) {%> (<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  <%} %></b>) </b></div>
 								<div align="right" style="width:980px !important;"> <span class="currency" style="font-weight: bold;" >(In &#8377; Lakhs)</span></div>
 								
 								<table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 0px; margin-left: 25px;width:980px !important;  border-collapse:collapse;" >
@@ -1819,14 +1851,14 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 													<%if(proc[8]!=null && proc[8].toString().length()>50){ %>
 													<%=proc[8].toString().substring(0,50) %> ...
 													<%}else{ %>
-													<%=proc[8]!=null?StringEscapeUtils.escapeHtml4(proc[8].toString()): " - "%>
+													<%=proc[8]!=null?(proc[8].toString()): " - "%>
 													<%} %>
 												</td>
 												<td style="text-align: right;">
 													<%if(proc[9].toString().equalsIgnoreCase("S")){ %>
-														<%=proc[6]!=null?StringEscapeUtils.escapeHtml4(proc[6].toString()): " - " %>
+														<%=proc[6]!=null?(proc[6].toString()): " - " %>
 													<%}else{ %>
-														<%=proc[5]!=null?StringEscapeUtils.escapeHtml4(proc[5].toString()): " - " %>
+														<%=proc[5]!=null?(proc[5].toString()): " - " %>
 													<%} %>
 												</td>
 												<td style="background-color: green;"></td>
@@ -1853,8 +1885,8 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										for(Object[] envi : envisagedDemandlist){psn++; %>
 										<tr>
 												<td style="text-align:center; "><%=psn %></td>
-												<td><%=envi[3]!=null?StringEscapeUtils.escapeHtml4(envi[3].toString()): " - " %></td>
-												<td style="text-align: right;"><%=envi[2]!=null?StringEscapeUtils.escapeHtml4(envi[2].toString()): " - " %></td>
+												<td><%=envi[3]!=null?(envi[3].toString()): " - " %></td>
+												<td style="text-align: right;"><%=envi[2]!=null?(envi[2].toString()): " - " %></td>
 												<td style="background-color: #F96E16;text-align: center; ">*</td>
 												<td></td>
 												<td></td>
@@ -1974,7 +2006,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 					<!-- ----------------------------------------------8. Overall financial Status------------------------------------------------- -->
 					<h1 class="break"></h1>	
 		 
-   					<div align="left" style="margin-left: 10px;"><b class="sub-title">8 <%if(projectidlist.size()>1) {%> (<%=(fch++) %>) <%} %>. Overall Financial Status </b> 			<b><%=ProjectDetail.get(z)[1]!=null?StringEscapeUtils.escapeHtml4(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  </b></div><div align="right"><b><span class="currency" >(&#8377; <span>Crore</span>)</span></b></div>
+   					<div align="left" style="margin-left: 10px;"><b class="sub-title">8 <%if(projectidlist.size()>1) {%> (<%=(fch++) %>) <%} %>. Overall Financial Status </b> 			<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  </b></div><div align="right"><b><span class="currency" >(&#8377; <span>Crore</span>)</span></b></div>
 						 
 						  	<table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
 						  	    <thead>
@@ -2020,7 +2052,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 			 
 			                         <tr>
 										<td align="center" style="max-width:50px !important;text-align: center;"><%=count++ %></td>
-										<td ><b><%=projectFinancialDetail.getBudgetHeadDescription()!=null?StringEscapeUtils.escapeHtml4(projectFinancialDetail.getBudgetHeadDescription()): " - "%></b></td>
+										<td ><b><%=projectFinancialDetail.getBudgetHeadDescription()!=null?(projectFinancialDetail.getBudgetHeadDescription()): " - "%></b></td>
 										<td align="right" style="text-align: right;"><%=df.format(projectFinancialDetail.getReSanction()) %></td>
 										<%totReSanctionCost+=(projectFinancialDetail.getReSanction());%>
 										<td align="right" style="text-align: right;"><%=df.format(projectFinancialDetail.getFeSanction())%></td>
@@ -2081,35 +2113,35 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 			    	 %>
 			    	 <tr>
 			   <td align="center" style="max-width:50px !important;text-align: center;"><%=++count %></td>
-				<td style="text-align: justify ;"><b><%=obj[4]!=null?StringEscapeUtils.escapeHtml4(obj[4].toString()): " - "%></b></td>
-				<td style="text-align: right;"><%=obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()): " - "%></td>
-				<td style="text-align: right;"><%=obj[6]!=null?StringEscapeUtils.escapeHtml4(obj[6].toString()): " - "%></td>
-				<td style="text-align: right;"><%=obj[7]!=null?StringEscapeUtils.escapeHtml4(obj[7].toString()): " - "%></td>
-				<td style="text-align: right;"><%=obj[8]!=null?StringEscapeUtils.escapeHtml4(obj[8].toString()): " - "%></td>
-				<td style="text-align: right;"><%=obj[9]!=null?StringEscapeUtils.escapeHtml4(obj[9].toString()): " - "%></td>
-				<td style="text-align: right;"><%=obj[10]!=null?StringEscapeUtils.escapeHtml4(obj[10].toString()): " - "%></td>
-				<td style="text-align: right;"><%=obj[11]!=null?StringEscapeUtils.escapeHtml4(obj[11].toString()): " - "%></td>
-				<td style="text-align: right;"><%=obj[12]!=null?StringEscapeUtils.escapeHtml4(obj[12].toString()): " - "%></td>
-				<td style="text-align: right;"><%=obj[13]!=null?StringEscapeUtils.escapeHtml4(obj[13].toString()): " - "%></td>
-				<td style="text-align: right;"><%=obj[14]!=null?StringEscapeUtils.escapeHtml4(obj[14].toString()): " - "%></td>
-				<td style="text-align: right;"><%=obj[15]!=null?StringEscapeUtils.escapeHtml4(obj[15].toString()): " - "%></td>
-				<td style="text-align: right;"><%=obj[16]!=null?StringEscapeUtils.escapeHtml4(obj[16].toString()): " - "%></td>
+				<td style="text-align: justify ;"><b><%=obj[4]!=null?(obj[4].toString()): " - "%></b></td>
+				<td style="text-align: right;"><%=obj[5]!=null?(obj[5].toString()): " - "%></td>
+				<td style="text-align: right;"><%=obj[6]!=null?(obj[6].toString()): " - "%></td>
+				<td style="text-align: right;"><%=obj[7]!=null?(obj[7].toString()): " - "%></td>
+				<td style="text-align: right;"><%=obj[8]!=null?(obj[8].toString()): " - "%></td>
+				<td style="text-align: right;"><%=obj[9]!=null?(obj[9].toString()): " - "%></td>
+				<td style="text-align: right;"><%=obj[10]!=null?(obj[10].toString()): " - "%></td>
+				<td style="text-align: right;"><%=obj[11]!=null?(obj[11].toString()): " - "%></td>
+				<td style="text-align: right;"><%=obj[12]!=null?(obj[12].toString()): " - "%></td>
+				<td style="text-align: right;"><%=obj[13]!=null?(obj[13].toString()): " - "%></td>
+				<td style="text-align: right;"><%=obj[14]!=null?(obj[14].toString()): " - "%></td>
+				<td style="text-align: right;"><%=obj[15]!=null?(obj[15].toString()): " - "%></td>
+				<td style="text-align: right;"><%=obj[16]!=null?(obj[16].toString()): " - "%></td>
 				</tr>
 			     <%}%>
 			    	 	<tr>
 						<td colspan="2"><b>Total</b></td>
-						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[17]!=null?StringEscapeUtils.escapeHtml4(overallfinance.get(z).get(0)[17].toString()): " - "%></td>
-						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[18]!=null?StringEscapeUtils.escapeHtml4(overallfinance.get(z).get(0)[18].toString()): " - "%></td>
-						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[19]!=null?StringEscapeUtils.escapeHtml4(overallfinance.get(z).get(0)[19].toString()): " - "%></td>
-						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[20]!=null?StringEscapeUtils.escapeHtml4(overallfinance.get(z).get(0)[20].toString()): " - "%></td>
-						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[21]!=null?StringEscapeUtils.escapeHtml4(overallfinance.get(z).get(0)[21].toString()): " - "%></td>
-						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[22]!=null?StringEscapeUtils.escapeHtml4(overallfinance.get(z).get(0)[22].toString()): " - "%></td>
-						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[23]!=null?StringEscapeUtils.escapeHtml4(overallfinance.get(z).get(0)[23].toString()): " - "%></td>
-						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[24]!=null?StringEscapeUtils.escapeHtml4(overallfinance.get(z).get(0)[24].toString()): " - "%></td>
-						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[25]!=null?StringEscapeUtils.escapeHtml4(overallfinance.get(z).get(0)[25].toString()): " - "%></td>
-						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[26]!=null?StringEscapeUtils.escapeHtml4(overallfinance.get(z).get(0)[26].toString()): " - "%></td>
-						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[27]!=null?StringEscapeUtils.escapeHtml4(overallfinance.get(z).get(0)[27].toString()): " - "%></td>
-						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[28]!=null?StringEscapeUtils.escapeHtml4(overallfinance.get(z).get(0)[28].toString()): " - "%></td>
+						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[17]!=null?(overallfinance.get(z).get(0)[17].toString()): " - "%></td>
+						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[18]!=null?(overallfinance.get(z).get(0)[18].toString()): " - "%></td>
+						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[19]!=null?(overallfinance.get(z).get(0)[19].toString()): " - "%></td>
+						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[20]!=null?(overallfinance.get(z).get(0)[20].toString()): " - "%></td>
+						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[21]!=null?(overallfinance.get(z).get(0)[21].toString()): " - "%></td>
+						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[22]!=null?(overallfinance.get(z).get(0)[22].toString()): " - "%></td>
+						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[23]!=null?(overallfinance.get(z).get(0)[23].toString()): " - "%></td>
+						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[24]!=null?(overallfinance.get(z).get(0)[24].toString()): " - "%></td>
+						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[25]!=null?(overallfinance.get(z).get(0)[25].toString()): " - "%></td>
+						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[26]!=null?(overallfinance.get(z).get(0)[26].toString()): " - "%></td>
+						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[27]!=null?(overallfinance.get(z).get(0)[27].toString()): " - "%></td>
+						<td align="right" style="text-align: right;"><%=overallfinance.get(z).get(0)[28]!=null?(overallfinance.get(z).get(0)[28].toString()): " - "%></td>
 					</tr>
 			     	<tr>
 						<td colspan="2"><b>GrandTotal</b></td>
@@ -2183,7 +2215,8 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 									<th style="width: 20px; ">MS</th>
 									<th style="width: 20px; ">L</th>
 									<th style="width: 325px;">Action Plan </th>	
-									<th style="width: 100px;" >PDC</th>	
+									<th style="width: 120px;" >Start Date</th>
+									<th style="width: 120px;" >PDC</th>	
 								<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("ADE")) {%>
 									<th style="width: 210px;">Responsibility </th>
 									<% } %>
@@ -2209,7 +2242,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										
 										<tr>
 											<td style="text-align: center;"><%=serialno %></td>
-											<td style="text-align: center">M<%=obj[22]!=null?StringEscapeUtils.escapeHtml4(obj[22].toString()): " - " %></td>
+											<td style="text-align: center">M<%=obj[22]!=null?(obj[22].toString()): " - " %></td>
 							
 											<td style="text-align: center">
 												<%
@@ -2224,7 +2257,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 												}else if(obj[26].toString().equals("1")) { 
 													for(Map.Entry<Integer,String>entry:treeMapLevOne.entrySet()){
 														if(entry.getKey().toString().equalsIgnoreCase(obj[2].toString())){%>
-															<%=entry.getValue()!=null?StringEscapeUtils.escapeHtml4(entry.getValue()): " - " %>
+															<%=entry.getValue()!=null?(entry.getValue()): " - " %>
 													<%}} 
 												
 												%>
@@ -2237,7 +2270,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 												}else if(obj[26].toString().equals("2")) {  
 													for(Map.Entry<Integer,String>entry:treeMapLevTwo.entrySet()){
 														if(entry.getKey().toString().equalsIgnoreCase(obj[3].toString())){%>
-															<%=entry.getValue()!=null?StringEscapeUtils.escapeHtml4(entry.getValue()): " - " %>
+															<%=entry.getValue()!=null?(entry.getValue()): " - " %>
 													<%}} 
 												
 												
@@ -2265,19 +2298,20 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 											
 											<td style="<%if(obj[26].toString().equals("0")) {%>font-weight: bold;<%}%>;text-align:justify ">
 												<%if(obj[26].toString().equals("0")) {%>
-													<%=obj[9]!=null?StringEscapeUtils.escapeHtml4(obj[9].toString()): " - " %>
+													<%=obj[9]!=null?(obj[9].toString()): " - " %>
 												<%}else if(obj[26].toString().equals("1")) { %>
-													&nbsp;&nbsp;<%=obj[10]!=null?StringEscapeUtils.escapeHtml4(obj[10].toString()): " - " %>
+													&nbsp;&nbsp;<%=obj[10]!=null?(obj[10].toString()): " - " %>
 												<%}else if(obj[26].toString().equals("2")) { %>
-													&nbsp;&nbsp;<%=obj[11]!=null?StringEscapeUtils.escapeHtml4(obj[11].toString()): " - " %>
+													&nbsp;&nbsp;<%=obj[11]!=null?(obj[11].toString()): " - " %>
 												<%}else if(obj[26].toString().equals("3")) { %>
-													&nbsp;&nbsp;<%=obj[12]!=null?StringEscapeUtils.escapeHtml4(obj[12].toString()): " - " %>
+													&nbsp;&nbsp;<%=obj[12]!=null?(obj[12].toString()): " - " %>
 												<%}else if(obj[26].toString().equals("4")) { %>
-													&nbsp;&nbsp;<%=obj[13]!=null?StringEscapeUtils.escapeHtml4(obj[13].toString()): " - " %>
+													&nbsp;&nbsp;<%=obj[13]!=null?(obj[13].toString()): " - " %>
 												<%}else if(obj[26].toString().equals("5")) { %>
-													&nbsp;&nbsp;<%=obj[14]!=null?StringEscapeUtils.escapeHtml4(obj[14].toString()): " - " %>
+													&nbsp;&nbsp;<%=obj[14]!=null?(obj[14].toString()): " - " %>
 												<%} %>
 											</td>
+											<td style="text-align:center" ><%= obj[7]!=null? sdf.format(sdf1.parse(obj[7].toString())) : " - " %></td>
 											<td  style="text-align:center">
 											
 												<%if(! LocalDate.parse(obj[8].toString()).isEqual(LocalDate.parse(obj[29].toString())) ){ %> 
@@ -2288,10 +2322,10 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 											</td>
 																			<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("ADE")) {%>
 											
-											<td ><%=obj[24]!=null?StringEscapeUtils.escapeHtml4(obj[24].toString()): " - " %><%-- (<%=obj[25] %>) --%></td>
+											<td ><%=obj[24]!=null?(obj[24].toString()): " - " %><%-- (<%=obj[25] %>) --%></td>
 											
 											<%} %>
-											<td style="text-align: center"><%=obj[16]!=null?StringEscapeUtils.escapeHtml4(obj[16].toString()): " - " %>%</td>		
+											<td style="text-align: center"><%=obj[16]!=null?(obj[16].toString()): " - " %>%</td>		
 											<% 
 												LocalDate StartDate = LocalDate.parse(obj[7].toString());
 												LocalDate EndDate = LocalDate.parse(obj[8].toString());
@@ -2303,7 +2337,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 							
 											<td >
 												<%if(obj[28]!=null){ %>
-												<%=StringEscapeUtils.escapeHtml4(obj[28].toString()) %>
+												<%=(obj[28].toString()) %>
 												<%} %>
 											</td>
 										</tr>
@@ -2400,11 +2434,11 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										String tempString=temp[temp.length-1];
 										%>
 									<span style="font-weight: bold">
-										<%=tempString!=null?StringEscapeUtils.escapeHtml4(tempString): " - "%>
+										<%=tempString!=null?(tempString): " - "%>
 										</span>
 									<%}%>
 								</td>
-												<td  style="text-align: justify;"><%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()): " - " %></td>
+												<td  style="text-align: justify;"><%=obj[2]!=null?(obj[2].toString()): " - " %></td>
 												<td   style="text-align: center;" >
 												<%	String actionstatus = obj[9].toString();
 															int progress = obj[16]!=null ? Integer.parseInt(obj[16].toString()) : 0;
@@ -2432,9 +2466,9 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 													<%=sdf.format(sdf1.parse(obj[3].toString()))%>
 												</td>
 											
-												<td > <%=obj[11]!=null?StringEscapeUtils.escapeHtml4(obj[11].toString()): " - " %></td>
+												<td > <%=obj[11]!=null?(obj[11].toString()): " - " %></td>
 				
-												<td > <%if(obj[17]!=null){ %> <%=StringEscapeUtils.escapeHtml4(obj[17].toString())%> <%} %> </td>			
+												<td > <%if(obj[17]!=null){ %> <%=(obj[17].toString())%> <%} %> </td>			
 											</tr>			
 										<%i++;
 										}} }%>
@@ -2456,8 +2490,8 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 												for(Object[] obj :RecDecDetails){%>
 												<tr>
 													<td style="width: 5%; text-align: center;">  <%=++i%></td>
-													<td style="width: 5%; text-align: center;"> <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()): " - "%></td>
-													<td style="width: 85%;  word-wrap: break-word;"> <%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - "%></td>
+													<td style="width: 5%; text-align: center;"> <%=obj[2]!=null?(obj[2].toString()): " - "%></td>
+													<td style="width: 85%;  word-wrap: break-word;"> <%=obj[3]!=null?(obj[3].toString()): " - "%></td>
 													
 												</tr>
 												<%}}else{%><td colspan="3" style="text-align: center;"> No Data Available!</td><%}%>
@@ -2482,7 +2516,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										
 									<% if(TechWorkDataList.get(z)!=null){ %>
 										<tr>
-											<td style="text-align: justify;"><%=StringEscapeUtils.escapeHtml4(TechWorkDataList.get(z)[2].toString()) %></td>
+											<td style="text-align: justify;"><%=TechWorkDataList.get(z)[2].toString() %></td>
 										</tr>
 								<%}else{ %>
 									<tr><td colspan="2" style="text-align: left ;">Nil </td></tr>

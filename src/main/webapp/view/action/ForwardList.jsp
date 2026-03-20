@@ -116,9 +116,9 @@
 															<td>
 															<textarea id="td<%=obj[0].toString()%>" style="display: none;"><%=obj[5].toString()%></textarea>
 															<%if(obj[5]!=null && obj[5].toString().length()<75) {%>
-															<%=StringEscapeUtils.escapeHtml4(obj[5].toString()) %>
+															<%=obj[5].toString() %>
 															<%}else{ %>
-															<%=StringEscapeUtils.escapeHtml4(obj[5].toString()).substring(0,75) %>&nbsp;&nbsp;<span class="custom-span" onclick="showAction('<%=obj[0].toString()%>','<%=obj[14].toString()%>')">show more</span>
+															<%=obj[5].toString().substring(0,75) %>&nbsp;&nbsp;<span class="custom-span" onclick="showAction('<%=obj[0].toString()%>','<%=obj[14].toString()%>')">show more</span>
 															<%} %>
 															</td>
 															<td class="text-center"><%=obj[4]!=null?sdf.format(obj[4]):" - "%></td>

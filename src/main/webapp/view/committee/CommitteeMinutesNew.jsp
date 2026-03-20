@@ -298,7 +298,7 @@ p{
 						<br><br><br>
 			<div align="center" ><h3><%=labdetails[2] !=null?labdetails[2].toString(): " - "%> (<%=labdetails[1]!=null?labdetails[1].toString(): " - "%>)</h3></div>
 			
-			<div align="center" ><h3><%=labdetails[4]!=null?labdetails[2].toString(): " - " %>, &nbsp;<%=labdetails[5] !=null?labdetails[5].toString(): " - "%>, &nbsp;<%=labdetails[6]!=null?labdetails[6].toString(): " - " %></h3></div>
+			<div align="center" ><h3><%=labdetails[4]!=null?labdetails[4].toString(): " - " %>, &nbsp;<%=labdetails[5] !=null?labdetails[5].toString(): " - "%>, &nbsp;<%=labdetails[6]!=null?labdetails[6].toString(): " - " %></h3></div>
 		</div>  
 		
  <h1 class="break"></h1> 
@@ -487,11 +487,11 @@ for( Object[]obj:specialMembers){ %>
 	 	 <td style="border: 1px solid black; padding: 5px;text-align: center"> <%=j%> </td>
 	 	  	<td style="border: 1px solid black; padding: 5px;text-align: left">  
 	 	  	
-	 			<%= invitedlist.get(i)[6]!=null?invitedlist.get(i)[6].toString(): " - "%>,&nbsp;<%=invitedlist.get(i)[7]!=null?invitedlist.get(i)[7].toString(): " - " %>
+	 			<%= invitedlist.get(i)[6]!=null?invitedlist.get(i)[6].toString(): " - "%>&nbsp;
 		 	</td>	
 		 	<td style="border: 1px solid black; padding: 5px;text-align: left;">  
 	 	  	
-	 			<%= invitedlist.get(i)[11]!=null?invitedlist.get(i)[11].toString(): " - "%>  
+	 			<%=invitedlist.get(i)[7]!=null?invitedlist.get(i)[7].toString(): " - " %>, <%= invitedlist.get(i)[11]!=null?invitedlist.get(i)[11].toString(): " - "%>  
 		 	</td>
 		 	<td style="border: 1px solid black;padding: 5px ;text-align: left">
 		 		<%  if(invitedlist.get(i)[3].toString().equalsIgnoreCase("CC")) {		 %>Chairperson<%}

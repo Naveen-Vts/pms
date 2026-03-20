@@ -36,7 +36,8 @@ SimpleDateFormat sdf1=fc.getSqlDateFormat(); int addcount=0;
 NFormatConvertion nfc=new NFormatConvertion();
 SimpleDateFormat sdf2=new SimpleDateFormat("dd-MM-yyyy");
 List<DemandDetails> demandList=(List<DemandDetails>)request.getAttribute("demandList");
-String projectId=request.getAttribute("projectId").toString();
+String projectId= (String) request.getAttribute("projectId");
+String projectCode = (String) request.getAttribute("projectCode");
 Format format = com.ibm.icu.text.NumberFormat.getCurrencyInstance(new Locale("en", "in"));
 
 %>
@@ -84,6 +85,7 @@ Format format = com.ibm.icu.text.NumberFormat.getCurrencyInstance(new Locale("en
 												
 												<td>
 													<form action="AddDemandFileSubmit.htm" method="post">
+														<input type="hidden" name="projectCode" id="projectCode" value="<%=projectCode %>" >
 														<input type="hidden" name="DemandNo" id="DemandNoId" value="<%=demand.getDemandNo() %>" >
 														<input type="hidden" name="projectId" id="projectIdId" value="<%=demand.getProjectId() %>" >
 														<input type="hidden" name="demandDate" id="demandDateId" value="<%=demand.getDemandDate() %>" >

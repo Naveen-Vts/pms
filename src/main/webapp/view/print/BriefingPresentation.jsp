@@ -423,7 +423,11 @@ String baseUrl = scheme + "://" + serverName
 								</tr>
 								<tr>
 									<td class="bp-45">
-										<%if (FilenameUtils.getExtension(projectdatadetails.get(z)[3].toString()).equalsIgnoreCase("pdf")) {%>
+										<%
+										Path systemPath = Paths.get(filePath,projectLabCode,"ProjectData",projectdatadetails.get(z)[3].toString());
+										File systemfile = systemPath.toFile();
+										if(systemfile.exists()){
+										if (FilenameUtils.getExtension(projectdatadetails.get(z)[3].toString()).equalsIgnoreCase("pdf")) {%>
 										<iframe
 											src="data:application/pdf;base64,<%=pdffiles.get(z)[0]%>#view=FitV" class="bp-43"
 											id="config<%=ProjectDetail.get(z)[0]%>"> </iframe> <%
@@ -433,7 +437,7 @@ String baseUrl = scheme + "://" + serverName
 										class="bp-44"
 										src="data:image/<%=FilenameUtils.getExtension(projectdatadetails.get(z)[3].toString())%>;base64,<%=pdffiles.get(z)[0]%>"
 										id="config<%=ProjectDetail.get(z)[0]%>"> <%
-										 }
+										 }}
 										 %>
 									</td>
 								</tr>
@@ -674,7 +678,7 @@ String baseUrl = scheme + "://" + serverName
 									</button>
 								<%}%>
 							</td>
-								<td class="text-justify"> <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):"" %> </td>
+								<td class="text-justify"> <%=obj[2]!=null?(obj[2].toString()):"" %> </td>
 								<td class="text-center">
 								<%if(obj[8]!= null && !LocalDate.parse(obj[8].toString()).equals(LocalDate.parse(obj[7].toString())) ){ %><span class="text-dark font-weight-bold"><%=sdf.format(sdf1.parse(obj[8].toString()))%></span><br><%} %>	
 								<%if(obj[7]!= null && !LocalDate.parse(obj[7].toString()).equals(LocalDate.parse(obj[6].toString())) ){ %><span class="text-dark font-weight-bold"><%=sdf.format(sdf1.parse(obj[7].toString()))%></span><br><%} %>
@@ -718,7 +722,7 @@ String baseUrl = scheme + "://" + serverName
 									<%} %>
 									<%}else { %><span class="notassign">NA</span><%} %>
 							</td>
-							<td><% if (obj[19] != null) { %><%= StringEscapeUtils.escapeHtml4(obj[19].toString())%> <% } %></td>
+							<td><% if (obj[19] != null) { %><%= (obj[19].toString())%> <% } %></td>
 						</tr>
 						<% i++; }
 						} %>
@@ -794,8 +798,14 @@ String baseUrl = scheme + "://" + serverName
 								<td colspan="7" class="text-center">Nil</td>
 							</tr>
 							<% } else if (lastpmrcactions.size() > 0) {
+								Map<String,List<Object[]>> list = lastpmrcactions.get(z)!=null ? lastpmrcactions.get(z).stream()
+										.collect(Collectors.groupingBy(array -> array[0].toString(), LinkedHashMap::new,Collectors.toList())) : new HashMap<>();
 							int i = 1;String key="";
-							for (Object[] obj : lastpmrcactions.get(z)) {
+							for(Map.Entry<String, List<Object[]>> map : list.entrySet()){
+								int j=1;
+								List<Object[]> values = map.getValue();
+								int rowSpan = values.size();
+							for (Object[] obj : values) {
 							%>
 							<tr>
 								<td class="text-center"><%=i%></td>
@@ -814,7 +824,7 @@ String baseUrl = scheme + "://" + serverName
 								<%}%> 
 								<!--  -->
 								</td>
-								<td class="text-justify"> <%=StringEscapeUtils.escapeHtml4(obj[2].toString())%> </td>
+								<%if(j++==1){ %><td rowspan="<%=rowSpan%>" class="text-justify"> <%=obj[2].toString()%> </td> <%} %>
 								<td class="text-center">
 									<%	String actionstatus = obj[9].toString();
 										int progress = obj[15]!=null ? Integer.parseInt(obj[15].toString()) : 0;
@@ -869,12 +879,12 @@ String baseUrl = scheme + "://" + serverName
 										<%} %>
 								</td>
 								<td class="text-justify">
-									<% if (obj[16] != null) { %><%= StringEscapeUtils.escapeHtml4(obj[16].toString()) %> <% } %>
+									<% if (obj[16] != null) { %><%= (obj[16].toString()) %> <% } %>
 								</td>
 
 								
 							</tr>
-							<% i++; }
+							<% i++; }}
 							} %>
 						</tbody>
 
@@ -1000,6 +1010,7 @@ String baseUrl = scheme + "://" + serverName
 								<th class="width20">MS</th>
 								<th class="width70">L</th>
 								<th class="width350">System/ Subsystem/ Activities</th>
+								<th class="width100" >Start Date</th>
 								<th class="width100">ADC<br>PDC</th>
 								<!-- <th style="width: 150px;">ADC</th> -->
 								<th class="width70">Progress</th>
@@ -1078,21 +1089,22 @@ String baseUrl = scheme + "://" + serverName
 								class="<%if (obj[21].toString().equals("0")) {%>font-weight-bold<%}%>">
 								<%
 								if (obj[21].toString().equals("0")) {
-								%> <%=StringEscapeUtils.escapeHtml4( obj[10].toString() )%> <%
+								%> <%=( obj[10].toString() )%> <%
 									 } else if (obj[21].toString().equals("1")) {
 									 %>
-																	&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4( obj[11].toString() )%> <%
+																	&nbsp;&nbsp;<%=( obj[11].toString() )%> <%
 									 } else if (obj[21].toString().equals("2")) {
 									 %>
-																	&nbsp;&nbsp;<%= StringEscapeUtils.escapeHtml4(obj[12].toString()) %> <%
+																	&nbsp;&nbsp;<%= (obj[12].toString()) %> <%
 									 } else if (obj[21].toString().equals("3")) {
 									 %>
-																	&nbsp;&nbsp;<%= StringEscapeUtils.escapeHtml4(obj[13].toString())%> <%
+																	&nbsp;&nbsp;<%= (obj[13].toString())%> <%
 									 } else if (obj[21].toString().equals("4")) {
 									 %>
-																	&nbsp;&nbsp;<%= StringEscapeUtils.escapeHtml4(obj[14].toString())%> <% } else if (obj[21].toString().equals("5")) { %>
-																	&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[15].toString())%> <% } %>
+																	&nbsp;&nbsp;<%= (obj[14].toString())%> <% } else if (obj[21].toString().equals("5")) { %>
+																	&nbsp;&nbsp;<%=(obj[15].toString())%> <% } %>
 							</td>
+							<td class="text-center" ><%= obj[7]!=null? sdf.format(sdf1.parse(obj[7].toString())) : " - " %></td>
 							<td class="text-center">
 
 								
@@ -1158,7 +1170,7 @@ String baseUrl = scheme + "://" + serverName
 							</td>
 							
 							<td class="bp-56">
-								<% if (obj[23] != null) { %><%= StringEscapeUtils.escapeHtml4(obj[23].toString()) %> <% } %>
+								<% if (obj[23] != null) { %><%= (obj[23].toString()) %> <% } %>
 							</td>
 							<td class="text-center">
 							<%if (obj[21].toString().equals("0")) {%>
@@ -1235,6 +1247,7 @@ String baseUrl = scheme + "://" + serverName
 								<th class="width30">MS</th>
 								<th class="width70">L</th>
 								<th class="width450">System/ Subsystem/ Activities</th>
+								<th class="width100" >Start Date</th>
 								<th class="width150">PDC</th>
 								<th class="width60">Progress</th>
 								<th class="width50">Status(DD)</th>
@@ -1312,19 +1325,20 @@ String baseUrl = scheme + "://" + serverName
 
 							<td class="<%if(obj[21].toString().equals("0")) {%>font-weight-bold<%}%> text-justify">
 									<%if(obj[21].toString().equals("0")) {%>
-										<%=StringEscapeUtils.escapeHtml4( obj[10].toString() ) %>
+										<%=( obj[10].toString() ) %>
 									<%}else if(obj[21].toString().equals("1")) { %>
-										&nbsp;&nbsp;<%= StringEscapeUtils.escapeHtml4(obj[11].toString()) %>
+										&nbsp;&nbsp;<%= (obj[11].toString()) %>
 									<%}else if(obj[21].toString().equals("2")) { %>
-										&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[12].toString()) %>
+										&nbsp;&nbsp;<%=(obj[12].toString()) %>
 									<%}else if(obj[21].toString().equals("3")) { %>
-										&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[13].toString()) %>
+										&nbsp;&nbsp;<%=(obj[13].toString()) %>
 									<%}else if(obj[21].toString().equals("4")) { %>
-										&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[14].toString()) %>
+										&nbsp;&nbsp;<%=(obj[14].toString()) %>
 									<%}else if(obj[21].toString().equals("5")) { %>
-										&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[15].toString()) %>
+										&nbsp;&nbsp;<%=(obj[15].toString()) %>
 									<%} %>
 							</td>
+							<td class="text-center" ><%= obj[7]!=null? sdf.format(sdf1.parse(obj[7].toString())) : " - " %></td>
 							<% 
 								LocalDate StartDate = LocalDate.parse(obj[7].toString());
 								LocalDate EndDate = LocalDate.parse(obj[8].toString());
@@ -1364,7 +1378,7 @@ String baseUrl = scheme + "://" + serverName
 							</td>
 							<td class="bp-59">
 								<% if (obj[23] != null) {
-								%><%=StringEscapeUtils.escapeHtml4(obj[23].toString())%>
+								%><%=(obj[23].toString())%>
 								<%}%>
 							</td>
 							<td class="text-center">
@@ -1612,7 +1626,7 @@ String baseUrl = scheme + "://" + serverName
 
 								</td>
 								<td class="text-justify" rowspan="1">
-									<% if (obj[19] != null) { %> <%=StringEscapeUtils.escapeHtml4(obj[19].toString())%> <% } %>
+									<% if (obj[19] != null) { %> <%=(obj[19].toString())%> <% } %>
 								</td>
 							</tr>
 							<tr>
@@ -1627,8 +1641,8 @@ String baseUrl = scheme + "://" + serverName
 											<%}else if(RPN>=76){ %>(Very High)
 											<%} %>
 								</td>
-								<td class="text-justify" colspan="3"><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()):"" %></td>
-								<td class="text-justify" colspan="2"><%=obj[21]!=null?StringEscapeUtils.escapeHtml4(obj[21].toString()):"" %></td>
+								<td class="text-justify" colspan="3"><%=obj[3]!=null?(obj[3].toString()):"" %></td>
+								<td class="text-justify" colspan="2"><%=obj[21]!=null?(obj[21].toString()):"" %></td>
 							</tr>
 
 							<% if (riskmatirxdata.get(z).size() > i) { %>
@@ -1825,7 +1839,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<%} %>
 					</td>
 				<td class="border border-dark text-center">
-				<% if(obj[2]!=null){%> <%=StringEscapeUtils.escapeHtml4(obj[2].toString())%> <%}else{ %>-<%} %><br>
+				<% if(obj[2]!=null){%> <%=(obj[2].toString())%> <%}else{ %>-<%} %><br>
 					<%if(obj[16]!=null){%> <%=sdf.format(sdf1.parse(obj[16].toString()))%> <%}else{ %> - <%} %>
 				</td>
 				<td class="border border-dark text-right"><%if(obj[6]!=null){%> <%=format.format(new BigDecimal(obj[6].toString())).substring(1)%> <%} else{ %> - <%} %></td>
@@ -1841,7 +1855,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					</td>					
 					<td <%if(!obj[1].toString().equalsIgnoreCase(demand)){ %> class="bp-66"<%} else{ %> class="bp-67"<%} %>>
 						<%if(!obj[1].toString().equalsIgnoreCase(demand)){ %>
-					<%=StringEscapeUtils.escapeHtml4(obj[11].toString())%>
+					<%=(obj[11].toString())%>
 					<%} %>
 					</td>
 					</tr>
@@ -1971,9 +1985,9 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 												<td class="text-center"><%=psn %></td>
 												<td>
 													<%if(proc[8].toString().length()>60){ %>
-													<%=StringEscapeUtils.escapeHtml4(proc[8].toString().substring(0,60)) %> ...
+													<%=(proc[8].toString().substring(0,60)) %> ...
 													<%}else{ %>
-													<%=StringEscapeUtils.escapeHtml4(proc[8].toString() )%>
+													<%=(proc[8].toString() )%>
 													<%} %>
 												</td>
 												<td class="text-right">
@@ -2363,6 +2377,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 								<th class="width20">MS</th>
 								<th class="width50">L</th>
 								<th class="width265">Action Plan</th>
+								<th class="width100" >Start Date</th>
 								<th class="width110">PDC</th>
 								<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("ADE")) {%>
 									<th class="width200">Responsibility </th>
@@ -2444,14 +2459,15 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 								</td>
 
 								<td class="<%if (obj[26].toString().equals("0")) { %>font-weight-bold <%}%> text-justify ">
-									<% if (obj[26].toString().equals("0")) { %> <%= StringEscapeUtils.escapeHtml4(obj[9].toString())%> 
-									<%}else if (obj[26].toString().equals("1")) { %>&nbsp;&nbsp;<%= StringEscapeUtils.escapeHtml4(obj[10].toString())%> 
-									<%}else if (obj[26].toString().equals("2")) { %>&nbsp;&nbsp;<%= StringEscapeUtils.escapeHtml4(obj[11].toString())%> 
-									<%}else if (obj[26].toString().equals("3")) { %>&nbsp;&nbsp;<%= StringEscapeUtils.escapeHtml4(obj[12].toString())%> 
-									<%}else if (obj[26].toString().equals("4")) { %>&nbsp;&nbsp;<%= StringEscapeUtils.escapeHtml4(obj[13].toString())%> 
-									<%}else if (obj[26].toString().equals("5")) { %>&nbsp;&nbsp;<%= StringEscapeUtils.escapeHtml4(obj[14].toString())%>
+									<% if (obj[26].toString().equals("0")) { %> <%= (obj[9].toString())%> 
+									<%}else if (obj[26].toString().equals("1")) { %>&nbsp;&nbsp;<%= (obj[10].toString())%> 
+									<%}else if (obj[26].toString().equals("2")) { %>&nbsp;&nbsp;<%= (obj[11].toString())%> 
+									<%}else if (obj[26].toString().equals("3")) { %>&nbsp;&nbsp;<%= (obj[12].toString())%> 
+									<%}else if (obj[26].toString().equals("4")) { %>&nbsp;&nbsp;<%= (obj[13].toString())%> 
+									<%}else if (obj[26].toString().equals("5")) { %>&nbsp;&nbsp;<%= (obj[14].toString())%>
 									<%}%>
 								</td>
+								<td class="text-center" ><%= obj[7]!=null? sdf.format(sdf1.parse(obj[7].toString())) : " - " %></td>
 								<td class="text-center">
 									<%
 									if (!LocalDate.parse(obj[8].toString()).isEqual(LocalDate.parse(obj[29].toString())) ) {%>
@@ -2493,7 +2509,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 												
 								</td>
 								<td>
-									<% if (obj[28] != null) { %> <%=StringEscapeUtils.escapeHtml4(obj[28].toString())%> <% } %>
+									<% if (obj[28] != null) { %> <%=(obj[28].toString())%> <% } %>
 								</td>
 								<td class="text-center">
 						
@@ -2617,7 +2633,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 										</button>
 									<%}%>
 								</td>
-								<td class="text-justify"> <%=StringEscapeUtils.escapeHtml4(obj[2].toString())%> </td>
+								<td class="text-justify"> <%=(obj[2].toString())%> </td>
 								<td class="text-justify">
 																	<%	String actionstatus = obj[9].toString();
 										int progress = obj[16]!=null ? Integer.parseInt(obj[16].toString()) : 0;
@@ -2674,7 +2690,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 									<%} %>
 								</td>
 								<td>
-									<% if (obj[17] != null) { %> <%=StringEscapeUtils.escapeHtml4(obj[17].toString() )%> <% } %>
+									<% if (obj[17] != null) { %> <%=(obj[17].toString() )%> <% } %>
 								</td>
 							
 							</tr>
@@ -2713,8 +2729,8 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 												for(Object[] obj :RecDecDetails){%>
 												<tr>
 													<td class="width-5 text-center"> <%=++i%></td>
-													<td class="width-5 text-center"> <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):""%></td>
-													<td class="width-85 bp-75">  <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()):""%></td>
+													<td class="width-5 text-center"> <%=obj[2]!=null?(obj[2].toString()):""%></td>
+													<td class="width-85 bp-75">  <%=obj[2]!=null?(obj[3].toString()):""%></td>
 												</tr>
 												<%}}else{%><td colspan="3" class="text-center"> No Data Available!</td><%}%>
 											</tbody>
@@ -3003,7 +3019,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 														<td class="text-center width-7">Mil-<%=obj[5]%></td>
 														<%-- <td class="width-30px"><%=obj[1]%></td> --%>
 														<td class="bp-93"
-															><%=StringEscapeUtils.escapeHtml4(obj[4].toString())%></td>
+															><%=(obj[4].toString())%></td>
 
 														<td class="width-8"><%=sdf.format(obj[2])%></td>
 														<td class="width-8"><%=sdf.format(obj[3])%></td>
@@ -3068,7 +3084,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 														<td class="width-5"">A-<%=countA%></td>
 														<%-- <td class="width-30px"><%=obj[1]%></td> --%>
 														<td class="bp-93"
-															><%=StringEscapeUtils.escapeHtml4(objA[4].toString())%></td>
+															><%=(objA[4].toString())%></td>
 
 														<td class="width-30px"><%=sdf.format(objA[2])%></td>
 														<td class="width-8"><%=sdf.format(objA[3])%></td>
@@ -3142,7 +3158,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 															&nbsp;&nbsp;&nbsp;B-<%=countB%></td>
 														<%-- <td class="width-30px"><%=obj[1]%></td> --%>
 														<td class="bp-93"
-															><%=StringEscapeUtils.escapeHtml4(objB[4].toString())%></td>
+															><%=(objB[4].toString())%></td>
 
 														<td class="width-30px"><%=sdf.format(objB[2])%></td>
 														<td class="width-8"><%=sdf.format(objB[3])%></td>
@@ -3214,7 +3230,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 															&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C-<%=countC%></td>
 														<%-- <td class="width-30px"><%=obj[1]%></td> --%>
 														<td class="bp-93"
-															><%=StringEscapeUtils.escapeHtml4(objC[4].toString())%></td>
+															><%=(objC[4].toString())%></td>
 
 														<td class="width-30px"><%=sdf.format(objC[2])%></td>
 														<td class="width-8"><%=sdf.format(objC[3])%></td>
@@ -3286,7 +3302,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 															&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D-<%=countD%></td>
 														<%-- <td class="width-30px"><%=obj[1]%></td> --%>
 														<td class="bp-93"
-															>StringEscapeUtils.escapeHtml4(objD[4].toString())</td>
+															>(objD[4].toString())</td>
 
 														<td class="width-30px"><%=sdf.format(objB[2])%></td>
 														<td class="width-8"><%=sdf.format(objB[3])%></td>
@@ -3359,7 +3375,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 															&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;E-<%=countE%></td>
 														<%-- <td class="width-30px"><%=obj[1]%></td> --%>
 														<td class="bp-93"
-															><%=StringEscapeUtils.escapeHtml4(objE[4].toString())%></td>
+															><%=(objE[4].toString())%></td>
 
 														<td class="width-30px"><%=sdf.format(objE[2])%></td>
 														<td class="width-8"><%=sdf.format(objE[3])%></td>
@@ -3619,15 +3635,15 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 												for(Object[] risktype : RiskTypes ){ %>
 												<tr>
 													<td class="text-center"><%=++riskcount %></td>
-													<td class="text-center"><b>I<%=risktype[2]!=null?StringEscapeUtils.escapeHtml4(risktype[2].toString()):"" %></b></td>
-													<td>Internal <%=risktype[1]!=null?StringEscapeUtils.escapeHtml4(risktype[1].toString()):"" %></td>
+													<td class="text-center"><b>I<%=risktype[2]!=null?(risktype[2].toString()):"" %></b></td>
+													<td>Internal <%=risktype[1]!=null?(risktype[1].toString()):"" %></td>
 												</tr>
 												<%} %>
 												<%for(Object[] risktype : RiskTypes ){ %>
 												<tr>
 													<td class="text-center"><%=++riskcount %></td>
-													<td class="text-center"><b>E<%=risktype[2]!=null?StringEscapeUtils.escapeHtml4(risktype[2].toString()):"" %></b></td>
-													<td>Internal <%=risktype[1]!=null?StringEscapeUtils.escapeHtml4(risktype[1].toString()):"" %></td>
+													<td class="text-center"><b>E<%=risktype[2]!=null?(risktype[2].toString()):"" %></b></td>
+													<td>Internal <%=risktype[1]!=null?(risktype[1].toString()):"" %></td>
 												</tr>
 												<%} %>
 											</tbody>

@@ -438,7 +438,9 @@ public class RfpMainServiceImpl implements RfpMainService {
 	@Override
 	public long ProjectHoaUpdate(List<ProjectHoa> hoa,String Username,List<IbasLabMaster> LabDetails) throws Exception{
 		logger.info(new Date() +"Inside SERVICE ProjectHoaUpdate ");
+		
 		long count1 =0 ;
+		try {
 		long count = dao.ProjectHoaDelete(LabDetails.get(0).getLabCode());
 		for(ProjectHoa obj : hoa) {
 			obj.setCreatedBy(Username);
@@ -446,7 +448,9 @@ public class RfpMainServiceImpl implements RfpMainService {
 			obj.setLabCode(LabDetails.get(0).getLabCode());
 			count1=dao.ProjectHoaUpdate(obj);
 		}
-		
+		}catch (Exception e) {
+		e.printStackTrace();
+		}
 		return count1;
 	}
 	

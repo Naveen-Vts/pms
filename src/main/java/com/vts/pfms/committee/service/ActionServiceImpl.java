@@ -610,24 +610,27 @@ public class ActionServiceImpl implements ActionService {
 					long assignid=  dao.ActionAssignInsert(actionassign);
 					System.out.println("assignid---"+assignid);
 					if(result>0) {
-						Object[] data=dao.ActionNotification(String.valueOf(result) ,String.valueOf(assignid)).get(0);
-						PfmsNotification notification=new PfmsNotification();
-						notification.setEmpId(Long.parseLong(data[2].toString()));
-						notification.setNotificationby(Long.parseLong(data[5].toString()));
-						notification.setNotificationDate(sdf1.format(new Date()));
-						notification.setScheduleId(unsuccess);
-						notification.setCreatedBy(main.getCreatedBy());
-						notification.setCreatedDate(sdf1.format(new Date()));
-						notification.setIsActive(1);
-						if("I".equalsIgnoreCase(actionmain.getType())) {
-							notification.setNotificationUrl("ActionIssue.htm");
-							 notification.setNotificationMessage("An Issue No "+data[7]+" Assigned by "+data[3]+", "+data[4]+".");
-						} else {
-							notification.setNotificationUrl("AssigneeList.htm");
-							notification.setNotificationMessage("An Action No "+data[7]+" Assigned by "+data[3]+", "+data[4]+".");
+						List<Object[]> datas=dao.ActionNotification(String.valueOf(result) ,String.valueOf(assignid));
+						if(datas.size()>0) {
+							Object[] data = datas.get(0);
+							PfmsNotification notification=new PfmsNotification();
+							notification.setEmpId(Long.parseLong(data[2].toString()));
+							notification.setNotificationby(Long.parseLong(data[5].toString()));
+							notification.setNotificationDate(sdf1.format(new Date()));
+							notification.setScheduleId(unsuccess);
+							notification.setCreatedBy(main.getCreatedBy());
+							notification.setCreatedDate(sdf1.format(new Date()));
+							notification.setIsActive(1);
+							if("I".equalsIgnoreCase(actionmain.getType())) {
+								notification.setNotificationUrl("ActionIssue.htm");
+								 notification.setNotificationMessage("An Issue No "+data[7]+" Assigned by "+data[3]+", "+data[4]+".");
+							} else {
+								notification.setNotificationUrl("AssigneeList.htm");
+								notification.setNotificationMessage("An Action No "+data[7]+" Assigned by "+data[3]+", "+data[4]+".");
+							}
+							notification.setStatus("MAR");
+				            dao.ActionNotificationInsert(notification);
 						}
-						notification.setStatus("MAR");
-			            dao.ActionNotificationInsert(notification);
 					}else {
 					return unsuccess;
 					}
@@ -2708,7 +2711,7 @@ public int ActionAssignerEdit(ActionAssign assign) throws Exception {
 }
 
 	@Override
-	public long insertActionMainFornonProject(ActionMainDto main, ActionAssignDto assign) {
+	public long insertActionMainFornonProject(ActionMainDto main, ActionAssignDto assign)throws Exception {
 		try {
 			logger.info(new Date() +" Inside Action Service Implementation insertActionMainFornonProject");
 			Object[] committeShortname = null;
@@ -2887,7 +2890,22 @@ public int ActionAssignerEdit(ActionAssign assign) throws Exception {
 	}
 
 	@Override
-	public List<Object[]> assigneeListForFromExternal() {
+	public List<Object[]> assigneeListForFromExternal()throws Exception {
 		return dao.assigneeListForFromExternal();
+	}
+
+	@Override
+	public List<Object[]> divisionList() throws Exception {
+		return dao.divisionList();
+	}
+
+	@Override
+	public List<Object[]> getDivisionEmployeesList(String divisionId) throws Exception {
+		return dao.getDivisionEmployeesList(divisionId);
+	}
+	
+	@Override
+	public List<Object[]> getRfaActionsOnRFAtype(String projectType,String projectid, String rfatypeid,String rfaType,String empId, String fdate, String tdate,String rfaStatus) throws Exception {
+		return dao.getRfaActionsOnRFAtype(projectType,projectid,rfatypeid,rfaType,empId,fdate,tdate,rfaStatus);
 	}
 }

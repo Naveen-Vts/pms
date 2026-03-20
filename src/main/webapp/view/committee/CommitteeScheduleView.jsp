@@ -292,9 +292,7 @@
 								<tr>
 									<td colspan="4"><textarea class="form-control"
 											name="decisions" id="decisions" cols="50" rows="5"
-											placeholder="Decisions sought from Meeting" maxlength="1000">
-											<%if(committeescheduleeditdata[18]!=null ){ %> <%=committeescheduleeditdata[18].toString() %> <%} %>
-										</textarea></td>
+											placeholder="Decisions sought from Meeting" maxlength="1000"><%if(committeescheduleeditdata[18]!=null ){ %> <%=committeescheduleeditdata[18].toString() %> <%} %></textarea></td>
 								</tr>
 								<tr>
 									<td><label class="mt-25px mb-n20">Reference

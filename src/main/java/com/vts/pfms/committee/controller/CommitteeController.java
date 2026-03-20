@@ -150,6 +150,7 @@ import com.vts.pfms.master.dto.ProjectFinancialDetails;
 import com.vts.pfms.master.service.MasterService;
 import com.vts.pfms.milestone.model.FileRepUploadPreProject;
 import com.vts.pfms.model.TotalDemand;
+import com.vts.pfms.pfmsserv.feign.PFMSServeFeignClient;
 import com.vts.pfms.print.controller.PrintController;
 import com.vts.pfms.print.service.PrintService;
 import com.vts.pfms.utils.InputValidator;
@@ -193,6 +194,9 @@ public class CommitteeController {
 	@Autowired
 	PrintService printservice;
 
+	
+	@Autowired
+	PFMSServeFeignClient pfmsServ;
 	
 	private static final RestTemplate restTemplate = new RestTemplate();
 
@@ -1068,6 +1072,7 @@ public class CommitteeController {
 
 		}catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
 		}
 
 		return "committee/CommitteeEnotePrint";
@@ -1244,12 +1249,12 @@ public class CommitteeController {
 			String labcode = (String)ses.getAttribute("labcode");
 			System.out.println("flow" +flow);
 			
-			String Subject=req.getParameter("subject").trim();
-			String Comment=req.getParameter("Comment").trim();
-			String officer1Role=req.getParameter("Rec1_Role").toUpperCase();
-			String officer2Role=req.getParameter("Rec2_Role").toUpperCase();
-			String officer3Role=req.getParameter("Rec3_Role").toUpperCase();
-			String approvingOfficerRole=req.getParameter("Approving_Role").toUpperCase();
+			String Subject=req.getParameter("subject");
+			String Comment=req.getParameter("Comment");
+			String officer1Role=req.getParameter("Rec1_Role");
+			String officer2Role=req.getParameter("Rec2_Role");
+			String officer3Role=req.getParameter("Rec3_Role");
+			String approvingOfficerRole=req.getParameter("Approving_Role");
 
 			long flagcount=0;
 			
@@ -1638,7 +1643,8 @@ public class CommitteeController {
 			if(committeeactivelist.size()==0)
 			{
 				redir.addAttribute("resultfail", "No Committee is Constituted, Constitute a Non-Project Committee ");
-				redir.addFlashAttribute("id","N");			 
+//				redir.addFlashAttribute("id","N");
+				return "redirect:/MainDashBoard.htm";
 			}			
 			req.setAttribute("CommitteeList", committeeactivelist);
 		}
@@ -2051,26 +2057,26 @@ public class CommitteeController {
 				docids.add( req.getParameterValues("attachid_"+i));
 			}
 			
-			if (containsHTMLTags(AgendaItem)) {
+			if (AgendaItem!=null && containsHTMLTags(AgendaItem)) {
 				redir.addAttribute("scheduleid",req.getParameter("scheduleid"));
 				if(prgmstatus!=null && prgmstatus.equalsIgnoreCase("Y")) return redirectWithError(redir, "PrgmScheduleAgenda.htm", "'Agenda' should not contain HTML Tags.!");
 			    if(statusflag!=null && statusflag.equalsIgnoreCase("ROD")) return redirectWithError(redir, "RODScheduleAgenda.htm", "'Agenda' should not contain HTML Tags.!");
 				return redirectWithError(redir, "CommitteeScheduleAgenda.htm", "'Agenda' should not contain HTML Tags.!");
 			} 
-			if (containsHTMLTags(Remarks)) {
+			if (Remarks!=null && containsHTMLTags(Remarks)) {
 				redir.addAttribute("scheduleid",req.getParameter("scheduleid"));
 				if(prgmstatus!=null && prgmstatus.equalsIgnoreCase("Y")) return redirectWithError(redir, "PrgmScheduleAgenda.htm", "'Remarks' should not contain HTML Tags.!");
 			    if(statusflag!=null && statusflag.equalsIgnoreCase("ROD")) return redirectWithError(redir, "RODScheduleAgenda.htm", "'Remarks' should not contain HTML Tags.!");
 				return redirectWithError(redir, "CommitteeScheduleAgenda.htm", "'Remarks' should not contain HTML Tags.!");
 			}
-			if (containsHTMLTags(groupNames)) {
+			if (groupNames!=null && containsHTMLTags(groupNames)) {
 				redir.addAttribute("scheduleid",req.getParameter("scheduleid"));
 				if(prgmstatus!=null && prgmstatus.equalsIgnoreCase("Y")) return redirectWithError(redir, "PrgmScheduleAgenda.htm", "'GroupName' should not contain HTML Tags.!");
 				if(statusflag!=null && statusflag.equalsIgnoreCase("ROD")) return redirectWithError(redir, "RODScheduleAgenda.htm", "'GroupName' should not contain HTML Tags.!");
 				return redirectWithError(redir, "CommitteeScheduleAgenda.htm", "'GroupName' should not contain HTML Tags.!");
 			}
 			List<CommitteeScheduleAgendaDto> scheduleagendadtos=new ArrayList<CommitteeScheduleAgendaDto>();
-			for(int i=0;i<AgendaItem.length;i++) 
+			for(int i=0;i<AgendaItem.length;i++)
 			{
 				CommitteeScheduleAgendaDto scheduleagendadto = new CommitteeScheduleAgendaDto();
 				scheduleagendadto.setScheduleId(req.getParameter("scheduleid"));
@@ -2087,7 +2093,7 @@ public class CommitteeController {
 				//				scheduleagendadto.setAttachmentName(FileAttach[i].getOriginalFilename());
 				scheduleagendadto.setDocLinkIds(docids.get(i));
 				scheduleagendadtos.add(scheduleagendadto);
-				scheduleagendadto.setGroupName(groupNames[i]);
+				if(groupNames!=null && groupNames[i]!=null) scheduleagendadto.setGroupName(groupNames[i]);
 			}
 
 			long count=service.CommitteeAgendaSubmit(scheduleagendadtos);
@@ -2143,7 +2149,7 @@ public class CommitteeController {
 				if(statusflag!=null && statusflag.equalsIgnoreCase("ROD")) return redirectWithError(redir, "RODScheduleAgenda.htm", "'Remarks' should not contain HTML Tags.!");
 				return redirectWithError(redir, "CommitteeScheduleAgenda.htm", "'Remarks' should not contain HTML Tags.!");
 			}
-			if (InputValidator.isContainsHTMLTags(groupName)) {
+			if (groupName!=null && InputValidator.isContainsHTMLTags(groupName)) {
 				redir.addAttribute("scheduleid",req.getParameter("scheduleid"));
 				if(prgmflag1!=null && prgmflag1.equalsIgnoreCase("Y")) return redirectWithError(redir, "PrgmScheduleAgenda.htm", "'GroupName' should not contain HTML Tags.!");
 				if(statusflag!=null && statusflag.equalsIgnoreCase("ROD")) return redirectWithError(redir, "RODScheduleAgenda.htm", "'GroupName' should not contain HTML Tags.!");
@@ -2165,7 +2171,7 @@ public class CommitteeController {
 			scheduleagendadto.setRemarks(remarks);
 			scheduleagendadto.setModifiedBy(UserId);
 			scheduleagendadto.setDocLinkIds( req.getParameterValues("attachid"));
-			scheduleagendadto.setGroupName(groupName);
+			if(groupName!=null) scheduleagendadto.setGroupName(groupName);
 			//			scheduleagendadto.setAgendaAttachment(FileAttach.getBytes());
 			//			scheduleagendadto.setAttachmentName(FileAttach.getOriginalFilename());
 			//			scheduleagendadto.setDocId(docid);
@@ -2507,7 +2513,7 @@ public class CommitteeController {
 
 		String UserId=(String)ses.getAttribute("Username");
 		String labcode = (String)ses.getAttribute("labcode");
-//		String labcode = "ADE";
+//		String labcode = "PGAD";
 		logger.info(new Date() +"Inside CommitteeMinutesSubmit.htm "+UserId);
 		try
 		{
@@ -2521,16 +2527,16 @@ public class CommitteeController {
 			String subsystemid = req.getParameter("subsystemidedit");
 			
 
-			if ((minutesid.equalsIgnoreCase("3") || minutesid.equalsIgnoreCase("5")) 
-					&& InputValidator.isContainsHTMLTags(req.getParameter("NoteText"))) {
-				redir.addAttribute("committeescheduleid", req.getParameter("scheduleid"));
-				redir.addAttribute("specname", req.getParameter("specname"));
-				redir.addAttribute("membertype",req.getParameter("membertype"));
-				redir.addAttribute("formname", req.getParameter("formname"));
-				redir.addAttribute("unit1",req.getParameter("unit1"));
-			    if(status!=null && status.equalsIgnoreCase("ROD"))	return  redirectWithError(redir,"RODScheduleMinutes.htm","HTML elements should not be entered !");
-			    return  redirectWithError(redir,"CommitteeScheduleMinutes.htm","HTML elements should not be entered !");
-			}
+//			if (!labcode.equalsIgnoreCase("PGAD") && (minutesid.equalsIgnoreCase("3") ||  minutesid.equalsIgnoreCase("5")) 
+//					&& InputValidator.isContainsHTMLTags(req.getParameter("NoteText"))) {
+//				redir.addAttribute("committeescheduleid", req.getParameter("scheduleid"));
+//				redir.addAttribute("specname", req.getParameter("specname"));
+//				redir.addAttribute("membertype",req.getParameter("membertype"));
+//				redir.addAttribute("formname", req.getParameter("formname"));
+//				redir.addAttribute("unit1",req.getParameter("unit1"));
+//			    if(status!=null && status.equalsIgnoreCase("ROD"))	return  redirectWithError(redir,"RODScheduleMinutes.htm","HTML elements should not be entered !");
+//			    return  redirectWithError(redir,"CommitteeScheduleMinutes.htm","HTML elements should not be entered !");
+//			}
 
 			if(InputValidator.isContainsHTMLTags(Remarks)) {
 				redir.addAttribute("committeescheduleid", req.getParameter("scheduleid"));
@@ -2576,12 +2582,13 @@ public class CommitteeController {
 
 			String SpecName = req.getParameter("specname");
 			String CommitteeName= req.getParameter("committeename");
-
+			String unit1 = req.getParameter("unit1");
+			if(minutesid.equalsIgnoreCase("3") && unit1.length()<6) unit1+=req.getParameter("scheduleagendaid");
 
 			if (count > 0) {
-				redir.addAttribute("result", CommitteeName + " Schedule Minutes (" + SpecName + ") Added Successfully");
-				redir.addAttribute("unit1",req.getParameter("unit1"));
-				redir.addAttribute("unit1",req.getParameter("unit2"));
+				redir.addFlashAttribute("result", CommitteeName + " Schedule Minutes (" + SpecName + ") Added Successfully");
+				redir.addFlashAttribute("unit1",unit1);
+				redir.addFlashAttribute("unit2",req.getParameter("unit2"));
 
 
 
@@ -2675,7 +2682,7 @@ public class CommitteeController {
 		{
 			String UserId=(String)ses.getAttribute("Username");
 			String labcode = (String)ses.getAttribute("labcode");
-//			String labcode = "ADE";
+//			String labcode = "PGAD";
 			logger.info(new Date() +"Inside CommitteeMinutesEditSubmit.htm "+UserId);
 			try
 			{
@@ -2683,16 +2690,16 @@ public class CommitteeController {
 				String subsystemid = req.getParameter("subsystemidedit");
 				String status = req.getParameter("redirpageflag");
 				String minutesid = req.getParameter("minutesidedits");
-				if ((minutesid.equalsIgnoreCase("3") || minutesid.equalsIgnoreCase("5")) 
-						&& InputValidator.isContainsHTMLTags(req.getParameter("NoteText"))) {
-					redir.addAttribute("committeescheduleid", req.getParameter("scheduleid"));
-					redir.addAttribute("specname", req.getParameter("specname"));
-					redir.addAttribute("membertype",req.getParameter("membertype"));
-					redir.addAttribute("formname", req.getParameter("formname"));
-					redir.addAttribute("unit1",req.getParameter("unit1"));				
-					if(status!=null && status.equalsIgnoreCase("ROD"))	return  redirectWithError(redir,"RODScheduleMinutes.htm","HTML elements should not be entered !");
-					return  redirectWithError(redir,"CommitteeScheduleMinutes.htm","HTML elements should not be entered !");
-				}
+//				if (!labcode.equalsIgnoreCase("PGAD") &&  (minutesid.equalsIgnoreCase("3") || minutesid.equalsIgnoreCase("5")) 
+//						&& InputValidator.isContainsHTMLTags(req.getParameter("NoteText"))) {
+//					redir.addAttribute("committeescheduleid", req.getParameter("scheduleid"));
+//					redir.addAttribute("specname", req.getParameter("specname"));
+//					redir.addAttribute("membertype",req.getParameter("membertype"));
+//					redir.addAttribute("formname", req.getParameter("formname"));
+//					redir.addAttribute("unit1",req.getParameter("unit1"));				
+//					if(status!=null && status.equalsIgnoreCase("ROD"))	return  redirectWithError(redir,"RODScheduleMinutes.htm","HTML elements should not be entered !");
+//					return  redirectWithError(redir,"CommitteeScheduleMinutes.htm","HTML elements should not be entered !");
+//				}
 				String ActionName=req.getParameter("NoteText");
 				String Remarks=req.getParameter("remarks");
 				
@@ -6115,7 +6122,7 @@ private boolean isValidFileType(MultipartFile file) {
 
 	@RequestMapping(value = "ExternalEmployeeListFormation.htm", method = RequestMethod.GET)
 	public @ResponseBody String ExternalEmployeeListFormation(HttpServletRequest req,HttpSession ses) throws Exception {
-
+		try {
 		String UserId = (String)ses.getAttribute("Username");
 		logger.info(new Date() +" Inside ExternalEmployeeListFormation.htm"+ UserId);
 
@@ -6125,6 +6132,10 @@ private boolean isValidFileType(MultipartFile file) {
 
 		Gson json = new Gson();
 		return json.toJson(ExternalEmployeeList);	
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@RequestMapping(value = "ChairpersonEmployeeListFormation.htm", method = RequestMethod.GET)
@@ -7426,8 +7437,6 @@ private boolean isValidFileType(MultipartFile file) {
 				CommitteeMeetingDPFMFrozen dpfm = service.getFrozenDPFMMinutes(committeescheduleid);
 				//CommitteeProjectBriefingFrozen CPF=service.getFrozenCommitteeMOM(committeescheduleid);
 
-
-
 				res.setContentType("application/pdf"); res.setHeader("Content-Disposition",
 						"inline; name="+ dpfm.getDPFMFileName()+".pdf; filename"+dpfm.getDPFMFileName()); 
 				Path filepath = Paths.get(uploadpath, LabCode, "DPFM", dpfm.getDPFMFileName());
@@ -7498,60 +7507,89 @@ private boolean isValidFileType(MultipartFile file) {
 				req.setAttribute("levelid", LevelId);
 				req.setAttribute("labInfo", service.LabDetailes(LabCode));
 				/*---------------------------------------------------------------------------------------------------------------*/
-				//				if(Long.parseLong(projectid) >0 && committeescheduleeditdata[22].toString().equals("N") ) {
 
-				final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+(projectdetails!=null?projectdetails[4].toString():"")+"&rupess="+10000000;
-				HttpHeaders headers = new HttpHeaders();
-				headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-				headers.set("labcode", LabCode);
-				String jsonResult=null;
+				
+//				if(Long.parseLong(projectid) >0 && committeescheduleeditdata[22].toString().equals("N") ) {
+
+//				final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+(projectdetails!=null?projectdetails[4].toString():"")+"&rupess="+10000000;
+//				HttpHeaders headers = new HttpHeaders();
+//				headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+//				headers.set("labcode", LabCode);
+//				String jsonResult=null;
+//				try {
+//					HttpEntity<String> entity = new HttpEntity<String>(headers);
+//					ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
+//					jsonResult=response.getBody();						
+//				}catch(Exception e) {
+//					req.setAttribute("errorMsg", "errorMsg");
+//				}
+//				ObjectMapper mapper = new ObjectMapper();
+//				mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//				mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+//				List<ProjectFinancialDetails> projectDetails=null;
+//				if(jsonResult!=null) {
+//					try {
+//						projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
+//						req.setAttribute("financialDetails",projectDetails);
+//					} catch (JsonProcessingException e) {
+//						e.printStackTrace();
+//					}
+//				}
+
+				
 				try {
-					HttpEntity<String> entity = new HttpEntity<String>(headers);
-					ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
-					jsonResult=response.getBody();						
-				}catch(Exception e) {
-					req.setAttribute("errorMsg", "errorMsg");
+				req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(projectdetails!=null?projectdetails[4].toString():"", "10000000"));
+				}catch (Exception e) {
+				e.printStackTrace();
+				req.setAttribute("financialDetails",new ArrayList<>());
 				}
-				ObjectMapper mapper = new ObjectMapper();
-				mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-				mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-				List<ProjectFinancialDetails> projectDetails=null;
-				if(jsonResult!=null) {
-					try {
-						projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
-						req.setAttribute("financialDetails",projectDetails);
-					} catch (JsonProcessingException e) {
-						e.printStackTrace();
-					}
-				}
-
-				final String localUri2=uri+"/pfms_serv/getTotalDemand";
-
-				String jsonResult2=null;
+				
+//				final String localUri2=uri+"/pfms_serv/getTotalDemand";
+//
+//				String jsonResult2=null;
+//				try {
+//					HttpEntity<String> entity = new HttpEntity<String>(headers);
+//					ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
+//					jsonResult2=response.getBody();						
+//				}catch(Exception e) {
+//					req.setAttribute("errorMsg", "errorMsg");
+//				}
+//				ObjectMapper mapper2 = new ObjectMapper();
+//				mapper2.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//				mapper2.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+//				List<TotalDemand> totaldemand=null;
+//				if(jsonResult2!=null) {
+//					try {
+//						totaldemand = mapper2.readValue(jsonResult2, new TypeReference<List<TotalDemand>>(){});
+//						req.setAttribute("TotalProcurementDetails",totaldemand);
+//					} catch (JsonProcessingException e) {
+//						e.printStackTrace();
+//					}
+//				}
+				
 				try {
-					HttpEntity<String> entity = new HttpEntity<String>(headers);
-					ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
-					jsonResult2=response.getBody();						
-				}catch(Exception e) {
-					req.setAttribute("errorMsg", "errorMsg");
+				req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand());
 				}
-				ObjectMapper mapper2 = new ObjectMapper();
-				mapper2.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-				mapper2.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-				List<TotalDemand> totaldemand=null;
-				if(jsonResult2!=null) {
-					try {
-						totaldemand = mapper2.readValue(jsonResult2, new TypeReference<List<TotalDemand>>(){});
-						req.setAttribute("TotalProcurementDetails",totaldemand);
-					} catch (JsonProcessingException e) {
-						e.printStackTrace();
-					}
+				catch (Exception e) {
+					e.printStackTrace();
+					req.setAttribute("TotalProcurementDetails",new ArrayList<TotalDemand>());
 				}
-
 				List<Object[]> procurementStatusList=(List<Object[]>)service.ProcurementStatusList(projectid);
 				List<Object[]> procurementOnDemand=null;
 				List<Object[]> procurementOnSanction=null;
-
+				
+			    List<List<Object[]>> overallfinance = new ArrayList<>();
+			    List<String> Pmainlist = printservice.ProjectsubProjectIdList(projectid);
+			    List<Object[]> ProjectDetails = new ArrayList<>();
+			    
+		    	for(String proId: Pmainlist) {
+		    		List<Object[]> projDetails = printservice.ProjectDetails(proId);
+		    		ProjectDetails.add(!projDetails.isEmpty() ? projDetails.get(0) : new Object[0]);
+		    		overallfinance.add(printservice.getrOverallFinance(proId));
+		    	}
+		    	req.setAttribute("projectidlist", Pmainlist);
+		    	req.setAttribute("overallfinance", overallfinance);
+		    	req.setAttribute("ProjectDetails", ProjectDetails);
 
 				if(procurementStatusList!=null){
 					Map<Object, List<Object[]>> map = procurementStatusList.stream().collect(Collectors.groupingBy(c -> c[9])); 
@@ -7866,53 +7904,66 @@ private boolean isValidFileType(MultipartFile file) {
 				/*---------------------------------------------------------------------------------------------------------------*/
 				//				if(Long.parseLong(projectid) >0 && committeescheduleeditdata[22].toString().equals("N") ) {
 
-				final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+projectdetails[4].toString()+"&rupess="+10000000;
-				HttpHeaders headers = new HttpHeaders();
-				headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-				headers.set("labcode", LabCode);
-				String jsonResult=null;
-				try {
-					HttpEntity<String> entity = new HttpEntity<String>(headers);
-					ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
-					jsonResult=response.getBody();						
-				}catch(Exception e) {
-					req.setAttribute("errorMsg", "errorMsg");
-				}
-				ObjectMapper mapper = new ObjectMapper();
-				mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-				mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-				List<ProjectFinancialDetails> projectDetails=null;
-				if(jsonResult!=null) {
-					try {
-						projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
-						req.setAttribute("financialDetails",projectDetails);
-					} catch (JsonProcessingException e) {
-						e.printStackTrace();
-					}
-				}
+//				final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+projectdetails[4].toString()+"&rupess="+10000000;
+//				HttpHeaders headers = new HttpHeaders();
+//				headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+//				headers.set("labcode", LabCode);
+//				String jsonResult=null;
+//				try {
+//					HttpEntity<String> entity = new HttpEntity<String>(headers);
+//					ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
+//					jsonResult=response.getBody();						
+//				}catch(Exception e) {
+//					req.setAttribute("errorMsg", "errorMsg");
+//				}
+//				ObjectMapper mapper = new ObjectMapper();
+//				mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//				mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+//				List<ProjectFinancialDetails> projectDetails=null;
+//				if(jsonResult!=null) {
+//					try {
+//						projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
+//						req.setAttribute("financialDetails",projectDetails);
+//					} catch (JsonProcessingException e) {
+//						e.printStackTrace();
+//					}
+//				}
 
-				final String localUri2=uri+"/pfms_serv/getTotalDemand";
-
-				String jsonResult2=null;
 				try {
-					HttpEntity<String> entity = new HttpEntity<String>(headers);
-					ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
-					jsonResult2=response.getBody();						
-				}catch(Exception e) {
-					req.setAttribute("errorMsg", "errorMsg");
-				}
-				ObjectMapper mapper2 = new ObjectMapper();
-				mapper2.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-				mapper2.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-				List<TotalDemand> totaldemand=null;
-				if(jsonResult2!=null) {
-					try {
-						totaldemand = mapper2.readValue(jsonResult2, new TypeReference<List<TotalDemand>>(){});
-						req.setAttribute("TotalProcurementDetails",totaldemand);
-					} catch (JsonProcessingException e) {
-						e.printStackTrace();
+					req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(projectdetails!=null?projectdetails[4].toString():"", "10000000"));
+					}catch (Exception e) {
+					e.printStackTrace();
+					req.setAttribute("financialDetails",new ArrayList<>());
 					}
-				}
+//				final String localUri2=uri+"/pfms_serv/getTotalDemand";
+//
+//				String jsonResult2=null;
+//				try {
+//					HttpEntity<String> entity = new HttpEntity<String>(headers);
+//					ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
+//					jsonResult2=response.getBody();						
+//				}catch(Exception e) {
+//					req.setAttribute("errorMsg", "errorMsg");
+//				}
+//				ObjectMapper mapper2 = new ObjectMapper();
+//				mapper2.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//				mapper2.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+//				List<TotalDemand> totaldemand=null;
+//				if(jsonResult2!=null) {
+//					try {
+//						totaldemand = mapper2.readValue(jsonResult2, new TypeReference<List<TotalDemand>>(){});
+//						req.setAttribute("TotalProcurementDetails",totaldemand);
+//					} catch (JsonProcessingException e) {
+//						e.printStackTrace();
+//					}
+//				}
+				try {
+					req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand());
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+						req.setAttribute("TotalProcurementDetails",new ArrayList<TotalDemand>());
+					}
 
 				List<Object[]> procurementStatusList=(List<Object[]>)service.ProcurementStatusList(projectid);
 				List<Object[]> procurementOnDemand=null;
@@ -8548,53 +8599,67 @@ private boolean isValidFileType(MultipartFile file) {
 			/*---------------------------------------------------------------------------------------------------------------*/
 			//				if(Long.parseLong(projectid) >0 && committeescheduleeditdata[22].toString().equals("N") ) {
 
-			final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+projectdetails[4].toString()+"&rupess="+10000000;
-			HttpHeaders headers = new HttpHeaders();
-			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-			headers.set("labcode", LabCode);
-			String jsonResult=null;
-			try {
-				HttpEntity<String> entity = new HttpEntity<String>(headers);
-				ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
-				jsonResult=response.getBody();						
-			}catch(Exception e) {
-				req.setAttribute("errorMsg", "errorMsg");
-			}
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-			mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-			List<ProjectFinancialDetails> projectDetails=null;
-			if(jsonResult!=null) {
-				try {
-					projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
-					req.setAttribute("financialDetails",projectDetails);
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
-			}
+//			final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+projectdetails[4].toString()+"&rupess="+10000000;
+//			HttpHeaders headers = new HttpHeaders();
+//			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+//			headers.set("labcode", LabCode);
+//			String jsonResult=null;
+//			try {
+//				HttpEntity<String> entity = new HttpEntity<String>(headers);
+//				ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
+//				jsonResult=response.getBody();						
+//			}catch(Exception e) {
+//				req.setAttribute("errorMsg", "errorMsg");
+//			}
+//			ObjectMapper mapper = new ObjectMapper();
+//			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//			mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+//			List<ProjectFinancialDetails> projectDetails=null;
+//			if(jsonResult!=null) {
+//				try {
+//					projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
+//					req.setAttribute("financialDetails",projectDetails);
+//				} catch (JsonProcessingException e) {
+//					e.printStackTrace();
+//				}
+//			}
 
-			final String localUri2=uri+"/pfms_serv/getTotalDemand";
-
-			String jsonResult2=null;
 			try {
-				HttpEntity<String> entity = new HttpEntity<String>(headers);
-				ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
-				jsonResult2=response.getBody();						
-			}catch(Exception e) {
-				req.setAttribute("errorMsg", "errorMsg");
-			}
-			ObjectMapper mapper2 = new ObjectMapper();
-			mapper2.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-			mapper2.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-			List<TotalDemand> totaldemand=null;
-			if(jsonResult2!=null) {
-				try {
-					totaldemand = mapper2.readValue(jsonResult2, new TypeReference<List<TotalDemand>>(){});
-					req.setAttribute("TotalProcurementDetails",totaldemand);
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
+				req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(projectdetails!=null?projectdetails[4].toString():"", "10000000"));
+				}catch (Exception e) {
+				e.printStackTrace();
+				req.setAttribute("financialDetails",new ArrayList<>());
 				}
-			}
+//			final String localUri2=uri+"/pfms_serv/getTotalDemand";
+//
+//			String jsonResult2=null;
+//			try {
+//				HttpEntity<String> entity = new HttpEntity<String>(headers);
+//				ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
+//				jsonResult2=response.getBody();						
+//			}catch(Exception e) {
+//				req.setAttribute("errorMsg", "errorMsg");
+//			}
+//			ObjectMapper mapper2 = new ObjectMapper();
+//			mapper2.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//			mapper2.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+//			List<TotalDemand> totaldemand=null;
+//			if(jsonResult2!=null) {
+//				try {
+//					totaldemand = mapper2.readValue(jsonResult2, new TypeReference<List<TotalDemand>>(){});
+//					req.setAttribute("TotalProcurementDetails",totaldemand);
+//				} catch (JsonProcessingException e) {
+//					e.printStackTrace();
+//				}
+//			}
+			
+			try {
+				req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand());
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					req.setAttribute("TotalProcurementDetails",new ArrayList<TotalDemand>());
+				}
 
 			List<Object[]> procurementStatusList=(List<Object[]>)service.ProcurementStatusList(projectid);
 			List<Object[]> procurementOnDemand=null;
@@ -9184,54 +9249,68 @@ private boolean isValidFileType(MultipartFile file) {
 				/*---------------------------------------------------------------------------------------------------------------*/
 				//				if(Long.parseLong(projectid) >0 && committeescheduleeditdata[22].toString().equals("N") ) {
 
-				final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+projectdetails[4].toString()+"&rupess="+10000000;
-				HttpHeaders headers = new HttpHeaders();
-				headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-				headers.set("labcode", LabCode);
-				String jsonResult=null;
+//				final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+projectdetails[4].toString()+"&rupess="+10000000;
+//				HttpHeaders headers = new HttpHeaders();
+//				headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+//				headers.set("labcode", LabCode);
+//				String jsonResult=null;
+//				try {
+//					HttpEntity<String> entity = new HttpEntity<String>(headers);
+//					ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
+//					jsonResult=response.getBody();						
+//				}catch(Exception e) {
+//					req.setAttribute("errorMsg", "errorMsg");
+//				}
+//				ObjectMapper mapper = new ObjectMapper();
+//				mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//				mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+//				List<ProjectFinancialDetails> projectDetails=null;
+//				if(jsonResult!=null) {
+//					try {
+//						projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
+//						req.setAttribute("financialDetails",projectDetails);
+//					} catch (JsonProcessingException e) {
+//						e.printStackTrace();
+//					}
+//				}
 				try {
-					HttpEntity<String> entity = new HttpEntity<String>(headers);
-					ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
-					jsonResult=response.getBody();						
-				}catch(Exception e) {
-					req.setAttribute("errorMsg", "errorMsg");
-				}
-				ObjectMapper mapper = new ObjectMapper();
-				mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-				mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-				List<ProjectFinancialDetails> projectDetails=null;
-				if(jsonResult!=null) {
-					try {
-						projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
-						req.setAttribute("financialDetails",projectDetails);
-					} catch (JsonProcessingException e) {
-						e.printStackTrace();
+					req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(projectdetails!=null?projectdetails[4].toString():"", "10000000"));
+					}catch (Exception e) {
+					e.printStackTrace();
+					req.setAttribute("financialDetails",new ArrayList<>());
 					}
-				}
 
-				final String localUri2=uri+"/pfms_serv/getTotalDemand";
+//				final String localUri2=uri+"/pfms_serv/getTotalDemand";
+//
+//				String jsonResult2=null;
+//				try {
+//					HttpEntity<String> entity = new HttpEntity<String>(headers);
+//					ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
+//					jsonResult2=response.getBody();						
+//				}catch(Exception e) {
+//					req.setAttribute("errorMsg", "errorMsg");
+//				}
+//				ObjectMapper mapper2 = new ObjectMapper();
+//				mapper2.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//				mapper2.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+//				List<TotalDemand> totaldemand=null;
+//				if(jsonResult2!=null) {
+//					try {
+//						totaldemand = mapper2.readValue(jsonResult2, new TypeReference<List<TotalDemand>>(){});
+//						req.setAttribute("TotalProcurementDetails",totaldemand);
+//					} catch (JsonProcessingException e) {
+//						e.printStackTrace();
+//					}
+//				}
 
-				String jsonResult2=null;
+				
 				try {
-					HttpEntity<String> entity = new HttpEntity<String>(headers);
-					ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
-					jsonResult2=response.getBody();						
-				}catch(Exception e) {
-					req.setAttribute("errorMsg", "errorMsg");
-				}
-				ObjectMapper mapper2 = new ObjectMapper();
-				mapper2.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-				mapper2.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-				List<TotalDemand> totaldemand=null;
-				if(jsonResult2!=null) {
-					try {
-						totaldemand = mapper2.readValue(jsonResult2, new TypeReference<List<TotalDemand>>(){});
-						req.setAttribute("TotalProcurementDetails",totaldemand);
-					} catch (JsonProcessingException e) {
-						e.printStackTrace();
+					req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand());
 					}
-				}
-
+					catch (Exception e) {
+						e.printStackTrace();
+						req.setAttribute("TotalProcurementDetails",new ArrayList<TotalDemand>());
+					}
 				List<Object[]> procurementStatusList=(List<Object[]>)service.ProcurementStatusList(projectid);
 				List<Object[]> procurementOnDemand=null;
 				List<Object[]> procurementOnSanction=null;
@@ -9676,53 +9755,66 @@ private boolean isValidFileType(MultipartFile file) {
 			/*---------------------------------------------------------------------------------------------------------------*/
 			//					if(Long.parseLong(projectid) >0 && committeescheduleeditdata[22].toString().equals("N") ) {
 
-			final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+projectdetails[4].toString()+"&rupess="+10000000;
-			HttpHeaders headers = new HttpHeaders();
-			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-			headers.set("labcode", LabCode);
-			String jsonResult=null;
+//			final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+projectdetails[4].toString()+"&rupess="+10000000;
+//			HttpHeaders headers = new HttpHeaders();
+//			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+//			headers.set("labcode", LabCode);
+//			String jsonResult=null;
+//			try {
+//				HttpEntity<String> entity = new HttpEntity<String>(headers);
+//				ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
+//				jsonResult=response.getBody();						
+//			}catch(Exception e) {
+//				req.setAttribute("errorMsg", "errorMsg");
+//			}
+//			ObjectMapper mapper = new ObjectMapper();
+//			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//			mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+//			List<ProjectFinancialDetails> projectDetails=null;
+//			if(jsonResult!=null) {
+//				try {
+//					projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
+//					req.setAttribute("financialDetails",projectDetails);
+//				} catch (JsonProcessingException e) {
+//					e.printStackTrace();
+//				}
+//			}
 			try {
-				HttpEntity<String> entity = new HttpEntity<String>(headers);
-				ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
-				jsonResult=response.getBody();						
-			}catch(Exception e) {
-				req.setAttribute("errorMsg", "errorMsg");
-			}
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-			mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-			List<ProjectFinancialDetails> projectDetails=null;
-			if(jsonResult!=null) {
-				try {
-					projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
-					req.setAttribute("financialDetails",projectDetails);
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
+				req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(projectdetails!=null?projectdetails[4].toString():"", "10000000"));
+				}catch (Exception e) {
+				e.printStackTrace();
+				req.setAttribute("financialDetails",new ArrayList<>());
 				}
-			}
-
-			final String localUri2=uri+"/pfms_serv/getTotalDemand";
-
-			String jsonResult2=null;
+//			final String localUri2=uri+"/pfms_serv/getTotalDemand";
+//
+//			String jsonResult2=null;
+//			try {
+//				HttpEntity<String> entity = new HttpEntity<String>(headers);
+//				ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
+//				jsonResult2=response.getBody();						
+//			}catch(Exception e) {
+//				req.setAttribute("errorMsg", "errorMsg");
+//			}
+//			ObjectMapper mapper2 = new ObjectMapper();
+//			mapper2.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//			mapper2.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+//			List<TotalDemand> totaldemand=null;
+//			if(jsonResult2!=null) {
+//				try {
+//					totaldemand = mapper2.readValue(jsonResult2, new TypeReference<List<TotalDemand>>(){});
+//					req.setAttribute("TotalProcurementDetails",totaldemand);
+//				} catch (JsonProcessingException e) {
+//					e.printStackTrace();
+//				}
+//			}
+			
 			try {
-				HttpEntity<String> entity = new HttpEntity<String>(headers);
-				ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
-				jsonResult2=response.getBody();						
-			}catch(Exception e) {
-				req.setAttribute("errorMsg", "errorMsg");
-			}
-			ObjectMapper mapper2 = new ObjectMapper();
-			mapper2.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-			mapper2.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-			List<TotalDemand> totaldemand=null;
-			if(jsonResult2!=null) {
-				try {
-					totaldemand = mapper2.readValue(jsonResult2, new TypeReference<List<TotalDemand>>(){});
-					req.setAttribute("TotalProcurementDetails",totaldemand);
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
+				req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand());
 				}
-			}
+				catch (Exception e) {
+					e.printStackTrace();
+					req.setAttribute("TotalProcurementDetails",new ArrayList<TotalDemand>());
+				}
 
 			List<Object[]> procurementStatusList=(List<Object[]>)service.ProcurementStatusList(projectid);
 			List<Object[]> procurementOnDemand=null;
@@ -9915,54 +10007,68 @@ private boolean isValidFileType(MultipartFile file) {
 				/*---------------------------------------------------------------------------------------------------------------*/
 				//				if(Long.parseLong(projectid) >0 && committeescheduleeditdata[22].toString().equals("N") ) {
 
-				final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+projectdetails[4].toString()+"&rupess="+10000000;
-				HttpHeaders headers = new HttpHeaders();
-				headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-				headers.set("labcode", LabCode);
-				String jsonResult=null;
+//				final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+projectdetails[4].toString()+"&rupess="+10000000;
+//				HttpHeaders headers = new HttpHeaders();
+//				headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+//				headers.set("labcode", LabCode);
+//				String jsonResult=null;
+//				try {
+//					HttpEntity<String> entity = new HttpEntity<String>(headers);
+//					ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
+//					jsonResult=response.getBody();						
+//				}catch(Exception e) {
+//					req.setAttribute("errorMsg", "errorMsg");
+//				}
+//				ObjectMapper mapper = new ObjectMapper();
+//				mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//				mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+//				List<ProjectFinancialDetails> projectDetails=null;
+//				if(jsonResult!=null) {
+//					try {
+//						projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
+//						req.setAttribute("financialDetails",projectDetails);
+//					} catch (JsonProcessingException e) {
+//						e.printStackTrace();
+//					}
+//				}
+				
 				try {
-					HttpEntity<String> entity = new HttpEntity<String>(headers);
-					ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
-					jsonResult=response.getBody();						
-				}catch(Exception e) {
-					req.setAttribute("errorMsg", "errorMsg");
-				}
-				ObjectMapper mapper = new ObjectMapper();
-				mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-				mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-				List<ProjectFinancialDetails> projectDetails=null;
-				if(jsonResult!=null) {
-					try {
-						projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
-						req.setAttribute("financialDetails",projectDetails);
-					} catch (JsonProcessingException e) {
-						e.printStackTrace();
+					req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(projectdetails!=null?projectdetails[4].toString():"", "10000000"));
+					}catch (Exception e) {
+					e.printStackTrace();
+					req.setAttribute("financialDetails",new ArrayList<>());
 					}
-				}
 
-				final String localUri2=uri+"/pfms_serv/getTotalDemand";
+//				final String localUri2=uri+"/pfms_serv/getTotalDemand";
+//
+//				String jsonResult2=null;
+//				try {
+//					HttpEntity<String> entity = new HttpEntity<String>(headers);
+//					ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
+//					jsonResult2=response.getBody();						
+//				}catch(Exception e) {
+//					req.setAttribute("errorMsg", "errorMsg");
+//				}
+//				ObjectMapper mapper2 = new ObjectMapper();
+//				mapper2.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//				mapper2.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+//				List<TotalDemand> totaldemand=null;
+//				if(jsonResult2!=null) {
+//					try {
+//						totaldemand = mapper2.readValue(jsonResult2, new TypeReference<List<TotalDemand>>(){});
+//						req.setAttribute("TotalProcurementDetails",totaldemand);
+//					} catch (JsonProcessingException e) {
+//						e.printStackTrace();
+//					}
+//				}
 
-				String jsonResult2=null;
 				try {
-					HttpEntity<String> entity = new HttpEntity<String>(headers);
-					ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
-					jsonResult2=response.getBody();						
-				}catch(Exception e) {
-					req.setAttribute("errorMsg", "errorMsg");
-				}
-				ObjectMapper mapper2 = new ObjectMapper();
-				mapper2.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-				mapper2.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-				List<TotalDemand> totaldemand=null;
-				if(jsonResult2!=null) {
-					try {
-						totaldemand = mapper2.readValue(jsonResult2, new TypeReference<List<TotalDemand>>(){});
-						req.setAttribute("TotalProcurementDetails",totaldemand);
-					} catch (JsonProcessingException e) {
-						e.printStackTrace();
+					req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand());
 					}
-				}
-
+					catch (Exception e) {
+						e.printStackTrace();
+						req.setAttribute("TotalProcurementDetails",new ArrayList<TotalDemand>());
+					}
 				List<Object[]> procurementStatusList=(List<Object[]>)service.ProcurementStatusList(projectid);
 				List<Object[]> procurementOnDemand=null;
 				List<Object[]> procurementOnSanction=null;
@@ -11216,9 +11322,7 @@ private boolean isValidFileType(MultipartFile file) {
 
 			req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutesforAction(committeescheduleid) );
 			req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
-			//req.setAttribute("CommitteeAgendaList", service.CommitteeAgendaList(committeescheduleid));
 			req.setAttribute("committeeminutes",service.CommitteeMinutesSpecdetails());
-			//req.setAttribute("committeeminutessub",service.CommitteeMinutesSub());
 			List<Object[]> invitedlists= service.CommitteeAtendance(committeescheduleid);
 			
 			Map<Object,List<Object[]>> invitedlist = invitedlists.stream().filter(row->row[4].toString().equalsIgnoreCase("P")).collect(Collectors.groupingBy(row -> row[3]));
@@ -11408,9 +11512,7 @@ private boolean isValidFileType(MultipartFile file) {
 			req.setAttribute("userview",UserView);
 			req.setAttribute("committeeminutesspeclist",service.committeeScheduleMinutesforActionForMomADE(committeescheduleid));
 			req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
-			//req.setAttribute("CommitteeAgendaList", service.CommitteeAgendaList(committeescheduleid));
 			req.setAttribute("committeeminutes",service.CommitteeMinutesSpecdetails());
-			//req.setAttribute("committeeminutessub",service.CommitteeMinutesSub());
 			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));
 			req.setAttribute("projectid", projectid);				
 			req.setAttribute("actionlist", service.MinutesViewAllActionList(committeescheduleid));
@@ -11560,5 +11662,205 @@ private boolean isValidFileType(MultipartFile file) {
 			logger.error(new Date() + " Inside subsystemAdd.htm " + UserId, e);
 			return json.toJson(sub1);
 		}
+	}
+	
+// **************************************** Naveen R 1/12/2025 *******************************************************
+	
+	@RequestMapping(value = "SendProgrammeMinutesOfMeeting.htm", method = {RequestMethod.GET,RequestMethod.POST})
+	public @ResponseBody String sendProgrammeMinutesOfMeeting(HttpServletRequest req,HttpServletResponse res, HttpSession ses, RedirectAttributes redir) throws Exception {
+		String UserId=(String)ses.getAttribute("Username");
+		String EmpNo=(String)ses.getAttribute("EmpNo");
+		String EmpName=(String)ses.getAttribute("EmpName");
+		String LabCode =(String) ses.getAttribute("labcode");
+		logger.info(new Date() +"Inside CommitteeMinutesNewDownload.htm "+UserId);
+		int mailcount=0;
+		try {
+			String committeescheduleid = req.getParameter("committeescheduleid");	
+
+			Object[] committeescheduleeditdata = service.CommitteeScheduleEditDataforMom(committeescheduleid);
+			String projectid= committeescheduleeditdata[9].toString();
+			if(projectid!=null && Integer.parseInt(projectid)>0)
+			{
+				req.setAttribute("projectdetails", service.projectdetails(projectid));
+			}
+			String divisionid= committeescheduleeditdata[16].toString();
+			if(divisionid!=null && Integer.parseInt(divisionid)>0)
+			{
+				req.setAttribute("divisiondetails", service.DivisionData(divisionid));
+			}
+			String initiationid= committeescheduleeditdata[17].toString();
+			if(initiationid!=null && Integer.parseInt(initiationid)>0)
+			{
+				req.setAttribute("initiationdetails", service.Initiationdetails(initiationid));
+			}
+
+			List<Object[]> actionlist= service.MinutesViewAllActionList(committeescheduleid);
+			HashMap< String, ArrayList<Object[]>> actionsdata=new LinkedHashMap<String, ArrayList<Object[]>>();
+
+			for(Object obj[] : actionlist) {
+
+				ArrayList<Object[]> values=new ArrayList<Object[]>(); 
+				for(Object obj1[] : actionlist ) {
+					if(obj1[0].equals(obj[0])) {
+						values.add(obj1);
+					}
+				}
+				if(!actionsdata.containsKey(obj[0].toString())) {
+					actionsdata.put(obj[0].toString(), values);
+				}
+			} 
+
+			req.setAttribute("actionsdata",actionsdata );
+
+			req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutesforAction(committeescheduleid) );
+			req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
+			req.setAttribute("committeeminutes",service.CommitteeMinutesSpecdetails());
+			List<Object[]> invitedlists= service.CommitteeAtendance(committeescheduleid);
+			
+			Map<Object,List<Object[]>> invitedlist = invitedlists.stream().filter(row->row[4].toString().equalsIgnoreCase("P")).collect(Collectors.groupingBy(row -> row[3]));
+			List<Map.Entry<Object, List<Object[]>>> entries = new ArrayList<>(invitedlist.entrySet());
+			
+			req.setAttribute("committeeinvitedlist", invitedlists);
+			req.setAttribute("projectid", projectid);
+			req.setAttribute("actionlist", service.MinutesViewAllActionList(committeescheduleid));
+			req.setAttribute("labdetails", service.LabDetails(committeescheduleeditdata[24].toString()));
+			req.setAttribute("isprint", "Y");
+			req.setAttribute("lablogo", LogoUtil.getLabLogoAsBase64String(committeescheduleeditdata[24].toString()));
+			req.setAttribute("meetingcount",service.MeetingNo(committeescheduleeditdata));
+			req.setAttribute("labInfo", service.LabDetailes(LabCode));
+			req.setAttribute("ActionPlanSixMonths", service.ActionPlanSixMonths(projectid));
+			String filename=committeescheduleeditdata[11].toString().replace("/", "-");
+
+			req.setAttribute("flagforView", "M");
+			String path=req.getServletContext().getRealPath("/view/temp");
+			req.setAttribute("path",path);
+
+			req.setAttribute("ccmFlag", req.getParameter("ccmFlag"));
+
+			CharArrayWriterResponse customResponse = new CharArrayWriterResponse(res);
+			req.getRequestDispatcher("/view/committee/MoMTabularMinutes.jsp").forward(req, customResponse);
+			String html = customResponse.getOutput();
+
+			HtmlConverter.convertToPdf(html,new FileOutputStream(path+File.separator+filename+".pdf"));
+			req.setAttribute("tableactionlist",  actionsdata);
+
+			PdfReader pdf1=new PdfReader(path+File.separator+filename+".pdf");
+
+			PdfDocument pdfDocument = new PdfDocument(pdf1);
+
+			pdfDocument.close();
+			pdf1.close();	       
+
+
+			String typeOfHost = "L";
+			MailConfigurationDto mailAuthentication=null;
+			try {
+				mailAuthentication = mailService.getMailConfigByTypeOfHost(typeOfHost);
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error("Exception in getting mail configuration for Programme Mom "+e.getMessage());
+				System.out.println(e.getMessage());
+			}	
+			
+			File pdfFile = new File(path + File.separator + filename + ".pdf"); 
+
+
+			List<String> ccEmails = new ArrayList<>();
+			String mainEmail = "";
+			ArrayList<String> membertypes = new ArrayList<>(Arrays.asList("CC","CS","PS","CI","I","P","CH"));
+			List<Object[]> committeeInvitedList = service.CommitteeAtendance(committeescheduleid);
+
+			for(Object[] obj : committeeInvitedList) {
+			    if(membertypes.contains(obj[3].toString()) && obj[4].toString().equalsIgnoreCase("P") && obj[8] != null) {
+			        ccEmails.add(obj[8].toString());
+			    }
+			    if(obj[3].toString().equalsIgnoreCase("CC")) {
+			        mainEmail = obj[8].toString();
+			    }
+			}
+			ccEmails.remove(mainEmail); 
+
+
+			final String username = mailAuthentication.getUsername().toString();
+			final String password = mailAuthentication.getPassword().toString(); 
+			
+			Properties props = new Properties();
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");     
+			props.put("mail.smtp.host", mailAuthentication.getHost());
+			props.put("mail.smtp.port", mailAuthentication.getPort());
+			props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+ 
+			
+			Session session = Session.getDefaultInstance(props,
+					new jakarta.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username,password);
+				}
+			});	
+
+			try {
+			    MimeMessage message = new MimeMessage(session);
+			    message.setFrom(new InternetAddress(username));
+//			    mainEmail="naveen.vedts@gmail.com";
+			    message.setRecipient(Message.RecipientType.TO, new InternetAddress(mainEmail));
+			    message.setSubject("MoM Attachment for " + committeescheduleeditdata[11].toString());
+
+
+			    for (String cc : ccEmails) {
+			        message.addRecipient(Message.RecipientType.CC, new InternetAddress(cc));
+			    }
+
+			    MimeBodyPart textPart = new MimeBodyPart();
+			    textPart.setContent("<div style='font-family:Arial; font-size:14px; color:#333;'>"
+				    		+"<p>Dear Sir/Madam,</p>"
+							+"<p>Please find attached the PMG Minutes of Meeting held on "+sdf3.format(committeescheduleeditdata[2])+". </p>"
+							+"<p><i>This is a system generated email. Please do not reply.</i></p>"+
+						"</div>","text/html; charset=UTF-8");
+
+
+			    MimeBodyPart attachmentPart = new MimeBodyPart();
+			    attachmentPart.attachFile(pdfFile);
+
+
+			    MimeMultipart multipart = new MimeMultipart();
+			    multipart.addBodyPart(textPart);
+			    multipart.addBodyPart(attachmentPart);
+
+			    message.setContent(multipart);
+
+
+			    Transport.send(message);
+			    logger.info("Mail sent successfully to " + mainEmail);
+
+			} catch (Exception e) {
+			    logger.error("Error sending email: " + e.getMessage(), e);
+			    e.printStackTrace();
+				System.out.println(e.getMessage());
+			}
+
+
+			FileInputStream fis = new FileInputStream(pdfFile);
+			DataOutputStream os = new DataOutputStream(res.getOutputStream());
+			res.setHeader("Content-Length", String.valueOf(pdfFile.length()));
+			byte[] buffer = new byte[1024];
+			int len = 0;
+			while ((len = fis.read(buffer)) >= 0) {
+				os.write(buffer, 0, len);
+			}
+
+			os.close();
+			fis.close();
+			Path pathOfFile2 = Paths.get(path + "/" + filename  + ".pdf");
+
+			Gson json = new Gson();
+			return json.toJson(mailcount);
+			
+		}catch (Exception e) {
+			logger.error("Exception in sending the mail for programme MOM "+e.getMessage());
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+		return null;
 	}
 }

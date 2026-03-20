@@ -93,6 +93,15 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.gson.Gson;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.geom.Rectangle;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.properties.TextAlignment;
 import com.vts.pfms.FormatConverter;
 import com.vts.pfms.Zipper;
 import com.vts.pfms.committee.model.ActionAssign;
@@ -702,18 +711,18 @@ public class MilestoneController {
 
 			if (count == 1) {
 				if("Assign".equalsIgnoreCase(req.getParameter("sub"))) {
-					redir.addAttribute("result", "Milestone Activity  Assigned   Successfuly.");
+					redir.addAttribute("result", "Milestone Activity Assigned Successfuly.");
 				}else if("Accept".equalsIgnoreCase(req.getParameter("sub"))) {
-					redir.addAttribute("result", "Milestone Activity  Accepted And Base Line 0 Created   Successfuly.");	
+					redir.addAttribute("result", "Milestone Activity Accepted And Base Line 0 Created   Successfuly.");	
 				}else if("Back".equalsIgnoreCase(req.getParameter("sub"))) {
-					redir.addAttribute("result", "Milestone Activity  Sent Back  Successfuly.");	
+					redir.addAttribute("result", "Milestone Activity Sent Back  Successfuly.");	
 				}
 			}else if(count==2) {
-				redir.addAttribute("resultfail", "Milestone Activity Sub Level Total  Weightage less than 100%, Please Modify");
+				redir.addAttribute("resultfail", "Milestone Activity Sub Level Total Weightage less than 100%, Please Modify");
 			}else if(count==3) {
 				redir.addAttribute("resultfail", "Milestone Activity Sub Level Not Exist, Please Add One Sub Level");
 			}else if(count==4) {
-				redir.addAttribute("resultfail", "Milestone Activity Sub Level Total  Weightage less than 100%, Please Send Back");
+				redir.addAttribute("resultfail", "Milestone Activity Sub Level Total Weightage less than 100%, Please Send Back");
 			}
 			else {
 				redir.addAttribute("resultfail", "Milestone Activity Assign Unsuccessful");
@@ -894,21 +903,31 @@ public class MilestoneController {
 			mainDto.setWeightage(req.getParameter("Weightage"));
 			mainDto.setCreatedBy(UserId);
 			
+			String activityType = req.getParameter("ActivityType");
 			
 			System.out.println("Valid To -" +req.getParameter("ValidTo"));
 			
-			MilestoneActivityLevel level = service.getMilestoneActivityLevelById(req.getParameter("ActivityId"));
 			
-			System.out.println(level.getEndDate());
-		   
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-			LocalDate date = LocalDate.parse(req.getParameter("ValidTo"), formatter);
-			LocalDate date1 = LocalDate.parse(level.getEndDate().toString());
-			
-			long daysBetween = ChronoUnit.DAYS.between(date1, date);
-			if(daysBetween!=0) {
-				updateTheLinkMilstoneTimeLine(req.getParameter("ActivityId"),daysBetween,UserId);
+			if(activityType!=null && !activityType.equalsIgnoreCase("M")) {
+				
+			  MilestoneActivityLevel level = service.getMilestoneActivityLevelById(req.getParameter("ActivityId"));
+			 
+			  System.out.println(level.getEndDate());
+			  
+			  
+			  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+			  LocalDate date = LocalDate.parse(req.getParameter("ValidTo"), formatter);
+			  LocalDate date1 = LocalDate.parse(level.getEndDate().toString());
+			  
+			  long daysBetween = ChronoUnit.DAYS.between(date1, date); 
+			  System.out.println("daysBetween"+daysBetween);
+			  if(daysBetween!=0) {
+				  updateTheLinkMilstoneTimeLine(req.getParameter("ActivityId"),daysBetween, UserId); 
+			  }
+			  
 			}
+			
+			
 	
 			int count =service.MilestoneActivityUpdate(mainDto);
 
@@ -3175,6 +3194,7 @@ private boolean isValidFileType(MultipartFile file) {
 	@RequestMapping(value = "FileRepMasterListAllAjax.htm", method = RequestMethod.GET)
 	public @ResponseBody String FileRepMasterListAllAjax(Model model,HttpServletRequest req, HttpSession ses,HttpServletResponse res)throws Exception 
 	{
+		try {
 		String UserId = (String) ses.getAttribute("Username");
 		String LabCode =(String) ses.getAttribute("labcode");
 		logger.info(new Date() +"Inside FileRepMasterListAllAjax.htm "+UserId);
@@ -3184,6 +3204,10 @@ private boolean isValidFileType(MultipartFile file) {
 
 		Gson json = new Gson();
 		return json.toJson(FileLevelSublevelName);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 
@@ -3890,6 +3914,7 @@ private boolean isValidFileType(MultipartFile file) {
 			@RequestParam(name = "fileAttach", required = false) MultipartFile file,
 			@RequestParam("docName") String docName,
 			@RequestParam("fileRepId") String fileRepId,
+			@RequestParam("reportType") String reportType,
 			@RequestParam("projectId") String projectId,
 			@RequestParam("mainLevelId") String mainLevelId,
 			@RequestParam("subLevelId") String subLevelId,
@@ -3928,9 +3953,41 @@ private boolean isValidFileType(MultipartFile file) {
 	        if (!extension.equalsIgnoreCase("pdf")) {
 	        	 return new ResponseEntity<String>(HttpStatus.EXPECTATION_FAILED);
 	        }
+	        String code = null;
+	        if(labcode.equalsIgnoreCase("PGAD")) {
+		        String reportTypeName = reportType!=null && reportType.length()>0 ? reportType : " - ";
+		        
+		        Object[] projectDetails = service.getprojectDetails(projectId);
+		        String projectCode = projectDetails != null && projectDetails[3] != null
+		                ? projectDetails[3].toString()
+		                : "";
+	
+		        int num = 1;
+		        String count = String.format("%04d", num);
+		        int currYear = LocalDate.now().getYear();
+	
+		        Object[] fileRepUploadDetail = service.getFileRepUploadDetails(projectId);
+	
+		        if (fileRepUploadDetail != null && fileRepUploadDetail[3] != null) {
+	
+		            String lastCode = fileRepUploadDetail[3].toString();
+		            String[] codes = lastCode.split("/");
+	
+		            if (codes.length >= 6) {
+	
+		                int lastUpdatedNum = Integer.parseInt(codes[4]);
+		                int lastUpdatedYear = Integer.parseInt(codes[5]);
+	
+		                if (lastUpdatedYear == currYear) {
+		                    count = String.format("%04d", lastUpdatedNum + 1);
+		                } else {
+		                    count = String.format("%04d", 1);
+		                }
+		            }
+		        }
+		        code = "DRDO/" + labcode + "/" + projectCode + "/" + reportTypeName + "/" + count + "/" + currYear;
+	        } 
 
-			
-			
 			FileUploadDto upload = new FileUploadDto();
 			upload.setFileId(fileRepId);
 			upload.setFileRepMasterId(mainLevelId);
@@ -3942,6 +3999,7 @@ private boolean isValidFileType(MultipartFile file) {
 			upload.setUserId(UserId);
 			upload.setLabCode(labcode);
 			upload.setIsNewVersion(isnewversion);
+			upload.setReportType(code);
 			
 			result=service.uploadFileData(upload,fileType);
 		}
@@ -3958,13 +4016,15 @@ private boolean isValidFileType(MultipartFile file) {
 	public @ResponseBody ResponseEntity<Resource> downloadPdfFromPasswordZip(
 			 @PathVariable("id") Long id,
 		     @RequestParam("fileType") String fileType,
-	        HttpServletRequest req) throws Exception {
+	        HttpServletRequest req,HttpSession session) throws Exception {
 
+		String labCode = (String) session.getAttribute("labcode");
+		//labCode = "PGAD";
 	    Optional<FileRepUploadNew> optionalFile = service.getFileById(id);
 	    if (!optionalFile.isPresent()) {
 	        return ResponseEntity.notFound().build();
 	    }
-
+	    
 	    FileRepUploadNew fileEntity = optionalFile.get();
 	    if (fileEntity.getFilePath() == null || fileEntity.getFileName() == null) {
 	        return ResponseEntity.badRequest().build();
@@ -4004,8 +4064,16 @@ private boolean isValidFileType(MultipartFile file) {
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 	        }
 
+	        String code = "";
+	        if(fileEntity.getReportType()!=null && fileEntity.getReportType().length()>0) {
+	        	code = fileEntity.getReportType();
+	        }
 	        File pdfFile = pdfFiles[0];
-	        Resource resource = new UrlResource(pdfFile.toURI());
+	        File modifiedFile = pdfFile;
+	        if(labCode.equalsIgnoreCase("PGAD")) {
+	        	modifiedFile = addHeaderForPdf(pdfFile,code);
+	        }
+	        Resource resource = new UrlResource(modifiedFile.toURI());
 
 	        return ResponseEntity.ok()
 	                .contentType(MediaType.APPLICATION_PDF)
@@ -4019,6 +4087,56 @@ private boolean isValidFileType(MultipartFile file) {
 	    }
 	}
 	
+	private File addHeaderForPdf(File inputPdf, String headerText) throws Exception {
+
+	    String path = inputPdf.getParent();
+	    String filename = inputPdf.getName().replace(".pdf", "");
+
+	    PdfDocument pdfDocMain = new PdfDocument(
+	            new PdfReader(inputPdf.getAbsolutePath()),
+	            new PdfWriter(path + File.separator + filename + "_temp.pdf")
+	    );
+
+	    Document docMain = new Document(pdfDocMain, PageSize.A4);
+	    docMain.setMargins(50, 50, 50, 50);
+
+	    int pages = pdfDocMain.getNumberOfPages();
+
+	    for (int i = 1; i <= pages; i++) {
+
+	        PdfPage pageMain = pdfDocMain.getPage(i);
+	        Rectangle pageSizeMain = pageMain.getPageSize();
+
+	        Paragraph header = new Paragraph(headerText)
+	                .setFontSize(10)
+	                .setBold();
+	                //.setTextAlignment(TextAlignment.CENTER);
+
+	        float marginLeft = 36;   
+	        float marginTop  = 15;   
+
+	        float x = marginLeft;
+	        float y = pageSizeMain.getHeight() - marginTop;
+
+	        docMain.showTextAligned(
+	                header,
+	                x,
+	                y,
+	                i,  
+	                TextAlignment.LEFT,
+	                com.itextpdf.layout.properties.VerticalAlignment.TOP,
+	                0f
+	        );
+
+	    }
+
+	    docMain.close();
+	    pdfDocMain.close();
+
+	    return new File(path + File.separator + filename + "_temp.pdf");
+	}
+
+
 	@RequestMapping(value = "removeFileAttachment.htm", method = RequestMethod.POST)
 	public @ResponseBody String removeFileAttachment(HttpServletRequest req, HttpSession ses,HttpServletResponse res,
 			@RequestParam("techDataId") String techDataId,

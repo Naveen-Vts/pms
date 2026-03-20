@@ -150,4 +150,6 @@ public interface MilestoneService {
 	public List<Object[]> getsuccessorList(String activityId)throws Exception;
 	public int deleteMilestoneActivityPredecessor(String successor)throws Exception;
 	public long saveMilestoneSub(MilestoneActivitySub attach)throws Exception;
+	public Object[] getprojectDetails(String projectId)throws Exception;
+	public Object[] getFileRepUploadDetails(String projectId)throws Exception;
 }

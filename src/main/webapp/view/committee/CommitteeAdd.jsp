@@ -136,7 +136,7 @@ String projectappliacble=(String)request.getAttribute("projectappliacble");
 								</div>
 							</div>
 													
-							<div class="col-md-2 d-none" id="periodicduration">
+							<div class="col-md-2 hidden" id="periodicduration">
 								<div class="form-group">
 									<label class="control-label" >Periodic Duration (Days)<span class="mandatory text-danger">*</span></label>
 									<input class="form-control mt-n5" type="number" min="1" name="periodicduration" id="periodicdurationfield" placeholder="Days">

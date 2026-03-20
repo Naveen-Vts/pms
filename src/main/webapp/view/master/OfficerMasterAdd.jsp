@@ -168,7 +168,7 @@ List<Object[]> OfficerList = (List<Object[]>)request.getAttribute("OfficerList")
 
 <div class="col-md-3">
 	<div class="form-group">
-		<label >Superior Officer:<span class="mandatory" >*</span></label>
+		<label >Superior Officer:<!-- <span class="mandatory" >*</span> --></label>
 		<select class="form-control selectdee" id="superiorOfficer" name="superiorOfficer" data-container="body" data-live-search="true"  required="required" >
 			<option value="0" selected="selected" hidden="true">--Select--</option>
 			<%  for ( Object[]  obj :OfficerList) {%>			

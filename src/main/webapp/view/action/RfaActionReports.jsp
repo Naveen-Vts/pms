@@ -41,7 +41,7 @@ h6{
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 .pdfimage{
-height: 50px;
+height: 30px;
 }
 </style>
 </head>
@@ -53,15 +53,18 @@ SimpleDateFormat sdf1=fc.getSqlDateFormat();
 
 SimpleDateFormat sdf2=new SimpleDateFormat("dd-MM-yyyy");
 SimpleDateFormat sdf3=new SimpleDateFormat("yyyy-MM-dd");
-
+List<Object[]> employeeList = (List<Object[]>)request.getAttribute("employeeList");
 List<Object[]> ProjectList = (List<Object[]>)request.getAttribute("ProjectList");
 List<Object[]> RfaNoTypeList = (List<Object[]>)request.getAttribute("RfaNoTypeList");
 List<Object[]> RfaActionList = (List<Object[]>)request.getAttribute("rfaActionList");
 String fdate=(String)request.getAttribute("fdate");
 String tdate=(String)request.getAttribute("tdate");  
 String rfatypeid=(String)request.getAttribute("rfatypeid");  
+String rfatype=(String)request.getAttribute("rfatype");  
+String employeeId=(String)request.getAttribute("employeeId");  
 String projectid = (String)request.getAttribute("projectid");
 String projectType = (String)request.getAttribute("projectType");
+String rfaStatus = (String) request.getAttribute("rfaStatus"); 
 List<Object[]> preProjectList = (List<Object[]>) request.getAttribute("preProjectList");
 List<Object[]> AssigneeList=(List<Object[]>) request.getAttribute("AssigneeEmplList");
 String projectCode=projectType.equalsIgnoreCase("P") ? 
@@ -75,6 +78,8 @@ String projectCode=projectType.equalsIgnoreCase("P") ?
 									   .findFirst()
 									   .orElse(null);
 
+String labcode = (String) session.getAttribute("labcode");
+
 %>
 
 
@@ -85,11 +90,16 @@ String projectCode=projectType.equalsIgnoreCase("P") ?
 				 <form method="post" name="dateform" id="myform">
                  <div class="card-header position-relative p-0">  
 					<div class="row">
-						<h4 class="col-md-3 p-3">RFA Action Reports</h4> 
-					    	<div class="d-flex justify-content-center flex-wrap" style="margin-bottom: 15px">
+						<div class="col-md-4">
+							<h4 class="ms-5 p-3">RFA Action Reports</h4>
+						</div>
+					</div>
+					</div>
+			        <div class="card-body">
+			        	<div class="d-flex justify-content-end flex-wrap" style="margin-bottom: 15px">
 							   			 <!-- Project Type -->
 							        <div class="d-flex align-items-center mx-2 my-1">
-							            <label for="projectType" class="mr-2 font-weight-bold" style="font-size: 17px;">Project Type:</label>
+							            <label for="projectType" class="mr-2 font-weight-bold" style="font-size: 15px;">Project Type:</label>
 							            <select class="form-control selectdee" id="projectType" name="projectType">
 							                <option disabled selected value="">Choose...</option>
 							                <option value="P" <%if(projectType.equalsIgnoreCase("P")){ %> selected <% }%>>Project</option>
@@ -99,7 +109,7 @@ String projectCode=projectType.equalsIgnoreCase("P") ?
 							
 							        <!-- Project -->
 							        <div class="d-flex align-items-center mx-2 my-1">
-							            <label for="projectId" class="mr-2 font-weight-bold" style="font-size: 17px;">Project:</label>
+							            <label for="projectId" class="mr-2 font-weight-bold" style="font-size: 15px;">Project:</label>
 							             <select class="form-control selectdee" name="projectid" id="projectId" required data-live-search="true">
 								            <% if(projectType.equalsIgnoreCase("P")) { %>
 								                    <% for(Object[] obj : ProjectList) {
@@ -117,7 +127,7 @@ String projectCode=projectType.equalsIgnoreCase("P") ?
 								      </div>
 								         
 								     <div class="d-flex align-items-center mx-2 my-1">
-							            <label for="projectType" class="mr-2 font-weight-bold" style="font-size: 17px;">Type:</label>
+							            <label for="rfatypeid" class="mr-2 font-weight-bold" style="font-size: 15px;">Type:</label>
 							             <select class="form-control selectdee" id="rfatypeid" name="rfatypeid"  >
 			                                          <option value="-" <%if(rfatypeid.equalsIgnoreCase("")) {%> selected <%} %>>ALL</option>
 						   			        	<%if(RfaNoTypeList!=null && RfaNoTypeList.size()>0){
@@ -126,21 +136,48 @@ String projectCode=projectType.equalsIgnoreCase("P") ?
 										        <%}} %>   
 						  	             </select>
 							        </div>
-		   				</div>	   							
-					</div>
-					</div>
-			        <div class="card-body">
+							        <%if(labcode.equalsIgnoreCase("ADE")){ %>
+							        <div class="d-flex align-items-center mx-2 my-1">
+							            <label for="rfatype" class="mr-2 font-weight-bold" style="font-size: 15px;">RFA Type:</label>
+							             <select class="form-control selectdee" id="rfatype" name="rfatype"  >
+			                                   <option value="I" <%if(rfatype!=null && rfatype.equalsIgnoreCase("I")){ %>selected="selected" <%} %>>Internal</option>
+											   <option value="E" <%if(rfatype!=null && rfatype.equalsIgnoreCase("E")){ %>selected="selected" <%} %>>To External</option>
+											   <option value="F" <%if(rfatype!=null && rfatype.equalsIgnoreCase("F")){ %>selected="selected" <%} %>>From External</option>
+						  	             </select>
+							        </div>
+							        <div class="d-flex align-items-center mx-2 my-1">
+							            <label for="employee" class="mr-2 font-weight-bold" style="font-size: 15px;">Employee:</label>
+							             <select class="form-control selectdee" id="employeeId" name="employeeId"  >
+							             	<!-- <option value="" selected="selected" disabled="disabled">Select Employee</option> -->
+							             	<option value="" selected="selected">All Employees</option>
+							             		<% for(Object[] obj: employeeList){ %>
+							             		<option value="<%=obj[0]%>" <%if(employeeId!=null && employeeId.equalsIgnoreCase(obj[0].toString())){ %> selected="selected" <%} %>><%= obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):" - " %>, <%=obj[2]!=null ? StringEscapeUtils.escapeHtml4(obj[2].toString()) : "-" %></option>
+							             		<%} %> 
+						  	             </select>
+							        </div>
+							        <%} %>
+		   				</div>	   			
 			        		<div class="d-flex justify-content-end align-items-center">
+			        			<%if(labcode.equalsIgnoreCase("ADE")){ %>
+				        			<div class="form-group mb-2 mr-4 d-flex align-items-center">
+				        				<label for="RfaStatus"  class="control-label mb-0 mr-2" style="font-size: 15px; ">RFA Status</label>
+				        				<select class="form-control selectdee" id="rfaStatus" name="rfaStatus">
+				        					<option value="ALL" selected="selected">Opened</option>
+				        					<option value="ARC" <%if(rfaStatus!=null && rfaStatus.equalsIgnoreCase("ARC")){ %>selected="selected" <%} %>>Closed</option>
+				        					<option value="RFC" <%if(rfaStatus!=null && rfaStatus.equalsIgnoreCase("RFC")){ %>selected="selected" <%} %>>Cancelled</option>
+				        				</select>
+				        			</div>
+			        			<%} %>
 						        <!-- From Date -->
 						        <div class="form-group mb-2 mr-4 d-flex align-items-center">
-						            <label for="fdate" class="control-label mb-0 mr-2" style="font-size: 17px; font-weight: 700;">From Date:</label>
+						            <label for="fdate" class="control-label mb-0 mr-2" style="font-size: 15px; font-weight: 700;">From Date:</label>
 						           <input  class="form-control"  data-date-format="dd/mm/yyyy" id="fdate" name="fdate" 
 						           required="required"  value="<%=sdf.format(sdf1.parse(fdate))%>" style="width: 150px;">
 						        </div>
 						
 						        <!-- To Date -->
 						        <div class="form-group mb-2 d-flex align-items-center">
-						            <label for="tdate" class="control-label mb-0 mr-2" style="font-size: 17px; font-weight: 700;">To Date:</label>
+						            <label for="tdate" class="control-label mb-0 mr-2" style="font-size: 15px; font-weight: 700;">To Date:</label>
 						            <input  class="form-control " data-date-format="dd/mm/yyyy" id="tdate" name="tdate"  
 						            required="required" value="<%=sdf.format(sdf1.parse(tdate))%>" style="width: 150px;">
 						        </div>
@@ -150,7 +187,7 @@ String projectCode=projectType.equalsIgnoreCase("P") ?
 										formmethod="POST" formnovalidate="formnovalidate" name="rfaid"
 										value="" formtarget="_blank" data-toggle="tooltip"
 										data-placement="top" data-original-title="RFA Report pdf"
-										style="border: none;background: transparent;margin-bottom: 7px;">
+										style="border: none;background: transparent;margin-bottom: 7px;cursor: pointer;">
 										<div>
 											<img class="pdfimage" src="view/images/pdf1.png">
 										</div>
@@ -158,7 +195,10 @@ String projectCode=projectType.equalsIgnoreCase("P") ?
 									<input type="hidden" name="reportFromdate" value="<%=fdate%>">
 									<input type="hidden" name="reportTodate" value="<%=tdate%>">
 									<input type="hidden" name="rfatypeid" value="<%=rfatypeid%>">
+									<input type="hidden" name="rfatype" value="<%=rfatype%>">
+									<input type="hidden" name="employeeId" value="<%=employeeId%>">
 									<input type="hidden" name="projectid" value="<%=projectid%>">
+									<input type="hidden" name="rfaStatus" value="<%=rfaStatus %>">
 									<input type="hidden" name="projectType" value="<%=projectType%>">
 									<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 							   </div> 
@@ -305,7 +345,7 @@ $('#tdate').daterangepicker({
 });
 
 $(document).ready(function(){
-	   $('#fdate, #tdate,#projectId,#projectType,#rfatypeid').change(function(){
+	   $('#fdate, #tdate,#projectId,#projectType,#rfatypeid,#rfatype,#employeeId,#rfaStatus').change(function(){
 	   var form = document.getElementById("myform");
 		 
         if (form) {
@@ -327,7 +367,6 @@ $(document).ready(function(){
 function showProblem(a,b){
 	/* var y=JSON.stringify(a); */
 	var pro=$('#tdpro'+a).val();
-	console.log(a);
 	$('#modalbody').html(pro);
 	$('#header').html(b);
 	$('#exampleModalCenter').modal('show');
@@ -336,7 +375,6 @@ function showProblem(a,b){
 function showObservation(a,b){
 	/* var y=JSON.stringify(a); */
 	var obs=$('#tdobs'+a).val();
-	console.log(a);
 	$('#modalbodyobs').html(obs);
 	$('#headerobs').html(b);
 	$('#exampleModalCenterObs').modal('show');

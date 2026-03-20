@@ -92,6 +92,7 @@
 												<span class="text-margin">Original :&ensp; <span class="text-padding bg-blue"></span></span>
 												<span class="text-margin">Ongoing :&ensp; <span class="text-padding bg-success"></span></span>
 												<span class="text-margin">Revised :&ensp; <span class="text-padding bg-orange" ></span></span>
+												<span class="text-margin">Delay Ongoing :&ensp; <span class="text-padding bg-danger" ></span></span>
 											</div>
 										</div>
 									</div>
@@ -138,14 +139,19 @@ $('#ProjectId').on('change',function(){
 
 								    	var data = [
 								    		  
-								    	<% for(Object[] obj : MilestoneActivityMain){ %>
-								    	
-								    	  {
-								    		  
-								    		 
-								    		    id: "<%=obj[0]%>",
+								    	<% for(Object[] obj : MilestoneActivityMain){ 
+								    		
+								    		String fromDate = obj[4] != null ? obj[4].toString() : "";
+						                    String toDate = obj[5] != null ? obj[5].toString() : "";
+						                    String revisedFromDate = obj[6] != null ? obj[6].toString() : "";
+						                    String revisedToDate = obj[7] != null ? obj[7].toString() : "";
+						                     
+								    		boolean isRevised = toDate.equalsIgnoreCase(revisedToDate) && fromDate.equalsIgnoreCase(revisedFromDate);
+								    	%>
+								    	{
+								    			id: "<%=obj[0]%>",
 								    		    name: "<%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()): ""%>",
-								    		    <%if(!obj[8].toString().equalsIgnoreCase("0") && !obj[8].toString().equalsIgnoreCase("1")){%>
+								    		    <%if(!obj[8].toString().equalsIgnoreCase("0") && !obj[8].toString().equalsIgnoreCase("1") && !isRevised){%>
 								    		    baselineStart: "<%=obj[3]%>",
 								    		    baselineEnd: "<%=obj[4]%>",
 								    		    baseline: {fill: "#f25287 0.5", stroke: "0.5 #dd2c00"},
@@ -170,11 +176,18 @@ $('#ProjectId').on('change',function(){
 								    		    children: [
 								    		    <% for(Object[] objA : MilestoneActivityA){ %>
 								    		    		
-								    		   		<% if(obj[0].toString().equalsIgnoreCase(objA[1].toString()) ) {%>	
+								    		   		<% if(obj[0].toString().equalsIgnoreCase(objA[1].toString()) ) {
+								    		   			String fromDateA = objA[4] != null ? objA[4].toString() : "";
+									                    String toDateA = objA[5] != null ? objA[5].toString() : "";
+									                    String revisedFromDateA = objA[6] != null ? objA[6].toString() : "";
+									                    String revisedToDateA = objA[7] != null ? objA[7].toString() : "";
+									                     
+											    		boolean isRevisedA = toDateA.equalsIgnoreCase(revisedToDateA) && fromDateA.equalsIgnoreCase(revisedFromDateA);
+								    		   		%>	
 								    		   			{
 											    		    id: "<%=obj[0]%>_<%=objA[0]%>",
 											    		    name: "<%=objA[2]!=null?StringEscapeUtils.escapeHtml4(objA[2].toString()): ""%>",
-											    		    <%if(!objA[8].toString().equalsIgnoreCase("0") && !objA[8].toString().equalsIgnoreCase("1")){%>
+											    		    <%if(!objA[8].toString().equalsIgnoreCase("0") && !objA[8].toString().equalsIgnoreCase("1") && !isRevisedA){%>
 											    		    baselineStart: "<%=objA[3]%>",
 											    		    baselineEnd: "<%=objA[4]%>",
 											    		    baseline: {fill: "#f25287 0.5", stroke: "0.5 #dd2c00"},
@@ -198,11 +211,18 @@ $('#ProjectId').on('change',function(){
 											    		    children: [
 												    		    <% for(Object[] objB : MilestoneActivityB){ %>
 												    		    		
-												    		   		<% if(objA[0].toString().equalsIgnoreCase(objB[1].toString()) ) {%>	
+												    		   		<% if(objA[0].toString().equalsIgnoreCase(objB[1].toString()) ) {
+												    		   			String fromDateB = objB[4] != null ? objB[4].toString() : "";
+													                    String toDateB = objB[5] != null ? objB[5].toString() : "";
+													                    String revisedFromDateB = objB[6] != null ? objB[6].toString() : "";
+													                    String revisedToDateB = objB[7] != null ? objB[7].toString() : "";
+													                     
+															    		boolean isRevisedB = toDateB.equalsIgnoreCase(revisedToDateB) && fromDateB.equalsIgnoreCase(revisedFromDateB);
+												    		   		%>	
 												    		   			{
 															    		    id: "<%=objA[0]%>_<%=objB[0]%>",
 															    		    name: "<%=objB[2]!=null?StringEscapeUtils.escapeHtml4(objB[2].toString()): ""%>",
-															    		    <%if(!objB[8].toString().equalsIgnoreCase("0") && !objB[8].toString().equalsIgnoreCase("1")){%>
+															    		    <%if(!objB[8].toString().equalsIgnoreCase("0") && !objB[8].toString().equalsIgnoreCase("1") && !isRevisedB){%>
 															    		    actualStart: "<%=objB[5]%>",
 															    		    actualEnd: "<%=objB[6]%>",
 															    		    actual: {fill: "#455a64", stroke: "0.8 #455a64"},
@@ -229,11 +249,18 @@ $('#ProjectId').on('change',function(){
 															    		    children: [
 																    		    <% for(Object[] objC : MilestoneActivityC){ %>
 																    		    		
-																    		   		<% if(objB[0].toString().equalsIgnoreCase(objC[1].toString()) ) {%>	
+																    		   		<% if(objB[0].toString().equalsIgnoreCase(objC[1].toString()) ) {
+																    		   			String fromDateC = objC[4] != null ? objC[4].toString() : "";
+																	                    String toDateC = objC[5] != null ? objC[5].toString() : "";
+																	                    String revisedFromDateC = objC[6] != null ? objC[6].toString() : "";
+																	                    String revisedToDateC = objC[7] != null ? objC[7].toString() : "";
+																	                     
+																			    		boolean isRevisedC = toDateC.equalsIgnoreCase(revisedToDateC) && fromDateC.equalsIgnoreCase(revisedFromDateC);
+																    		   		%>	
 																    		   			{
 																			    		    id: "<%=objB[0]%>_<%=objC[0]%>",
 																			    		    name: "<%=objC[2]!=null?StringEscapeUtils.escapeHtml4(objC[2].toString()): ""%>",
-																			    		    <%if(!objC[8].toString().equalsIgnoreCase("0") && !objC[8].toString().equalsIgnoreCase("1")){%>
+																			    		    <%if(!objC[8].toString().equalsIgnoreCase("0") && !objC[8].toString().equalsIgnoreCase("1") && !isRevisedC){%>
 																			    		    actualStart: "<%=objC[5]%>",
 																			    		    actualEnd: "<%=objC[6]%>",
 																			    		    actual: {fill: "#455a64", stroke: "0.8 #455a64"},
@@ -259,11 +286,18 @@ $('#ProjectId').on('change',function(){
 																			    		    children: [
 																				    		    <% for(Object[] objD : MilestoneActivityD){ %>
 																				    		    		
-																				    		   		<% if(objC[0].toString().equalsIgnoreCase(objD[1].toString()) ) {%>	
+																				    		   		<% if(objC[0].toString().equalsIgnoreCase(objD[1].toString()) ) {
+																				    		   			String fromDateD = objD[4] != null ? objD[4].toString() : "";
+																					                    String toDateD = objD[5] != null ? objD[5].toString() : "";
+																					                    String revisedFromDateD = objD[6] != null ? objD[6].toString() : "";
+																					                    String revisedToDateD = objD[7] != null ? objD[7].toString() : "";
+																					                     
+																							    		boolean isRevisedD = toDateD.equalsIgnoreCase(revisedToDateD) && fromDateD.equalsIgnoreCase(revisedFromDateD);
+																				    		   		%>	
 																				    		   			{
 																							    		    id: "<%=objC[0]%>_<%=objD[0]%>",
 																							    		    name: "<%=objD[2]!=null?StringEscapeUtils.escapeHtml4(objD[2].toString()): ""%>",
-																							    		    <%if(!objD[8].toString().equalsIgnoreCase("0") && !objD[8].toString().equalsIgnoreCase("1")){%>
+																							    		    <%if(!objD[8].toString().equalsIgnoreCase("0") && !objD[8].toString().equalsIgnoreCase("1") && !isRevisedD){%>
 																							    		    actualStart: "<%=objD[5]%>",
 																							    		    actualEnd: "<%=objD[6]%>",
 																							    		    actual: {fill: "#455a64", stroke: "0.8 #455a64"},
@@ -288,11 +322,18 @@ $('#ProjectId').on('change',function(){
 																							    		    children: [
 																								    		    <% for(Object[] objE : MilestoneActivityE){ %>
 																								    		    		
-																								    		   		<% if(objD[0].toString().equalsIgnoreCase(objE[1].toString()) ) {%>	
+																								    		   		<% if(objD[0].toString().equalsIgnoreCase(objE[1].toString()) ) {
+																								    		   			String fromDateE = objE[4] != null ? objE[4].toString() : "";
+																									                    String toDateE = objE[5] != null ? objE[5].toString() : "";
+																									                    String revisedFromDateE = objE[6] != null ? objE[6].toString() : "";
+																									                    String revisedToDateE = objE[7] != null ? objE[7].toString() : "";
+																									                     
+																											    		boolean isRevisedE = toDateE.equalsIgnoreCase(revisedToDateE) && fromDateE.equalsIgnoreCase(revisedFromDateE);
+																								    		   		%>	
 																								    		   			{
 																											    		    id: "<%=objD[0]%>_<%=objE[0]%>",
 																											    		    name: "<%=objE[2]!=null?StringEscapeUtils.escapeHtml4(objE[2].toString()): ""%>",
-																											    		    <%if(!objE[8].toString().equalsIgnoreCase("0") && !objE[8].toString().equalsIgnoreCase("1")){%>
+																											    		    <%if(!objE[8].toString().equalsIgnoreCase("0") && !objE[8].toString().equalsIgnoreCase("1") && !isRevisedE){%>
 																											    		    actualStart: "<%=objE[5]%>",
 																											    		    actualEnd: "<%=objE[6]%>",
 																											    		    actual: {fill: "#455a64", stroke: "0.8 #455a64"},
@@ -690,10 +731,6 @@ $('#ProjectId').on('change',function(){
 								     }
 								     
 								    </script>
-																	
-                        		
-
-
+				
 </body>
-
 </html>

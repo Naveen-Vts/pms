@@ -22,6 +22,8 @@
 
 List<Object[]> DivisionGroupListAdd=(List<Object[]>)request.getAttribute("DivisionGroupListAdd");
 List<Object[]> DivisionHeadListAdd=(List<Object[]>)request.getAttribute("DivisionHeadListAdd");
+List<Object[]> lablist = (List<Object[]>)request.getAttribute("lablist");
+String labCode  = (String) session.getAttribute("labcode");
 
 
 %>
@@ -73,7 +75,7 @@ List<Object[]> DivisionHeadListAdd=(List<Object[]>)request.getAttribute("Divisio
 <div class="col-md-3">
 		<div class="form-group">
                  <label>Division Name:<span class="mandatory">*</span></label>
-                  <input  class="form-control form-control alphanum-no-leading-space text-uppercase input-font w-80"  type="text" name="dName" id="divisionName" required="required" maxlength="100"  > 
+                  <input  class="form-control form-control alphanum-no-leading-space input-font w-80"  type="text" name="dName" id="divisionName" required="required" maxlength="100"  > 
 		</div>
 </div>
 
@@ -92,25 +94,36 @@ List<Object[]> DivisionHeadListAdd=(List<Object[]>)request.getAttribute("Divisio
 		</div>
 </div>
    
+   
+</div><!-- row closed -->
+
+<!-- srikant code start -->
+<div class="row">
+<div class="col-md-3">
+                    <div class="form-group">
+                    	<label class="control-label">Lab Code</label>
+                    	<select class="custom-select selectdee" name="labCode" onChange="showEmployees(this.value)">		
+                      		<option value="" selected="selected" disabled="disabled">Select Labcode</option>											
+								<% for (  Object[] obj : lablist){ %>
+								<option value=<%=obj[3]%> ><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()):"-"%></option>
+								<%} %>
+						</select> 
+                    </div>
+                 </div>
 <div class="col-md-3">
 		<div class="form-group">
 				<label >Division Head Name:<span class="mandatory" >*</span></label>
 				<select class="custom-select" id="dHName" required="required" name="dHName">
 								<option  selected value="">---Select---</option>
 								
-								<% for (  Object[] obj : DivisionHeadListAdd){ %>
+							<%-- 	<% for (  Object[] obj : DivisionHeadListAdd){ %>
 						
 								<option value=<%=obj[0]%>><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - "%>, <%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - " %> </option>
 							
-								<%} %>
+								<%} %> --%>
 				</select>
 		</div>
 </div>
-   
-</div><!-- row closed -->
-
-<!-- srikant code start -->
-<div class="row">
 <div class="col-md-3">
 		<div class="form-group">
                  <label>Division Short Name:<span class="mandatory" >*</span></label>
@@ -203,6 +216,35 @@ function Divisioncheck(frmid){
 	
 }
 
+
+function showEmployees(labcode){
+	console.log(labcode);
+	if(labcode !=""){
+		$.ajax({		
+		type : "GET",
+		url : "EmployeeOnLabCode.htm",
+		data : {
+			labcode : labcode,
+		},
+		datatype : 'json',
+		success : function(result) {
+	
+			var result = JSON.parse(result);	
+			var values = Object.keys(result).map(function(e) {
+									 return result[e]
+						});
+							
+			var s = '<option value="" selected disabled>---Select---</option>';
+			for (i = 0; i < values.length; i++) {									
+				s += '<option value="'+values[i][0]+'">'
+					+values[i][1].replaceAll("<","").replaceAll(">","") + " (" +values[i][2].replaceAll("<","").replaceAll(">","")+")" 
+					+ '</option>';
+			} 
+			$('#dHName').html(s);
+		}
+		});
+	}
+}
 
 
 </script>

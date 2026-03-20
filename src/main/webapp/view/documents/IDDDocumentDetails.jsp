@@ -1428,8 +1428,8 @@ function DownloadDocPDF(){
                 		IGILogicalInterfaces iface = logicalInterfaceList.stream().filter(e -> e.getLogicalInterfaceId()==Long.parseLong(obj[3].toString())).findFirst().orElse(null);
                 		String[] split = obj[6].toString().split("-");
 			        	IGILogicalChannel channel = logicalChannelList.stream().filter(e -> e.getLogicalChannelId().equals(iface.getLogicalChannelId())).findFirst().orElse(null);
-			        	//List<Object[]> fieldDescList =  fieldDescriptionList.stream().filter(e -> iface.getLogicalInterfaceId()== Long.parseLong(e[1].toString()) && obj[0].toString().equalsIgnoreCase(e[19].toString())).collect(Collectors.toList());
-
+			        	List<Object[]> fieldDescList =  fieldDescriptionList.stream().filter(e -> iface.getLogicalInterfaceId()== Long.parseLong(e[1].toString()) && obj[0].toString().equalsIgnoreCase(e[19].toString())).collect(Collectors.toList());
+			        	
                 %>
 	                {
 	                	text: mainContentCount+'.<%=designslno%>.<%=++specCount%>. <%=iface.getMsgCode() %>',	
@@ -1552,6 +1552,111 @@ function DownloadDocPDF(){
 	                },
 	                { text: '\n',},
 
+	                {
+	                    text: 'Message Format',
+	                    style: 'chapterSubSubHeader',
+	                },
+	                {
+	                    table: {
+	                        headerRows: 1,
+	                        widths: [<% for (int i = 0; i <18; i++) { %>'auto',<% } %>],
+	                        body: [
+	                            // Table header
+	                            [
+	                                { text: 'Pos', style: 'tableHeader2' },
+	                                <% for (int i = 15; i >=0; i--) { %>
+	                                	{ text: 'b<%=i%>', style: 'tableHeader2' },
+	                                <% } %>
+	                                { text: 'Pos', style: 'tableHeader2' },
+	                            ],
+	                            
+	                            <% if(fieldDescList!=null && fieldDescList.size()>0) {
+	                            	int posCount = 0, availableBits = 16, slno = 1;
+	                            	boolean newRow = true;
+									for(Object[] field : fieldDescList){
+										int dataLength = Integer.parseInt(field[4].toString());
+										int rowSpanCount = 1;
+								%>
+									// New Row to be generated for the first time
+									<% if(newRow) { %>
+		                            	[
+		                            		{ text: '<%=posCount%>', style: 'tableData2', alignment: 'center', },
+		                            <% } %>
+		                            
+		                            // Handling the existing row with ??
+									<% if( dataLength > availableBits && !newRow) { %>
+										<%if(availableBits>0) {%>
+											{ text: '??', style: 'tableData2', colSpan: <%=availableBits%>, alignment: 'center' }, 
+			                                <% for (int i = 1; i < availableBits; i++) { %> null,<% } %>
+											{ text: '<%=posCount%>', style: 'tableData2', alignment: 'center', }
+											
+										],
+	                                	<%} %>
+	                                	<% posCount+=2;
+		                            	availableBits = 16;%>
+		                            	[
+		                            		{ text: '<%=posCount%>', style: 'tableData2', alignment: 'center', },
+		                            <% } %>
+		                            
+		                            // Calculation for the available columns (bits), row span calculations for more than 16 bits
+		                            <% 
+			                            availableBits = availableBits - dataLength; 
+			                            newRow = false;
+			                            rowSpanCount = dataLength / 16;
+		                            %>
+	                            
+									// Filling the field name
+	                                { text: '<%=field[8]%>', style: 'tableData2', alignment: 'center' 
+	                                <%if(rowSpanCount>1) {%> , colSpan: 16, rowSpan: <%=rowSpanCount%> <%} else {%> , colSpan: <%=dataLength%><%}%> }, 
+	                                <% for (int i = 1; i < (dataLength>16?16:dataLength); i++) { %> null,<% } %>
+									
+	                                // If the field has more than 16 bits handling the rowspan
+	                                <%if(rowSpanCount>1) {
+	                                %>
+	                                	{ text: '<%=posCount%>', style: 'tableData2', alignment: 'center', },
+	                                ],
+	                                <%for(int i=1; i<rowSpanCount; i++) {
+	                                		posCount+=2;
+	                                %>
+		                                [
+		                                    { text: '<%=posCount%>', style: 'tableData2', alignment: 'center', },
+		                                    null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+		                                    { text: '<%=posCount%>', style: 'tableData2', alignment: 'center', }
+		                                ],
+	                                <% } } %>
+	                                
+	                                // At the end if the field is not present filling ?? by default
+	                                <%if(slno==fieldDescList.size() && availableBits>0) {%>
+			                                { text: '??', style: 'tableData2', colSpan: <%=availableBits%>, alignment: 'center' }, 
+			                                <% for (int i = 1; i < availableBits; i++) { %> null,<% } %>
+											{ text: '<%=posCount%>', style: 'tableData2', alignment: 'center', }
+										],
+	                                <%} %>
+	                                
+	                            	// close the row if the available bits are zero.
+	                                <% if(availableBits==0) { %>
+	                                		{ text: '<%=posCount%>', style: 'tableData2', alignment: 'center', }
+	                                	],
+	                                <% posCount+=2;
+		                            	availableBits = 16;
+	                                	newRow = true;
+	                                } %>
+	                            
+	                            <% ++slno; } } %>
+	                            
+	                        ]
+	                    },
+	                    layout: {
+	                        hLineWidth: function (i, node) { return 1; },
+	                        vLineWidth: function (i, node) { return 1; },
+	                        hLineColor: function (i, node) { return '#aaaaaa'; },
+	                        vLineColor: function (i, node) { return '#aaaaaa'; },
+	                        paddingLeft: function(i, node) { return 2; },
+	                        paddingRight: function(i, node) { return 2; },
+	                    },
+	                    margin: [20, 0, 0, 0],
+	                },
+	                
 	                <%-- {
 	                    text: mainContentCount+'. <%=specCount%>. Field Description',
 	                    style: 'chapterSubHeader',

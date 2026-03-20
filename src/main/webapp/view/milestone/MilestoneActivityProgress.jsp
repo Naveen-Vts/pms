@@ -284,43 +284,54 @@
 
     
     function exportMultipleTablesToExcel() {
-    	
-    	 // Step 1: Show SweetAlert2 loading
+
    	  Swal.fire({
    	    title: 'Please wait...',
    	    text: 'Preparing your Excel file',
    	    allowOutsideClick: false,
-   	    allowEscapeKey: false,
-   	    didOpen: () => {
-   	      Swal.showLoading();
-   	    }
+   	    didOpen: () => Swal.showLoading()
    	  });
 
-   	  // Step 2: Delay Excel generation by 3 seconds
    	  setTimeout(() => {
+
+   	    var table = $('#myTable').DataTable();
    	    var wb = XLSX.utils.book_new();
 
-   	    var projectname = $('#projectId :selected').text().trim();
-   	    console.log(projectname);
-   	    var fromdate = $('#fromDate').val();
-   	    var todate = $('#toDate').val();
-   	    var tables = [
-   	      { id: "myTable", name: "Milestone Progress" }
-   	    ];
+   	    var wsData = [];
 
-   	    tables.forEach(table => {
-   	      var el = document.getElementById(table.id);
-   	      if (el) {
-   	        var ws = XLSX.utils.table_to_sheet(el);
-   	        XLSX.utils.book_append_sheet(wb, ws, table.name);
-   	      }
+   	    // 1️⃣ Headers
+   	    var headers = [];
+   	    $('#myTable thead th').each(function () {
+   	      headers.push($(this).text().trim());
+   	    });
+   	    wsData.push(headers);
+
+   	    // 2️⃣ ALL rows (pagination ignored)
+   	    table.rows({ search: 'applied' }).every(function () {
+   	      var row = [];
+   	      $(this.node()).find('td').each(function () {
+   	        row.push($(this).text().replace(/\s+/g, ' ').trim());
+   	      });
+   	      wsData.push(row);
    	    });
 
-   	    XLSX.writeFile(wb, "Mil_Progress_"+projectname+"_"+fromdate+"_"+todate+".xlsx");
+   	    // 3️⃣ Create Excel sheet
+   	    var ws = XLSX.utils.aoa_to_sheet(wsData);
+   	    XLSX.utils.book_append_sheet(wb, ws, "Milestone Progress");
+
+   	    var projectname = $('#projectId :selected').text().trim();
+   	    var fromdate = $('#fromDate').val();
+   	    var todate = $('#toDate').val();
+
+   	    XLSX.writeFile(
+   	      wb,
+   	      "Mil_Progress_" + projectname + "_" + fromdate + "_" + todate + ".xlsx"
+   	    );
+
    	    Swal.close();
-   	  }, 1000); // 3 seconds
-   	  
-   }
+
+   	  }, 500);
+   	}
 </script>   
 </body>
 </html>

@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -642,7 +643,7 @@ public class MasterController {
 				Map md=model.asMap();
 				divisionid=(String)md.get("divisionid");
 			}
-
+			req.setAttribute("lablist", service.LabsList());
 			List<Object[]>  divisionlist = adminservice.DivisionMasterList(LabCode);
 			if(divisionlist==null || divisionlist.size()==0)
 			{
@@ -821,15 +822,15 @@ public class MasterController {
 	            Map<String, Object> md = model.asMap();
 	            onboard = (String) md.get("Onboard");
 	        }
+	        req.setAttribute("lablist", service.LabList());
 
 	        if (Option == null) {
-	            
+
 	            req.setAttribute("groupslist", service.GroupsList(LabCode));
 	            req.setAttribute("Onboarding", onboard);
 	            return "master/GroupsList";
 	        } 
 	        else if (Option.equalsIgnoreCase("add")) {
-	          
 	            req.setAttribute("groupheadlist", service.GroupHeadList(LabCode));
 	            req.setAttribute("tdaddlist", service.TDListAdd()
 	                                            .stream()
@@ -840,8 +841,9 @@ public class MasterController {
 	        else if (Option.equalsIgnoreCase("edit")) {
 	            
 	            String groupid = req.getParameter("groupid");
-	            req.setAttribute("groupsdata", service.GroupsData(groupid));
-	            req.setAttribute("groupheadlist", service.GroupHeadList(LabCode));
+	            Object[] groupData = service.GroupsData(groupid);
+	            req.setAttribute("groupsdata", groupData);
+	            req.setAttribute("groupheadlist", service.GroupHeadList(groupData[8].toString()));
 	            req.setAttribute("tdaddlist", service.TDListAdd()
 	                                            .stream()
 	                                            .filter(e -> LabCode.equalsIgnoreCase(e[3].toString()))
@@ -2588,5 +2590,40 @@ private boolean isValidFileType(MultipartFile file) {
 		return json.toJson(count);
 	}
 	// 22/8/2025  Naveen R RoleName and RoleCode Duplicate Check End
+	
+	@RequestMapping(value = "EmployeeOnLabCode.htm",method = RequestMethod.GET)
+	@ResponseBody
+	public String  getEmployeesBasedonLab(HttpSession ses,HttpServletRequest req) {
+		String UserId = (String)ses.getAttribute("Username");
+		String labcode =req.getParameter("labcode");
+		logger.info(new Date() + " Inside EmployeeOnLabCode.htm "+ UserId );
+		List<Object[]> list = new ArrayList<Object[]>();
+		try {
+			list = service.GroupHeadList(labcode);
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(new Date() + "Inside EmployeeOnLabCode.htm " + UserId);
+		}
+		Gson json = new Gson();
+		return json.toJson(list);
+	}
+	
+	@RequestMapping(value = "EmployeeOnDivisionCode.htm",method = RequestMethod.GET)
+	@ResponseBody
+	public String  getEmployeesBasedonDivisionCode(HttpSession ses,HttpServletRequest req) {
+		String UserId = (String)ses.getAttribute("Username");
+		String labcode =req.getParameter("labcode");
+		String divisionId = req.getParameter("divisionId");
+		logger.info(new Date() + " Inside EmployeeOnDivisionCode.htm "+ UserId );
+		List<Object[]> list = new ArrayList<Object[]>();
+		try {
+			list = service.DivisionNonEmpList(divisionId).stream().filter(e -> labcode.equalsIgnoreCase(e[3].toString())).collect(Collectors.toList());
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(new Date() + "Inside EmployeeOnDivisionCode.htm " + UserId);
+		}
+		Gson json = new Gson();
+		return json.toJson(list);
+	}
 	
 }

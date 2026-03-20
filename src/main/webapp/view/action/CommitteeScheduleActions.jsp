@@ -35,7 +35,8 @@ List<Object[]> EmpNameList=(List<Object[]>)request.getAttribute("EmpNameList");
 String labcode = (String)request.getAttribute("labcode");
 List<Object[]> Alllablist = (List<Object[]>)request.getAttribute("AllLabList");
 String projectid=committeescheduleeditdata!=null?committeescheduleeditdata[9].toString():"";
-
+List<Object[]> divisionList = (List<Object[]>) request.getAttribute("divisionList");
+//labcode = "PGAD";
 String GenId="GenAdd";
 String MinutesBack=null;
 MinutesBack=(String)request.getAttribute("minutesback");
@@ -54,7 +55,7 @@ String committeeId = (String) request.getAttribute("committeeId");
 String dmcFlag = (String) request.getAttribute("dmcFlag");
 
 String nonproject = (String) request.getAttribute("nonproject");
-
+String programmeId = (String) request.getAttribute("programmeId");
 %>
 
 
@@ -139,11 +140,21 @@ String nonproject = (String) request.getAttribute("nonproject");
 									<span class="font-size14">
 										<%=(ccmFlag!=null&&ccmFlag.equalsIgnoreCase("Y")?"3":(dmcFlag!=null&&dmcFlag.equalsIgnoreCase("Y")?"1":obj[7]!=null?StringEscapeUtils.escapeHtml4(obj[7].toString()):" - ") )+"."+(count++) +". "%> <%-- <%=obj[4] %> --%>  
 									<input type="hidden" id="Data<%=obj[0].toString()%>" value="<%=obj[1].toString()%>">
-									<%if(obj[1]!=null && obj[1].toString().length()>50) {%>
-									<%=StringEscapeUtils.escapeHtml4(obj[1].toString().substring(0,50)) %><span class="cursor-pointer" onclick='showModal("<%=obj[0].toString()%>")'>&nbsp;( view more)</span>
-									<%}else {%>
-									<%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):" - " %>
-									<%} %>	
+									<span class="font-size14">
+											<%
+											String content = obj[1] != null ? obj[1].toString() : " - ";
+											content = content.replaceAll("(?i)</?(p|div|strong)[^>]*>", "");
+											%>											
+											<%= content.length() > 50 ? content.substring(0,50) : content %>
+											
+											<% if(content.length() > 45) { %>
+											<span class="cursor-pointer"
+											      onclick='showModal("<%=obj[0].toString()%>")'>
+											   &nbsp;(view more)
+											</span>
+											<%} %>
+										</span>
+
 										<br>
 										<%if("3".equalsIgnoreCase(obj[7].toString())){%><%-- / <%=obj[5] %> / --%>
 									<%-- 	<%=obj[6] %> --%> <%} %> 
@@ -173,13 +184,12 @@ String nonproject = (String) request.getAttribute("nonproject");
 											<%} %> onclick="FormName('myFormgen<%=obj[0] %>')"
 											value="Assign"
 										 />
-
 									</form>
 								</div>
 							</div>
 						</div>
 						<%next=prev;}  // assign the previous value to next one%> 
-</div>
+					</div>
 					</div>
 					<!-- Big card-body end -->
 
@@ -188,7 +198,7 @@ String nonproject = (String) request.getAttribute("nonproject");
 
 			</div>
 			<!-- col-md-5 end -->
-			<div class="col-md-7" ">
+			<div class="col-md-7" >
 
 				<div class="card margin2" >
 					<div class="card-header card-color" >
@@ -227,6 +237,7 @@ String nonproject = (String) request.getAttribute("nonproject");
 										type="hidden" name="specname" id="specnameadd"> <input
 										type="hidden" name="minutesback" value="<%=MinutesBack %>">
 										<input type="hidden" name="nonproject" value="<%= (nonproject != null) ? nonproject : "N" %>" />
+										<input type="hidden" name="programmeId" value="<%= (programmeId!=null) ? programmeId : "0" %>" />
 										<%if(ccmFlag!=null && ccmFlag.equalsIgnoreCase("Y")) {%>
 											<input type="hidden" name="ccmScheduleId" value="<%=committeescheduleeditdata!=null?committeescheduleeditdata[6]:"" %>">
 											<input type="hidden" name="committeeMainId" value="<%=committeeMainId %>">
@@ -313,7 +324,7 @@ String nonproject = (String) request.getAttribute("nonproject");
 								</div>
 
 
-								<%if(committeescheduleeditdata!=null && !committees.contains(committeescheduleeditdata[8].toString()) && rodflag==null) {%>
+								<%if(committeescheduleeditdata!=null && !committees.contains(committeescheduleeditdata[8].toString()) && rodflag==null && programmeId!=null && programmeId.equalsIgnoreCase("0") && !labcode.equalsIgnoreCase("PGAD")) {%>
 								<div class="col-sm-4" align="left" id="main">
 									<div class="form-group" >
 										<label>Multiple Assignee : </label><br> 
@@ -326,6 +337,20 @@ String nonproject = (String) request.getAttribute("nonproject");
 										</select>
 									</div>
 								</div>
+								<%} %>
+								
+								<% if(programmeId!=null && programmeId.equalsIgnoreCase("1") && labcode.equalsIgnoreCase("PGAD") && divisionList!=null && divisionList.size() > 0){ %>
+									<div class="col-md-4" align="left" id="divisions">
+										<div class="form-group">
+											<label>Multiple Assignee :</label><br>
+											<select class="form-control selectdee" onchange="showDivisionEmployee()" id="multipleDivisionAssignee" name="multipleDivisionAssignee">
+												<option value="" selected="selected" disabled="disabled" >Select</option>
+												<% for (Object[] obj : divisionList){ %>
+													<option value="<%=obj[0] %>"> <%= obj[3]!=null ? StringEscapeUtils.escapeHtml4(obj[3].toString()): "" %> <%=obj[2]!=null ? "("+StringEscapeUtils.escapeHtml4(obj[2].toString()) + ")": "" %></option>
+												<%} %>
+											</select>
+										</div>
+									</div>
 								<%} %>
 
 							</div>
@@ -386,6 +411,7 @@ String nonproject = (String) request.getAttribute("nonproject");
 		<input type="hidden" name="minutesback" value="<%=MinutesBack%>" /> 
 		<input type="hidden" name="specValueId" id="specValueId" value="">
 		<input type="hidden" name="nonproject" value="<%= (nonproject != null) ? nonproject : "N" %>" />
+		<input type="hidden" name="programmeId" value="<%= (programmeId!=null) ? programmeId : "0" %>" />
 		<%if(rodflag!=null) {%>
 			<input type="hidden" name="rodflag" value="Y">	
 		<%} %>
@@ -509,6 +535,7 @@ String nonproject = (String) request.getAttribute("nonproject");
 							<input type="hidden" name="specnamevalue" id="specValue" value="">
 							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 							<input type="hidden" name="nonproject" value="<%= (nonproject != null) ? nonproject : "N" %>" />
+							<input type="hidden" name="programmeId" value="<%= (programmeId!=null) ? programmeId : "0" %>" />
 							<%if(rodflag!=null) {%>
 								<input type="hidden" name="rodflag" value="Y">	
 							<%} %>
@@ -820,6 +847,38 @@ String nonproject = (String) request.getAttribute("nonproject");
 	});
 
 	
+</script>
+
+<script>
+
+function showDivisionEmployee(){
+	var divisionId = $('#multipleDivisionAssignee').val();
+	$.ajax({
+		  type:'GET',
+		  url:'getDivisionEmployees.htm',
+		  datatype:'json',
+		  data:{
+			  divisionId:divisionId,
+		  },
+		  success:function(result){
+			  var ajaxresult=JSON.parse(result);
+			  console.log(ajaxresult.length);
+			  if(ajaxresult.length>0){
+				  $('#modalHeader').text(" Division Employees");
+				  $('#employeeModal').modal('show');
+				  var html="";
+				  for(var i=0;i<ajaxresult.length;i++){
+					 if(ajaxresult[i][1]!=null && ajaxresult[i][2]!=null) html=html+"<tr><td class='text-center'>"+(i+1)+"</td><td>"+ajaxresult[i][1] +", " + ajaxresult[i][2]+"</td></tr>"; 
+				  }
+				  if(html.length===0){
+					  html = "<tr><td class='text-center' colspan='2'>No Data Available</td></tr>"
+				  }
+				  $('#modalTable').html(html);
+			  }
+		  }
+	  })
+}
+
 </script>
 
 <script>

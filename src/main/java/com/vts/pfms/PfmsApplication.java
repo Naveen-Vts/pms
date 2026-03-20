@@ -21,7 +21,7 @@ public class PfmsApplication {
 		SpringApplication.run(PfmsApplication.class, args);
 	}
 
-	@Bean
+	  @Bean
 	   public RestTemplate getRestTemplate() {
 	      return new RestTemplate();
 	   }

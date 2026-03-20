@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -255,15 +256,20 @@ public class MasterServiceImpl implements MasterService {
 		Long empId=Long.parseLong(empid);
 		Long SeniorityNumber=Long.parseLong(newSeniorityNumber);
 		int result= 0;
+		List<Integer> list = new ArrayList<Integer>();
 		Long newSeniorityNumberL=SeniorityNumber;
 		List<Object[]> EmpSenHaveUpdate=dao.updateAndGetList(empId,newSeniorityNumber);
+		if(EmpSenHaveUpdate!=null) list.add(1);
 		List<Object[]> result1=EmpSenHaveUpdate.stream().filter(srno-> Long.parseLong(srno[0].toString())>=SeniorityNumber && Long.parseLong(srno[1].toString())!=empId  ).collect(Collectors.toList());
 		
 		for(Object[] data:result1) { 
 		  Long empIdL=Long.parseLong(data[1].toString()); 
-		  result= dao.updateAllSeniority(empIdL, ++newSeniorityNumberL);
+		  result = dao.updateAllSeniority(empIdL, ++newSeniorityNumberL);
+		  if(result>0)list.add(result);		  
 		}
-		return 1;
+
+		return list.size();
+
 	}
 	
 	

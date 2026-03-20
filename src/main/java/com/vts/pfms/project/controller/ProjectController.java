@@ -4085,19 +4085,19 @@ public class ProjectController
 				String projectshortname = req.getParameter("projectshortname"); 
 				String platformName=req.getParameter("platformName"); //srikant
 								
-				if (Stream.of(pcode, pname, desc, unicode, projectshortname, sano, NodalName)
-				        .anyMatch(field -> !InputValidator.isContainCapitalsSmallsNumericSymbolsSpace(field))) {
-				    return redirectWithError(redir, "ProjectMain.htm", "Only letters, digits, spaces, and '-', '/', '\\' are allowed.");
-				}
-				
-				if(Stream.of(tsancost,sancostre,sancostfe)
-						.anyMatch(field-> !InputValidator.isDecimalFormat(field))){
-				    return redirectWithError(redir, "ProjectMain.htm", "Only numbers are allowed. You may enter up to 2 digits after the decimal.");				
-				}
-				if(Stream.of(application,scope,Deliverable,Objective)
-						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
-					return redirectWithError(redir, "ProjectMain.htm", "HTML tags are not permitted.");				
-				}
+//				if (Stream.of(pcode, pname, desc, unicode, projectshortname, sano, NodalName)
+//				        .anyMatch(field -> !InputValidator.isContainCapitalsSmallsNumericSymbolsSpace(field))) {
+//				    return redirectWithError(redir, "ProjectMain.htm", "Only letters, digits, spaces, and '-', '/', '\\' are allowed.");
+//				}
+//				
+//				if(Stream.of(tsancost,sancostre,sancostfe)
+//						.anyMatch(field-> !InputValidator.isDecimalFormat(field))){
+//				    return redirectWithError(redir, "ProjectMain.htm", "Only numbers are allowed. You may enter up to 2 digits after the decimal.");				
+//				}
+//				if(Stream.of(application,scope,Deliverable,Objective)
+//						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
+//					return redirectWithError(redir, "ProjectMain.htm", "HTML tags are not permitted.");				
+//				}
 
 
 				ProjectMain protype=new ProjectMain();
@@ -4204,19 +4204,19 @@ public class ProjectController
 				String projectshortname = req.getParameter("projectshortname");
 				String PlatformName=req.getParameter("platformName");  //srikant
 				
-				if (Stream.of(pcode, pname, desc, unicode, projectshortname, sano, NodalLab)
-				        .anyMatch(field -> !InputValidator.isContainCapitalsSmallsNumericSymbolsSpace(field))) {
-				    return redirectWithError(redir, "ProjectMain.htm", "Only letters, digits, spaces, and '-', '/', '\\' are allowed.");
-				}
-				
-				if(Stream.of(tsancost,sancostre,sancostfe)
-						.anyMatch(field-> !InputValidator.isDecimalFormat(field))){
-				    return redirectWithError(redir, "ProjectMain.htm", "Only numbers are allowed. You may enter up to 2 digits after the decimal.");				
-				}
-				if(Stream.of(application,scope,Deliverable,Objective)
-						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
-					return redirectWithError(redir, "ProjectMain.htm", "HTML tags are not permitted.");				
-				}
+//				if (Stream.of(pcode, pname, desc, unicode, projectshortname, sano, NodalLab)
+//				        .anyMatch(field -> !InputValidator.isContainCapitalsSmallsNumericSymbolsSpace(field))) {
+//				    return redirectWithError(redir, "ProjectMain.htm", "Only letters, digits, spaces, and '-', '/', '\\' are allowed.");
+//				}
+//				
+//				if(Stream.of(tsancost,sancostre,sancostfe)
+//						.anyMatch(field-> !InputValidator.isDecimalFormat(field))){
+//				    return redirectWithError(redir, "ProjectMain.htm", "Only numbers are allowed. You may enter up to 2 digits after the decimal.");				
+//				}
+//				if(Stream.of(application,scope,Deliverable,Objective)
+//						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
+//					return redirectWithError(redir, "ProjectMain.htm", "HTML tags are not permitted.");				
+//				}
 
 				ProjectMain protype=new ProjectMain();
 				protype.setIsMainWC(Integer.parseInt(isMainWC));
@@ -4376,18 +4376,18 @@ public class ProjectController
 				String scope = req.getParameter("scope");
 				String application = req.getParameter("application");
 				
-				if (Stream.of(pcode, pname, desc, unicode, projectshortname, sano, nodallab)
-				        .anyMatch(field -> !InputValidator.isContainCapitalsSmallsNumericSymbolsSpace(field))) {
-				    return redirectWithError(redir, "ProjectList.htm", "Only letters, digits, spaces, and '-', '/', '\\' are allowed.");
-				}				
-				if(Stream.of(tsancost,sancostre,sancostfe)
-						.anyMatch(field-> !InputValidator.isDecimalFormat(field))){
-				    return redirectWithError(redir, "ProjectList.htm", "Only numbers are allowed. You may enter up to 2 digits after the decimal.");				
-				}
-				if(Stream.of(application,scope,Deliverable,Objective)
-						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
-					return redirectWithError(redir, "ProjectList.htm", "HTML tags are not permitted.");				
-				}
+//				if (Stream.of(pcode, pname, desc, unicode, projectshortname, sano, nodallab)
+//				        .anyMatch(field -> !InputValidator.isContainCapitalsSmallsNumericSymbolsSpace(field))) {
+//				    return redirectWithError(redir, "ProjectList.htm", "Only letters, digits, spaces, and '-', '/', '\\' are allowed.");
+//				}				
+//				if(Stream.of(tsancost,sancostre,sancostfe)
+//						.anyMatch(field-> !InputValidator.isDecimalFormat(field))){
+//				    return redirectWithError(redir, "ProjectList.htm", "Only numbers are allowed. You may enter up to 2 digits after the decimal.");				
+//				}
+//				if(Stream.of(application,scope,Deliverable,Objective)
+//						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
+//					return redirectWithError(redir, "ProjectList.htm", "HTML tags are not permitted.");				
+//				}
 				
 				ProjectMaster protype=new ProjectMaster();
 				//     		 protype.setIsMainWC(Integer.parseInt(isMainWC));
@@ -4407,6 +4407,7 @@ public class ProjectController
 				protype.setProjectDirector(Long.parseLong(projectdirector));
 				protype.setProjectCategory(Long.parseLong(req.getParameter("projectcategory")));
 				protype.setProjectType(Long.parseLong(projectTypeID));
+				protype.setProjectTypeId(Long.parseLong(projectTypeID));;
 				protype.setProjSancAuthority(ProjectsancAuthority);
 				protype.setSanctionDate(new java.sql.Date(sdf2.parse(sadate).getTime()));
 				protype.setTotalSanctionCost(Double.parseDouble(tsancost.trim()));
@@ -4490,19 +4491,19 @@ public class ProjectController
 				String nodallab = req.getParameter("Nodal");
 				String platformName=req.getParameter("platformName"); //srikant  
 				
-				if (Stream.of(pcode, pname, desc, unicode, projectshortname, sano, nodallab)
-				        .anyMatch(field -> !InputValidator.isContainCapitalsSmallsNumericSymbolsSpace(field))) {
-				    return redirectWithError(redir, "ProjectList.htm", "Only letters, digits, spaces, and '-', '/', '\\' are allowed.");
-				}				
-				if(Stream.of(tsancost,sancostre,sancostfe)
-						.anyMatch(field-> !InputValidator.isDecimalFormat(field))){
-				    return redirectWithError(redir, "ProjectList.htm", "Only numbers are allowed. You may enter up to 2 digits after the decimal.");				
-				}
-				if(Stream.of(application,scope,Deliverable,Objective)
-						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
-					return redirectWithError(redir, "ProjectList.htm", "HTML tags are not permitted.");				
-				}
-	
+//				if (Stream.of(pcode, pname, desc, unicode, projectshortname, sano, nodallab)
+//				        .anyMatch(field -> !InputValidator.isContainCapitalsSmallsNumericSymbolsSpace(field))) {
+//				    return redirectWithError(redir, "ProjectList.htm", "Only letters, digits, spaces, and '-', '/', '\\' are allowed.");
+//				}				
+//				if(Stream.of(tsancost,sancostre,sancostfe)
+//						.anyMatch(field-> !InputValidator.isDecimalFormat(field))){
+//				    return redirectWithError(redir, "ProjectList.htm", "Only numbers are allowed. You may enter up to 2 digits after the decimal.");				
+//				}
+//				if(Stream.of(application,scope,Deliverable,Objective)
+//						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
+//					return redirectWithError(redir, "ProjectList.htm", "HTML tags are not permitted.");				
+//				}
+//	
 				ProjectMaster protype=new ProjectMaster();
 				//     		 protype.setIsMainWC(Integer.parseInt(isMainWC));
 				//			 protype.setWorkCenter(WCname);
@@ -4518,6 +4519,7 @@ public class ProjectController
 				protype.setProjectDirector(Long.parseLong(projectdirector));
 				protype.setProjectCategory(Long.parseLong(req.getParameter("projectcategory")));
 				protype.setProjectType(Long.parseLong(projectTypeID));
+				protype.setProjectTypeId(Long.parseLong(projectTypeID));
 				protype.setProjSancAuthority(ProjectsancAuthority);
 				protype.setSanctionDate(new java.sql.Date(sdf2.parse(sadate).getTime()));
 				protype.setTotalSanctionCost(Double.parseDouble(tsancost.trim()));

@@ -286,7 +286,7 @@
 															for(Object[] obj: AssignedList){ %>
 															<tr>
 															<td  class="center td-width1"><%=count %></td>
-															<td class="td-modified"><%= obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()):"-" %></td>
+															<td class="td-modified"><%= obj[5]!=null?obj[5].toString():"-" %></td>
 															<td class="width-10 text-center" ><%=obj[4]!=null?StringEscapeUtils.escapeHtml4(sdf.format(obj[4])):" - " %></td>
 															<td class="width-10 text-center"><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(sdf.format(obj[3])):" - "%></td>
 															<td ><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):" - "%>, <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):" - "%></td>
@@ -506,7 +506,7 @@
 						datatype : 'json',
 						success : function(result) {
 							var result = JSON.parse(result);
-							$('#modalactionitem').html(result[1]);
+							$('#modalactionitem').html(result[1].replaceAll("<p>","").replaceAll("</p>","").replaceAll("<","").replaceAll(">","").replaceAll("/",""));
 							$('#modalactionmainid').val(result[0]);
 							$('#modalactionassignid').val(result[6]);
 							$('#modelAssigneelabcode').val(result[5]).trigger('change');

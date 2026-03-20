@@ -43,7 +43,7 @@ public class RfpMainDaoImpl implements RfpMainDao {
 	private static final String NOTICELIST="SELECT * FROM pfms_notice WHERE NoticeBy=:empid AND IsActive=1 AND MONTH(CreatedDate) = MONTH(CURRENT_DATE())";
 	private static final String NOTICE="SELECT n.noticeid,n.notice, e.emp_name FROM pfms_notice n, employee e   WHERE   DATE(NOW()) >=n.FromDate AND DATE(NOW()) <= n.ToDate AND e.emp_id=n.NoticeBy AND n.IsActive=1 AND n.labcode=:labcode ORDER BY n.NoticeId DESC";	
 	private static final String getEmpNoQuery="SELECT emp_no FROM employee WHERE emp_id =:empid";	
-	private static final String PROJECTLIST="SELECT a.projectid AS id,a.projectcode,a.projectname,a.projectmainid,a.projecttype,b.empname AS 'project_director',b.mobileno,a.projectdirector,a.sanctiondate,a.pdc FROM project_master a , employee b WHERE a.projectdirector=b.empid AND a.isactive=1 AND a.labcode = (SELECT labcode FROM employee WHERE empid=:empid)";
+	private static final String PROJECTLIST="SELECT a.project_id AS id,a.project_code,a.project_name,a.project_main_id,a.project_type,b.emp_name AS 'project_director',b.mobile_no,a.project_director,a.sanction_date,a.pdc FROM project_master a , employee b WHERE a.project_director=b.emp_id AND a.is_active=1 AND a.lab_code = (SELECT lab_code FROM employee WHERE emp_id=:empid)";
 	private static final String QUATERS="SELECT a.sanctiondate, a.pdc, TIMESTAMPDIFF(YEAR,a.sanctiondate,a.pdc)+1 FROM project_master a WHERE a.projectid=:projectid";
 	private static final String MILEQUATER="CALL Pfms_Milestone_Quarter(:proid,:Quater,:yr)"; 
 	private static final String GANTTCHARTLIST="SELECT milestoneactivityid,projectid,activityname,milestoneno,orgstartdate,orgenddate,startdate,enddate,progressstatus,revisionno FROM milestone_activity WHERE isactive=1 ";

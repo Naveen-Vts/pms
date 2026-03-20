@@ -26,6 +26,11 @@ String projectid=(String) request.getAttribute("projectid");
 //List<Object[]> projectslist=(List<Object[]>)request.getAttribute("projectslist"); 
 String projectappliacble=(String) request.getAttribute("projectappliacble"); 
 Object[] projectdetails=(Object[])request.getAttribute("projectdetails");
+
+String LabCode = (String) session.getAttribute("labcode");
+
+String LoginType = (String) session.getAttribute("LoginType");
+
 %>
 
  <!-- ----------------------------------message ------------------------- -->
@@ -158,7 +163,8 @@ Object[] projectdetails=(Object[])request.getAttribute("projectdetails");
 																</form> 		
 															
 												
-																<%if(projectappliacble.equalsIgnoreCase("N") && !Arrays.asList("CCM","CARS").contains(obj[1].toString()) ){ %>												
+																<%if(projectappliacble.equalsIgnoreCase("N") && !Arrays.asList("CCM","CARS").contains(obj[1].toString()) ){
+																	if( (LoginType.equalsIgnoreCase("A") || LoginType.equalsIgnoreCase("P"))){ %>												
 																	<form action="CommitteeMainMembers.htm" method="post" name="myfrm"	class="d-inline">
 																		<button class="editable-click" name="sub" value="Details" 	>
 																			<div class="cc-rockmenu">
@@ -176,7 +182,8 @@ Object[] projectdetails=(Object[])request.getAttribute("projectdetails");
 																		<input type="hidden" name="divisionid"	value="0" />
 																		<input type="hidden" name="initiationid" value="0" />
 	 																	<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-																	</form> 
+																	</form>
+																	<%} %> 
 																	<form action="NonProjectCommitteeAutoSchedule.htm" method="post" name="myfrm" class="d-inline">
 																		<button class="editable-click" name="sub" value="Details" 	>
 																			<div class="cc-rockmenu">

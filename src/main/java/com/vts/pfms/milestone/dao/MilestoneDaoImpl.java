@@ -1,5 +1,6 @@
 	package com.vts.pfms.milestone.dao;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,14 +50,16 @@ public class MilestoneDaoImpl implements MilestoneDao {
 			+ "a.acceptedby,a.isaccepted,a.statusremarks,a.progressstatus,a.Weightage,a.activitystatusid,b.project_id,a.dateofcompletion, a.OICEmpId, a.financialOutlay,a.oicempid1 \r\n"
 			+ "FROM milestone_activity a,project_master b, employee c,employee d, employee_desig e, employee_desig f \r\n"
 			+ "WHERE a.projectid=b.project_id AND a.oicempid=c.emp_id AND a.oicempid1=d.emp_id AND c.desig_id = e.desig_id AND d.desig_id = f.desig_id AND a.projectid=:ProjectId ORDER BY a.MilestoneNo";
-	private static final String PROJECTMASTER="SELECT a.ProjectId, a.ProjectCode, a.ProjectName, a.ProjectShortName FROM project_master a WHERE a.IsActive='1'";
+	private static final String PROJECTMASTER="SELECT a.project_id, a.project_code, a.project_name, a.project_short_name FROM project_master a WHERE a.is_active='1'";
 	private static final String EMPLOYEELISTALL="select a.emp_id,a.emp_name,b.designation,a.title,a.salutation FROM employee a,employee_desig b WHERE a.is_active='1' AND a.desig_id=b.desig_id ORDER BY a.sr_no=0,a.sr_no";
     private static final String MILESTONECOUNT="Select count(*) from milestone_activity where isactive='1' and projectid=:ProjectId";
+
 	private static final String MA="SELECT a.milestoneactivityid,b.project_name,a.startdate,a.enddate,a.activityname,a.milestoneno,\r\n"
 			+ "c.emp_name,d.emp_name AS emp,a.oicempid,a.oicempid1,a.projectid,a.progressstatus,a.revisionno,a.acceptedby,\r\n"
-			+ "a.accepteddate,a.activitytype,a.Weightage,e.activitytype AS TYPE, c.lab_code AS 'LabCode1', d.lab_code AS 'LabCode2'\r\n"
+			+ "a.accepteddate,a.activitytype,a.Weightage,e.activitytype AS TYPE, c.lab_code AS 'LabCode1', d.lab_code AS 'LabCode2', (SELECT COALESCE(a.ModifiedDate, a.CreatedDate) > MAX(c.CreatedDate) FROM `milestone_activity_rev` c WHERE c.MilestoneActivityId=:id)AS 'IsChange' \r\n"
 			+ "FROM milestone_activity a,project_master b, employee c,employee d, milestone_activity_type e WHERE a.activitytype=e.activitytypeid AND\r\n"
 			+ "a.projectid=b.project_id AND a.oicempid=c.emp_id AND a.oicempid1=d.emp_id AND a.milestoneactivityid=:id";
+
 	private static final String MILEACTIVITYLEVEL="CALL Pfms_Milestone_Level_List(:id,:levelid)";
     private static final String MAREVISION="SELECT MAX(revisionno) FROM milestone_activity_rev WHERE milestoneactivityid=:id ";
 	private static final String MADETAILS="FROM MilestoneActivity WHERE MilestoneActivityId=:Id";
@@ -115,7 +118,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 	private static final String VERSIONCHECKLIST="SELECT b.filerepuploadid,b.filerepid,b.filenameui,b.ReleaseDoc,b.versionDoc FROM file_rep_new a,file_rep_upload b WHERE a.projectid=:projectId AND a.DocumentName=:docName AND a.filerepid=b.filerepid AND a.IsActive=1 AND b.IsActive=1 ORDER BY b.filerepuploadid DESC LIMIT 1"; 
 	private static final String DOCUMENTSTAGELIST="SELECT a.fileuploadmasterid,a.parentlevelid,a.levelid,a.levelname FROM file_doc_master a WHERE a.isactive=1 AND a.levelid=:levelid AND a.parentlevelid=:documenttype";
 	private static final String FILEHISTORYLIST="SELECT fru.filerepuploadid,frn.filerepid,fdm.docid,fdm.levelname,fru.versiondoc,fru.releasedoc,CAST(DATE_FORMAT(fru.createddate,'%d-%m-%Y') AS CHAR) AS 'createddate' FROM  file_rep_new frn,file_rep_upload fru,file_doc_master fdm WHERE frn.filerepid=fru.filerepid AND frn.documentid=fdm.fileuploadmasterid AND frn.filerepid=:filerepid ORDER BY fru.versiondoc DESC,fru.releasedoc DESC ";
-	private static final String FILEREPMASTERLISTALL ="SELECT a.filerepmasterid,a.parentlevelid,a.levelid,a.levelname,COALESCE(b.ProjectCode, 'General') AS ProjectCode FROM file_rep_master a LEFT JOIN project_master b ON a.projectid = b.projectid WHERE a.filerepmasterid > 0 AND a.projectid =:projectid AND a.LabCode =:LabCode";
+	private static final String FILEREPMASTERLISTALL ="SELECT a.filerepmasterid,a.parentlevelid,a.levelid,a.levelname,COALESCE(b.project_code, 'General') AS ProjectCode FROM file_rep_master a LEFT JOIN project_master b ON a.projectid = b.project_id WHERE a.filerepmasterid > 0 AND a.projectid =:projectid AND a.LabCode =:LabCode";
 	private static final String FILEDOCMASTERLISTALL ="SELECT fileuploadmasterid,parentlevelid,levelid,levelname,docid,docshortname FROM file_doc_master WHERE isactive=1  AND labcode=:LabCode AND fileuploadmasterid IN (SELECT parentlevelid FROM file_doc_master WHERE isactive=1 AND fileuploadmasterid IN (SELECT parentlevelid FROM file_project_doc   WHERE projectid=:projectid AND labcode=:LabCode ) )  UNION  SELECT fileuploadmasterid,parentlevelid,levelid,levelname,docid,docshortname FROM file_doc_master WHERE isactive=1 AND labcode=:LabCode AND fileuploadmasterid IN (SELECT parentlevelid FROM file_project_doc   WHERE projectid=:projectid AND labcode=:LabCode) ";
 	private static final String PROJECTDOCUMETSADD ="SELECT DocAmendmentId,FileRepUploadId,FileName,Description,AmendVersion,FilePath,FilePass,Amendmentname FROM file_doc_amendment WHERE FileRepUploadId=:FileRepUploadId ORDER BY AmendVersion DESC";
 	private static final String DOCUMENTAMENDMENTDATA ="SELECT DocAmendmentId,FileRepUploadId,FileName,Description,AmendVersion,FilePath,FilePass,Amendmentname FROM file_doc_amendment WHERE DocAmendmentId=:docammendmentid ORDER BY AmendVersion DESC";
@@ -539,16 +542,19 @@ public class MilestoneDaoImpl implements MilestoneDao {
 		return trans.getActivityTransactionId();
 	}
 	@Override
-	public int ActivityMainSum(String Id,String ActivityId) throws Exception {
-		try {
-			Query query = manager.createNativeQuery(MILESUM);
-			query.setParameter("projectid", Long.parseLong(ActivityId));
-			query.setParameter("id", Long.parseLong(Id));
-			return (Integer)query.getSingleResult();
-		}catch (Exception e) {
-			e.printStackTrace();
-			return 0;
-		}
+	public int ActivityMainSum(String Id, String ActivityId) {
+	    try {
+	        Query query = manager.createNativeQuery(MILESUM);
+	        query.setParameter("projectid", Long.parseLong(ActivityId));
+	        query.setParameter("id", Long.parseLong(Id));
+
+	        BigDecimal result = (BigDecimal) query.getSingleResult();
+	        return result != null ? result.intValue() : 0;
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return 0;
+	    }
 	}
 
 	@Override
@@ -1043,7 +1049,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 		}
 	}
 	
-	private static final String MILESTONEACTIVITYLISTNEW = "SELECT a.milestoneactivityid AS obid,0 AS 'parentactivityid',a.startdate,a.enddate,a.activityname,a.progressstatus,a.Weightage,a.dateofcompletion, b.activitystatus,a.activitystatusid,a.revisionno AS 'rev' ,d.activitytypeid, d.activitytype ,a.oicempid,e.empname,a.oicempid1,0 AS 'activitylevelid' FROM milestone_activity a,milestone_activity_status b, milestone_activity_type d ,employee e WHERE a.activitystatusid=b.activitystatusid AND a.activitytype=d.activitytypeid AND a.oicempid=e.empid AND a.projectid=:projectid";
+	private static final String MILESTONEACTIVITYLISTNEW = "SELECT a.milestoneactivityid AS obid,0 AS 'parentactivityid',a.startdate,a.enddate,a.activityname,a.progressstatus,a.Weightage,a.dateofcompletion, b.activitystatus,a.activitystatusid,a.revisionno AS 'rev' ,d.activitytypeid, d.activitytype ,a.oicempid,e.emp_name,a.oicempid1,0 AS 'activitylevelid' FROM milestone_activity a,milestone_activity_status b, milestone_activity_type d ,employee e WHERE a.activitystatusid=b.activitystatusid AND a.activitytype=d.activitytypeid AND a.oicempid=e.emp_id AND a.projectid=:projectid";
 	@Override
 	public List<Object[]> MilestoneActivityListNew(String ProjectId) throws Exception 
 	{
@@ -1055,7 +1061,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 	}
 	
 	
-	private static final String MILESTONEACTIVITYLEVELEXCEL = "SELECT a.activityid AS obid,a.parentactivityid,a.startdate,a.enddate,a.activityname,a.progressstatus,a.Weightage,a.dateofcompletion, b.activitystatus,a.activitystatusid,a.revision AS rev,d.activitytypeid, d.activitytype,a.oicempid,e.empname,a.oicempid1 ,a.activitylevelid FROM milestone_activity_level a,milestone_activity_status b, milestone_activity_type d ,employee e WHERE a.activitystatusid=b.activitystatusid AND a.activitytype=d.activitytypeid AND a.oicempid=e.empid AND   a.parentactivityid=:MilestoneActivityId AND a.activitylevelid=:levelid ";
+	private static final String MILESTONEACTIVITYLEVELEXCEL = "SELECT a.activityid AS obid,a.parentactivityid,a.startdate,a.enddate,a.activityname,a.progressstatus,a.Weightage,a.dateofcompletion, b.activitystatus,a.activitystatusid,a.revision AS rev,d.activitytypeid, d.activitytype,a.oicempid,e.emp_name,a.oicempid1 ,a.activitylevelid FROM milestone_activity_level a,milestone_activity_status b, milestone_activity_type d ,employee e WHERE a.activitystatusid=b.activitystatusid AND a.activitytype=d.activitytypeid AND a.oicempid=e.emp_id AND   a.parentactivityid=:MilestoneActivityId AND a.activitylevelid=:levelid ";
 	@Override
 	public List<Object[]> MilestoneActivityLevelExcel(String MilestoneActivityId,String LevelId) throws Exception {
 		Query query=manager.createNativeQuery(MILESTONEACTIVITYLEVELEXCEL);
@@ -1509,7 +1515,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 		}
 	}
 		
-	private static final String ACTIONASSIGNEELIST="SELECT a.ActionAssignId, a.ActionMainId, a.ActionNo, b.ActionItem, a.Assignee, b.ActionDate, a.EndDate, b.ProjectId, a.Loading, c.ProjectCode, c.ProjectShortName, a.Progress FROM action_assign a JOIN action_main b ON a.ActionMainId=b.ActionMainId LEFT JOIN project_master c ON b.ProjectId=c.ProjectId WHERE a.IsActive=1 AND a.Assignee=:EmpId";
+	private static final String ACTIONASSIGNEELIST="SELECT a.ActionAssignId, a.ActionMainId, a.ActionNo, b.ActionItem, a.Assignee, b.ActionDate, a.EndDate, b.ProjectId, a.Loading, c.project_code, c.project_short_name, a.Progress FROM action_assign a JOIN action_main b ON a.ActionMainId=b.ActionMainId LEFT JOIN project_master c ON b.ProjectId=c.project_id WHERE a.IsActive=1 AND a.Assignee=:EmpId";
 	@Override
 	public List<Object[]> actionAssigneeList(String empId) throws Exception {
 		try {
@@ -1871,5 +1877,28 @@ public class MilestoneDaoImpl implements MilestoneDao {
 		Query query = manager.createNativeQuery(PREDECESSORDELETE);
 		query.setParameter("successorId",successor);
 		return query.executeUpdate();
+	}
+
+	@Override
+	public Object[] getprojectDetails(String projectId) throws Exception {
+		Query query = manager.createNativeQuery("SELECT * from project_master WHERE ProjectId=:projectId");
+		query.setParameter("projectId", Long.parseLong(projectId));
+		List<Object[]> list =  (List<Object[]>) query.getResultList();
+		if(list.size()>0) {
+			return list.get(0);
+		}
+		return null;
+	}
+
+	private static final String FILEREPUPLOADDETAILS= "SELECT b.FileRepUploadId, b.FileRepId, b.FileName, b.ReportType FROM file_rep_new a LEFT JOIN file_rep_upload b ON a.FileRepId = b.FileRepId ORDER BY FileRepUploadId DESC LIMIT 1;"; 
+	@Override
+	public Object[] getFileRepUploadDetails(String projectId) throws Exception {
+		Query query = manager.createNativeQuery(FILEREPUPLOADDETAILS);
+//		query.setParameter("projectId", Long.parseLong(projectId));
+		List<Object[]> list =  (List<Object[]>) query.getResultList();
+		if(list.size()>0) {
+			return list.get(0);
+		}
+		return null;
 	}
 }

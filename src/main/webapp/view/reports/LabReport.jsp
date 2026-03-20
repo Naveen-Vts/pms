@@ -47,7 +47,7 @@ Object[] ProjectEditData=(Object[])request.getAttribute("ProjectEditData");
 Object[] editorData=(Object[])request.getAttribute("editorData");
 String Project=(String)request.getAttribute("ProjectId");
 int currentYear=(int)request.getAttribute("currentYear");
-int PastYr=currentYear-1;
+//int PastYr=currentYear-1;
 int nextYear=(int)request.getAttribute("nextYear");
 List<PfmsLabReportMilestone>LabReportMilestoneData = (List<PfmsLabReportMilestone>)request.getAttribute("LabReportMilestoneData");
 
@@ -246,7 +246,7 @@ if(proList!=null && proList.size()>0){
 
             <!-- Details of Review held till YR -->
             <div class="attribute mt-3">
-                <h5 class="labParticipatingHeading">Details of Review held till <%=PastYr%></h5>
+                <h5 class="labParticipatingHeading">Details of Review held till <%=currentYear%></h5>
                 <p class="labParticipatingClass"><b>EB:</b> <%=ProjectEditData[16]!=null?StringEscapeUtils.escapeHtml4(ProjectEditData[16].toString()):" - " %></p>
                 <p class="labParticipatingClass"><b>PMRC:</b> <%=ProjectEditData[15]!=null?StringEscapeUtils.escapeHtml4(ProjectEditData[15].toString()):" - " %></p>
               <%--   <table>

@@ -784,7 +784,7 @@ function openMainModal(agendaid,scheduleid,agendaname,projectid,cloneId,agendaty
                             html += '</li>';
                         }
 
-                        html += '<div class="" id="mainfolder-files-' + mainId + ' displayNoneStyle"></div>';
+                        html += '<div class="display-none" id="mainfolder-files-' + mainId + '" ></div>';
                         html += '</ul></li>';
                     }
                 }
@@ -808,12 +808,13 @@ function openMainModal(agendaid,scheduleid,agendaname,projectid,cloneId,agendaty
 }
 
 function toggleFolder(element, folderId, projecId, type, agendatype, agendaid) {
-	
     if ($(event.target).closest('.file-item').length > 0 || $(event.target).hasClass('pdf-check')) {
         return;
     }
     event.stopPropagation(); // Prevent parent toggling
 
+    console.log("Inside ttoggleFolder")
+    
     var $elem = $(element);
     var $icon = $elem.children('.folder-icon');
     var $subfolder = $elem.children('ul.subfolder');
@@ -843,8 +844,10 @@ function toggleFolder(element, folderId, projecId, type, agendatype, agendaid) {
 
 function loadFolderFiles(folderId, projecId, type, agendatype, agendaid) {
 	
-	const initiationId = <%= initiationid %>;
+	const initiationId = '<%=initiationid %>';
 
+	
+	 console.log("Inside loadFolderFiles", initiationId, +","+ projecId);
     let ajaxUrl = "";
     let ajaxData = {};
     
@@ -858,6 +861,7 @@ function loadFolderFiles(folderId, projecId, type, agendatype, agendaid) {
          ajaxData = { projectId : projecId, fileId : folderId, fileType : type,};
     }
 
+    console.log("ajaxUrl",ajaxUrl +" "+ajaxData)
     $.ajax({
         type: "GET",
         url: ajaxUrl,

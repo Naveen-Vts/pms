@@ -634,9 +634,8 @@
 								<table class="width-100">
 									<tr>
 										<td class="width-12 "><label
-											class="td-st"> Action
-												Item :</label></td>
-										<td><%=Assignee[5]!=null?StringEscapeUtils.escapeHtml4(Assignee[5].toString()):" - "%></td>
+											class="td-st"> Action Item :</label></td>
+										<td><%=Assignee[5]!=null?Assignee[5].toString():" - "%></td>
 									</tr>
 								</table>
 								<table>

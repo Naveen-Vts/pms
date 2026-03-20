@@ -848,6 +848,7 @@ public class AdminController {
 	            onboard = (String) md.get("Onboard");
 	        }
 
+	        req.setAttribute("lablist", service.AllLabList());
 	        if (Option == null) {
 	           
 	            req.setAttribute("Onboarding", onboard);
@@ -869,14 +870,15 @@ public class AdminController {
 	        else if (Option.equalsIgnoreCase("edit")) {
 	           
 	            String DivisionId = req.getParameter("Did");
-	            req.setAttribute("DivisionMasterEditData", service.DivisionMasterEditData(DivisionId).get(0));
+	            Object[] divisionData = service.DivisionMasterEditData(DivisionId).get(0);
+	            req.setAttribute("DivisionMasterEditData", divisionData);
 	            req.setAttribute("DivisionGroupList", service.DivisionGroupList()
 	                    .stream()
 	                    .filter(e -> LabCode.equalsIgnoreCase(e[2].toString()))
 	                    .collect(Collectors.toList()));
 	            req.setAttribute("DivisionHeadList", service.DivisionHeadList()
 	                    .stream()
-	                    .filter(e -> LabCode.equalsIgnoreCase(e[2].toString()))
+	                    .filter(e -> divisionData[7].toString().equalsIgnoreCase(e[2].toString()))
 	                    .collect(Collectors.toList()));
 	            return "admin/DivisionMasterEdit";
 	        }

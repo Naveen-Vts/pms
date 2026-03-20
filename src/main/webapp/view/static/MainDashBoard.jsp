@@ -1112,7 +1112,7 @@ String IsDG = (String)request.getAttribute("IsDG");
 										<tbody>
 											<tr>
 												<td><a href="javascript:MyTaskDetails(<%=obj[0]%>)"> <i class="fa fa-hand-o-right j-3" aria-hidden="true" ></i></a></td>
-												<td class="clx-51"><%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()): " - " %></td>
+												<td class="clx-51"><%=obj[2]!=null?obj[2].toString(): " - " %></td>
 												<td class="width-100x"><%=obj[4]!=null?sdf.format(obj[4]):" - " %></td>
 												<td><%=obj[12]!=null?StringEscapeUtils.escapeHtml4(obj[12].toString()): " - " %>
 													<form name="MyTaskDetails<%=obj[0]%>" id="MyTaskDetails<%=obj[0]%>" action="<%=obj[14] %>" method="POST" >

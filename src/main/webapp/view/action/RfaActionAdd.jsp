@@ -574,17 +574,19 @@ function chooseEmp(seltype){
 					$('#CCEmpName').html('');
 					$('#CCEmpName').html(cc);
 				}else{
-					$('#CCEmpName').html('');
+					console.log("Inside the Dropdown");
 					cc += '<option   value="">SELECT</option>';
-					for(var i=0;i<optionsArray.length;i++){
+					/* for(var i=0;i<optionsArray.length;i++){
 						cc=cc+optionsArray[i];
-					}
+					} */
+					console.log(cc);
 					if(labCode != '@EXP'){
 					for (i = 0; i < values.length; i++) 
 					{
 						cc += '<option value="'+values[i][0]+ "/"+labCode + '">'+values[i][1] + ', ' +values[i][3] + '</option>';
 					} 
 					}
+					$('#CCEmpName').html('');
 					$('#CCEmpName').html(cc);
 				}
 				

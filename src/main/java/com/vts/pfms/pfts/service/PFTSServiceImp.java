@@ -364,4 +364,9 @@ public class PFTSServiceImp implements PFTSService{
 		
 		return dao.getprocurementMilestoneDetails(pftsid);
 	}
+
+	@Override
+	public Object[] ProjectDataByPrjCode(String projectCode) throws Exception {
+		return dao.ProjectDataByPrjCode(projectCode);
+	}
 }

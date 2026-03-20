@@ -295,13 +295,13 @@ label {
 										<input type="text" class="form-control quantum" name="quantum" id="quantumEdit_<%=slno1 %>" value="<%=StringEscapeUtils.escapeHtml4(desc[6].toString()) %>" maxlength="255" readonly>
 									</td>
 									<td>
-										<input type="text" class="form-control unit" name="unit" id="unitEdit_<%=slno1 %>" value="<%=StringEscapeUtils.escapeHtml4(desc[18].toString()) %>" maxlength="255" readonly>
+										<input type="text" class="form-control unit" name="unit" id="unitEdit_<%=slno1 %>" value="<%=desc[18]!=null?StringEscapeUtils.escapeHtml4(desc[18].toString()):"-" %>" maxlength="255" readonly>
 									</td>	
 									<td>
-										<input type="text" class="form-control description" name="description" id="descriptionEdit_<%=slno1 %>" value="<%=StringEscapeUtils.escapeHtml4(desc[5].toString()) %>" maxlength="255" readonly>
+										<input type="text" class="form-control description" name="description" id="descriptionEdit_<%=slno1 %>" value="<%=desc[5]!=null?StringEscapeUtils.escapeHtml4(desc[5].toString()):"-" %>" maxlength="255" readonly>
 									</td>	
 									<td>
-										<input type="text" class="form-control remarks" name="remarks" id="remarksEdit_<%=slno1 %>" value="<%=StringEscapeUtils.escapeHtml4(desc[7].toString()) %>" maxlength="500" readonly>
+										<input type="text" class="form-control remarks" name="remarks" id="remarksEdit_<%=slno1 %>" value="<%=desc[7]!=null?StringEscapeUtils.escapeHtml4(desc[7].toString()):"-" %>" maxlength="500" readonly>
 									</td>	
 									<%if(groupId!=temp && groupId!=0) { temp = groupId;%>
 										<td style="border-bottom: none;">
@@ -334,7 +334,7 @@ label {
 												onclick="return confirm('Are you sure to Update?')">
 									            	<i class="fa fa-lg fa-edit" style="padding: 0px;color: darkorange;font-size: 25px;" aria-hidden="true"></i>
 									       		</button>
-									        	<button type="submit" class="editable-clicko" formaction="IRSFieldDescDelete.htm" formmethod="post" data-toggle="tooltip" title="Delete"
+									        	<button type="submit" class="editable-clicko" formaction="IRSFieldDescDelete.htm" formmethod="post" formnovalidate="formnovalidate" formnovalidate="formnovalidate" data-toggle="tooltip" title="Delete"
 									       	 	onclick="return confirm('Are you sure to Delete?')">
 									            	<i class="fa fa-lg fa-trash" style="padding: 0px;color: red;font-size: 25px;" aria-hidden="true"></i>
 									        	</button>

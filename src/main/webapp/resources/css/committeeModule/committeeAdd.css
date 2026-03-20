@@ -29,3 +29,7 @@ hr {
 	background: linear-gradient(to right, #334d50, #cbcaa5);
 	padding: 25px;
 }
+
+.hidden{
+	display: none;
+}

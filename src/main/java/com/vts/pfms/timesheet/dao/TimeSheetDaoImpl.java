@@ -363,18 +363,18 @@ public class TimeSheetDaoImpl implements TimeSheetDao {
 		}
 	}
 	
-	private static final String GETEMPLOYEENEWTIMESHEETLIST = "SELECT a.TimeSheetId, a.EmpId, a.ActivityFromDate, b.TimeSheetActivityId, b.ActivityTypeId, e.ActivityType,e.ActivityCode, b.ProjectId, (CASE WHEN b.ProjectId=0 THEN 'General' ELSE CONCAT(g.ProjectCode, ' (', g.ProjectShortName, ')') END) AS 'Project',\r\n"
-			+ "	b.AssignedBy, CONCAT(IFNULL(CONCAT(c.Title,' '),(IFNULL(CONCAT(c.Salutation, ' '), ''))), c.EmpName) AS 'Assigner', d.Designation AS 'AssignerDesig', b.KeywordId, f.Keyword, b.WorkDone, b.WorkDoneon, b.ActivitySeqNo,\r\n"
-			+ "	CONCAT(IFNULL(CONCAT(h.Title,' '),(IFNULL(CONCAT(h.Salutation, ' '), ''))), h.EmpName) AS 'Employee', i.Designation\r\n"
+	private static final String GETEMPLOYEENEWTIMESHEETLIST = "SELECT a.TimeSheetId, a.EmpId, a.ActivityFromDate, b.TimeSheetActivityId, b.ActivityTypeId, e.ActivityType,e.ActivityCode, b.ProjectId, (CASE WHEN b.ProjectId=0 THEN 'General' ELSE CONCAT(g.project_code, ' (', g.project_short_name, ')') END) AS 'Project',\r\n"
+			+ "	b.AssignedBy, CONCAT(IFNULL(CONCAT(c.Title,' '),(IFNULL(CONCAT(c.Salutation, ' '), ''))), c.emp_name) AS 'Assigner', d.Designation AS 'AssignerDesig', b.KeywordId, f.Keyword, b.WorkDone, b.WorkDoneon, b.ActivitySeqNo,\r\n"
+			+ "	CONCAT(IFNULL(CONCAT(h.Title,' '),(IFNULL(CONCAT(h.Salutation, ' '), ''))), h.emp_name) AS 'Employee', i.Designation\r\n"
 			+ "FROM pfms_timesheet a\r\n"
 			+ "JOIN pfms_timesheet_activity b ON a.TimeSheetId=b.TimeSheetId AND b.IsActive=1\r\n"
-			+ "LEFT JOIN employee c ON b.AssignedBy=c.EmpId\r\n"
-			+ "LEFT JOIN employee_desig d ON c.DesigId=d.DesigId\r\n"
+			+ "LEFT JOIN employee c ON b.AssignedBy=c.emp_id\r\n"
+			+ "LEFT JOIN employee_desig d ON c.desig_id=d.desig_id\r\n"
 			+ "LEFT JOIN milestone_activity_type e ON b.ActivityTypeId=e.ActivityTypeId\r\n"
 			+ "LEFT JOIN pfms_timesheet_keywords f ON b.KeywordId=f.KeywordId\r\n"
-			+ "LEFT JOIN project_master g ON b.ProjectId = g.ProjectId\r\n"
-			+ "LEFT JOIN employee h ON a.EmpId = h.EmpId\r\n"
-			+ "LEFT JOIN employee_desig i ON h.DesigId=i.DesigId\r\n"
+			+ "LEFT JOIN project_master g ON b.ProjectId = g.project_id\r\n"
+			+ "LEFT JOIN employee h ON a.EmpId = h.emp_id\r\n"
+			+ "LEFT JOIN employee_desig i ON h.desig_id=i.desig_id\r\n"
 			+ "WHERE a.IsActive=1 AND (CASE WHEN 'A'=:EmpId THEN 1=1 ELSE a.EmpId=:EmpId END) AND a.ActivityFromDate BETWEEN :FromDate AND :ToDate ORDER BY a.ActivityFromDate";
 	@Override
 	public List<Object[]> getEmployeeNewTimeSheetList(String empId, String fromDate, String toDate) throws Exception {

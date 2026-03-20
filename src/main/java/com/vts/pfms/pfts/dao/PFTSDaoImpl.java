@@ -31,7 +31,7 @@ public  class PFTSDaoImpl implements PFTSDao{
 	private static final String PrevDemandFile ="SELECT ProjectId, DemandNo, DemandDate, ItemNomenclature, EstimatedCost FROM pfts_file WHERE ProjectId=:projectid";
 	private static final String StatusList="SELECT s.PftsStatusId, s.PftsStatus, s.PftsStageName FROM pfts_status s WHERE s.PftsStatusId > (SELECT PftsStatusId FROM pfts_file WHERE PftsFileId=:fileid) AND CASE WHEN (SELECT PftsStatusId FROM pfts_file WHERE PftsFileId=:fileid) < 10 THEN s.PftsStatusId <= 10 ELSE TRUE END ORDER BY pftsstatusid ";
 	private static final String updateCostDetails="UPDATE pfts_file SET OrderNo=:orderno, OrderCost=:ordercost, DpDate=:dpdate WHERE PftsFileId=:fileid";
-	private static final String PROJECTDATA="SELECT projectid, projectcode, projectname FROM project_master WHERE projectid=:projectid";
+	private static final String PROJECTDATA="SELECT project_id, project_code, project_name FROM project_master WHERE project_id=:projectid";
 	
 	
 	@Override
@@ -459,4 +459,15 @@ public  class PFTSDaoImpl implements PFTSDao{
 			}
 	}
 	
+	private static final String PROJECTDATABYPRJCODE="SELECT project_id, project_code, project_name FROM project_master WHERE project_code=:projectcode";
+	
+	@Override
+	public Object[] ProjectDataByPrjCode(String projectcode) throws Exception {
+		
+		Query query=manager.createNativeQuery(PROJECTDATABYPRJCODE);	   
+		query.setParameter("projectcode",projectcode);
+		Object[] Project=(Object[])query.getSingleResult();	
+		
+		return Project;
+	}
 }

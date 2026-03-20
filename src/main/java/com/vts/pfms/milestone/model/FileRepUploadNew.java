@@ -23,6 +23,7 @@ public class FileRepUploadNew {
 		private String CreatedBy;
 		private String CreatedDate;
 		private int IsActive;
+		private String ReportType;
 		public Long getFileRepUploadId() {
 			return FileRepUploadId;
 		}
@@ -96,6 +97,12 @@ public class FileRepUploadNew {
 		}
 		public void setDescription(String description) {
 			Description = description;
+		}
+		public String getReportType() {
+			return ReportType;
+		}
+		public void setReportType(String reportType) {
+			ReportType=reportType;
 		}
 		
 }
