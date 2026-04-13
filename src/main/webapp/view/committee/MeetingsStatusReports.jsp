@@ -48,7 +48,7 @@
 <%--                                                            <option value="0" <%if(projectid.equalsIgnoreCase("0")){ %> selected="selected" <%} %>>General</option>	
  --%>                                                           <%
                                                            for(Object[] obj:projectslist){ 
-                                                        	   String projectshortName=(obj[12]!=null)?" ( "+obj[12].toString()+" ) ":"";%>
+                                                        	   String projectshortName=(obj[12]!=null)?" ("+obj[12].toString().trim()+") ":"";%>
 														   <option value="<%=obj[0] %>" <%if(projectid.equalsIgnoreCase(obj[0].toString())){ %> selected="selected" <%} %>><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - " %> <%= projectshortName!=null?StringEscapeUtils.escapeHtml4(projectshortName):" - " %></option>	
 														<%} %>
 																</select>	

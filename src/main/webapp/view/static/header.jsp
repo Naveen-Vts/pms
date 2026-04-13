@@ -39,7 +39,62 @@
 <spring:url value="/resources/css/header/headerCss.css" var="headerCss" />     
 <link href="${headerCss}" rel="stylesheet" />
 
+<style>
+    /* Unique Grid Container */
+    .pms-grid-container {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 15px !important;
+        padding: 15px !important;
+        width: 280px !important;
+        background-color: #ffffff !important;
+        border-radius: 12px !important;
+    }
 
+    /* Individual Item Styling */
+    .pms-grid-item {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        padding: 12px 5px !important;
+        border-radius: 8px !important;
+        color: #333333 !important;
+        transition: background 0.2s ease-in-out !important;
+        text-decoration: none !important;
+        border: 1px solid transparent !important;
+        cursor: pointer !important;
+    }
+
+    /* Hover effect for the grid boxes */
+    .pms-grid-item:hover {
+        background-color: #f4f7fa !important;
+        border: 1px solid #e0e6ed !important;
+        text-decoration: none !important;
+    }
+
+    /* Icon and Text spacing */
+    .pms-grid-item i {
+        font-size: 24px !important;
+        margin-bottom: 8px !important;
+        display: block !important;
+    }
+
+    .pms-grid-item span {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        color: #444 !important;
+        display: block !important;
+    }
+
+    /* Ensure the dropdown menu itself doesn't have weird padding */
+    .pms-grid-dropdown-menu {
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+    }
+</style>
 </head>
 
 
@@ -57,7 +112,9 @@ String labcode= (String)session.getAttribute("labcode");
 		<div id="content-wrapper" class=" flex-column">
 
 			<div id="content">
-				<% String Username =(String)session.getAttribute("Username");  %>
+				<% String Username =(String)session.getAttribute("Username"); 
+				String token =(String)session.getAttribute("token"); 
+				%>
 				<% String EmpName =(String)session.getAttribute("EmpName");  %>
 				<% long FormRole =(Long)session.getAttribute("FormRole");  %>
 				<% String FormRoleName =(String)session.getAttribute("LoginTypeName");  %>
@@ -124,18 +181,57 @@ String labcode= (String)session.getAttribute("labcode");
 						<div class="collapse navbar-collapse" id="navbarResponsive">
 							<ul class="navbar-nav ml-auto ">
 								<%if(loginPage.equalsIgnoreCase("login")) {%>
-								<li class="nav-item active navActive" >
-								<button type="button" class="btn btn-sm btn-light btnHeight"
-									onclick="opensmartsearch()"  >
-									 <b>Search </b>&#x1F50D;
-								</button>
-								<a class="btn custom-button bgtrans"
-									href="MainDashBoard.htm" type="button" aria-haspopup="true"
-									aria-expanded="false" ><i
-										class="fa fa-home font12rem" aria-hidden="true"
-										s></i> Home</a></li>
-								<%} %>
-
+        <li class="nav-item active navActive">
+            
+        <div class="dropdown d-inline-block mr-2">
+    <a class="nav-link" href="javascript:void(0)" role="button" id="appGridMenu" 
+       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
+       style="padding: 5px 10px; display: inline-block;">
+        <i class="fa fa-th" aria-hidden="true" style="font-size: 22px; color: white !important;"></i>
+    </a>
+    
+    <div class="dropdown-menu dropdown-menu-right pms-grid-dropdown-menu" aria-labelledby="appGridMenu">
+        <div class="pms-grid-container">
+            <a class="pms-grid-item" onclick="openAMS()">
+                <i class="fa fa-tasks" style="color: #e74c3c !important;"></i>
+                <span>AMS</span>
+            </a>
+            <a class="pms-grid-item" onclick="openTMDS()">
+                <i class="fa fa-file-code-o" style="color: #3498db !important;"></i>
+                <span>TMDS</span>
+            </a>
+            <a class="pms-grid-item" onclick="openDMS()">
+                <i class="fa fa-envelope-open" style="color: #9b59b6 !important;"></i>
+                <span>DMS</span>
+            </a>
+            <a class="pms-grid-item" onclick="openPFTS()">
+                <i class="fa fa-file-text" style="color: #f1c40f !important;"></i>
+                <span>PFTS</span>
+            </a>
+            <a class="pms-grid-item" onclick="openEMS()">
+                <i class="fa fa-user-circle" style="color: #7f8c8d !important;"></i>
+                <span>EMS</span>
+            </a>
+            <a class="pms-grid-item" onclick="openIBAS()">
+                <i class="fa fa-rupee" style="color: #27ae60 !important;"></i>
+                <span>IBAS</span>
+            </a>
+            <a class="pms-grid-item" onclick="openHRMS()">
+                <i class="fa fa-users" style="color: #16a085 !important;"></i>
+                <span>HRMS</span>
+            </a>
+        </div>
+    </div>
+</div>
+            <button type="button" class="btn btn-sm btn-light btnHeight" onclick="opensmartsearch()">
+                 <b>Search </b>&#x1F50D;
+            </button>
+            
+            <a class="btn custom-button bgtrans" href="MainDashBoard.htm">
+                <i class="fa fa-home font12rem" aria-hidden="true"></i> Home
+            </a>
+        </li>
+        <%} %>
 								<!-- New Content from table start --------------------------------->
 
 								<li class="nav-item dropdown"><input type="hidden"
@@ -247,6 +343,7 @@ String labcode= (String)session.getAttribute("labcode");
 												target="_blank"> <i class="fa fa-question-circle help-icon" aria-hidden="true"></i>
 												&nbsp;&nbsp; Help
 											</a> 
+									
 
 											<div class="dropdown-divider"></div>
 											<form id="logoutForm" method="POST"
@@ -299,7 +396,7 @@ String labcode= (String)session.getAttribute("labcode");
 			</div>
 
 
-			<script type="text/javascript">
+<script type="text/javascript">
 	$(document).ready(function() {
 		var loginPage = '<%=loginPage%>';
 		
@@ -769,6 +866,315 @@ function changed() {
 				    });
 				});
 
+				
+				
+				  /** * 1. Transfer Session data to LocalStorage 
+				   * This ensures the data is available for your logic below.
+				   */
+				  const sessionUser = {
+				      token: "<%= token %>",
+				      username: "<%= Username %>"
+				  };
+
+				  // Only set it if the session actually contained data
+				  if (sessionUser.token && sessionUser.username) {
+				      localStorage.setItem('user', JSON.stringify(sessionUser));
+				  }
+
+				  /**
+				   * 2. The openAMS Function
+				   */
+				   const openAMS = async () => { // Added 'async' here
+					    const userData = localStorage.getItem("user");
+					    
+					    if (!userData || userData === '{"token":"","username":""}') {
+					        console.error("No session data found. Please log in.");
+					        return;
+					    }
+					    
+					    try {
+					        // 'await' waits until the AJAX success function would have fired
+					        // and assigns the actual 'result' to the variable 'exist'
+					        const exist = await checkAccess("AMS");
+
+					        if (exist) {
+					            const targetOrigin = "http://192.168.1.150:3000";
+					            const amsWindow = window.open(targetOrigin + "/dashboard?ams=true", "_blank");
+
+					            let count = 0;
+					            const checkInterval = setInterval(() => {
+					                if (amsWindow && count < 5) { 
+					                    amsWindow.postMessage(
+					                        { type: "LOGIN_SUCCESS", user: JSON.parse(userData) },
+					                        targetOrigin
+					                    );
+					                    count++;
+					                } else {
+					                    clearInterval(checkInterval);
+					                }
+					            }, 1000); 
+					        } else {
+					            alert("You don't have access to AMS");
+					        }
+					    } catch (error) {
+					        console.error("Request failed", error);
+					    }
+					};
+					
+					
+					const openTMDS = async () => { // Added async
+					    const userData = localStorage.getItem("user");
+					    
+					    // 1. Validation: Session Check
+					    if (!userData || userData === '{"token":"","username":""}') {
+					        console.error("No session data found. Please log in.");
+					        return;
+					    }
+
+					    try {
+					        // 2. Wait for access verification
+					        const exist = await checkAccess("TMDS");
+
+					        if (exist) {
+					            const targetOrigin = "http://192.168.1.20:3001";
+					            const tmdsWindow = window.open(targetOrigin + "/maindashboard?tmds=true", "_blank");
+
+					            let count = 0;
+					            const checkInterval = setInterval(() => {
+					                // 3. Send message to the new window
+					                if (tmdsWindow && count < 5) { 
+					                    tmdsWindow.postMessage(
+					                        { type: "LOGIN_SUCCESS", user: JSON.parse(userData) },
+					                        targetOrigin
+					                    );
+					                    count++;
+					                } else {
+					                    clearInterval(checkInterval);
+					                }
+					            }, 1000); // 1 second is usually safer for cross-origin window loading
+					        } else {
+					            // 4. Handle no access
+					            alert("You don't have access to TMDS");
+					        }
+					    } catch (error) {
+					        console.error("Error verifying TMDS access:", error);
+					        alert("An error occurred while checking system permissions.");
+					    }
+					};
+					  
+					const openDMS = async () => { // Marked as async
+					    const userData = localStorage.getItem("user");
+					    
+					    // 1. Validation: Session Check
+					    if (!userData || userData === '{"token":"","username":""}') {
+					        console.error("No session data found. Please log in.");
+					        return;
+					    }
+
+					    try {
+					        // 2. Wait for the access check to complete
+					        const exist = await checkAccess("DMS");
+
+					        if (exist) {
+					            const targetOrigin = "http://192.168.1.26:3002";
+					            const dmsWindow = window.open(targetOrigin + "/dashboard?dms=true", "_blank");
+
+					            let count = 0;
+					            const checkInterval = setInterval(() => {
+					                // 3. Message passing logic
+					                if (dmsWindow && count < 5) { 
+					                    dmsWindow.postMessage(
+					                        { type: "LOGIN_SUCCESS", user: JSON.parse(userData) },
+					                        targetOrigin
+					                    );
+					                    count++;
+					                } else {
+					                    clearInterval(checkInterval);
+					                }
+					            }, 1000); 
+					        } else {
+					            // 4. Permission denied handling
+					            alert("You don't have access to DMS");
+					        }
+					    } catch (error) {
+					        console.error("Error verifying DMS access:", error);
+					        alert("An error occurred while verifying system permissions.");
+					    }
+					};
+					
+						  
+					const openPFTS = async () => { // Marked as async
+					    const userData = localStorage.getItem("user");
+					    
+					    // 1. Validation: Session Check
+					    if (!userData || userData === '{"token":"","username":""}') {
+					        console.error("No session data found. Please log in.");
+					        return;
+					    }
+
+					    try {
+					        // 2. Perform the asynchronous access check for PFTS
+					        const exist = await checkAccess("PFTS");
+
+					        if (exist) {
+					            const targetOrigin = "http://192.168.1.26:3000";
+					            const pftsWindow = window.open(targetOrigin + "/dashboard?pfts=true", "_blank");
+
+					            let count = 0;
+					            const checkInterval = setInterval(() => {
+					                // 3. Message passing to the new window
+					                if (pftsWindow && count < 5) { 
+					                    pftsWindow.postMessage(
+					                        { type: "LOGIN_SUCCESS", user: JSON.parse(userData) },
+					                        targetOrigin
+					                    );
+					                    count++;
+					                } else {
+					                    clearInterval(checkInterval);
+					                }
+					            }, 1000); 
+					        } else {
+					            // 4. Alert user if access is denied
+					            alert("You don't have access to PFTS");
+					        }
+					    } catch (error) {
+					        console.error("Error verifying PFTS access:", error);
+					        alert("An error occurred while verifying system permissions.");
+					    }
+					};
+					
+					
+					const openEMS = async () => { // Marked as async
+					    const userData = localStorage.getItem("user");
+					    
+					    // 1. Validation: Session Check
+					    if (!userData || userData === '{"token":"","username":""}') {
+					        console.error("No session data found. Please log in.");
+					        return;
+					    }
+
+					    try {
+					        // 2. Wait for the access check to complete for EMS
+					        const exist = await checkAccess("EMS");
+
+					        if (exist) {
+					            const targetOrigin = "http://192.168.1.26:3003";
+					            const emsWindow = window.open(targetOrigin + "/dashboard?ems=true", "_blank");
+
+					            let count = 0;
+					            const checkInterval = setInterval(() => {
+					                // 3. Message passing logic
+					                if (emsWindow && count < 5) { 
+					                    emsWindow.postMessage(
+					                        { type: "LOGIN_SUCCESS", user: JSON.parse(userData) },
+					                        targetOrigin
+					                    );
+					                    count++;
+					                } else {
+					                    clearInterval(checkInterval);
+					                }
+					            }, 1000); 
+					        } else {
+					            // 4. Permission denied handling
+					            alert("You don't have access to EMS");
+					        }
+					    } catch (error) {
+					        console.error("Error verifying EMS access:", error);
+					        alert("An error occurred while verifying system permissions.");
+					    }
+					};
+								  
+					const openIBAS = async () => {
+					    const userData = localStorage.getItem("user");
+					    
+					    // Validation: Don't open if no user data exists
+					    if (!userData || userData === '{"token":"","username":""}') {
+					        console.error("No session data found. Please log in.");
+					        return;
+					    }
+
+					    try {
+					        // Wait for verification
+					        const exist = await checkAccess("IBAS");
+
+					        if (exist) {
+					            const targetOrigin = "http://192.168.1.62:3000";
+					            const ibasWindow = window.open(targetOrigin + "/dashboard?ibas=true", "_blank");
+
+					            let count = 0;
+					            const checkInterval = setInterval(() => {
+					                if (ibasWindow && count < 5) { 
+					                    ibasWindow.postMessage(
+					                        { type: "LOGIN_SUCCESS", user: JSON.parse(userData) },
+					                        targetOrigin
+					                    );
+					                    count++;
+					                } else {
+					                    clearInterval(checkInterval);
+					                }
+					            }, 1000); 
+					        } else {
+					            alert("You don't have access to IBAS");
+					        }
+					    } catch (error) {
+					        console.error("Error verifying IBAS access:", error);
+					        alert("An error occurred while verifying system permissions.");
+					    }
+					};
+					
+					const openHRMS = async () => {
+					    const userData = localStorage.getItem("user");
+					    
+					    // Validation: Don't open if no user data exists
+					    if (!userData || userData === '{"token":"","username":""}') {
+					        console.error("No session data found. Please log in.");
+					        return;
+					    }
+
+					    try {
+					        // Wait for verification
+					        const exist = await checkAccess("HRMS");
+
+					        if (exist) {
+					            const targetOrigin = "http://192.168.1.150:3001";
+					            const hrmsWindow = window.open(targetOrigin + "/dashboard?hrms=true", "_blank");
+
+					            let count = 0;
+					            const checkInterval = setInterval(() => {
+					                if (hrmsWindow && count < 5) { 
+					                    hrmsWindow.postMessage(
+					                        { type: "LOGIN_SUCCESS", user: JSON.parse(userData) },
+					                        targetOrigin
+					                    );
+					                    count++;
+					                } else {
+					                    clearInterval(checkInterval);
+					                }
+					            }, 1000); 
+					        } else {
+					            alert("You don't have access to HRMS");
+					        }
+					    } catch (error) {
+					        console.error("Error verifying HRMS access:", error);
+					        alert("An error occurred while verifying system permissions.");
+					    }
+					};
+										  function checkAccess(app) {
+											    console.log("Checking access for: " + app);
+											    
+											    // Return the promise created by $.ajax
+											    return $.ajax({
+											        type: 'GET',
+											        url: 'user-login-app-access',
+											        dataType: 'json',
+											        data: {
+											            projectCode: app
+											        },
+											        error: function(err) {
+											            console.error("Access check failed", err);
+											        }
+											    });
+											}	  
 </script>
 
 

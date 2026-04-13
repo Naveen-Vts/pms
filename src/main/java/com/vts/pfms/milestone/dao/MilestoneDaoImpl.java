@@ -24,6 +24,7 @@ import com.vts.pfms.milestone.model.FileRepNewPreProject;
 import com.vts.pfms.milestone.model.FileRepUploadNew;
 import com.vts.pfms.milestone.model.FileRepUploadPreProject;
 import com.vts.pfms.milestone.model.MilestoneActivity;
+import com.vts.pfms.milestone.model.MilestoneActivityBriefing;
 import com.vts.pfms.milestone.model.MilestoneActivityLevel;
 import com.vts.pfms.milestone.model.MilestoneActivityLevelRemarks;
 import com.vts.pfms.milestone.model.MilestoneActivityPredecessor;
@@ -71,7 +72,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 	private static final String ACTIVITYLEVELFULLEDIT="UPDATE milestone_activity_level SET activityname=:name,Weightage=:Weightage,activitytype=:type,oicempid=:empid,oicempid1=:empid1,startdate=:from,enddate=:to,orgstartdate=:orgfrom,orgenddate=:orgto,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE activityid=:id";
 	private static final String MILEACTIVITYUPDATE="UPDATE milestone_activity  SET activityname=:name, startdate=:from,enddate=:to,Weightage=:Weightage,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE milestoneactivityid=:id";
     private static final String MILELEVELCOMPARE="CALL Pfms_Milestone_Level_Compare(:id,:rev,:rev1,:levelid)";
-	private static final String MILECOMPAREMAIN="SELECT a.milestoneactivityid,b.projectname,e.startdate,e.enddate,e.activityname,e.progressstatus as ps,c.empname,d.empname AS emp,e.revisionno,e.progressstatus as ps1,e.progressstatus as ps2,a.progressstatus as ps3,DATEDIFF(e.enddate,e.startdate) AS actual,(SELECT DATEDIFF(f.enddate,f.startdate) FROM milestone_activity_rev f WHERE  f.milestoneactivityid=:id  AND f.revisionno=:rev1) AS diff,a.dateofcompletion,g.activitystatus  FROM milestone_activity a,project_master b, employee c,employee d,milestone_activity_rev e,milestone_activity_status g WHERE a.activitystatusid=g.activitystatusid and a.projectid=b.projectid AND a.oicempid=c.empid AND a.oicempid1=d.empid AND a.milestoneactivityid=e.milestoneactivityid   AND a.milestoneactivityid=:id AND e.revisionno=:rev";
+	private static final String MILECOMPAREMAIN="SELECT a.milestoneactivityid,b.project_name,e.startdate,e.enddate,e.activityname,e.progressstatus as ps,c.emp_name,d.emp_name AS emp,e.revisionno,e.progressstatus as ps1,e.progressstatus as ps2,a.progressstatus as ps3,DATEDIFF(e.enddate,e.startdate) AS actual,(SELECT DATEDIFF(f.enddate,f.startdate) FROM milestone_activity_rev f WHERE  f.milestoneactivityid=:id  AND f.revisionno=:rev1) AS diff,a.dateofcompletion,g.activitystatus  FROM milestone_activity a,project_master b, employee c,employee d,milestone_activity_rev e,milestone_activity_status g WHERE a.activitystatusid=g.activitystatusid and a.projectid=b.project_id AND a.oicempid=c.emp_id AND a.oicempid1=d.emp_id AND a.milestoneactivityid=e.milestoneactivityid   AND a.milestoneactivityid=:id AND e.revisionno=:rev";
 	private static final String MAEMPLIST="select a.milestoneactivityid,b.project_name,a.startdate,a.enddate,a.activityname,a.milestoneno,c.emp_name,d.emp_name as emp,(SELECT MAX(e.revisionno) FROM milestone_activity_rev e WHERE a.milestoneactivityid=e.milestoneactivityid) AS rev from milestone_activity a,project_master b, employee c,employee d,milestone_activity_rev e where  a.revisionno=e.revisionno  AND a.milestoneactivityid=e.milestoneactivityid and a.projectid=b.project_id and a.oicempid=c.emp_id and a.oicempid1=d.emp_id and (a.oicempid1=:EmpId or a.oicempid=:EmpId)";
 	private static final String STATUSLIST="select a.activitystatusid,a.activitystatus FROM milestone_activity_status a ";
 	private static final String PROACTIVITYUPDATE="UPDATE milestone_activity SET dateofcompletion=:doc,activitystatusid=:status,progressstatus=:progress,statusremarks=:remarks,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE milestoneactivityid=:id";
@@ -263,8 +264,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 	}
 
 	@Override
-	public long MilestoneActivitySubRev(MilestoneActivitySubRev Milestone)
-			throws Exception {
+	public long MilestoneActivitySubRev(MilestoneActivitySubRev Milestone)throws Exception {
 		manager.persist(Milestone);
 		manager.flush();
 		return Milestone.getActivityRevId();
@@ -1898,6 +1898,49 @@ public class MilestoneDaoImpl implements MilestoneDao {
 		List<Object[]> list =  (List<Object[]>) query.getResultList();
 		if(list.size()>0) {
 			return list.get(0);
+		}
+		return null;
+	}
+	
+	
+	// Naveen 05-03-2026
+	@Override
+	public long saveMilestoneActivityBriefing(MilestoneActivityBriefing entity) throws Exception {
+		try {
+			manager.persist(entity);
+			manager.flush();
+			return entity.getMilestoneActivityBriefingId();
+		}catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	@Override
+	public MilestoneActivityBriefing getMilestoneActivityBriefing(String mileStoneActivityBriefingId) throws Exception  {
+		try {
+			if(mileStoneActivityBriefingId==null || mileStoneActivityBriefingId.isBlank()) return null;
+			Long id = Long.parseLong(mileStoneActivityBriefingId);
+			return manager.find(MilestoneActivityBriefing.class, id);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private static final String MILESTONEBRIEFINGBYID = "SELECT milestoneActivityBriefingId,briefingPointId,points,scheduleId FROM milestone_activity_briefing WHERE milestoneActivityBriefingId = :milestoneActivityBriefingId AND isActive = 1";
+	@Override
+	public Object[] getMilestoneActivityBriefingById(String mileStoneActivityBriefingId) throws Exception {
+		try {
+			if(mileStoneActivityBriefingId==null || mileStoneActivityBriefingId.isBlank()) return null;
+			Query query = manager.createNativeQuery(MILESTONEBRIEFINGBYID);
+			query.setParameter("milestoneActivityBriefingId", Long.parseLong(mileStoneActivityBriefingId));
+			List<Object[]> list =  (List<Object[]>) query.getResultList();
+			if(list.size()>0) {
+				return list.get(0);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}

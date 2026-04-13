@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -100,7 +101,9 @@ import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.kernel.utils.PdfMerger;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.font.FontProvider;
+import com.itextpdf.layout.properties.TextAlignment;
 import com.vts.pfms.CharArrayWriterResponse;
 import com.vts.pfms.FormatConverter;
 import com.vts.pfms.Zipper;
@@ -676,9 +679,17 @@ public class PrintController {
     		req.setAttribute("committeeMetingsCount", service.ProjectCommitteeMeetingsCount(projectid, "0", "0", "0", "0", CommitteeCode) );
     		Object[] nextmeetVenue = (Object[])service.BriefingMeetingVenue(projectid, committeeid);
 	    	req.setAttribute("nextMeetVenue", nextmeetVenue);
-	    	if(nextmeetVenue!=null && nextmeetVenue[0]!=null) {
-	    		req.setAttribute("recdecDetails", service.GetRecDecDetails(nextmeetVenue[0].toString()));
-	    	}
+	    	Object[] lastmeetingVenue = service.getLastcreatedSchedule(projectid, committeeid);
+			req.setAttribute("lastmeetingVenue", lastmeetingVenue);
+			if (nextmeetVenue != null && nextmeetVenue[0] != null) {
+				req.setAttribute("recdecDetails", service.GetRecDecDetails(nextmeetVenue[0].toString()));
+			}
+			if(lastmeetingVenue!=null && lastmeetingVenue[0]!=null && LabCode.equalsIgnoreCase("PGAD")) {
+				List<Object[]> list = service.getMilestoneBriefingList(lastmeetingVenue[0].toString());
+				Map<String,List<Object[]>> milestoneBriefingMap = list!=null ? list.stream().collect(Collectors.groupingBy(obj -> obj[1]!=null?obj[1].toString():"UNKNOWN",LinkedHashMap::new,Collectors.toList())) : new LinkedHashMap<String, List<Object[]>>();
+				req.setAttribute("milestoneBriefingMap", milestoneBriefingMap);
+				req.setAttribute("recdecDetails", service.GetRecDecDetails(lastmeetingVenue[0].toString()));
+			}
 	    	req.setAttribute("RiskTypes", service.RiskTypes());
     		
     		Object[] mileStoneLevelId = service.MileStoneLevelId(projectid,committeeid);
@@ -724,6 +735,7 @@ public class PrintController {
 	        //PdfWriter pdfWriter = new PdfWriter(path + File.separator + "mergedb.pdf");
 	        PdfDocument pdfDocs = new PdfDocument(pdfw);
 	        pdfw.setCompressionLevel(CompressionConstants.BEST_COMPRESSION);
+	        pdfw.setSmartMode(true); // DLRL Changes
 	        PdfDocument pdfDocMain = new PdfDocument(new PdfReader(path+File.separator+filename+".pdf"),new PdfWriter(path+File.separator+filename+"Maintemp.pdf"));
 	        Document docMain = new Document(pdfDocMain,PageSize.A4);
 	        docMain.setMargins(50, 50, 50, 50);
@@ -2682,6 +2694,7 @@ public class PrintController {
 	public String ProjectBriefingPaper(Model model,HttpServletRequest req, HttpSession ses, RedirectAttributes redir,HttpServletResponse res)	throws Exception 
 	{
 		String UserId = (String) ses.getAttribute("Username");
+		String labCode = (String) ses.getAttribute("labcode");
 		logger.info(new Date() +"Inside ProjectBriefingPaper.htm "+UserId);		
 		try
 		{
@@ -2693,6 +2706,9 @@ public class PrintController {
 				return "redirect:/MainDashBoard.htm";
 			}
 			req.setAttribute("IsIbasConnected", IsIbasConnected);
+			  if(labCode.equalsIgnoreCase("PGAD")) { 
+				  return "print/ProjectBriefingPaperPgad"; 
+			  }
 			return "print/ProjectBriefingPaperNew";
 		}
 		catch(Exception e) {	    		
@@ -2733,6 +2749,7 @@ public class PrintController {
 	public String BriefingPresentation(Model model,HttpServletRequest req, HttpSession ses, RedirectAttributes redir,HttpServletResponse res)	throws Exception 
 	{
 		String UserId = (String) ses.getAttribute("Username");
+		String labcode = (String) ses.getAttribute("labcode");
 		logger.info(new Date() +"Inside BriefingPresentationOpt.htm "+UserId);		
 		try
 		{
@@ -2757,7 +2774,10 @@ public class PrintController {
 				redir.addAttribute("cc", "No Project is Assigned to you.");
 				return "redirect:/MainDashBoard.htm";
 			}  
-
+		
+			if(labcode.equalsIgnoreCase("PGAD")) {
+				return "print/BriefingPresentationpgad";
+			}
 			return "print/BriefingPresentation";
 		}
 		catch(Exception e) {	    		
@@ -2817,12 +2837,22 @@ public class PrintController {
 			
 			Object[] nextmeetVenue = (Object[])service.BriefingMeetingVenue(projectid, committeeid);
 	    	req.setAttribute("nextMeetVenue", nextmeetVenue);
-	    	req.setAttribute("projectslist", projectslist);
-	    	req.setAttribute("SpecialCommitteesList",SpecialCommitteesList);
-	    	req.setAttribute("otherMeetingList", service.otherMeetingList(projectid));
-	    	if(nextmeetVenue!=null && nextmeetVenue[0]!=null) {
-	    		req.setAttribute("recdecDetails", service.GetRecDecDetails(nextmeetVenue[0].toString()));
-	    	}
+	    	
+	    	Object[] lastmeetingVenue = service.getLastcreatedSchedule(projectid, committeeid);
+			req.setAttribute("lastmeetingVenue", lastmeetingVenue);
+
+			req.setAttribute("projectslist", projectslist);
+			req.setAttribute("SpecialCommitteesList", SpecialCommitteesList);
+			req.setAttribute("otherMeetingList", service.otherMeetingList(projectid));
+			if (nextmeetVenue != null && nextmeetVenue[0] != null) {				
+				req.setAttribute("recdecDetails", service.GetRecDecDetails(nextmeetVenue[0].toString()));
+			}
+			if(lastmeetingVenue!=null && lastmeetingVenue[0]!=null && LabCode.equalsIgnoreCase("PGAD")) {
+				List<Object[]> list = service.getMilestoneBriefingList(lastmeetingVenue[0].toString());
+				Map<String,List<Object[]>> milestoneBriefingMap = list!=null ? list.stream().collect(Collectors.groupingBy(obj -> obj[1]!=null?obj[1].toString():"UNKNOWN",LinkedHashMap::new,Collectors.toList())) : new LinkedHashMap<String, List<Object[]>>();
+				req.setAttribute("milestoneBriefingMap", milestoneBriefingMap);
+				req.setAttribute("recdecDetails", service.GetRecDecDetails(lastmeetingVenue[0].toString()));
+			}
 	    	req.setAttribute("RiskTypes", service.RiskTypes());
 	    	
 	    	req.setAttribute("filePath", env.getProperty("ApplicationFilesDrive"));
@@ -6539,9 +6569,19 @@ public class PrintController {
 			
 			Object[] nextmeetVenue = (Object[])service.BriefingMeetingVenue(projectid, committeeid);
 	    	req.setAttribute("nextMeetVenue", nextmeetVenue);
-	    	if(nextmeetVenue!=null && nextmeetVenue[0]!=null) {
-	    		req.setAttribute("recdecDetails", service.GetRecDecDetails(nextmeetVenue[0].toString()));
-	    	}
+	    	Object[] lastmeetingVenue = service.getLastcreatedSchedule(projectid, committeeid);
+			req.setAttribute("lastmeetingVenue", lastmeetingVenue);
+
+			req.setAttribute("nextMeetVenue", nextmeetVenue);
+			if (nextmeetVenue != null && nextmeetVenue[0] != null) {
+				req.setAttribute("recdecDetails", service.GetRecDecDetails(nextmeetVenue[0].toString()));
+			}
+			if(lastmeetingVenue!=null && lastmeetingVenue[0]!=null && labcode.equalsIgnoreCase("PGAD")) {
+				List<Object[]> list = service.getMilestoneBriefingList(lastmeetingVenue[0].toString());
+				Map<String,List<Object[]>> milestoneBriefingMap = list!=null ? list.stream().collect(Collectors.groupingBy(obj -> obj[1]!=null?obj[1].toString():"UNKNOWN",LinkedHashMap::new,Collectors.toList())) : new LinkedHashMap<String, List<Object[]>>();
+				req.setAttribute("milestoneBriefingMap", milestoneBriefingMap);
+				req.setAttribute("recdecDetails", service.GetRecDecDetails(lastmeetingVenue[0].toString()));
+			}
 	    	req.setAttribute("RiskTypes", service.RiskTypes());
 	    	
 	    	req.setAttribute("filePath", env.getProperty("ApplicationFilesDrive"));
@@ -7002,5 +7042,402 @@ public class PrintController {
 		System.out.println("Time Needed "+(end-startTime));
 
 		return "print/AllReportExcel";
+	}
+	
+	@RequestMapping(value = "ProjectBriefingNewDownload.htm")
+	public void downloadNewBriefingPaperPDF(HttpServletRequest req, HttpSession ses, HttpServletResponse res) {
+
+	    String UserId = (String) ses.getAttribute("Username");
+	    String LabCode = (String) ses.getAttribute("labcode");
+
+	    logger.info(new Date() + "Inside ProjectBriefingNewDownload.htm " + UserId);
+
+	    try {
+
+	        String projectid = req.getParameter("projectid");
+	        String committeeid = req.getParameter("committeeid");
+
+	        Committee committee = service.getCommitteeData(committeeid);
+
+	        String projectLabCode = service.ProjectDetails(projectid).get(0)[5].toString();
+	        String CommitteeCode = committee.getCommitteeShortName().trim();
+
+	        if (LabCode.equalsIgnoreCase("ADE")) {
+	            req.setAttribute("otherMeetingList", service.otherMeetingList(projectid));
+	        }
+
+	        List<Object[]> SpecialCommitteesList = service.SpecialCommitteesList(LabCode);
+	        Map<String, List<Object[]>> reviewMeetingListMap = new HashMap<>();
+
+	        for (Object[] obj : SpecialCommitteesList) {
+	            reviewMeetingListMap.put(obj[1] + "", service.ReviewMeetingList(projectid, obj[1] + ""));
+	        }
+
+	        req.setAttribute("reviewMeetingListMap", reviewMeetingListMap);
+
+	        req.setAttribute("text", req.getParameter("text"));
+	        req.setAttribute("IsIbasConnected", IsIbasConnected);
+	        req.setAttribute("committeeData", committee);
+	        req.setAttribute("projectid", projectid);
+	        req.setAttribute("committeeid", committeeid);
+	        req.setAttribute("ProjectCost", ProjectCost);
+	        req.setAttribute("isprint", "0");
+	        req.setAttribute("AppFilesPath", ApplicationFilesDrive);
+	        req.setAttribute("projectLabCode", projectLabCode);
+	        req.setAttribute("labInfo", service.LabDetailes(projectLabCode));
+	        req.setAttribute("lablogo", LogoUtil.getLabLogoAsBase64String(projectLabCode));
+	        req.setAttribute("thankYouImg", LogoUtil.getThankYouImageAsBase64String());
+	        req.setAttribute("filePath", env.getProperty("ApplicationFilesDrive"));
+	        req.setAttribute("ApplicationFilesDrive", env.getProperty("ApplicationFilesDrive"));
+
+	        req.setAttribute("committeeMetingsCount",
+	                service.ProjectCommitteeMeetingsCount(projectid, "0", "0", "0", "0", CommitteeCode));
+
+	        Object[] nextmeetVenue = (Object[]) service.BriefingMeetingVenue(projectid, committeeid);
+	        req.setAttribute("nextMeetVenue", nextmeetVenue);
+			Object[] lastmeetingVenue = service.getLastcreatedSchedule(projectid, committeeid);
+			req.setAttribute("lastmeetingVenue", lastmeetingVenue);
+
+
+	        if (nextmeetVenue != null && nextmeetVenue[0] != null) {
+
+	            req.setAttribute("recdecDetails", service.GetRecDecDetails(nextmeetVenue[0].toString()));
+
+	        }
+			if(lastmeetingVenue!=null && lastmeetingVenue[0]!=null && LabCode.equalsIgnoreCase("PGAD")) {
+				List<Object[]> list = service.getMilestoneBriefingList(lastmeetingVenue[0].toString());
+				Map<String,List<Object[]>> milestoneBriefingMap = list!=null ? list.stream().collect(Collectors.groupingBy(obj -> obj[1]!=null?obj[1].toString():"UNKNOWN",LinkedHashMap::new,Collectors.toList())) : new LinkedHashMap<String, List<Object[]>>();
+				req.setAttribute("milestoneBriefingMap", milestoneBriefingMap);
+				req.setAttribute("recdecDetails", service.GetRecDecDetails(lastmeetingVenue[0].toString()));
+			}
+
+	        req.setAttribute("RiskTypes", service.RiskTypes());
+
+	        Object[] mileStoneLevelId = service.MileStoneLevelId(projectid, committeeid);
+	        req.setAttribute("levelid", mileStoneLevelId != null ? mileStoneLevelId[0].toString() : "2");
+
+	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected);
+
+	        List<Object[]> projectdatadetails = (List<Object[]>) req.getAttribute("projectdatadetails");
+	        List<List<Object[]>> ebandpmrccount = (List<List<Object[]>>) req.getAttribute("ebandpmrccount");
+	        List<Object[]> TechWorkDataList = (List<Object[]>) req.getAttribute("TechWorkDataList");
+
+	        milestoneLevelDataMap(req, reviewMeetingListMap, projectid, committee.getCommitteeShortName().trim());
+
+	        String filename = "BriefingPaper";
+
+	        String path = req.getServletContext().getRealPath("/view/temp");
+	        req.setAttribute("path", path);
+
+	        CharArrayWriterResponse response1 = new CharArrayWriterResponse(res);
+	        req.getRequestDispatcher("/view/print/BriefingPaperNewpgad.jsp").forward(req, response1);
+
+	        String html1 = response1.getOutput();
+
+	        String pdf1Path = path + File.separator + "briefing_" + UserId + ".pdf";
+
+	        HtmlConverter.convertToPdf(html1, new FileOutputStream(pdf1Path));
+
+	        CharArrayWriterResponse response2 = new CharArrayWriterResponse(res);
+	        req.getRequestDispatcher("/view/print/ActionTablePgad.jsp").forward(req, response2);
+
+	        String html2 = response2.getOutput();
+
+	        String pdf2Path = path + File.separator + "actiontable_" + UserId + ".pdf";
+
+	        HtmlConverter.convertToPdf(html2, new FileOutputStream(pdf2Path));
+
+	        String mergedPath = path + File.separator + filename + "_" + UserId + ".pdf";
+
+	        PdfDocument mergedPdf = new PdfDocument(new PdfWriter(mergedPath));
+	        PdfMerger merger = new PdfMerger(mergedPdf);
+
+	        PdfDocument pdf1 = new PdfDocument(new PdfReader(pdf1Path));
+	        PdfDocument pdf2 = new PdfDocument(new PdfReader(pdf2Path));
+
+	        merger.merge(pdf1, 1, pdf1.getNumberOfPages());
+	        merger.merge(pdf2, 1, pdf2.getNumberOfPages());
+
+	        pdf1.close();
+	        pdf2.close();
+
+	        int z = 0;
+
+	        for (Object[] objData : projectdatadetails) {
+
+	            try {
+
+	                if (objData != null) {
+
+	                    String No2 = null;
+
+	                    if (CommitteeCode.equalsIgnoreCase("PMRC")) {
+	                        No2 = "P" + (Long.parseLong(ebandpmrccount.get(0).get(0)[1].toString()) + 1);
+	                    } 
+	                    else if (CommitteeCode.equalsIgnoreCase("EB")) {
+	                        No2 = "E" + (Long.parseLong(ebandpmrccount.get(0).get(1)[1].toString()) + 1);
+	                    }
+
+	                    String fileName = "grantt_" + objData[1].toString() + "_" + No2 + ".pdf";
+
+	                    Path ganttPath = Paths.get(
+	                            env.getProperty("ApplicationFilesDrive"),
+	                            projectLabCode,
+	                            "gantt",
+	                            fileName
+	                    );
+
+	                    if (Files.exists(ganttPath)) {
+
+	                        File headerPdf = addHeaderForPdf(
+	                                ganttPath.toFile(),
+	                                objData[12] + " :- Gantt Chart"
+	                        );
+
+	                        PdfDocument pdf = new PdfDocument(new PdfReader(headerPdf));
+	                        merger.merge(pdf, 1, pdf.getNumberOfPages());
+	                        pdf.close();
+
+	                        headerPdf.delete();
+	                    }
+	                }
+
+
+	                if (objData != null && objData[3] != null) {
+
+	                    Path sysPath = Paths.get(
+	                            env.getProperty("ApplicationFilesDrive"),
+	                            projectLabCode,
+	                            "ProjectData",
+	                            objData[3].toString()
+	                    );
+
+	                    if (FilenameUtils.getExtension(objData[3].toString()).equalsIgnoreCase("pdf")
+	                            && Files.exists(sysPath)) {
+
+	                        File headerPdf = addHeaderForPdf(
+	                                sysPath.toFile(),
+	                                objData[12] + " :- System Configuration Annexure"
+	                        );
+
+	                        PdfDocument pdf = new PdfDocument(new PdfReader(headerPdf));
+	                        merger.merge(pdf, 1, pdf.getNumberOfPages());
+	                        pdf.close();
+
+	                        headerPdf.delete();
+	                    }
+	                }
+
+
+
+	                if (objData != null && objData[4] != null) {
+
+	                    Path specPath = Paths.get(
+	                            env.getProperty("ApplicationFilesDrive"),
+	                            projectLabCode,
+	                            "ProjectData",
+	                            objData[4].toString()
+	                    );
+
+	                    if (FilenameUtils.getExtension(objData[4].toString()).equalsIgnoreCase("pdf")
+	                            && Files.exists(specPath)) {
+
+	                        File headerPdf = addHeaderForPdf(
+	                                specPath.toFile(),
+	                                objData[12] + " :- System Specification Annexure"
+	                        );
+
+	                        PdfDocument pdf = new PdfDocument(new PdfReader(headerPdf));
+	                        merger.merge(pdf, 1, pdf.getNumberOfPages());
+	                        pdf.close();
+
+	                        headerPdf.delete();
+	                    }
+	                }
+
+
+	                if (objData != null && objData[5] != null) {
+
+	                    Path treePath = Paths.get(
+	                            env.getProperty("ApplicationFilesDrive"),
+	                            projectLabCode,
+	                            "ProjectData",
+	                            objData[5].toString()
+	                    );
+
+	                    if (FilenameUtils.getExtension(objData[5].toString()).equalsIgnoreCase("pdf")
+	                            && Files.exists(treePath)) {
+
+	                        File headerPdf = addHeaderForPdf(
+	                                treePath.toFile(),
+	                                objData[12] + " :- Overall Product tree/WBS Annexure"
+	                        );
+
+	                        PdfDocument pdf = new PdfDocument(new PdfReader(headerPdf));
+	                        merger.merge(pdf, 1, pdf.getNumberOfPages());
+	                        pdf.close();
+
+	                        headerPdf.delete();
+	                    }
+	                }
+
+
+	                if (objData != null && objData[6] != null) {
+
+	                    Path trlPath = Paths.get(
+	                            env.getProperty("ApplicationFilesDrive"),
+	                            projectLabCode,
+	                            "ProjectData",
+	                            objData[6].toString()
+	                    );
+
+	                    if (FilenameUtils.getExtension(objData[6].toString()).equalsIgnoreCase("pdf")
+	                            && Files.exists(trlPath)) {
+
+	                        File headerPdf = addHeaderForPdf(
+	                                trlPath.toFile(),
+	                                objData[12] + " :- TRL table with TRL at sanction stage Annexure"
+	                        );
+
+	                        PdfDocument pdf = new PdfDocument(new PdfReader(headerPdf));
+	                        merger.merge(pdf, 1, pdf.getNumberOfPages());
+	                        pdf.close();
+
+	                        headerPdf.delete();
+	                    }
+	                }
+
+
+	                if (TechWorkDataList != null && z < TechWorkDataList.size() && TechWorkDataList.get(z) != null) {
+
+	                    if (FilenameUtils.getExtension(TechWorkDataList.get(z)[8].toString()).equalsIgnoreCase("pdf")) {
+
+	                        Zipper zip = new Zipper();
+
+	                        String tecdata = TechWorkDataList.get(z)[6].toString().replaceAll("[/\\\\]", ",");
+
+	                        String[] fileParts = tecdata.split(",");
+
+	                        String zipName = TechWorkDataList.get(z)[7].toString()
+	                                + TechWorkDataList.get(z)[11].toString()
+	                                + "-" + TechWorkDataList.get(z)[10].toString() + ".zip";
+
+	                        Path techPath;
+
+	                        if (fileParts.length == 4) {
+
+	                            techPath = Paths.get(env.getProperty("ApplicationFilesDrive"),
+	                                    fileParts[0], fileParts[1], fileParts[2], fileParts[3], zipName);
+
+	                        } else {
+
+	                            techPath = Paths.get(env.getProperty("ApplicationFilesDrive"),
+	                                    fileParts[0], fileParts[1], fileParts[2], fileParts[3], fileParts[4], zipName);
+	                        }
+
+	                        zip.unpack(techPath.toString(), path, TechWorkDataList.get(z)[9].toString());
+
+	                        Path techPdfPath = Paths.get(path, TechWorkDataList.get(z)[8].toString());
+
+	                        if (Files.exists(techPdfPath)) {
+
+	                            File headerPdf = addHeaderForPdf(
+	                                    techPdfPath.toFile(),
+	                                    objData[12] + " :- Technical Details"
+	                            );
+
+	                            PdfDocument pdf = new PdfDocument(new PdfReader(headerPdf));
+	                            merger.merge(pdf, 1, pdf.getNumberOfPages());
+	                            pdf.close();
+
+	                            headerPdf.delete();
+	                            Files.deleteIfExists(techPdfPath);
+	                        }
+	                    }
+	                }
+
+	            } catch (Exception e) {
+
+	                logger.error(new Date() + " Annexure Merge Error " + UserId, e);
+	            }
+
+	            z++;
+	        }
+	        mergedPdf.getDocumentInfo().setTitle("Project Briefing Paper");
+	        mergedPdf.close();
+
+	        res.setContentType("application/pdf");
+	        res.setHeader("Content-disposition", "inline;filename=" + filename + ".pdf");
+
+	        File f = new File(mergedPath);
+
+	        try (OutputStream out = res.getOutputStream();
+	             FileInputStream in = new FileInputStream(f)) {
+
+	            byte[] buffer = new byte[4096];
+	            int length;
+
+	            while ((length = in.read(buffer)) > 0) {
+	                out.write(buffer, 0, length);
+	            }
+
+	            out.flush();
+	        }
+
+	        Files.deleteIfExists(Paths.get(pdf1Path));
+	        Files.deleteIfExists(Paths.get(pdf2Path));
+	        Files.deleteIfExists(Paths.get(mergedPath));
+
+	    } catch (Exception e) {
+
+	        logger.error(new Date() + " Inside ProjectBriefingNewDownload.htm " + UserId, e);
+	        e.printStackTrace();
+	    }
+	}
+	
+	private File addHeaderForPdf(File inputPdf, String headerText) throws Exception {
+	
+	    String path = inputPdf.getParent();
+	    String filename = inputPdf.getName().replace(".pdf", "");
+	
+	    PdfDocument pdfDocMain = new PdfDocument(
+	            new PdfReader(inputPdf.getAbsolutePath()),
+	            new PdfWriter(path + File.separator + filename + "_temp.pdf")
+	    );
+	
+	    Document docMain = new Document(pdfDocMain);
+	
+	    int pages = pdfDocMain.getNumberOfPages();
+	
+	    for (int i = 1; i <= pages; i++) {
+	
+	        PdfPage pageMain = pdfDocMain.getPage(i);
+	        Rectangle pageSizeMain = pageMain.getPageSize();
+	
+	        Paragraph header = new Paragraph(headerText)
+	                .setFontSize(10)
+	                .setBold();
+	
+	        float marginLeft = 160;   
+	        float marginTop  = 15;   
+
+	        float x = marginLeft;
+	        float y = pageSizeMain.getHeight() - marginTop;
+	
+	        docMain.showTextAligned(
+	                header,
+	                x,
+	                y,
+	                i,
+	                TextAlignment.LEFT,
+	                com.itextpdf.layout.properties.VerticalAlignment.TOP,
+	                0f
+	        );
+	    }
+	
+	    docMain.close();
+	    pdfDocMain.close();
+	
+	    return new File(path + File.separator + filename + "_temp.pdf");
 	}
 }

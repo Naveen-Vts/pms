@@ -580,7 +580,7 @@ var filexcount=0;
             if (this.id) {            	
             	fileidarr.push(this.id);
             }
-        
+        });
 		for(var z=0; z<fileidarr.length;z++)
 		{
 			if(document.getElementById(fileidarr[z]).files.length !=0 ){

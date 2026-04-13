@@ -1,3 +1,4 @@
+<%@page import="com.itextpdf.kernel.colors.Lab"%>
 <%@page import="org.apache.commons.text.StringEscapeUtils"%>
 <%@page import="com.vts.pfms.committee.model.CommitteeSchedule"%>
 <%@page import="java.util.stream.Collectors"%>
@@ -44,6 +45,11 @@ unit21=(String)request.getAttribute("unit2");
 if(unit21==null){
 	  unit21="NO";
 }
+String actionType = (String) request.getAttribute("actionType");
+
+if(actionType==null){
+	actionType= "view";
+}
  
 String specname=(String)request.getAttribute("specname");
 SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd");
@@ -79,6 +85,7 @@ List<String> SplCommitteeCodes=(List<String>)request.getAttribute("SplCommitteeC
 Object[]MomAttachment=(Object[])request.getAttribute("MomAttachment");
 Long empId = (Long)session.getAttribute("EmpId");
 String formname=(String)request.getAttribute("formname");
+
 if(formname!=null){
 	GenId=formname;
 }
@@ -152,7 +159,11 @@ List<CommitteeSchedule> dmcScheduleList = (List<CommitteeSchedule>) request.getA
 		<%if(committeescheduleeditdata[22].toString().equals("N")){%>
 			<button type="button" class="btn btn-sm btn-secondary my-2 my-sm-0 emailBtnStyle" formaction="" onclick="sendEmail(<%=committeescheduleeditdata[6]%>)">
 			<i class="fa fa-paper-plane-o" aria-hidden="true"></i>&nbsp; EMAIL</button> 
-			<input type="submit" class="btn  btn-sm view minutesBtnStyle" value="MINUTES" formaction="CommitteeMinutesNewDownload.htm" formmethod="get" formtarget="_blank"/>
+			<% if(LabCode.equalsIgnoreCase("PGAD")){ %>
+				<input type="submit" class="btn  btn-sm view minutesBtnStyle" value="MINUTES" formaction="CommitteeMinutesNewMOMDownload.htm" formmethod="get" formtarget="_blank"/>
+			<%}else{ %>
+				<input type="submit" class="btn  btn-sm view minutesBtnStyle" value="MINUTES" formaction="CommitteeMinutesNewDownload.htm" formmethod="get" formtarget="_blank"/>
+			<%} %>
 			<button type="submit" class="btn btn-primary btn-sm"  name="sub" value="word"  id="wordDownloadBtn" formmethod="get" formtarget="_blank" formaction="CommitteeMinutesNewWordDownload.htm"  ><i class="fa fa-file-word-o minutesIconStyle" title="Committee Minutes New Word Download"></i></button> 
 		<%} %>
 			<%if(committeescheduleeditdata[22].toString().equals("N")){%><button type="submit" class="btn btn-sm prints my-2 my-sm-0 fs-12px" formaction="getMinutesFrozen.htm" onclick="return confirm('Are You Sure to Freeze Minutes 2021 ?')">FREEZE</button>
@@ -167,12 +178,14 @@ List<CommitteeSchedule> dmcScheduleList = (List<CommitteeSchedule>) request.getA
 		<button type="submit" class="btn btn-sm prints my-2 my-sm-0 fs-12px" formtarget="_blank">MINUTES</button>
 		<%} %>
 		<% if(committeescheduleeditdata[26]!=null && committeescheduleeditdata[26].toString().equalsIgnoreCase("0")){ %> 
-			<input type="submit" class="btn  btn-sm view minutesBtnStyle" value="TABULAR MINUTES" formaction="MeetingTabularMinutesDownload.htm" formtarget="_blank"/>
+			<%if(LabCode.equalsIgnoreCase("PGAD")){ %>
+			<input type="submit" class="btn  btn-sm view minutesBtnStyle" value="TABULAR MINUTES" formaction="MeetingTabularMinutesNewDownload.htm" formtarget="_blank"/>
+			<%}else{ %><input type="submit" class="btn  btn-sm view minutesBtnStyle" value="TABULAR MINUTES" formaction="MeetingTabularMinutesDownload.htm" formtarget="_blank"/>
 			<%if(Long.parseLong(projectid)==0 && Long.parseLong(divisionid)==0 && Long.parseLong(initiationid)==0 && Long.parseLong(carsInitiationId)==0 && Long.parseLong(programmeId)==0 && userview==null && LabCode.equalsIgnoreCase("ADE")){%>
 				<input type="submit" class="btn  btn-sm view minutesBtnStyle" value="TABULAR MINUTES ACTIONS" formaction="MinutesOfMeetingTabularMinutesDownload.htm" formtarget="_blank"/> 
 			<%}%>
 				
-		<%}else{ %>
+		<%}}else{ %>
 		
 		<button type="button" class="btn  btn-sm btn-secondary emailBtnStyle"  onclick="sendEmailForProgrammeMom(<%=committeescheduleeditdata[6]%>)">
 		<i class="fa fa-paper-plane-o" aria-hidden="true"></i>&nbsp; EMAIL</button>
@@ -248,7 +261,7 @@ List<CommitteeSchedule> dmcScheduleList = (List<CommitteeSchedule>) request.getA
 	      				<tr>
 	
 				      		<td class="tdMaxStyle"> 
-				      			<form  id="myForm500" action="CommitteeMinutesSpecEdit.htm" method="post">
+				      			<form  id="myForm500" action="CommitteeMinutesSpecEdit.htm" onsubmit="saveCkEditorText()" method="post">
 				      			
 				      				<input type="hidden" name="specname" value="Introduction">
 				                    <input type="hidden" name="scheduleid"	value="<%=hlo[7] %>" />
@@ -433,8 +446,15 @@ List<CommitteeSchedule> dmcScheduleList = (List<CommitteeSchedule>) request.getA
     if(committeeagendalist!=null && committeeagendalist.size()>0){
     	
  	  for(Object[] hlo1:committeeagendalist){
- 	
- 		 Unit=hlo1[3].toString();
+ 		 
+ 		Unit = hlo1[3] != null ? hlo1[3].toString() : "";
+
+ 		String groupName = hlo1[15] != null ? hlo1[15].toString().trim() : "";
+
+ 		if (!groupName.isEmpty()) {
+ 		    Unit = Unit + " (" + groupName+")";
+ 		}
+
  		 String scheduleagendaid=hlo1[0].toString();
  		 temp=hlo1[0].toString();
  			  
@@ -505,12 +525,19 @@ List<CommitteeSchedule> dmcScheduleList = (List<CommitteeSchedule>) request.getA
 	     				<div class="panel panel-info">
 	      					<div class="panel-heading">
 	        					<h4 class="panel-title">
+	        					<%
+								String editorContent = hlod[5] != null ? hlod[5].toString() : " - ";
+								
+								editorContent = editorContent.replaceAll("(?i)</?(p|div|strong)[^>]*>", "");
+								
+								String textOnly = editorContent.replaceAll("(?i)</?(p|div|strong)[^>]*>", "");
+								%>
 	          						<span class="fs-14px">3.<%=unitcount %>.1.<%=unit11 %>. 
 	          						<!-- newly added by sankha 12-10-2023 -->
-	          						<%if(hlod[5].toString().length()>30){ %>
-									<%=hlod[5]!=null?StringEscapeUtils.escapeHtml4(hlod[5].toString()).substring(0,20)+"....":" - " %>	 <span class="showModalStyle" onclick='showModal("<%=hlod[5].toString()%>")'>(<%=hlod[9]!=null?StringEscapeUtils.escapeHtml4(hlod[9].toString()): " - " %>)</span>         						
+	          						<%if(textOnly.length()>30){ %>
+									<%=editorContent.substring(0,20)+"...."%>	 <span class="showModalStyle" onclick='showModal("<%=editorContent%>")'>(<%=hlod[9]!=null?hlod[9].toString(): " - " %>)</span>         						
 	          						<%}else{ %>
-	          						<%=hlod[5]!=null?StringEscapeUtils.escapeHtml4(hlod[5].toString()): " - " %><span class="showModalStyle">(<%=hlod[9]!=null?StringEscapeUtils.escapeHtml4(hlod[9].toString()): " - " %>)</span>
+	          						<%=editorContent %><span class="showModalStyle">(<%=hlod[9]!=null?hlod[9].toString(): " - " %>)</span>
 	          						<%} %></span>
 	          						<!-- end -->
 	          						  </h4>
@@ -633,16 +660,23 @@ List<CommitteeSchedule> dmcScheduleList = (List<CommitteeSchedule>) request.getA
 	   				<div class="col-md-11 ml-10px"  align="left">
 	     				<div class="panel panel-info">
 	      					<div class="panel-heading">
+	        					<%
+								String editorContent = hlod[5] != null ? hlod[5].toString() : " - ";
+								
+								editorContent = editorContent.replaceAll("(?i)</?(p|div|strong)[^>]*>", "");
+								
+								String textOnly = editorContent.replaceAll("(?i)</?(p|div|strong)[^>]*>", "");
+								%>
 	        					<h4 class="panel-title">
 	          						<span class="fs-14px">3.<%=unitcount %>.2.<%=unit12 %>. 
-	          						<%if(hlod[5].toString().length()>30){ %>
-									<%=hlod[5]!=null?StringEscapeUtils.escapeHtml4(hlod[5].toString()).substring(0,20)+"....":" - " %>	          						
+	          						<%if(textOnly.length()>30){ %>
+									<%=editorContent.substring(0,20)+"...." %>	          						
 	          						<%}else{ %>
-	          						<%=hlod[5]!=null?StringEscapeUtils.escapeHtml4(hlod[5].toString()): " - " %>
+	          						<%=editorContent%>
 	          						<%} %>
 	          						<!-- end -->
 	          						</span>
-	          				<span class="showModalStyle" onclick="showModal('<%=hlod[5].toString() %>')">(<%=hlod[9]!=null?StringEscapeUtils.escapeHtml4(hlod[9].toString()): " - " %>)</span>  </h4>
+	          				<span class="showModalStyle" onclick="showModal('<%=editorContent %>')">(<%=hlod[9]!=null?hlod[9].toString(): " - " %>)</span>  </h4>
 	          				
 		       						<div class="introductionDivStyle">
 									 	<table class="text-center">
@@ -778,7 +812,6 @@ List<CommitteeSchedule> dmcScheduleList = (List<CommitteeSchedule>) request.getA
 								%>
 	        					<span class="fs-14px">
 								    3.<%=unitcount %>.3.<%=unit13 %>.
-								
 								    <% if(textOnly.length() > 30) { %>
 								        <%= editorContent.substring(0, Math.min(editorContent.length(), 20)) %>...
 								    <% } else { %>
@@ -1743,7 +1776,7 @@ function showAttachmentModal(){
    				<div class="row mb-10px">
    					
    					<div class="col-md-12"  align="left">
-						<label>
+						<label id="title-add">
 						<b id="iditemspec" class="fs-18px"></b>
 						<b id="iditemsubspecofsub" class="fs-18px"></b>
 						<b id="iditemsubspec" class="fs-18px"></b>
@@ -1923,10 +1956,15 @@ function showAttachmentModal(){
 						</label>
 					</div>
    					
-   					<div class="col-md-12 ml-0px w-100"  align="left">
-						<label >Action Name</label>
-
-						 <textarea class="form-control w-100 height-140px" required="required"  name="NoteText" id="editorair" maxlength="5000"></textarea>
+   				 <div class="col-md-12 ml-0px w-100"  align="left">
+						 <% if(!LabCode.equalsIgnoreCase("PGAD")){ %>
+						 		<label >Action Name</label>
+						 		<textarea class="form-control w-100 height-140px" required="required"  name="NoteText" id="editorair" maxlength="5000"></textarea>
+						 <%}else{ %>						 
+						<div   id="summernoteair" class="center">
+						</div>
+						 <textarea class="textAreaClass" name="NoteText" id="editorair"></textarea>
+						 <%} %> 
 					</div>
 
   					
@@ -2333,24 +2371,79 @@ function editcheck1(editfileid)
    
     unitt="<%=unit3 %>";
     unitnew="<%=unit21%>";
+    actionType = "<%=actionType%>"
     
 
     var regex = /\d+/g;
     var matches = unitt.match(regex);
     
+    /* var actionMatch = actionType.matches("add");
+    console.log(actionMatch);
+    if(actionMatch!=null){
+    	
+    } */
+
+	function restoreCkEditorTextAIR() {
+	    const savedText = sessionStorage.getItem('CK_TEXT_AIR');
+	    if (!savedText) return;
+
+	    // Wait until editor instance is available
+	    const interval = setInterval(function () {
+	        if (CKEDITOR.instances['summernoteair']) {
+	            CKEDITOR.instances['summernoteair'].setData(savedText);
+	            clearInterval(interval);
+	        }
+	    }, 200);
+	}
+	
+	function saveCkEditorTextAIR() {
+	    if (CKEDITOR.instances['summernoteair']) {
+	        sessionStorage.setItem(
+	            'CK_TEXT_AIR',
+	            CKEDITOR.instances['summernoteair'].getData()
+	        );
+	    }
+	}
+	
+	function restoreCkEditorText() {
+	    const savedText = sessionStorage.getItem('CK_TEXT');
+	    if (!savedText) return;
+
+	    // Wait until editor instance is available
+	    const interval = setInterval(function () {
+	        if (CKEDITOR.instances['summernote']) {
+	            CKEDITOR.instances['summernote'].setData(savedText);
+	            clearInterval(interval);
+	        }
+	    }, 200);
+	}
+	
+	function saveCkEditorText() {
+	    if (CKEDITOR.instances['summernote']) {
+	        sessionStorage.setItem(
+	            'CK_TEXT',
+	            CKEDITOR.instances['summernote'].getData()
+	        );
+	    }
+	}
+	
+
 	if(matches!=null){
 		if("5"==matches){
 			$("#OutCome5").click();	
+	 		restoreCKEditorText();
+	 		restoreCkEditorTextAIR();
+	 		console.log("inside 1");
 		}else{
-			
 			$("#agendaclick").click();	
 			unitt=unitt.slice(1);
 			$("."+unitt).click();
 			$("#"+unitt+'5').click();
+	 		restoreCKEditorText();
+	 		restoreCkEditorTextAIR();
+	 		console.log("inside 2");
 		}
-	}   
-    
-	
+	}
 	function checklength(id){
 		
 		$('#'+id).on('change', function() { 
@@ -2372,13 +2465,27 @@ function editcheck1(editfileid)
 	
 
  <script type="text/javascript">
-	 
-	
+ 
+ 		var labCode = "<%=LabCode %>";
+ 		/* 
+ 	$('#specair').submit(function() {
+ 		
+	}) */
+	$('#specair').on('submit', function (e) {
+
+	    if(labCode==="PGAD"){
+	    	var data =CKEDITOR.instances['summernoteair'].getData();
+		  	if(data)$('#editorair').val(data);
+		    saveCkEditorTextAIR();
+	    }
+	});
+
 	  $('#specadd').submit(function() {
+		  saveCkEditorText();
 		  
 		  var data =CKEDITOR.instances['summernote'].getData();
 		  $('textarea[name=NoteText]').val(data);
-
+		  if(labCode === "PGAD") return true;
 		  if($('#issue').is(':checked')) 
 		    {
 				var data =CKEDITOR.instances['summernote'].getData();
@@ -2493,6 +2600,7 @@ function editcheck1(editfileid)
     					$("#remarksair").val('');
     					$("#OutComeAirHead").val(type);
     					$("#editorair").val('');
+      					CKEDITOR.instances['summernoteair'].setData('');
     					$("#OutComeAir").val('C');
     					document.getElementById('outcomeair').innerHTML = " / "+type;
      					
@@ -2587,6 +2695,7 @@ function editcheck1(editfileid)
     					$("#remarksair").val('');
     					$("#OutComeAir").val(type);
     					$("#editorair").val('');
+      					CKEDITOR.instances['summernoteair'].setData('');
     					$('#aircraftid').val('').change();      
     		            $('#subsystemid').prop('selectedIndex', 0).change();;   
     					if(type=="D"){
@@ -2683,7 +2792,8 @@ function editcheck1(editfileid)
         					}
     						
     					document.getElementById('iditemspec').innerHTML = values[1];
-    			
+						document.getElementById('iditemunit').innerHTML = "";
+
     					
     					CKEDITOR.instances['summernote'].setData();
     					$("#remarks").val('');
@@ -2778,6 +2888,7 @@ function editcheck1(editfileid)
   					$("#remarksair").val(values[9]);
   					$("#OutComeAir").val(values[10]);
   					$("#editorair").val(values[1]);
+  					CKEDITOR.instances['summernoteair'].setData(values[1]);
   					$("#PresDiscHeaderVal").val(AgendaSubHead);
   					document.getElementById('outcomeair').innerHTML = " / "+AgendaSubHead;
   	  			
@@ -2868,7 +2979,7 @@ function editcheck1(editfileid)
     					$("#remarksair").val(values[9]);
     					$("#OutComeAir").val(values[10]);
     					$("#editorair").val(values[1]);
-    					
+      					CKEDITOR.instances['summernoteair'].setData(values[1]);
     					$('#aircraftid').val(values[11]).change();     
     		            $('#subsystemid').val(values[12]).change();
 
@@ -3096,18 +3207,122 @@ toolbar: [{
 	]
 } );
 
+
+CKEDITOR.replace( 'summernoteair', {
+	
+	
+toolbar: [{
+          name: 'clipboard',
+          items: ['PasteFromWord', '-', 'Undo', 'Redo']
+        },
+        {
+          name: 'basicstyles',
+          items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat', 'Subscript', 'Superscript']
+        },
+        {
+          name: 'links',
+          items: ['Link', 'Unlink']
+        },
+        {
+          name: 'paragraph',
+          items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote']
+        },
+        {
+          name: 'insert',
+          items: ['Image', 'Table']
+        },
+        {
+          name: 'editing',
+          items: ['Scayt']
+        },
+        '/',
+
+        {
+          name: 'styles',
+          items: ['Format', 'Font', 'FontSize']
+        },
+        {
+          name: 'colors',
+          items: ['TextColor', 'BGColor', 'CopyFormatting']
+        },
+        {
+          name: 'align',
+          items: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']
+        },
+        {
+          name: 'document',
+          items: ['Print', 'PageBreak', 'Source']
+        }
+      ],
+     
+    removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar',
+
+	customConfig: '',
+
+	disallowedContent: 'img{width,height,float}',
+	extraAllowedContent: 'img[width,height,align]',
+
+	height: 380,
+
+	
+	contentsCss: [CKEDITOR.basePath +'mystyles.css' ],
+
+	
+	bodyClass: 'document-editor',
+
+	
+	format_tags: 'p;h1;h2;h3;pre',
+
+	
+	removeDialogTabs: 'image:advanced;link:advanced',
+
+	stylesSet: [
+	
+		{ name: 'Marker', element: 'span', attributes: { 'class': 'marker' } },
+		{ name: 'Cited Work', element: 'cite' },
+		{ name: 'Inline Quotation', element: 'q' },
+
+		
+		{
+			name: 'Special Container',
+			element: 'div',
+			styles: {
+				padding: '5px 10px',
+				background: '#eee',
+				border: '1px solid #ccc'
+			}
+		},
+		{
+			name: 'Compact table',
+			element: 'table',
+			attributes: {
+				cellpadding: '5',
+				cellspacing: '0',
+				border: '1',
+				bordercolor: '#ccc'
+			},
+			styles: {
+				'border-collapse': 'collapse'
+			}
+		},
+		{ name: 'Borderless Table', element: 'table', styles: { 'border-style': 'hidden', 'background-color': '#E6E6FA' } },
+		{ name: 'Square Bulleted List', element: 'ul', styles: { 'list-style-type': 'square' } }
+	]
+} );
+
 var genid="<%=GenId%>";
  $(document).ready(function(){
 
  	 $("#"+genid).click();
- 	 
+	restoreCkEditorTextAIR();
  	 if(unitt.charAt(0)==='#')
  	 {
  	 	$(unitt).click(); 
  	 }
  	 else
  	 {
- 		$('#'+unitt).click(); 	 
+ 		$('#'+unitt).click();
+ 		restoreCkEditorTextAIR();
  	 }
  
  
@@ -3136,38 +3351,63 @@ function showModal(a){
 }
 
 function sendEmail(a){
-	  $('body').css("filter", "blur(1.0px)");
-	 $('#spinner').show();
-	 $('#main1').hide();
-	 $('#main2').hide();
-	var committeescheduleid= a;
-	
- 	$.ajax({
-		type:'GET',
-		url:'SendMinutes.htm',
-		data:{
-			committeescheduleid:committeescheduleid,
-		},
-		datatype:'json',
-		
-		success:function (result){
-				
-			if(result.length>0){
-				 $('#main1').show();
-				 $('#main2').show();
-				 $('#spinner').hide();
-				 $('body').css("filter", "none");
-				 console.log("Email Sent");
-				 alert("MoM sent to the Participating members")
-			}
+	Swal.fire({
+        title: 'Are you sure to send the mail?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, send it!',
+        position: "end",
+        toast: false,
+    }).then((result) => {
+        if (result.isConfirmed) {
+	  		$('body').css("filter", "blur(1.0px)");
+			 $('#spinner').show();
+			 $('#main1').hide();
+			 $('#main2').hide();
+			var committeescheduleid= a;
 			
-		}
-	}) 
+		 	$.ajax({
+				type:'GET',
+				url:'SendMinutes.htm',
+				data:{
+					committeescheduleid:committeescheduleid,
+				},
+				datatype:'json',
+				
+				success:function (result){
+						
+					if(result.length>0){
+						 $('#main1').show();
+						 $('#main2').show();
+						 $('#spinner').hide();
+						 $('body').css("filter", "none");
+						 console.log("Email Sent");
+						 alert("MoM sent to the Participating members")
+					}
+					
+				}
+			}) 
+        }
+    });
 	
 }
 
 
 function sendEmails(a){
+
+	Swal.fire({
+        title: 'Are you sure to send the mail?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, send it!',
+        position: "end",
+        toast: false,
+    }).then((result) => {
+        if (result.isConfirmed) {
 	  $('body').css("filter", "blur(1.0px)");
 		 $('#spinner').show();
 		 $('#main1').hide();
@@ -3195,6 +3435,8 @@ function sendEmails(a){
 				
 			}
 		}) 
+        }
+    });
 }
 
 <%if(dmcFlag!=null && dmcFlag.equalsIgnoreCase("Y")) { %>
@@ -3225,7 +3467,7 @@ function sendDraftMoM(a){
 		},
 		success:function(result){
 			var ajaxresult = JSON.parse(result)
-			console.log("meeting draft sent##"+ajaxresult)
+
 			if(Number(ajaxresult)>0){
 				alert("Mom Draft Sent Successfully");
 				 $('#spinner').hide();
@@ -3585,10 +3827,8 @@ function FormNameActions(formId){
 	    
 	    if(minutesidadd=="3"){
 	 		unit1Val="#5Out"
-	 		console.log(unit1Val)
 	 	}else if(minutesidadd=="5"){
 	 		unit1Val="5"
-	 		console.log(unit1Val)
 	 	}
 	    
 	    $("#minutesidadd").val(minutesidadd);
@@ -3705,7 +3945,6 @@ function FormNameActions(formId){
 					}
 					
 				document.getElementById('iditemspec').innerHTML = values[1];
-		
 				
 				CKEDITOR.instances['summernote'].setData();
 				$("#remarks").val('');
@@ -3887,6 +4126,3 @@ $(document).ready(function () {
 
 </body>
 </html>
-
-
-

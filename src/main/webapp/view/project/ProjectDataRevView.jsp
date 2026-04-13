@@ -73,7 +73,7 @@ String projectdatarevid=(String)request.getAttribute("projectdatarevid");
 											<select class="form-control items style2" name="projectid"  required="required" data-live-search="true" data-container="body" onchange="submitForm('projectchange');">
 												<option disabled  selected value="">Choose...</option>
 												<%for(Object[] obj : projectslist){ 
-											     String projectshortName=(obj[17]!=null)?" ( "+obj[17].toString()+" ) ":"";
+											     String projectshortName=(obj[17]!=null)?" ("+obj[17].toString()+") ":"";
 												%>
 												<%-- <option <%if(projectid.equals(obj[0].toString())){ %> selected <%} %> value="<%=obj[0] %>" ><%=obj[4] %></option> --%>
 												<option <%if(projectid!=null && projectid.equals(obj[0].toString())) { %>selected <%} %>value="<%=obj[0]%>" ><%=obj[4]!=null?StringEscapeUtils.escapeHtml4(obj[4].toString()): " - "%> <%=projectshortName!=null?StringEscapeUtils.escapeHtml4(projectshortName): " - " %></option>

@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -41,6 +42,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -5024,7 +5029,7 @@ public class ProjectController
 		}
 	}
 	@RequestMapping(value = "ProjectDataAjax.htm", method = {RequestMethod.GET , RequestMethod.POST})
-	public @ResponseBody String ProjectDataAjax(HttpServletRequest req, HttpServletResponse res, HttpSession ses) throws Exception 
+	public ResponseEntity<byte[]> ProjectDataAjax(HttpServletRequest req, HttpServletResponse res, HttpSession ses) throws Exception 
 	{
 
 		logger.info(new Date() +"Inside ProjectDataAjax.htm "+req.getUserPrincipal().getName());
@@ -5056,19 +5061,38 @@ public class ProjectController
 			//my_file = new File(uploadpath+projectdatafiledata[2]+File.separator+projectdatafiledata[index]); 
 			Path pdataPath = Paths.get(uploadpath, LabCode,"ProjectData",projectdatafiledata[index].toString());
 			my_file=pdataPath.toFile();
-			res.setHeader("Content-disposition","attachment; filename="+projectdatafiledata[index].toString()); 
-			iframe.add(FilenameUtils.getExtension(projectdatafiledata[index]+""));
-			String pdf=Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(my_file));
-			iframe.add(pdf);
+			byte[] fileContent = FileUtils.readFileToByteArray(my_file);
+		    String mimeType = Files.probeContentType(my_file.toPath());
+
+		    HttpHeaders headers = new HttpHeaders();
+		    headers.setContentType(MediaType.parseMediaType(mimeType));
+		    // Provide the extension in a custom header so JS knows if it's a PDF or Image
+		    headers.add("File-Extension", FilenameUtils.getExtension(my_file.getName()));
+
+		    return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(new Date() +" Inside ProjectDataAjax.htm "+req.getUserPrincipal().getName(), e);
 		}
 		Gson json = new Gson();
-		return json.toJson(iframe);
+		return null;
 	}
 
-
+	@RequestMapping(value = "displayFile.htm")
+	public void displayFile(@RequestParam("path") String path, HttpServletResponse res) throws Exception {
+	    // Note: You should ideally pass an ID and look up the path for security
+	    File file = new File(uploadpath + path); 
+	    if (file.exists()) {
+	        String mimeType = Files.probeContentType(file.toPath());
+	        res.setContentType(mimeType != null ? mimeType : "application/octet-stream");
+	        res.setContentLength((int) file.length());
+	        
+	        try (FileInputStream fis = new FileInputStream(file);
+	             OutputStream os = res.getOutputStream()) {
+	            IOUtils.copy(fis, os); // From Apache Commons IO
+	        }
+	    }
+	}
 
 	@RequestMapping(value = "ProjectDataEditSubmit.htm", method = RequestMethod.POST)
 	public String ProjectDataEditSubmit(HttpServletRequest req, HttpSession ses, RedirectAttributes redir,

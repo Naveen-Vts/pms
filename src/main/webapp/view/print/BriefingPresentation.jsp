@@ -422,16 +422,21 @@ String baseUrl = scheme + "://" + serverName
 									</td>
 								</tr>
 								<tr>
+								
 									<td class="bp-45">
 										<%
 										Path systemPath = Paths.get(filePath,projectLabCode,"ProjectData",projectdatadetails.get(z)[3].toString());
 										File systemfile = systemPath.toFile();
 										if(systemfile.exists()){
 										if (FilenameUtils.getExtension(projectdatadetails.get(z)[3].toString()).equalsIgnoreCase("pdf")) {%>
-										<iframe
+<%-- 										<iframe
 											src="data:application/pdf;base64,<%=pdffiles.get(z)[0]%>#view=FitV" class="bp-43"
-											id="config<%=ProjectDetail.get(z)[0]%>"> </iframe> <%
-											 } else {
+											id="config<%=ProjectDetail.get(z)[0]%>"> </iframe> --%>
+											<button class="btn btn-lg btn-link" onclick="showModal('sysconfig','<%=projectdatadetails.get(z)[0]%>')" id="sysconfigbtn"></button>
+											<div class="col-md-12" id="sysconfigModal">
+											
+											</div>
+											 <%} else {
 											 %>
 										<img data-enlargable
 										class="bp-44"
@@ -474,13 +479,11 @@ String baseUrl = scheme + "://" + serverName
 							<table class="width-100">
 								<%if (projectdatadetails.get(z) != null && projectdatadetails.get(z)[4] != null) {%>
 								<tr>
-									<td class="p-0 ml-1">
+									<td class="bp-41">
 										<form action="#" method="post" target="_blank">
 											<b><%=ProjectDetail.get(z)[1]%> <% if (z != 0) { %>(SUB<% } %> : </b>
 											<span class="mainsubtitle"></span><span class="anchorlink bp-42"
-												onclick="$('#sysspecs<%=ProjectDetail.get(z)[0]%>').toggle();"
-												><b>As
-													on File Attached</b></span>
+												onclick="$('#sysspecs<%=ProjectDetail.get(z)[0]%>').toggle();"><b>As on File Attached</b></span>
 											<button type="submit" class="btn btn-sm "
 												formaction="ProjectDataSystemSpecsFileDownload.htm"
 												formmethod="post" formtarget="_blank">
@@ -497,9 +500,15 @@ String baseUrl = scheme + "://" + serverName
 								<tr>
 									<td class=" border-0 text-left">
 										<%if (FilenameUtils.getExtension(projectdatadetails.get(z)[4].toString()).equalsIgnoreCase("pdf")) {%>
-										<iframe 
+									<%-- 	<iframe 
 											src="data:application/pdf;base64,<%=pdffiles.get(z)[3]%>#view=FitV" class="bp-43"
-											id="sysspecs<%=ProjectDetail.get(z)[0]%>" > </iframe> <%
+											id="sysspecs<%=ProjectDetail.get(z)[0]%>" > </iframe>  --%>
+											<button class="btn btn-lg btn-link" onclick="showModal('sysspecs','<%=projectdatadetails.get(z)[0]%>')" id="sysspecsbtn">
+											</button>	
+											<div class="col-md-12" id="sysspecsModal">
+											
+											</div>
+											<%
 										 } else {
 										 %>
 										<img data-enlargable
@@ -574,9 +583,14 @@ String baseUrl = scheme + "://" + serverName
 								<%
 								if (FilenameUtils.getExtension(projectdatadetails.get(z)[5].toString()).equalsIgnoreCase("pdf")) {
 								%>
-								<iframe class="bp-43"
+							<%-- 	<iframe class="bp-43"
 									src="data:application/pdf;base64,<%=pdffiles.get(z)[1]%>#view=FitV" 
-									id="protree<%=ProjectDetail.get(z)[0]%>"> </iframe> <%
+									id="protree<%=ProjectDetail.get(z)[0]%>"> </iframe> --%>
+								<button class="btn btn-lg btn-link" onclick="showModal('protree','<%=projectdatadetails.get(z)[0]%>')" id="protreebtn"></button>		
+										<div class="col-md-12" id="protreeModal">
+											
+											</div>
+									 <%
 								 } else {
 								 %>
 								<img data-enlargable class="bp-44"
@@ -1456,9 +1470,13 @@ String baseUrl = scheme + "://" + serverName
 							<tr>
 									<td class="border-0 text-center" >
 									<%  if (FilenameUtils.getExtension(projectdatadetails.get(z)[6].toString()).equalsIgnoreCase("pdf")) {  %>
-										<div class="col-md-12 bp-60" >
-										<iframe  src="data:application/pdf;base64,<%=pdffiles.get(z)[2]%>#view=FitV" class="bp-43" id="pearl<%=ProjectDetail.get(z)[0]%>"> </iframe> 
-									</div>
+										
+											<button class="btn btn-lg btn-link" onclick="showModal('pearl','<%=projectdatadetails.get(z)[0]%>')" id="pearlbtn"></button>		
+										<div class="col-md-12" id="pearlModal">
+											
+											</div>
+										<%-- <iframe  src="data:application/pdf;base64,<%=pdffiles.get(z)[2]%>#view=FitV" class="bp-43" id="pearl<%=ProjectDetail.get(z)[0]%>"> </iframe>  --%>
+									
 									<% } else { %>
 										<img data-enlargable class="bp-61" src="data:image/<%=FilenameUtils.getExtension(projectdatadetails.get(z)[6].toString())%>;base64,<%=pdffiles.get(z)[2]%>"id="pearl<%=ProjectDetail.get(z)[0]%>"> 
 									<% } %>
@@ -2702,43 +2720,8 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 				</div>
 
 			</div>
-			<!-- ---------------------------------------- Issues Div ----------------------------------------------------- -->
-			<!-- ---------------------------------------- P-12 Decision/Recommendations sought Div ----------------------------------------------------- -->
-			<div class="carousel-item ">
-	
-					<div class="content-header row ">
-					<div class="col-md-1" ><img class="bp-18"   <%if(Drdologo!=null ){ %> src="data:image/*;base64,<%=Drdologo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> ></div>
-					<div class="col-md-1 bp-19" align="left"  ><b class="bp-20"><%=ProjectCode %></b>
-					<h6 class="bp-21"><%=pdc %></h6>
-					</div>
-					<div class="col-md-8">
-						<h3> 12. Decision/Recommendations Sought from <%=CommitteeCode%> </h3>
-					</div>
-					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
-					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
-					</div>
-					</div>
-				
-				<div class="content align-items-center" align="left">
-					<table class="subtables bp-48 width-100" >
-											<thead>
-												<tr><th class="width-5">SN</th><th class="width-5">Type</th><th class="width-85">Details</th></tr>
-											</thead>
-											<tbody>
-												<%int i=0; if(RecDecDetails!=null && RecDecDetails.size()>0){ 
-												for(Object[] obj :RecDecDetails){%>
-												<tr>
-													<td class="width-5 text-center"> <%=++i%></td>
-													<td class="width-5 text-center"> <%=obj[2]!=null?(obj[2].toString()):""%></td>
-													<td class="width-85 bp-75">  <%=obj[2]!=null?(obj[3].toString()):""%></td>
-												</tr>
-												<%}}else{%><td colspan="3" class="text-center"> No Data Available!</td><%}%>
-											</tbody>
-					</table>
-				</div>
-			</div>
-			<!-- ---------------------------------------- Decision/Recommendations sought Div ----------------------------------------------------- -->
-			<!-- ---------------------------------------- P-13a  Other Relevant Points Div ----------------------------------------------------- -->
+
+				<!-- ---------------------------------------- P-12a  Other Relevant Points Div ----------------------------------------------------- -->
 
 			<div class="carousel-item ">
 				   <div class="content-header row ">
@@ -2747,7 +2730,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-						<h3>13 (a) Other Relevant Points</h3>
+						<h3>12 (a) Other Relevant Points</h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -2775,9 +2758,9 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 			</div>
 
 
-			<!-- ----------------------------------------p-13a Other Relevant Points Div ----------------------------------------------------- -->
+			<!-- ----------------------------------------p-12a Other Relevant Points Div ----------------------------------------------------- -->
 
-			<!-- ---------------------------------------- P-13b Technical Work Carried Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-12b Technical Work Carried Div ----------------------------------------------------- -->
 
 			<div class="carousel-item ">
 
@@ -2789,9 +2772,9 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<div class="col-md-8">
 						<h3>
 							<% if (CommitteeCode.equalsIgnoreCase("EB")) { %>
-								13 (b) Technical Work Carried Out For Last Six Months
+								12 (b) Technical Work Carried Out For Last Six Months
 							<% } else { %>
-								13 (b) Technical Work Carried Out For Last Three Months
+								12 (b) Technical Work Carried Out For Last Three Months
 							<% } %>
 						</h3>
 					</div>
@@ -2857,9 +2840,9 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 							</div>
 					<% } %>
 				</div></div>
-			<!-- ---------------------------------------- p-13b Technical Work Carried Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- p-12b Technical Work Carried Div ----------------------------------------------------- -->
 
-			<!-- ---------------------------------------- P-13c  Technical Images Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-12c  Technical Images Div ----------------------------------------------------- -->
 			<div class="carousel-item ">
 					<div class="content-header row ">
 					<div class="col-md-1" ><img class="bp-18"   <%if(Drdologo!=null ){ %> src="data:image/*;base64,<%=Drdologo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> ></div>
@@ -2867,7 +2850,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-							<h3>13 (c) Technical Images</h3>
+							<h3>12 (c) Technical Images</h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -2893,9 +2876,47 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 				</div>
 			</div>
 
-		<!-- ---------------------------------------- p-13c Technical Images Div ----------------------------------------------------- -->
+		<!-- ---------------------------------------- p-12c Technical Images Div ----------------------------------------------------- -->
 		
-		<!-- ---------------------------------------- P-14  Thank you Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- Issues Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-13 Decision/Recommendations sought Div ----------------------------------------------------- -->
+			<div class="carousel-item ">
+	
+					<div class="content-header row ">
+					<div class="col-md-1" ><img class="bp-18"   <%if(Drdologo!=null ){ %> src="data:image/*;base64,<%=Drdologo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> ></div>
+					<div class="col-md-1 bp-19" align="left"  ><b class="bp-20"><%=ProjectCode %></b>
+					<h6 class="bp-21"><%=pdc %></h6>
+					</div>
+					<div class="col-md-8">
+						<h3> 13. Decision/Recommendations Sought from <%=CommitteeCode%> </h3>
+					</div>
+					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
+					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
+					</div>
+					</div>
+				
+				<div class="content align-items-center" align="left">
+					<table class="subtables bp-48 width-100" >
+											<thead>
+												<tr><th class="width-5">SN</th><th class="width-5">Type</th><th class="width-85">Details</th></tr>
+											</thead>
+											<tbody>
+												<%int i=0; if(RecDecDetails!=null && RecDecDetails.size()>0){ 
+												for(Object[] obj :RecDecDetails){%>
+												<tr>
+													<td class="width-5 text-center"> <%=++i%></td>
+													<td class="width-5 text-center"> <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):""%></td>
+													<td class="width-85 bp-75">  <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()):""%></td>
+												</tr>
+												<%}}else{%><td colspan="3" class="text-center"> No Data Available!</td><%}%>
+											</tbody>
+					</table>
+				</div>
+			</div>
+			<!-- ---------------------------------------- Decision/Recommendations sought Div ----------------------------------------------------- -->
+	
+	
+			<!-- ---------------------------------------- P-14  Thank you Div ----------------------------------------------------- -->
 
 			<div class="carousel-item ">
 				<div class="content bp-81">
@@ -2947,10 +2968,10 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="9. Action Plan"><b>9</b></li>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="10. GANTT chart of overall project schedule"><b>10</b></li>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="11. Issues"><b>11</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="12. Decision/Recommendations"><b>12</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="13 (a) Other Relevant Points"><b>13 (a)</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="13 (b) Technical Work Carried out"><b>13 (b)</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="13 (c) Technical Images"><b>13 (c)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="12 (a) Other Relevant Points"><b>12 (a)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="12 (b) Technical Work Carried out"><b>12 (b)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="12 (c) Technical Images"><b>12 (c)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="13. Decision/Recommendations"><b>13</b></li>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="Thank You"><b>End</b></li>
 			<li data-slide-to="21"  class="carousel-indicator content_full_screen bp-87" data-toggle="tooltip" data-placement="top" title="Full Screen Mode"><b><i class="fa fa-expand fa-lg" aria-hidden="true"></i></b></li>
 			<li data-slide-to="21"  class="carousel-indicator content_reg_screen bp-87" data-toggle="tooltip" data-placement="top" title="Exit Full Screen Mode"><b><i class="fa fa-compress fa-lg" aria-hidden="true"></i></b></li>
@@ -2974,12 +2995,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 													Object[] ProjectDetail123 = (Object[]) request.getAttribute("ProjectDetailsMil");
 												%>
 												<%=ProjectDetail123[2]%>
-												(
-												<%=ProjectDetail123[1]%>
-												)
-												<%
-												}
-												%>
+												(<%=ProjectDetail123[1]%>)<%}%>
 											</h5>
 										</div>
 									</div>
@@ -3697,7 +3713,14 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 									</tbody><%}%></table></div> <%} %>
 									</div></div></div></div></div></div></div></div></div>
 
-
+<!-- <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="longdivmodal"  data-backdrop="static">
+  <div class="modal-dialog modal-lg">
+    
+    <div class="modal-content mt-2 mb-2 style9" id="modalcontent" style="width:180%;margin-left:-35%">
+     
+    </div>
+  </div>
+</div> -->
 <script type="text/javascript">
 
 $('.content_reg_screen').hide();
@@ -3995,6 +4018,53 @@ function ActionDetails(InAssignId)
 	function showMeetingModal(){
 		$('#meetingModal').modal('show');
 	}
+	function showModal(a,b){
+		   
+		//$('#longdivmodal').modal('show');
+		$.ajax({
+		    type: 'GET',
+		    url: 'ProjectDataAjax.htm',
+		    xhrFields: {
+		        responseType: 'blob' // Crucial: tells jQuery to handle binary data
+		    },
+		    data: { filename: a, projectdataid: b },
+		    success: function(blob, status, xhr) {
+		        // Get the extension we sent from the header
+		        var extension = xhr.getResponseHeader('File-Extension').toLowerCase();
+		        
+		        // Create a temporary URL for the browser to use
+		        var fileUrl = URL.createObjectURL(blob);
+		        
+		        var htmlContent = '<button type="button" class="close style10" data-dismiss="modal">&times;</button>';
+		        
+		        if (extension === "pdf") {
+		            htmlContent += '<iframe width="100%" height="600" src="' + fileUrl + '"></iframe>';
+		        } else {
+		            htmlContent += '<img class="style11" src="' + fileUrl + '">';
+		        }
+
+		        $('#modalcontent').html(htmlContent);
+		        $('#'+a+'Modal').html(htmlContent);
+		        //$('#longdivmodal').modal('show');
+		        
+		        // Clean up memory after the modal is closed
+		        $('#longdivmodal').on('hidden.bs.modal', function () {
+		            URL.revokeObjectURL(fileUrl);
+		        });
+		    }
+		});
+	}
+	
+	   
+    $( document ).ready(function(){
+  	  
+		$('#pearlbtn').click();
+		$('#protreebtn').click();
+		$('#sysspecsbtn').click();
+		$('#sysconfigbtn').click();
+    })
+    
+	
 </script>
 </body>
 </html>

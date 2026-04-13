@@ -57,7 +57,7 @@ String lablogo=(String)request.getAttribute("lablogo");
 LabMaster labInfo=(LabMaster)request.getAttribute("labInfo");
 String filePath=(String)request.getAttribute("filePath");
 String projectLabCode=(String)request.getAttribute("projectLabCode");
-SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy", Locale.ENGLISH);
 SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");	
 Object[] committeeMetingsCount =  (Object[]) request.getAttribute("committeeMetingsCount");
 String CommitteeCode = committee.getCommitteeShortName().trim();
@@ -2395,116 +2395,13 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 			<div>
 	<%} %>
 	
-		<% for(int z=0 ; z<1;z++) {   %>
-			<h1 class="break"></h1>
-			<div align="left" style="margin-left: 10px;"><b class="sub-title">11. Issues:</b></div>
-			
-			<table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;   border-collapse:collapse;" >
-						<thead>
-							<tr>
-								<td colspan="7" style="border: 0">
-								
-								</td>									
-							</tr>
-							<tr>
-								<th  style="width: 20px !important;text-align: center;">SN</th>
-								<th  style="width: 20px !important;text-align: center;">ID</th>
-								<th  style="width: 370px;">Issue Point</th>
-								<th  style="width: 100px; "> ADC<br>PDC</th>
-<!-- 								<th  style="width: 80px; "> ADC</th> -->
-								<th  style="width: 210px; ">Responsibility</th>
-<!-- 								<th  style="width: 50px; ">Status</th>	
- -->								<th  style="width: 270px; ">Remarks</th>		
-							</tr>
-						</thead>
-						<tbody>				
-										<%if(oldpmrcissueslist.get(z).size()==0){ %>
-										<tr><td colspan="7" style="text-align: center;" > Nil</td></tr>
-										<%}
-										else if(oldpmrcissueslist.get(z).size()>0)
-										  {int i=1;
-										for(Object[] obj:oldpmrcissueslist.get(z)){ 
-											if(!obj[9].toString().equals("C")  || (obj[9].toString().equals("C") && obj[13]!=null &&  before6months.isBefore(LocalDate.parse(obj[13].toString())) )){
-										%>
-											<tr>
-												<td  style="text-align: center;"><%=i %></td>
-							<td style="text-align: center;" >
-									<%if(obj[18]!=null && Long.parseLong(obj[18].toString())>0){
-										String []temp=obj[1].toString().split("/");
-										String tempString=temp[temp.length-1];
-										%>
-									<span style="font-weight: bold">
-										<%=tempString!=null?(tempString): " - "%>
-										</span>
-									<%}%>
-								</td>
-												<td  style="text-align: justify;"><%=obj[2]!=null?(obj[2].toString()): " - " %></td>
-												<td   style="text-align: center;" >
-												<%	String actionstatus = obj[9].toString();
-															int progress = obj[16]!=null ? Integer.parseInt(obj[16].toString()) : 0;
-															LocalDate pdcorg = LocalDate.parse(obj[3].toString());
-															LocalDate endDate = LocalDate.parse(obj[4].toString());
-															
-															LocalDate lastdate = obj[13]!=null ? LocalDate.parse(obj[13].toString()): null;
-															LocalDate today = LocalDate.now();
-													%> 
-													<% if(lastdate!=null && actionstatus.equalsIgnoreCase("C") ){%>
-														<%if(actionstatus.equals("C") && (pdcorg.isAfter(lastdate) || pdcorg.equals(lastdate))){%>
-														<span class="completed"><%= sdf.format(sdf1.parse(obj[13].toString()))%> </span>
-														<%}else if(actionstatus.equals("C") && pdcorg.isBefore(lastdate)){ %>	
-														<span class="completeddelay"><%= sdf.format(sdf1.parse(obj[13].toString()))%> </span>
-														<%} %>	
-													<%}else{ %>
-															-									
-													<%} %>
-													<br>
-													<%-- <% if (obj[6] != null && !LocalDate.parse(obj[6].toString()).equals(LocalDate.parse(obj[5].toString())) ) { %> <%=sdf.format(sdf1.parse(obj[6].toString()))%><br> <% } %> 
-													<% if (obj[5] != null && !LocalDate.parse(obj[5].toString()).equals(LocalDate.parse(obj[3].toString())) ) { %> <%=sdf.format(sdf1.parse(obj[5].toString()))%><br> <% } %> --%>
-													<%if(!pdcorg.equals(endDate)) {%>
-													<%=sdf.format(sdf1.parse(obj[4].toString()))%><br>
-													<%} %>
-													<%=sdf.format(sdf1.parse(obj[3].toString()))%>
-												</td>
-											
-												<td > <%=obj[11]!=null?(obj[11].toString()): " - " %></td>
-				
-												<td > <%if(obj[17]!=null){ %> <%=(obj[17].toString())%> <%} %> </td>			
-											</tr>			
-										<%i++;
-										}} }%>
-								</tbody>			
-							</table>
-			<%} %>
-				<% for(int z=0 ; z<1;z++) {   %>
-											<h1 class="break"></h1>		
-<!-- -------------------------------------------------------------------------------------------------------------------------------------------------------- -->
-						<div align="left" style="margin-left: 10px;"><b class="sub-title">12. Decision/Recommendations sought from <%=CommitteeCode.toUpperCase() %> Meeting :</b></div>
-							
-							<table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;   border-collapse:collapse;" >
-			
-											<thead>
-												<tr><th style="width: 5%;">SN</th><th style="width: 5%;">Type</th><th style="width: 85%;">Details</th></tr>
-											</thead>
-											<tbody>
-												<%int i=0; if(RecDecDetails!=null && RecDecDetails.size()>0){ 
-												for(Object[] obj :RecDecDetails){%>
-												<tr>
-													<td style="width: 5%; text-align: center;">  <%=++i%></td>
-													<td style="width: 5%; text-align: center;"> <%=obj[2]!=null?(obj[2].toString()): " - "%></td>
-													<td style="width: 85%;  word-wrap: break-word;"> <%=obj[3]!=null?(obj[3].toString()): " - "%></td>
-													
-												</tr>
-												<%}}else{%><td colspan="3" style="text-align: center;"> No Data Available!</td><%}%>
-					</tbody>
-					</table>	
-				<%} %>	
 			<% for(int z=0 ; z<1;z++) {   %>
 			<h1 class="break"></h1>	
 			<div align="left" style="margin-left: 10px;"><b class="sub-title"> 
    							<%if(CommitteeCode.equalsIgnoreCase("EB")){ %>
-   								13. Other Relevant Points (if any) and Technical Work Carried Out For Last Six Months
+   								12. Other Relevant Points (if any) and Technical Work Carried Out For Last Six Months
 							<%}else { %>
-								13. Other Relevant Points (if any) and Technical Work Carried Out For Last Three Months
+								12. Other Relevant Points (if any) and Technical Work Carried Out For Last Three Months
 							<%} %>
    						</b></div>
    						
@@ -2516,7 +2413,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										
 									<% if(TechWorkDataList.get(z)!=null){ %>
 										<tr>
-											<td style="text-align: justify;"><%=TechWorkDataList.get(z)[2].toString() %></td>
+											<td style="text-align: justify;"><%=(TechWorkDataList.get(z)[2].toString()) %></td>
 										</tr>
 								<%}else{ %>
 									<tr><td colspan="2" style="text-align: left ;">Nil </td></tr>
@@ -2561,6 +2458,29 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 						
 						
 			<%} %>	
+			<% for(int z=0 ; z<1;z++) {   %>
+											<h1 class="break"></h1>		
+<!-- -------------------------------------------------------------------------------------------------------------------------------------------------------- -->
+						<div align="left" style="margin-left: 10px;"><b class="sub-title">13. Decision/Recommendations sought from <%=CommitteeCode.toUpperCase() %> Meeting :</b></div>
+							
+							<table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;   border-collapse:collapse;" >
+			
+											<thead>
+												<tr><th style="width: 5%;">SN</th><th style="width: 5%;">Type</th><th style="width: 85%;">Details</th></tr>
+											</thead>
+											<tbody>
+												<%int i=0; if(RecDecDetails!=null && RecDecDetails.size()>0){ 
+												for(Object[] obj :RecDecDetails){%>
+												<tr>
+													<td style="width: 5%; text-align: center;">  <%=++i%></td>
+													<td style="width: 5%; text-align: center;"> <%=obj[2]!=null?(obj[2].toString()): " - "%></td>
+													<td style="width: 85%;  word-wrap: break-word;"> <%=obj[3]!=null?(obj[3].toString()): " - "%></td>
+													
+												</tr>
+												<%}}else{%><td colspan="3" style="text-align: center;"> No Data Available!</td><%}%>
+					</tbody>
+					</table>	
+				<%} %>	
 		<h1 class="break"></h1> 
 
 		<!-- <div align="center" style="text-align: center; vertical-align: middle ;font-size:60px;font-weight: 600;margin: auto; position: relative;color: #145374 !important" >THANK YOU</div> -->

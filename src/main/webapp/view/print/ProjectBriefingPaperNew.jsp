@@ -121,7 +121,7 @@ Map<Integer,String> treeMapLevOne =(Map<Integer,String>)request.getAttribute("tr
 Map<Integer,String> treeMapLevTwo =(Map<Integer,String>)request.getAttribute("treeMapLevTwo");
 
 List<Object[]> envisagedDemandlist = (List<Object[]>)request.getAttribute("envisagedDemandlist");
-SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy", Locale.ENGLISH);
 SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 Map<Integer,String> committeeWiseMap=(Map<Integer,String>)request.getAttribute("committeeWiseMap");
 //Map<Integer,String> mapEB=(Map<Integer,String>)request.getAttribute("mapEB");
@@ -166,7 +166,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 										
 										<select class="form-control items width200" name="projectid"  required="required"  data-live-search="true" data-container="body" onchange="submitForm('projectchange');">
 											<%for(Object[] obj : projectslist){ 
-												String projectshortName=(obj[17]!=null)?" ( "+obj[17].toString()+" ) ":"";
+												String projectshortName=(obj[17]!=null)?" ("+obj[17].toString().trim()+") ":"";
 											%>
 												<option value=<%=obj[0]%> <%if(projectid!=null && projectid.equals(obj[0].toString())) { %>selected <%} %> ><%=obj[4] +projectshortName%></option>
 											<%} %>
@@ -1041,7 +1041,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 														<%} %>
 													
 												</td>
-												<td class="overflowWrap"><%if(obj[23]!=null){%><%=(obj[23].toString()) %>><%} %></td>
+												<td class="overflowWrap"><%if(obj[23]!=null){%><%=(obj[23].toString()) %><%} %></td>
 	                                            <td >
 													<a  data-toggle="modal" data-target="#exampleModal1" data-id="milestonemodal<%=obj[0] %>" class="milestonemodal m-modal" data-whatever="@mdo" >
 														<i class="fa fa-info-circle circle-font"  aria-hidden="true"></i> 
@@ -2467,97 +2467,9 @@ String isCCS = (String)request.getAttribute("isCCS");
 						   
 					</details>
 
-<!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
- 
-					<details>
-   						<summary role="button" tabindex="0"><b>12. Decision/Recommendations sought from <%=committee.getCommitteeShortName().trim().toUpperCase() %></b>     </summary>
-   						
-						  <div class="content">
-						  
-						  <%if(nextMeetVenue!=null && nextMeetVenue[0]!=null){%>
-						  
-						  	<form action="RecDecDetailsAdd.htm" method="post" id="recdecdetails">
-								<div class="row margin-top10" >
-									<div class="col-md-4"> 
-										<table class="table table-bordered table-hover table-striped table-condensed ">
-											<thead>
-												<tr><th class="width-5">SN</th><th class="width-80">Type</th><th class="width-5">Action</th></tr>
-											</thead>
-											<tbody>
-											<%int i=0; if(RecDecDetails!=null && RecDecDetails.size()>0){ 
-												for(Object[] obj :RecDecDetails){
-												String pointdata= "";
-												if(obj[3].toString().length()>30){
-													pointdata=(obj[3].toString());
-												}else{
-													pointdata=(obj[3].toString());
-												}
-												%>
-												<tr>
-													<td class="width-5 text-center"> <%=++i%></td>
-													<td class="width-80 text-break">
-													<b class="color145374"><%=obj[2]%> :-</b>
-													  <%if(pointdata.length()>30){%> <%=pointdata.substring(0,30)%>  <span onclick="RecDecmodal('<%=obj[0]%>')" class="color1176ab"><b> ...View More </b></span> <%}else{%> <%=pointdata%><%}%>
-													  </td>
-													<td class="text-center width-5"> 
-													<button class="btn btn-warning btn-sm" type="button" onclick="RecDecEdit('<%=obj[0]%>' )" value="EDIT"  > <i class="fa fa-pencil-square-o color100f0e"  aria-hidden="true"></i></button>
-												
-													<button class="btn btn-sm btn-danger" type="button" onclick="RecDecremove('<%=obj[0].toString() %>')" ><i class="fa fa-trash text-white" aria-hidden="true" ></i></button>
-																									
-													</td>
-												</tr>
-												<%}}else{%><td colspan="3" class="text-center"> No Data Available!</td><%}%>
-											</tbody>
-										</table>
-										<div align="center">
-											<button type="button" class="btn btn-info btn-sm add" onclick="RecDecEdit('0')"> ADD</button>
-										</div>
-									</div>
-									<div class="col-md-8"> 
-									<div class="card" >
-										<div class="card-header height40" >
-											<div align="center" id="drcdiv"  >
-			  									<div class="form-check form-check-inline">
-												  <input class="form-check-input" type="radio" name="darc" id="decision" value="D" required="required">
-												  <label class="form-check-label" for="decision"><b> Decision </b></label>
-												</div>
-												<div class="form-check form-check-inline">
-												  <input class="form-check-input" type="radio" name="darc" id="recommendation" value="R" required="required">
-												  <label class="form-check-label" for="recommendation"> <b>Recommendation </b></label>
-												</div>
-			  								</div>
-										</div>
-										 <div class="card-body">
-										    <textarea class="form-control" name="RecDecPoints" id="ckeditor1" rows="5" cols="20" maxlength="5"  required="required"></textarea>
-											<div align="center">
-												<input type="hidden" name="RedDecID" id="recdecid">
-												<input type="hidden" name="schedulid" value="<%=nextMeetVenue[0]%>">
-												<button type="button"  class="btn btn-primary btn-sm add margin-top10"  onclick="return checkData('recdecdetails')">Submit </button>
-												<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-												<input type="hidden" name="projectid" value="<%=projectid%>"/>
-												<input type="hidden" name="committeeid" value="<%=committeeid%>"/>	
-											</div>
-										</div>
-								    </div>
-									</div>
-								</div>	
-								</form>
-								<%}else{%>
-										 <h5>Meeting is Not Scheduled!</h5>
-								<%}%>
-						  	<br><br><br><br><br>
-						  </div>	
-						   
-					</details>						
-			 					<form action="DecesionRemove.htm" id="remvfrm" class="display-none">
-				<input type="hidden" name="recdecId" id="recdecId">
-				<input type="hidden" name="committeeid" value="<%=committeeid%>">
-						<input type="hidden" name="ProjectId"  value="<%=projectidlist.get(0)%>"> 
-					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-				</form>
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->						
 					<details>
-   						<summary role="button" tabindex="0"><b> 13. Other Relevant Points (if any) 
+   						<summary role="button" tabindex="0"><b> 12. Other Relevant Points (if any) 
    							<%if(committee.getCommitteeShortName().trim().equalsIgnoreCase("EB")){ %>
    								and Technical Work Carried Out For Last Six Months
 							<%}else { %>
@@ -2676,6 +2588,97 @@ String isCCS = (String)request.getAttribute("isCCS");
 					
 					
 					</details>
+
+
+<!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
+ 
+					<details>
+   						<summary role="button" tabindex="0"><b>13. Decision/Recommendations sought from <%=committee.getCommitteeShortName().trim().toUpperCase() %></b>     </summary>
+   						
+						  <div class="content">
+						  
+						  <%if(nextMeetVenue!=null && nextMeetVenue[0]!=null){%>
+						  
+						  	<form action="RecDecDetailsAdd.htm" method="post" id="recdecdetails">
+								<div class="row margin-top10" >
+									<div class="col-md-4"> 
+										<table class="table table-bordered table-hover table-striped table-condensed ">
+											<thead>
+												<tr><th class="width-5">SN</th><th class="width-80">Type</th><th class="width-5">Action</th></tr>
+											</thead>
+											<tbody>
+											<%int i=0; if(RecDecDetails!=null && RecDecDetails.size()>0){ 
+												for(Object[] obj :RecDecDetails){
+												String pointdata= "";
+												if(obj[3].toString().length()>30){
+													pointdata=obj[3].toString();
+												}else{
+													pointdata=obj[3].toString();
+												}
+												%>
+												<tr>
+													<td class="width-5 text-center"> <%=++i%></td>
+													<td class="width-80 text-break">
+													<b class="color145374"><%=obj[2]%> :-</b>
+													  <%if(pointdata.length()>30){%> <%=pointdata.substring(0,30)%>  <span onclick="RecDecmodal('<%=obj[0]%>')" class="color1176ab"><b> ...View More </b></span> <%}else{%> <%=pointdata%><%}%>
+													  </td>
+													<td class="text-center width-5"> 
+													<button class="btn btn-warning btn-sm" type="button" onclick="RecDecEdit('<%=obj[0]%>' )" value="EDIT"  > <i class="fa fa-pencil-square-o color100f0e"  aria-hidden="true"></i></button>
+												
+													<button class="btn btn-sm btn-danger" type="button" onclick="RecDecremove('<%=obj[0].toString() %>')" ><i class="fa fa-trash text-white" aria-hidden="true" ></i></button>
+																									
+													</td>
+												</tr>
+												<%}}else{%><td colspan="3" class="text-center"> No Data Available!</td><%}%>
+											</tbody>
+										</table>
+										<div align="center">
+											<button type="button" class="btn btn-info btn-sm add" onclick="RecDecEdit('0')"> ADD</button>
+										</div>
+									</div>
+									<div class="col-md-8"> 
+									<div class="card" >
+										<div class="card-header height40" >
+											<div align="center" id="drcdiv"  >
+			  									<div class="form-check form-check-inline">
+												  <input class="form-check-input" type="radio" name="darc" id="decision" value="D" required="required">
+												  <label class="form-check-label" for="decision"><b> Decision </b></label>
+												</div>
+												<div class="form-check form-check-inline">
+												  <input class="form-check-input" type="radio" name="darc" id="recommendation" value="R" required="required">
+												  <label class="form-check-label" for="recommendation"> <b>Recommendation </b></label>
+												</div>
+			  								</div>
+										</div>
+										 <div class="card-body">
+										    <textarea class="form-control" name="RecDecPoints" id="ckeditor1" rows="5" cols="20" maxlength="5"  required="required"></textarea>
+											<div align="center">
+												<input type="hidden" name="RedDecID" id="recdecid">
+												<input type="hidden" name="schedulid" value="<%=nextMeetVenue[0]%>">
+												<button type="button"  class="btn btn-primary btn-sm add margin-top10"  onclick="return checkData('recdecdetails')">Submit </button>
+												<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+												<input type="hidden" name="projectid" value="<%=projectid%>"/>
+												<input type="hidden" name="committeeid" value="<%=committeeid%>"/>	
+											</div>
+										</div>
+								    </div>
+									</div>
+								</div>	
+								</form>
+								<%}else{%>
+										 <h5>Meeting is Not Scheduled!</h5>
+								<%}%>
+						  	<br><br><br><br><br>
+						  </div>	
+						   
+					</details>						
+			 					<form action="DecesionRemove.htm" id="remvfrm" class="display-none">
+				<input type="hidden" name="recdecId" id="recdecId">
+				<input type="hidden" name="committeeid" value="<%=committeeid%>">
+						<input type="hidden" name="ProjectId"  value="<%=projectidlist.get(0)%>"> 
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</form>	
+
 <!--   --------------------------------------------------------------------------------------------------------------------------------------------- --> 
 					<details>
    						<summary role="button" tabindex="0"><b>Note</b></summary>

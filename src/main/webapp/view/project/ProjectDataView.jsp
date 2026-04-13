@@ -76,7 +76,7 @@ String pearlimg=  (String)request.getAttribute("pearlimg");
 												<select class="form-control items style4" name="projectid"  required="required" data-live-search="true" data-container="body" onchange="submitForm('projectchange');">
 													<option disabled  selected value="">Choose...</option>
 													<%for(Object[] obj : projectslist){ 
-													String projectshortName=(obj[17]!=null)?" ( "+obj[17].toString()+" ) ":"";
+													String projectshortName=(obj[17]!=null)?" ("+obj[17].toString().trim()+") ":"";
 													%>
 													<option <%if(projectid!=null && projectid.equals(obj[0].toString())) { %>selected <%} %>value="<%=obj[0]%>" ><%=obj[4]!=null?StringEscapeUtils.escapeHtml4(obj[4].toString()): " - "%> <%=projectshortName!=null?StringEscapeUtils.escapeHtml4(projectshortName): " - "%></option>     
 													<%} %>
@@ -315,23 +315,36 @@ function showModal(a,b){
    
 	$('#longdivmodal').modal('show');
 	$.ajax({
-		type:'GET',
-		url:'ProjectDataAjax.htm',
-		datatype:'json',
-		data:{
-			filename:a,
-			projectdataid:b,
-		},
-		success:function(result){
-			var ajaxresult=JSON.parse(result);
-			if(ajaxresult[0]==="pdf"){
-				$('#modalcontent').html('<button type="button" class="close style10" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><iframe width="100%" height="600" src="data:application/pdf;base64,'+ajaxresult[1]+'"></iframe>');
-			}
-			else{
-			$('#modalcontent').html(' <button type="button" class="close style10" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><img class="style11" src="data:image/'+ajaxresult[0]+';base64,'+ajaxresult[1]+'">')	
-			}
-		}
-	})
+	    type: 'GET',
+	    url: 'ProjectDataAjax.htm',
+	    xhrFields: {
+	        responseType: 'blob' // Crucial: tells jQuery to handle binary data
+	    },
+	    data: { filename: a, projectdataid: b },
+	    success: function(blob, status, xhr) {
+	        // Get the extension we sent from the header
+	        var extension = xhr.getResponseHeader('File-Extension').toLowerCase();
+	        
+	        // Create a temporary URL for the browser to use
+	        var fileUrl = URL.createObjectURL(blob);
+	        
+	        var htmlContent = '<button type="button" class="close style10" data-dismiss="modal">&times;</button>';
+	        
+	        if (extension === "pdf") {
+	            htmlContent += '<iframe width="100%" height="600" src="' + fileUrl + '"></iframe>';
+	        } else {
+	            htmlContent += '<img class="style11" src="' + fileUrl + '">';
+	        }
+
+	        $('#modalcontent').html(htmlContent);
+	        $('#longdivmodal').modal('show');
+	        
+	        // Clean up memory after the modal is closed
+	        $('#longdivmodal').on('hidden.bs.modal', function () {
+	            URL.revokeObjectURL(fileUrl);
+	        });
+	    }
+	});
 }
 </script>
 

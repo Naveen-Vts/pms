@@ -849,7 +849,7 @@ public class PrintDaoImpl implements PrintDao {
 			}
 		}
 		
-		private static final String AGENDALIST = "SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,b.project_name,b.project_id,a.remarks,b.project_code,a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.title,' '),''), j.emp_name) as 'empname' ,h.designation,a.duration,j.desig_id, a.PresentorLabCode  FROM project_master b,employee j,employee_desig h,committee_schedules_agenda a  WHERE a.projectid=b.project_id AND a.scheduleid=:committeescheduleid AND a.isactive=1 AND a.projectid NOT IN (0, -1) AND a.presenterid=j.emp_id AND j.desig_id=h.desig_id  UNION   SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,cs.labcode AS 'projectname' , '0' AS projectid,a.remarks,'' AS projectcode,a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.title,' '),''), j.emp_name) as 'empname' ,h.designation,a.duration,j.desig_id, a.PresentorLabCode  FROM employee j,employee_desig h, committee_schedules_agenda a, committee_schedule cs   WHERE a.scheduleid=:committeescheduleid AND a.scheduleid=cs.scheduleid  AND a.isactive=1 AND a.projectid IN (0, -1) AND a.presenterid=j.emp_id AND j.desig_id=h.desig_id ORDER BY 9   ";
+		private static final String AGENDALIST = "SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,b.project_name,b.project_id,a.remarks,b.project_code,a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.title,' '),''), j.emp_name) as 'empname' ,h.designation,a.duration,j.desig_id, a.PresentorLabCode,NULLIF(TRIM(a.GroupName), '') AS GroupName   FROM project_master b,employee j,employee_desig h,committee_schedules_agenda a  WHERE a.projectid=b.project_id AND a.scheduleid=:committeescheduleid AND a.isactive=1 AND a.projectid NOT IN (0, -1) AND a.presenterid=j.emp_id AND j.desig_id=h.desig_id  UNION   SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,cs.labcode AS 'projectname' , '0' AS projectid,a.remarks,'' AS projectcode,a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.title,' '),''), j.emp_name) as 'empname' ,h.designation,a.duration,j.desig_id, a.PresentorLabCode,NULLIF(TRIM(a.GroupName), '') AS GroupName   FROM employee j,employee_desig h, committee_schedules_agenda a, committee_schedule cs   WHERE a.scheduleid=:committeescheduleid AND a.scheduleid=cs.scheduleid  AND a.isactive=1 AND a.projectid IN (0, -1) AND a.presenterid=j.emp_id AND j.desig_id=h.desig_id ORDER BY 9   ";
 		@Override
 		public List<Object[]> AgendaList(String scheduleId) throws Exception 
 		{
@@ -1593,5 +1593,39 @@ public class PrintDaoImpl implements PrintDao {
 			
 			
 			return (List<Object[]>)query.getResultList();
+		}
+
+		// Naveen R 06-03-2026
+		private static final String MILESTONEBRIEFINGLIST = "SELECT milestoneActivityBriefingId,briefingPointId,points,scheduleId FROM milestone_activity_briefing WHERE scheduleId = :scheduleId AND isActive = 1;";
+		@Override
+		public List<Object[]> getMilestoneBriefingList(String scheduleId) throws Exception {
+			try{
+				Query query = manager.createNativeQuery(MILESTONEBRIEFINGLIST);
+				query.setParameter("scheduleId", scheduleId);			
+				return (List<Object[]>)query.getResultList();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return List.of();
+			}
+		}
+		
+		private static final String LASTMEETINGCREATED = """
+				SELECT cs.scheduleid, cs.meetingid,cs.scheduledate,cs.schedulestarttime,cs.scheduleflag, cs.MeetingVenue  
+				FROM committee_schedule cs, committee_meeting_status  cms WHERE cs.isactive=1 AND cms.meetingstatus=cs.scheduleflag 
+				AND cs.committeeid=:committeeId AND CASE WHEN cs.ProjectId=0 THEN cs.ProgrammeId IN (SELECT pp.programmeid 
+				FROM pfms_programme_projects pp WHERE pp.projectid =:projectId AND pp.IsActive=1) ELSE cs.ProjectId =:projectId END 
+				ORDER BY cs.scheduledate DESC LIMIT 1
+				""";
+		@Override
+		public Object[] getLastMeetingCreated(String projectId,String committeeId) throws Exception {
+			try {
+				Query query = manager.createNativeQuery(LASTMEETINGCREATED);
+				query.setParameter("projectId", projectId);			
+				query.setParameter("committeeId", committeeId);			
+				return (Object[])query.getSingleResult();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
 		}
 	}

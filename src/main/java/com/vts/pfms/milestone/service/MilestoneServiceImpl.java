@@ -53,6 +53,7 @@ import com.vts.pfms.milestone.model.FileRepNewPreProject;
 import com.vts.pfms.milestone.model.FileRepUploadNew;
 import com.vts.pfms.milestone.model.FileRepUploadPreProject;
 import com.vts.pfms.milestone.model.MilestoneActivity;
+import com.vts.pfms.milestone.model.MilestoneActivityBriefing;
 import com.vts.pfms.milestone.model.MilestoneActivityLevel;
 import com.vts.pfms.milestone.model.MilestoneActivityLevelRemarks;
 import com.vts.pfms.milestone.model.MilestoneActivityPredecessor;
@@ -2813,5 +2814,21 @@ public class MilestoneServiceImpl implements MilestoneService {
 	@Override
 	public Object[] getFileRepUploadDetails(String projectId) throws Exception {
 		return dao.getFileRepUploadDetails(projectId);
+	}
+	
+	// Naveen 05-03-2026
+	@Override
+	public long saveMilestoneActivityBriefing(MilestoneActivityBriefing entity) throws Exception  {
+		return dao.saveMilestoneActivityBriefing(entity);
+	}
+
+	@Override
+	public MilestoneActivityBriefing getMilestoneActivityBriefing(String mileStoneActivityBriefingId) throws Exception  {
+		return dao.getMilestoneActivityBriefing(mileStoneActivityBriefingId);
+	}
+
+	@Override
+	public Object[] getMilestoneActivityBriefingById(String milestoneid) throws Exception  {
+		return dao.getMilestoneActivityBriefingById(milestoneid);
 	}
 }

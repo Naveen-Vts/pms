@@ -102,7 +102,7 @@
                             	<select class="form-control selectdee w-220" id="ProjectId" required="required" name="ProjectId">
     									<option disabled="true"  selected value="">Choose...</option>
     										<% for (Object[] obj : ProjectList) {
-    										String projectshortName=(obj[3]!=null)?" ( "+obj[3].toString()+" ) ":"";%>
+    										String projectshortName=(obj[3]!=null)?" ("+obj[3].toString()+") ":"";%>
 										<option value="<%=obj[0]%>" <%if(obj[0].toString().equalsIgnoreCase(ProjectId)){ %>selected="selected" <%} %>> <%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - "%> <%= projectshortName!=null?StringEscapeUtils.escapeHtml4(projectshortName):" - " %></option>
 											<%} %>
   								</select>
@@ -112,7 +112,7 @@
 							</form>						
 						</div>
 						
-						<div class="col-md-3 justify-content-end" align="right" >
+						<div class="col-md-2 justify-content-end" align="right" >
 							<div>
 							<label>Interval : &nbsp;&nbsp;&nbsp; </label>
 							<select class="form-control selectdee f-right w-150" name="interval" id="interval" required="required"  data-live-search="true" >
@@ -127,6 +127,9 @@
 							<div class="col-md-1" >
 								 <button type="submit" class="btn btn-sm prints f-left" id="prints" onclick="ChartPrint(interval)" >Print</button> 
 							</div>
+							<div class="col-md-1">
+					    <button type="button" class="btn btn-sm btn-success f-left" id="downloadImg" onclick="downloadChartImage()">Save Image</button> 
+					</div>
 							<div class="col-md-1" >
 								<form method="post">
 									<button type="submit" class="btn btn-sm back f-right sub-level"  formaction="GanttChartSub.htm">Sub Level</button>
@@ -175,7 +178,7 @@
 
 									<script>
 								      /* anychart.onDocumentReady(function () {  */  
-								    	  
+								    	  var currentChart;
 									function chartprint(type,interval){
 								    	  var data = [
 								    		  <%int count=1;
@@ -482,7 +485,7 @@
 								          return items;
 								        });   */
 								        
-								        
+								        currentChart = chart;
 								       // to print
 
 									   	if(type==="print"){
@@ -560,6 +563,20 @@ $('#ProjectId').on('change',function(){
 	$('#myform').submit();
 })
 
+function downloadChartImage() {
+    if (currentChart) {
+        // This method works OFFLINE for PNG/JPG
+        // It uses the browser's canvas capabilities via anychart-exports.min.js
+        currentChart.saveAsPng({
+            "width": 1200,
+            "height": 800,
+            "quality": 1,
+            "filename": "Gantt_Chart_Export"
+        });
+    } else {
+        alert("Chart is not loaded yet!");
+    }
+}
 </script>
 
 

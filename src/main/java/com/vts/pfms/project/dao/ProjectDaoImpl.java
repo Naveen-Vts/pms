@@ -2583,7 +2583,7 @@ public class ProjectDaoImpl implements ProjectDao {
 		}
 		return projectfile;
 	}
-	private static final String DEMANDLIST="SELECT DemandModeId,DemandModeName,ModeDescription FROM demand_mode";
+	private static final String DEMANDLIST="SELECT demand_mode_id,demand_mode_name,mode_description FROM demand_mode";
 	@Override
 	public List<Object[]> DemandList() throws Exception {
 		// TODO Auto-generated method stub
@@ -4475,7 +4475,7 @@ public class ProjectDaoImpl implements ProjectDao {
 	}
 	
 	
-	private static final String ENOTETRANSACTIONLIST="SELECT tra.EnoteTransId,emp.EmpId,emp.EmpName,des.Designation,tra.ActionDate,tra.Remarks,sta.EnoteStatus,sta.EnoteStatusColor FROM pfms_initiation_approval_transaction tra,dak_enote_status sta,employee emp,employee_desig des,pfms_initiation_approval e WHERE e.EnoteId = tra.EnoteId AND tra.EnoteStatusCode = sta.EnoteStatusCode AND tra.ActionBy=emp.EmpId AND emp.DesigId = des.DesigId AND e.EnoteId=:enoteTrackId ORDER BY tra.ActionDate";
+	private static final String ENOTETRANSACTIONLIST="SELECT tra.EnoteTransId,emp.emp_id,emp.emp_name,des.designation,tra.ActionDate,tra.Remarks,sta.EnoteStatus,sta.EnoteStatusColor FROM pfms_initiation_approval_transaction tra,dak_enote_status sta,employee emp,employee_desig des,pfms_initiation_approval e WHERE e.EnoteId = tra.EnoteId AND tra.EnoteStatusCode = sta.EnoteStatusCode AND tra.ActionBy=emp.emp_id AND emp.desig_id = des.desig_id AND e.EnoteId=:enoteTrackId ORDER BY tra.ActionDate";
 	@Override
 	public List<Object[]> EnoteTransactionList(String enoteTrackId) throws Exception {
 		logger.info(LocalDate.now() + "Inside EnoteTransactionList");

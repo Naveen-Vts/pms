@@ -1232,4 +1232,15 @@ public List<Object[]> getProjectClosureReport() throws Exception {
 	
 	return dao.getProjectClosureReport();
 }
+
+//Naveen R 06-03-2026
+@Override
+public List<Object[]> getMilestoneBriefingList(String scheduleId) throws Exception {
+	return dao.getMilestoneBriefingList(scheduleId);
+}
+
+@Override
+public Object[] getLastcreatedSchedule(String projectId,String committeId) throws Exception {
+	return dao.getLastMeetingCreated(projectId, committeId);
+}
 }

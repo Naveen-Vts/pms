@@ -52,6 +52,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.vts.pfms.FormatConverter;
 import com.vts.pfms.admin.service.AdminService;
+import com.vts.pfms.cfg.JwtUtil;
 import com.vts.pfms.committee.service.ActionService;
 import com.vts.pfms.committee.service.CommitteeService;
 import com.vts.pfms.header.model.ProjectDashBoardFavourite;
@@ -464,7 +465,7 @@ public class LoginController {
 		
 		    String empNo=rfpmainservice.getEmpNo(Repository.findByUsername(req.getUserPrincipal().getName()).getEmpId());
 		    ses.setAttribute("empNo", empNo);
-		    
+			ses.setAttribute("token",JwtUtil.generateToken(req.getUserPrincipal().getName()));
 		    long pwdCount = headerservice.PasswordChangeHystoryCount(LoginId);
 			if(pwdCount==0) 
 			{
@@ -486,7 +487,78 @@ public class LoginController {
      
     }
     
-    
+    @RequestMapping(value = { "/welcome-react"}, method = RequestMethod.GET)
+    public String welcomeFromReact(Model model,HttpServletRequest req,HttpSession ses) throws Exception {
+    	
+      logger.info(new Date() +" Login By "+req.getUserPrincipal().getName());
+      String username= (String) ses.getAttribute("username");
+      
+      System.out.println("username-----123"+username);
+      try {
+    	  // other session setup code
+    	    String loginPage = (String) ses.getAttribute("loginPage");
+    	
+		    long LoginId=Repository.findByUsername(username).getLoginId();
+		    Object[] empdetails = headerservice.EmployeeDetailes(String.valueOf(LoginId)).get(0);
+
+		    ses.setAttribute("Username",username);
+		    ses.setAttribute("LoginId",LoginId ); 	
+		    ses.setAttribute("Division", Repository.findByUsername(username).getDivisionId()); 	
+		    ses.setAttribute("LoginType", Repository.findByUsername(username).getLoginType()); 
+		    ses.setAttribute("EmpId", Repository.findByUsername(username).getEmpId()); 
+		    ses.setAttribute("FormRole", Repository.findByUsername(username).getFormRoleId());
+		    ses.setAttribute("EmpName", empdetails[0]);
+		    ses.setAttribute("EmpNo", empdetails[2].toString());
+		    // ses.setAttribute("LoginAs", Repository.findByUsername(req.getUserPrincipal().getName()).getLoginType()); 
+		    ses.setAttribute("ProjectId", "0");
+		  	ses.setAttribute("DesgId", rfpmainservice.DesgId(Repository.findByUsername(username).getEmpId().toString()));
+		  	ses.setAttribute("LoginTypeName", headerservice.FormRoleName(Repository.findByUsername(username).getLoginType()));
+		  	ses.setAttribute("labid",headerservice.LabDetails(empdetails[3].toString())[0].toString());
+		  	//ses.setAttribute("ProjectInitiationList", headerservice.ProjectIntiationList(Repository.findByUsername(req.getUserPrincipal().getName()).getEmpId().toString(),Repository.findByUsername(req.getUserPrincipal().getName()).getLoginType()).size());
+		 	ses.setAttribute("DashBoardId", headerservice.getDashBoardId(Repository.findByUsername(username).getEmpId(),Repository.findByUsername(username).getLoginType())!=null && headerservice.getDashBoardId(Repository.findByUsername(username).getEmpId(),Repository.findByUsername(username).getLoginType()).size()>0 ? headerservice.getDashBoardId(Repository.findByUsername(username).getEmpId(),Repository.findByUsername(username).getLoginType()).get(0)[0].toString():"0");
+		  	
+		  	String LabCode = headerservice.getLabCode(Repository.findByUsername(username).getUsername().toString()).trim();
+		  	
+		  	ses.setAttribute("labcode", LabCode);
+		 	ses.setAttribute("clusterid", headerservice.LabDetails(empdetails[3].toString())[1].toString());
+		
+		 	
+		 
+		 	
+		 	String DGName = headerservice.LabMasterList(headerservice.LabDetails(empdetails[3].toString())[1].toString()).stream().filter(e-> "Y".equalsIgnoreCase(e[2].toString())).collect(Collectors.toList()).get(0)[1].toString();
+		 	String IsDG = "No";
+		    if(DGName.equalsIgnoreCase(LabCode))
+		   	 IsDG = "Yes";
+		    else
+		   	 IsDG = "No";
+		    ses.setAttribute("IsDG", IsDG);
+		 
+		 	req.setAttribute("loginTypeList", headerservice.loginTypeList(Repository.findByUsername(username).getLoginType()));
+//		    req.setAttribute("DashboardDemandCount", headerservice.DashboardDemandCount().get(0));
+		
+		    String empNo=rfpmainservice.getEmpNo(Repository.findByUsername(username).getEmpId());
+		    ses.setAttribute("empNo", empNo);
+		    
+		    long pwdCount = headerservice.PasswordChangeHystoryCount(LoginId);
+			if(pwdCount==0) 
+			{
+				return "redirect:/ForcePasswordChange.htm";
+			}
+			
+		    if(loginPage.equalsIgnoreCase("login")) {
+		    	return "redirect:/MainDashBoard.htm";
+		    }else {
+		    	return "redirect:/TimeSheetList.htm";
+		    }
+		    
+		    
+      }catch (Exception e) {
+    	e.printStackTrace();
+    	 logger.error(new Date() +" Login Problem Occures When Login By "+username, e);
+    	 return "static/Error";
+     }
+     
+    }
     
     @RequestMapping(value = "weeklyupdate.htm")
 	public String weeklyupdate(HttpServletRequest req, HttpSession ses) {
@@ -834,6 +906,7 @@ public class LoginController {
 			req.setAttribute("noticeEligibility", rfpmainservice.GetNoticeEligibility(EmpId));
 			req.setAttribute("logintype", LoginType);
 			req.setAttribute("selfremindercount", rfpmainservice.SelfActionsList(EmpId).size());
+			
 			// req.setAttribute("NotiecList",rfpmainservice.getAllNotice());
            //req.setAttribute("budgetlist",rfpmainservice.ProjectBudgets());
 			req.setAttribute("ibasUri", ibasUri);
@@ -912,11 +985,13 @@ public class LoginController {
 						.filter(e -> "N".equalsIgnoreCase(e[2].toString())).collect(Collectors.toList());
 			}
 
+			//Only for DG view call this method
+			if(IsDG.equalsIgnoreCase("YES")) {
 			for (Object[] obj : LabMasterList) {
 				labdatalist.add(rfpmainservice.ProjectHealthTotalData(ProjectId, EmpId, LoginType,
 						obj[1].toString().trim(), InAll));
 			}
-
+			}
 			req.setAttribute("projecthealthtotaldg", labdatalist);
 
 			if (!LoginType.equalsIgnoreCase("U") || !LoginType.equalsIgnoreCase("K")) {
@@ -951,7 +1026,7 @@ public class LoginController {
 					System.out.println("Feign Call Success after " + (System.currentTimeMillis() - start) + "ms");
 					}catch (Exception e) {
 						System.out.println("Feign Call Failed after " + (System.currentTimeMillis() - start) + "ms");
-						e.printStackTrace();
+						//e.printStackTrace();
 						req.setAttribute("budgetlist",new ArrayList<>());
 					}
 			}

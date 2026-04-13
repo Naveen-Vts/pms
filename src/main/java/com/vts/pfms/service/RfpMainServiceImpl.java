@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +18,9 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import com.vts.pfms.dao.RfpMainDao;
@@ -107,13 +109,14 @@ public class RfpMainServiceImpl implements RfpMainService {
 		
 	}
 	@Override
+	@CacheEvict(value = "getnotice", allEntries = true)
 	public Long addNotice(Notice notice)throws Exception{
 		
 		return dao.addNotice(notice);
 	}
 	
 	@Override
-
+	@Cacheable(value = "allActionsCount", key = "#empid")
 	public List<Object[]> AllActionsCount(String logintype, String empid,String LoginId,String LabCode) throws Exception 
 	{		
 		logger.info(new Date() +"Inside SERVICE AllActionsCount ");
@@ -130,6 +133,7 @@ public class RfpMainServiceImpl implements RfpMainService {
 	}
 	
 	@Override
+	@Cacheable(value = "getnotice", key = "#LabCode")
 	public List<Object[]> GetNotice(String LabCode)throws Exception{
 		
 		return dao.GetNotice(LabCode);
@@ -220,6 +224,7 @@ public class RfpMainServiceImpl implements RfpMainService {
 	
 	
 	@Override
+	@Cacheable(value = "projectMeetingCount", key = "#empid")
 	public List<Object[]> ProjectMeetingCount(String LoginType,String empid,String labcode) throws Exception {
 		logger.info(new Date() +"Inside SERVICE ProjectMeetingCount ");
 	
@@ -348,6 +353,7 @@ public class RfpMainServiceImpl implements RfpMainService {
 	}
 	
 	@Override
+	@Cacheable(value = "projectHealth", key = "#LabCode")
 	public List<Object[]> ProjectHealthData(String LabCode) throws Exception{
 		
 		return dao.ProjectHealthData(LabCode);
@@ -361,12 +367,20 @@ public class RfpMainServiceImpl implements RfpMainService {
 
 
 	@Override
+	@Caching(evict = {
+	    @CacheEvict(value = "projectHealth", allEntries = true),
+	    @CacheEvict(value = "todaySchedulesList", allEntries = true),
+	    @CacheEvict(value = "allActionsCount", allEntries = true),
+	    @CacheEvict(value = "projectMeetingCount", allEntries = true),
+	    @CacheEvict(value = "dashboardFinanceCashOutGo", allEntries = true)
+	})
 	public long ProjectHealthUpdate(String EmpId, String UserName) throws Exception {
 		List<Object[]> proList=dao.ProjectList(EmpId).stream().filter(e-> !"0".equalsIgnoreCase(e[0].toString())).collect(Collectors.toList());
 		long result=0;
 		for(Object[] obj:proList) {
 			try {
 		        dao.ProjectHealthDelete(obj[0].toString());
+		    
 				Object[] data=dao.ProjectHealthInsertData(obj[0].toString());
 				ProjectHealth health=new ProjectHealth();
 				health.setLabCode(data[0].toString());
@@ -417,6 +431,8 @@ public class RfpMainServiceImpl implements RfpMainService {
 				health.setABPending(Long.parseLong(data[41].toString()));
 				health.setABTotal(Long.parseLong(data[42].toString()));
 				health.setABTotalToBeHeld(Long.parseLong(data[43].toString()));
+				//DLRL
+				health.setMilToBeDone(Long.parseLong(data[44].toString()));
 				
 				health.setCreatedBy(UserName);
 				health.setCreatedDate(sdf1.format(new Date()));
@@ -572,7 +588,10 @@ public class RfpMainServiceImpl implements RfpMainService {
 	{
 		return dao.getCCMData(EmpId, LoginType, LabCode);
 	}
+	
+	
 	@Override
+	@Cacheable(value = "dashboardFinanceCashOutGo", key = "#EmpId")
 	public List<Object[]> DashboardFinanceCashOutGo(String LoginType,String EmpId,String LabCode,String ClusterId)throws Exception
 	{
 		List<Object[]> CashOutGo = dao.DashboardFinanceCashOutGo(LoginType, EmpId, LabCode, ClusterId);

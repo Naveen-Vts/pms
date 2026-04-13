@@ -226,7 +226,7 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 	<div class="credentials-info-container d2s" >
     	<%
         	boolean expstatus = (boolean)request.getAttribute("expstatus");
-       		if(!expstatus) {%>
+       		if(!expstatus) { %>
 				<marquee  class="news-scroll c2s" behavior="scroll" direction="left" scrollamount="7" onmouseover="this.stop();" onmouseout="this.start();" >Your License has been Expired..!</marquee>
 		<%} %>
 		<!-- <marquee  class="news-scroll" behavior="scroll" direction="left" scrollamount="7" onmouseover="this.stop();" onmouseout="this.start();" style="color: red;font-weight: bold;">Please ensure the Work Register details for January 2025 are filled in by 10 February 2025. Kindly disregard if it has already been completed.</marquee> -->
