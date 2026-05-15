@@ -24,6 +24,7 @@ import com.vts.pfms.milestone.model.FileRepNewPreProject;
 import com.vts.pfms.milestone.model.FileRepUploadNew;
 import com.vts.pfms.milestone.model.FileRepUploadPreProject;
 import com.vts.pfms.milestone.model.MilestoneActivity;
+import com.vts.pfms.milestone.model.MilestoneActivityBriefing;
 import com.vts.pfms.milestone.model.MilestoneActivityLevel;
 import com.vts.pfms.milestone.model.MilestoneActivityLevelRemarks;
 import com.vts.pfms.milestone.model.MilestoneActivityPredecessor;
@@ -1892,6 +1893,49 @@ public class MilestoneDaoImpl implements MilestoneDao {
 		List<Object[]> list =  (List<Object[]>) query.getResultList();
 		if(list.size()>0) {
 			return list.get(0);
+		}
+		return null;
+	}
+	
+	
+	// Naveen 05-03-2026
+	@Override
+	public long saveMilestoneActivityBriefing(MilestoneActivityBriefing entity) throws Exception {
+		try {
+			manager.persist(entity);
+			manager.flush();
+			return entity.getMilestoneActivityBriefingId();
+		}catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	@Override
+	public MilestoneActivityBriefing getMilestoneActivityBriefing(String mileStoneActivityBriefingId) throws Exception  {
+		try {
+			if(mileStoneActivityBriefingId==null || mileStoneActivityBriefingId.isBlank()) return null;
+			Long id = Long.parseLong(mileStoneActivityBriefingId);
+			return manager.find(MilestoneActivityBriefing.class, id);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private static final String MILESTONEBRIEFINGBYID = "SELECT milestoneActivityBriefingId,briefingPointId,points,scheduleId FROM milestone_activity_briefing WHERE milestoneActivityBriefingId = :milestoneActivityBriefingId AND isActive = 1";
+	@Override
+	public Object[] getMilestoneActivityBriefingById(String mileStoneActivityBriefingId) throws Exception {
+		try {
+			if(mileStoneActivityBriefingId==null || mileStoneActivityBriefingId.isBlank()) return null;
+			Query query = manager.createNativeQuery(MILESTONEBRIEFINGBYID);
+			query.setParameter("milestoneActivityBriefingId", Long.parseLong(mileStoneActivityBriefingId));
+			List<Object[]> list =  (List<Object[]>) query.getResultList();
+			if(list.size()>0) {
+				return list.get(0);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}

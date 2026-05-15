@@ -1,3 +1,4 @@
+<%@page import="java.util.Locale"%>
 <%@page import="org.apache.commons.text.StringEscapeUtils"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="java.time.LocalDate"%>
@@ -165,7 +166,7 @@ input,select,table,div,label,span,button {
 		FormatConverter fc = new FormatConverter();
 		SimpleDateFormat sdf = fc.getRegularDateFormat();
 		SimpleDateFormat sdf1 = fc.getSqlDateFormat();
-		SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+		SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy",Locale.ENGLISH);
 		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");	
 		    
 		DecimalFormat df = new DecimalFormat("####################.##");

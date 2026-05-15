@@ -326,6 +326,7 @@ String LoginTypes[] = {"A","P","E","Z","Y","Q","X","K","C","I","G","F"}  ;
 int ProjectCount = 0;
 List<Object[]> projecthealthtotaldg = (List<Object[]>)request.getAttribute("projecthealthtotaldg");
 String IsDG = (String)request.getAttribute("IsDG");
+IsDG = IsDG != null ? IsDG: "";
 
 %>
 <% 
@@ -1780,7 +1781,7 @@ String IsDG = (String)request.getAttribute("IsDG");
 													<%} %>
 												</td>
 												<td class="custom-td">
-													<%if(Integer.parseInt(obj[20].toString())>0){ %>
+													<%if(obj[20]!=null && Integer.parseInt(obj[20].toString())>0){ %>
 													<div class="row">
 														<div class="col-md-11">
 															<div class="progress" onclick="overallcommonredirect('mil','<%=obj[2]%>')">
@@ -1806,7 +1807,7 @@ String IsDG = (String)request.getAttribute("IsDG");
 													<%} %>
 												</td>
 												<td class="custom-td">
-													<%if(Integer.parseInt(obj[29].toString())>0){ %>
+													<%if(obj[29]!=null && Integer.parseInt(obj[29].toString())>0){ %>
 													<div class="row">
 														<div class="col-md-11">
 															<div class="progress" onclick="overallcommonredirect('action','<%=obj[2]%>')">
@@ -1833,7 +1834,7 @@ String IsDG = (String)request.getAttribute("IsDG");
 													<%} %>
 												</td>
 												<td class="custom-td">
-													<%if(Integer.parseInt(obj[34].toString())>0){ %>
+													<%if(obj[34]!=null && Integer.parseInt(obj[34].toString())>0){ %>
 													<div class="row">
 														<div class="col-md-11">
 															<div class="progress" onclick="overallcommonredirect('risk','<%=obj[2]%>')">

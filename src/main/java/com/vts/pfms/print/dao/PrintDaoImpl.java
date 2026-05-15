@@ -1,9 +1,12 @@
 package com.vts.pfms.print.dao;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityManager;
@@ -28,6 +31,9 @@ import com.vts.pfms.committee.model.Committee;
 import com.vts.pfms.committee.model.CommitteeSchedule;
 import com.vts.pfms.committee.model.PfmsNotification;
 import com.vts.pfms.milestone.model.MilestoneActivityLevelConfiguration;
+import com.vts.pfms.model.BriefingFinance;
+import com.vts.pfms.model.BriefingHeading;
+import com.vts.pfms.model.BriefingHeadingDetails;
 import com.vts.pfms.model.LabMaster;
 import com.vts.pfms.print.model.CommitteeProjectBriefingFrozen;
 import com.vts.pfms.print.model.FavouriteSlidesModel;
@@ -66,7 +72,7 @@ public class PrintDaoImpl implements PrintDao {
 			+ "WHERE a.CommitteeId = c.CommitteeId AND a.ScheduleFlag=b.MeetingStatus AND MeetingStatusId>6 AND scheduledate<=CURDATE() AND c.IsBriefing='Y' AND a.IsActive=1\r\n"
 			+ "AND CASE WHEN a.ProjectId=0 THEN a.ProgrammeId IN (SELECT pp.programmeid FROM pfms_programme_projects pp WHERE pp.projectid =:projectid AND pp.IsActive=1) ELSE a.ProjectId =:projectid END\r\n"
 			+ "GROUP BY c.CommitteeShortName";
-	private static final String PROJECTATTRIBUTES="SELECT pm.projectcode, pm.projectname, pm.ProjectDescription, pm.sanctiondate, pm.objective, pm.deliverable, pm.pdc,   ROUND(pm.TotalSanctionCost/100000,2) AS 'TotalSanctionCost',   ROUND(pm.SanctionCostRE/100000,2) AS 'SanctionCostRE', ROUND(pm.SanctionCostFE/100000,2) AS 'SanctionCostFE', pm.WorkCenter, pm.projectcategory,pc.classification,  pm.projecttype AS 'projecttypeid',pt.projecttype ,pma.labparticipating,pm.EndUser,pm.Scope  FROM project_master pm, pfms_security_classification pc, project_type pt , project_main pma  WHERE pm.projectcategory=pc.classificationid AND pm.projecttype=pt.projecttypeid AND pm.projectmainid=pma.projectmainid AND projectid=:projectid";
+	private static final String PROJECTATTRIBUTES="SELECT pm.projectcode, pm.projectname, pm.ProjectDescription, pm.sanctiondate, pm.objective, pm.deliverable, pm.pdc,   ROUND(pm.TotalSanctionCost/100000,2) AS 'TotalSanctionCost',   ROUND(pm.SanctionCostRE/100000,2) AS 'SanctionCostRE', ROUND(pm.SanctionCostFE/100000,2) AS 'SanctionCostFE', pm.WorkCenter, pm.projectcategory,pc.classification,  pm.projecttype AS 'projecttypeid',pt.projecttype ,pma.labparticipating,pm.EndUser,pm.Scope,pm.UnitCode  FROM project_master pm, pfms_security_classification pc, project_type pt , project_main pma  WHERE pm.projectcategory=pc.classificationid AND pm.projecttype=pt.projecttypeid AND pm.projectmainid=pma.projectmainid AND projectid=:projectid";
 	private static final String PROJECTDATADETAILS="SELECT ppd.projectdataid,ppd.projectid,ppd.filespath,ppd.systemconfigimgname,ppd.SystemSpecsFileName,ppd.ProductTreeImgName,ppd.PEARLImgName,ppd.CurrentStageId,ppd.RevisionNo,pps.projectstagecode,pps.projectstage,pps.stagecolor,pm.projectcode,ppd.proclimit/100000  FROM pfms_project_data ppd, pfms_project_stage pps,project_master pm WHERE ppd.projectid=pm.projectid AND ppd.CurrentStageId=pps.projectstageid AND ppd.projectid=:projectid";
 	private static final String PROCUREMETSSTATUSLIST="SELECT f.PftsFileId, f.DemandNo, f.OrderNo, f.DemandDate, f.DpDate, ROUND(f.EstimatedCost/100000,2) AS 'EstimatedCost',ROUND(f.OrderCost/100000, 2) AS 'OrderCost', f.PDRDate ,f.ItemNomenclature, s.PftsStatus, s.PftsStageName, f.Remarks,'' AS vendorname,f.PftsStatusId,f.PDC, f.IntegrationDate,f.spcdate   FROM pfts_file f, pfts_status s  WHERE f.ProjectId=:projectid AND f.isactive='1' AND f.EstimatedCost> (SELECT ppd.proclimit FROM pfms_project_data ppd WHERE ppd.ProjectId=f.ProjectId )   AND f.PftsStatusId=s.PftsStatusId AND f.PftsFileId NOT IN(SELECT PftsFileId FROM pfts_file_order) UNION SELECT f.PftsFileId, f.DemandNo, o.OrderNo, f.DemandDate, o.DpDate, ROUND(f.EstimatedCost/100000,2) AS 'EstimatedCost',ROUND(o.OrderCost/100000, 2) AS 'OrderCost', f.PDRDate ,f.ItemNomenclature, s.PftsStatus, s.PftsStageName, f.Remarks,o.vendorname,f.PftsStatusId,f.PDC, f.IntegrationDate,o.orderdate FROM pfts_file f, pfts_status s,pfts_file_order o  WHERE f.ProjectId=:projectid AND f.isactive='1' AND o.isactive='1' AND f.PftsFileId=o.PftsFileId  AND f.PftsStatusId=s.PftsStatusId AND o.OrderCost>(SELECT ppd.proclimit FROM pfms_project_data ppd WHERE ppd.ProjectId=f.ProjectId ) ORDER BY  DemandNo , PftsStatusId ASC";
 	private static final String RISKMATIRXDATA="SELECT pr.description, pr.severity, pr.probability, pr.mitigationplans, pr.revisionno,pr.projectid,pr.actionmainid , CONCAT(IFNULL(CONCAT(e.title,' '),''), e.empname) AS 'empname' ,ed.designation,asi.pdcorg, asi.pdc1,asi.pdc2,asi.revision, asi.actionno, am.actiondate,asi.actionstatus,asi.actionstatus AS 'actionflag',asi.enddate ,asi.progress,asi.progressremark,asi.progressdate,pr.impact,pr.RPN, pr.category, prt.riskcode,asi.actionassignid FROM pfms_risk pr, action_main am, employee e, employee_desig ed , action_assign asi ,pfms_risk_type prt WHERE prt.risktypeid=pr.risktypeid  AND pr.status='O' AND am.actionmainid=asi.actionmainid AND asi.actionmainid= pr.actionmainid AND asi.assignee = e.empid AND e.desigid=ed.desigid AND asi.assigneelabcode<>'@EXP' AND pr.projectid=:projectid UNION SELECT pr.description, pr.severity, pr.probability, pr.mitigationplans, pr.revisionno,pr.projectid,pr.actionmainid ,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.expertname) AS 'empname' ,'Expert' AS 'designation',asi.pdcorg, asi.pdc1,asi.pdc2,asi.revision, asi.actionno, am.actiondate,asi.actionstatus,asi.actionstatus AS 'actionflag',asi.enddate ,asi.progress,asi.progressremark,asi.progressdate,pr.impact,pr.RPN, pr.category, prt.riskcode,asi.actionassignid FROM pfms_risk pr, action_main am, expert e,  action_assign asi ,pfms_risk_type prt WHERE prt.risktypeid=pr.risktypeid  AND pr.status='O' AND am.actionmainid=asi.actionmainid AND asi.actionmainid= pr.actionmainid AND asi.assignee = e.Expertid AND asi.assigneelabcode='@EXP' AND   pr.projectid=:projectid";
@@ -849,7 +855,16 @@ public class PrintDaoImpl implements PrintDao {
 			}
 		}
 		
-		private static final String AGENDALIST = "SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,b.projectname,b.projectid,a.remarks,b.projectcode,a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.title,' '),''), j.empname) as 'empname' ,h.designation,a.duration,j.desigid, a.PresentorLabCode  FROM project_master b,employee j,employee_desig h,committee_schedules_agenda a  WHERE a.projectid=b.projectid AND a.scheduleid=:committeescheduleid AND a.isactive=1 AND a.projectid NOT IN (0, -1) AND a.presenterid=j.empid AND j.desigid=h.desigid  UNION   SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,cs.labcode AS 'projectname' , '0' AS projectid,a.remarks,'' AS projectcode,a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.title,' '),''), j.empname) as 'empname' ,h.designation,a.duration,j.desigid, a.PresentorLabCode  FROM employee j,employee_desig h, committee_schedules_agenda a, committee_schedule cs   WHERE a.scheduleid=:committeescheduleid AND a.scheduleid=cs.scheduleid  AND a.isactive=1 AND a.projectid IN (0, -1) AND a.presenterid=j.empid AND j.desigid=h.desigid ORDER BY 9   ";
+		private static final String AGENDALIST = """
+				SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,b.projectname,b.projectid,a.remarks,b.projectcode,a.agendapriority,
+				a.presenterid ,CONCAT(IFNULL(CONCAT(j.title,' '),''), j.empname) AS 'empname' ,h.designation,a.duration,j.desigid, a.PresentorLabCode ,NULLIF(TRIM(a.GroupName), '') AS GroupName 
+				FROM project_master b,employee j,employee_desig h,committee_schedules_agenda a  
+				WHERE a.projectid=b.projectid AND a.scheduleid=:committeescheduleid AND a.isactive=1 AND a.projectid NOT IN (0, -1) AND a.presenterid=j.empid 
+				AND j.desigid=h.desigid  UNION   SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,cs.labcode AS 'projectname' ,
+				'0' AS projectid,a.remarks,'' AS projectcode,a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.title,' '),''), j.empname) AS 'empname' ,
+				h.designation,a.duration,j.desigid, a.PresentorLabCode ,NULLIF(TRIM(a.GroupName), '') AS GroupName FROM employee j,employee_desig h, committee_schedules_agenda a, committee_schedule cs 
+				WHERE a.scheduleid=:committeescheduleid  AND a.scheduleid=cs.scheduleid  AND a.isactive=1 AND a.projectid IN (0, -1) AND a.presenterid=j.empid AND j.desigid=h.desigid
+				ORDER BY 9   """;
 		@Override
 		public List<Object[]> AgendaList(String scheduleId) throws Exception 
 		{
@@ -1594,4 +1609,239 @@ public class PrintDaoImpl implements PrintDao {
 			
 			return (List<Object[]>)query.getResultList();
 		}
+
+		// Naveen R 06-03-2026
+		private static final String MILESTONEBRIEFINGLIST = "SELECT milestoneActivityBriefingId,briefingPointId,points,scheduleId FROM milestone_activity_briefing WHERE scheduleId = :scheduleId AND isActive = 1;";
+		@Override
+		public List<Object[]> getMilestoneBriefingList(String scheduleId) throws Exception {
+			try{
+				Query query = manager.createNativeQuery(MILESTONEBRIEFINGLIST);
+				query.setParameter("scheduleId", scheduleId);			
+				return (List<Object[]>)query.getResultList();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return List.of();
+			}
+		}
+		
+		private static final String LASTMEETINGCREATED = """
+				SELECT cs.scheduleid, cs.meetingid,cs.scheduledate,cs.schedulestarttime,cs.scheduleflag, cs.MeetingVenue  
+				FROM committee_schedule cs, committee_meeting_status  cms WHERE cs.isactive=1 AND cms.meetingstatus=cs.scheduleflag 
+				AND cs.committeeid=:committeeId AND CASE WHEN cs.ProjectId=0 THEN cs.ProgrammeId IN (SELECT pp.programmeid 
+				FROM pfms_programme_projects pp WHERE pp.projectid =:projectId AND pp.IsActive=1) ELSE cs.ProjectId =:projectId END 
+				ORDER BY cs.scheduledate DESC , cs.schedulestarttime DESC LIMIT 1
+				""";
+		@Override
+		public Object[] getLastMeetingCreated(String projectId,String committeeId) throws Exception {
+			try {
+				Query query = manager.createNativeQuery(LASTMEETINGCREATED);
+				query.setParameter("projectId", projectId);			
+				query.setParameter("committeeId", committeeId);			
+				return (Object[])query.getSingleResult();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		// Naveen R 08-04-2026
+		@Override
+		public List<BriefingFinance> getBriefingFinanceDetails(String scheduleId) throws Exception {
+			try {
+				Query query = manager.createQuery("SELECT e FROM BriefingFinance e WHERE e.ScheduleId = :scheduleId AND e.IsActive = 1",BriefingFinance.class);
+				query.setParameter("scheduleId", scheduleId);
+				
+				return (List<BriefingFinance>)query.getResultList();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return List.of();
+			}
+		}
+
+		@Override
+		public long addOverallFinaceForPgad(List<BriefingFinance> list,String scheduleId) throws Exception {
+			try {
+				String sql ="UPDATE briefing_finance SET IsActive=0 WHERE ScheduleId=:scheduleId";
+				Query query = manager.createNativeQuery(sql);
+				query.setParameter("scheduleId", Long.parseLong(scheduleId));
+				query.executeUpdate();
+				
+				for(BriefingFinance pf:list) {
+					manager.persist(pf);
+					manager.flush();
+				}				
+				
+				return 1;
+			}catch (Exception e) {
+				e.printStackTrace();
+				return 0;
+			}
+		}
+
+		@Override
+		public long addHeadings(List<BriefingHeading> list, String projectid) throws Exception {
+			try {
+//				String sql ="UPDATE briefing_heading SET IsActive=0,ModifiedBy =:ModifiedBy , ModifiedDate=:ModifiedDate WHERE ProjectId=:projectid";
+//				Query query = manager.createNativeQuery(sql);
+//				query.setParameter("projectid", Long.parseLong(projectid));
+//				query.setParameter("ModifiedBy", list.get(0).getCreatedBy());
+//				query.setParameter("ModifiedDate", LocalDate.now().toString());
+//				query.executeUpdate();
+				
+				String sql = "SELECT HeadingId FROM briefing_heading WHERE projectId = :projectId AND IsActive = 1";
+
+				Query query = manager.createNativeQuery(sql);
+				query.setParameter("projectId", Long.parseLong(projectid));
+
+				List<Long> idList = query.getResultList();
+				Set<Long> receivedIds = new HashSet<>();
+				
+				String username = null;
+
+				for (BriefingHeading h : list) {
+					username = h.getModifiedBy();
+				    if (h.getHeadingId() != null) {
+				        receivedIds.add(h.getHeadingId());
+				    }
+				}
+				for (BriefingHeading h : list) {					
+				    manager.merge(h); // handles both insert + update
+				}
+				
+				for (Long dbId : idList) {
+				    if (!receivedIds.contains(dbId)) {
+
+				        BriefingHeading old = manager.find(BriefingHeading.class, dbId);
+
+				        if (old != null) {
+				            old.setIsActive(0);
+				            old.setModifiedDate(LocalDateTime.now());
+				            old.setModifiedBy(username);
+
+				            manager.merge(old);
+				        }
+				    }
+				}
+				return list.size();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return 0;
+			}
+		}
+
+		@Override
+		public List<BriefingHeading> getBriefingHeading(String projectid) throws Exception {
+			try {
+				Query query = manager.createQuery("SELECT e FROM BriefingHeading e WHERE e.ProjectId = :projectid AND e.IsActive = 1 ORDER BY e.Seniority ASC",BriefingHeading.class);
+				query.setParameter("projectid", projectid);
+				
+				return (List<BriefingHeading>)query.getResultList();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return List.of();
+			}
+		}
+
+		private static final String HEADERDETAILS = """
+				SELECT a.DetailsId,a.Details, b.HeadingId, b.ProjectId, b.Heading
+				FROM briefing_heading_details a LEFT JOIN briefing_heading b
+				ON a.HeadingId = b.HeadingId 
+				WHERE a.HeadingId = :headingId AND a.ScheduleId = :scheduleId AND a.IsActive = 1
+				""";
+		@Override
+		public List<Object[]> getHeadingDetails(String headingid, String projectid, String scheduleid) throws Exception {
+			try {
+				Query query = manager.createNativeQuery(HEADERDETAILS);
+				query.setParameter("headingId", headingid);
+				//query.setParameter("projectid", projectid);
+				query.setParameter("scheduleId", scheduleid);
+				
+				return (List<Object[]>)query.getResultList();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return new ArrayList<Object[]>();
+			}
+		}
+
+		@Override
+		public BriefingHeadingDetails getDetailsById(String detailid) throws Exception {
+			try {
+				Query query = manager.createQuery("SELECT e FROM BriefingHeadingDetails e WHERE e.DetailsId = :detailid AND e.IsActive = 1",BriefingHeadingDetails.class);
+				query.setParameter("detailid", detailid);
+				
+				List<BriefingHeadingDetails> detail = (List<BriefingHeadingDetails>)query.getResultList();
+
+				if(detail!=null && !detail.isEmpty()) return detail.get(0);
+				return null;
+			}catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		@Override
+		public long addDetails(BriefingHeadingDetails dto) throws Exception {
+			try{
+				manager.persist(dto);
+				manager.flush();
+				return dto.getDetailsId();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return 0;
+			}
+			
+		}
+		private static final String HEADERDETAILSALL = """
+				SELECT a.DetailsId,a.Details, b.HeadingId, b.ProjectId, b.Heading, a.ScheduleId
+				FROM briefing_heading_details a LEFT JOIN briefing_heading b
+				ON a.HeadingId = b.HeadingId 
+				WHERE a.IsActive = 1 AND b.ProjectId = :projectid AND a.scheduleid = :scheduleid AND b.isActive = 1
+				ORDER BY b.Seniority;
+				""";
+		@Override
+		public List<Object[]> getAllHeadingDetails(String projectid,String scheduleid) throws Exception {
+			try {
+				Query query = manager.createNativeQuery(HEADERDETAILSALL);
+				query.setParameter("projectid", projectid);
+				query.setParameter("scheduleid", scheduleid);
+				
+				return (List<Object[]>)query.getResultList();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return new ArrayList<Object[]>();
+			}
+		}
+		
+		@Override
+		public List<BriefingHeadingDetails> getDetailsByHeadingAndSCheduleId(String headingid,String scheduleid) throws Exception {
+			try {
+				Query query = manager.createQuery("SELECT e FROM BriefingHeadingDetails e WHERE e.HeadingId = :headingid AND e.ScheduleId = :scheduleid AND e.IsActive = 1",BriefingHeadingDetails.class);
+
+		        query.setParameter("headingid", Long.parseLong(headingid));
+		        query.setParameter("scheduleid", Long.parseLong(scheduleid));
+				
+				List<BriefingHeadingDetails> detail = (List<BriefingHeadingDetails>)query.getResultList();
+
+				if(detail!=null && !detail.isEmpty()) return detail;
+				return List.of();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return List.of();	
+			}
+		}
+
+		@Override
+		public long saveAllDetails(List<BriefingHeadingDetails> list) throws Exception {
+			try {
+		        for (int i = 0; i < list.size(); i++) {
+		            manager.persist(list.get(i));
+
+		        }
+		        return list.size();
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        return 0;
+		    }
+		}
+
 	}

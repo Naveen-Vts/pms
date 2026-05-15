@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +33,9 @@ import com.vts.pfms.committee.model.Committee;
 import com.vts.pfms.committee.model.PfmsNotification;
 import com.vts.pfms.milestone.dto.MilestoneActivityLevelConfigurationDto;
 import com.vts.pfms.milestone.model.MilestoneActivityLevelConfiguration;
+import com.vts.pfms.model.BriefingFinance;
+import com.vts.pfms.model.BriefingHeading;
+import com.vts.pfms.model.BriefingHeadingDetails;
 import com.vts.pfms.model.LabMaster;
 import com.vts.pfms.print.dao.PrintDao;
 import com.vts.pfms.print.dto.PfmsBriefingFwdDto;
@@ -1231,5 +1235,106 @@ public List<Object[]> getprojectListProjectDirectorWise() throws Exception {
 public List<Object[]> getProjectClosureReport() throws Exception {
 	
 	return dao.getProjectClosureReport();
+}
+
+// Naveen R 06-03-2026
+@Override
+public List<Object[]> getMilestoneBriefingList(String scheduleId) throws Exception {
+	return dao.getMilestoneBriefingList(scheduleId);
+}
+
+@Override
+public Object[] getLastcreatedSchedule(String projectId,String committeId) throws Exception {
+	return dao.getLastMeetingCreated(projectId, committeId);
+}
+
+
+@Override
+public  List<BriefingFinance> getBriefingFinanceDetails(String scheduleId) throws Exception {
+	return dao.getBriefingFinanceDetails(scheduleId);
+}
+
+
+@Override
+public long addOverallFinaceForPgad(List<BriefingFinance> list,String scheduleId) throws Exception {
+	return dao.addOverallFinaceForPgad(list,scheduleId);
+}
+
+
+@Override
+public long addHeadings(List<BriefingHeading> list, String projectid) throws Exception {
+	return dao.addHeadings(list,projectid);
+}
+
+
+@Override
+public List<BriefingHeading> getBriefingHeading(String projectid) throws Exception {
+	return dao.getBriefingHeading(projectid);
+}
+
+
+@Override
+public List<Object[]> getHeadingDetails(String headingid, String projectid, String scheduleid) throws Exception {
+	return dao.getHeadingDetails(headingid,projectid,scheduleid);
+}
+
+
+@Override
+public BriefingHeadingDetails getDetailsById(String detailid) throws Exception {
+	return dao.getDetailsById(detailid);
+}
+
+
+@Override
+public long addDetails(BriefingHeadingDetails dto) throws Exception {
+	return dao.addDetails(dto);
+}
+
+
+@Override
+public List<Object[]> getAllHeadingDetails(String projectid,String scheduleid) throws Exception {
+	return dao.getAllHeadingDetails(projectid,scheduleid);
+}
+
+
+@Override
+public long previouseHeadingAdd(String scheduleidto, String scheduleidfrom, String[] headingIds, String userId) throws Exception {
+	logger.info(new Date() +"Inside SERVICE previouseHeadingAdd ");
+	long count=0;
+	
+	if (headingIds != null) {
+
+	    List<BriefingHeadingDetails> newList = new ArrayList<>();
+
+	    for (String headingId : headingIds) {
+
+	        List<BriefingHeadingDetails> details =
+	                dao.getDetailsByHeadingAndSCheduleId(headingId, scheduleidfrom);
+
+	        for (BriefingHeadingDetails obj : details) {
+
+	            // CREATE NEW OBJECT
+	            BriefingHeadingDetails newObj = new BriefingHeadingDetails();
+
+	            // COPY FIELDS (except ID)
+	            newObj.setHeadingId(obj.getHeadingId());
+	            newObj.setDetails(obj.getDetails());
+	            newObj.setIsActive(1);
+
+	            // SET NEW VALUES
+	            newObj.setScheduleId(Long.parseLong(scheduleidto));
+	            newObj.setCreatedBy(obj.getCreatedBy());
+	            newObj.setCreatedDate(LocalDateTime.now());
+
+	            newList.add(newObj);
+	        }
+	    }
+
+	    //  SAVE NEW LIST
+	     long num = dao.saveAllDetails(newList);
+	     if(num > 0)count++;
+	}
+	
+	return count;
 }
 }

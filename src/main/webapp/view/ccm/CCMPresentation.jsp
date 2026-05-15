@@ -1,3 +1,4 @@
+<%@page import="java.util.Locale"%>
 <%@page import="org.apache.commons.text.StringEscapeUtils"%>
 <%@page import="com.fasterxml.jackson.databind.ObjectMapper"%>
 <%@page import="java.util.Set"%>
@@ -452,7 +453,7 @@ input,select,table,div,label,span {
 										DecimalFormat df = new DecimalFormat("####################.##");
 										SimpleDateFormat sdf = fc.getRegularDateFormat();
 										SimpleDateFormat sdf1 = fc.getSqlDateFormat();
-									    SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+									    SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy",Locale.ENGLISH);
 									    SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");	
 										String todayDate = outputFormat.format(new Date()).toString();		
 									%>
@@ -697,7 +698,7 @@ input,select,table,div,label,span {
 										DecimalFormat df = new DecimalFormat("####################.##");
 										SimpleDateFormat sdf = fc.getRegularDateFormat();
 										SimpleDateFormat sdf1 = fc.getSqlDateFormat();
-									    SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+									    SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy",Locale.ENGLISH);
 									    SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");	
 										String todayDate = outputFormat.format(new Date()).toString();	
 									%>

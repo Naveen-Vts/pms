@@ -135,6 +135,7 @@
 																<td>
 																	<select form="inlineeditform_<%=count%>" class="form-control items presenterid presenterIdStyle" name="presenterid" id="presenterid_<%=count %>"  required="required" data-live-search="true" data-container="body" onchange="getEmployee(this)">
 														        		<option disabled="disabled" selected value="">Choose...</option>
+														        		<option value="-1">None</option>
 																        <% for(Object[] emp : labEmpList){ %>
 																        	<option value="<%=emp[0] %>" <%if(obj[9].toString().equalsIgnoreCase(emp[0].toString())) {%>selected<%} %> ><%=emp[1]!=null?StringEscapeUtils.escapeHtml4(emp[1].toString()): " - " %>(<%=emp[3]!=null?StringEscapeUtils.escapeHtml4(emp[3].toString()): " - " %>)</option>
 																        <%} %>
@@ -266,6 +267,7 @@
 												<td>
 													<select class="form-control items presenterid presenterIdFontStyle" name="presenterid" id="presenterid_<%=count %>"  required="required" data-live-search="true" data-container="body" onchange="getEmployee(this)">
 										        		<option disabled="disabled" selected value="">Choose...</option>
+														<option value="-1">None</option>
 												        <% for(Object[] emp : empList){ %>
 												        	<option value="<%=emp[0] %>" <%if(obj[4].toString().equalsIgnoreCase(emp[0].toString())) {%>selected<%} %> ><%=emp[1]!=null?StringEscapeUtils.escapeHtml4(emp[1].toString()): " - " %>(<%=emp[3]!=null?StringEscapeUtils.escapeHtml4(emp[3].toString()): " - " %>)</option>
 												        <%} %>
@@ -335,6 +337,7 @@
 												<td>
 													<select class="form-control items presenterid presenterIdFontStyle" name="presenterid" id="presenterid_DH_0"  required="required" data-live-search="true" data-container="body" onchange="getEmployeeForDH(this)">
 										        		<option disabled="disabled" selected value="">Choose...</option>
+														<option value="-1">None</option>
 												        <% for(Object[] emp : empLists){ %>
 												        	<option value="<%=emp[0] %>" ><%=emp[1]!=null?StringEscapeUtils.escapeHtml4(emp[1].toString()): " - " %>(<%=emp[3]!=null?StringEscapeUtils.escapeHtml4(emp[3].toString()): " - " %>)</option>
 												        <%} %>
@@ -1146,7 +1149,7 @@ function getEmployeeForDH(ele){
 	
 }
 
-let index = 1000;
+let cloneIndex = 1000;
 
 $(document).on("click", ".btn-remove", function () {
     let row = $(this).closest("tr");
@@ -1184,7 +1187,7 @@ $(document).on("click", ".btn-clone", function () {
     });
 
     let clone = row.clone(false, false);
-    //let index = row.closest("table").find("tr").length;
+    let index = cloneIndex++;
 
     // Restore Select2 on original row
     row.find("select").select2({
@@ -1211,7 +1214,7 @@ $(document).on("click", ".btn-clone", function () {
         
         let onchange = $(this).attr("onchange");
         if (onchange) {
-            let newOnchange = onchange.replace(/\('\d+'\)/, "('" + index++ + "')");
+            let newOnchange = onchange.replace(/\('\d+'\)/, "('" + index + "')");
             $(this).attr("onchange", newOnchange);
         }
     });

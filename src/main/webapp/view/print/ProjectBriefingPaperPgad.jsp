@@ -1,3 +1,4 @@
+<%@page import="com.vts.pfms.model.BriefingFinance"%>
 <%@page import="org.apache.commons.text.StringEscapeUtils"%>
 <%@page import="java.nio.file.Paths"%>
 <%@page import="java.nio.file.Path"%>
@@ -46,7 +47,12 @@
 <link href="${actionCommon}" rel="stylesheet" />
 <title>Briefing </title>
 
-
+<style type="text/css">
+ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+</style>
 
 <meta charset="ISO-8859-1">
 </head>
@@ -105,6 +111,7 @@ LocalDate before6months = LocalDate.now().minusDays(committee.getPeriodicDuratio
 String No2=null;
 SimpleDateFormat sdfg=new SimpleDateFormat("yyyy");
 
+
 if(ebandpmrccount!=null && ebandpmrccount.size()>0){
 	List<Object[]> ebandpmrcsub = ebandpmrccount.get(0);
 	Object[] comcount = ebandpmrcsub.stream().filter(e -> e[0].toString().equalsIgnoreCase(committee.getCommitteeShortName())).findFirst().orElse(null);
@@ -112,9 +119,12 @@ if(ebandpmrccount!=null && ebandpmrccount.size()>0){
 	
 }
 
-
 Object[] nextMeetVenue =  (Object[]) request.getAttribute("nextMeetVenue");
+Object[] lastmeetingVenue =  (Object[]) request.getAttribute("lastmeetingVenue");
+
 List<Object[]> RecDecDetails = (List<Object[]>)request.getAttribute("recdecDetails");
+Map<String,List<Object[]>> milestoneBriefingMap = (Map<String,List<Object[]>>)request.getAttribute("milestoneBriefingMap");
+
 
 List<Object[]> RiskTypes = (List<Object[]>)request.getAttribute("RiskTypes");
 Map<Integer,String> treeMapLevOne =(Map<Integer,String>)request.getAttribute("treeMapLevOne");
@@ -122,7 +132,6 @@ Map<Integer,String> treeMapLevTwo =(Map<Integer,String>)request.getAttribute("tr
 
 List<Object[]> envisagedDemandlist = (List<Object[]>)request.getAttribute("envisagedDemandlist");
 SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy", Locale.ENGLISH);
-
 SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 Map<Integer,String> committeeWiseMap=(Map<Integer,String>)request.getAttribute("committeeWiseMap");
 //Map<Integer,String> mapEB=(Map<Integer,String>)request.getAttribute("mapEB");
@@ -132,6 +141,9 @@ List<List<Object[]>> overallfinance = (List<List<Object[]>>)request.getAttribute
 String thankYouImg = (String)request.getAttribute("thankYouImg");
 String IsIbasConnected=(String)request.getAttribute("IsIbasConnected");
 String isCCS = (String)request.getAttribute("isCCS");
+
+List<BriefingFinance> briefingFinanceDetials = (List<BriefingFinance>)request.getAttribute("briefingFinanceDetials");
+
 %>
 	<% String ses = (String) request.getParameter("result"); 
        String ses1 = (String) request.getParameter("resultfail");
@@ -155,7 +167,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 			<div class="col-md-12">
 				<div class="card shadow-nohover">
 					<div class="row card-header" >
-			   			<div class="col-md-4 marging-top8"  >
+			   			<div class="col-md-4 marging-top8" >
 							<h3>Project Briefing Paper</h3>
 						</div>							
 						<div class="col-md-8 justify-content-end margin-top-17 float-right" >
@@ -185,7 +197,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 									</td>
 									
 									<td class="border-0"> 
-										<button  type="submit" class="btn btn-sm border-radius3 border-0"  formmethod="GET" formaction="ProjectBriefingDownload.htm" formtarget="_blank"
+										<button  type="submit" class="btn btn-sm border-radius3 border-0"  formmethod="GET" formaction="ProjectBriefingNewDownload.htm" formtarget="_blank"
 										 data-toggle="tooltip" data-placement="top" title="Briefing Paper pdf" >
 											<i class="fa fa-download fa-lg" aria-hidden="true"></i>
 										</button>
@@ -209,6 +221,8 @@ String isCCS = (String)request.getAttribute("isCCS");
 										</button>
 									</td>
 									<td class="border-0 "><button  type="button" class="btn btn-sm back btn-black"  data-toggle="modal" data-target="#LevelModal"  >Mil Level (<%=levelid %>)</button></td>
+									<td class="border-0"><button type="submit" class="btn btn-sm add mt-1" formmethod="post" formaction="BriefingPaperV2.htm" 
+									data-toggle="tooltip" data-placement="top" title="Version 2"  > Version 2</button></td>
 								</tr>
 							</table>
 								<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
@@ -217,8 +231,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 							</form>				
 						</div>
 					 </div>
-					 
-	
+										 
 						<div class="card-body">	
 						
 				 		
@@ -250,39 +263,49 @@ String isCCS = (String)request.getAttribute("isCCS");
 										</tr>
 										<tr>
 											 <td  class="td-cp">(b)</td>
+											 <td class="cst-td1"><b>Project No</b></td>
+											 <td colspan="4" class="cst-td2"> <%=projectattributes[2]%> </td>
+										</tr>
+										<tr>
+											 <td  class="td-cp">(c)</td>
+											 <td class="cst-td1"><b>Project Unit Code</b></td>
+											 <td colspan="4" class="cst-td2"> <%=projectattributes[18]%></td>
+										</tr>
+										<tr>
+											 <td  class="td-cp">(d)</td>
 											 <td class="cst-td1"><b>Project Code</b></td>
 											 <td colspan="4" class="cst-td2"> <%=projectattributes[0]%> </td>
 										</tr>
 										<tr>
-											 <td  class=" td-cp">(c)</td>
+											 <td  class=" td-cp">(e)</td>
 											 <td  class="cst-td1"><b>Category</b></td>
 											 <td colspan="4" class="cst-td2"><%=projectattributes[14]%></td>
 										</tr>
 										<tr>
-											 <td  class="td-cp">(d)</td>
+											 <td  class="td-cp">(f)</td>
 											 <td  class="cst-td1"><b>Date of Sanction</b></td>
 											 <td colspan="4" class="cst-td2"><%=sdf.format(sdf1.parse(projectattributes[3].toString()))%></td>
 										</tr>
 										<tr>
-											 <td  class="width20-padding5">(e)</td>
+											 <td  class="width20-padding5">(g)</td>
 											 <td  class="width150-padding5"><b>Nodal and Participating Labs</b></td>
 											 <td colspan="4" class="cst-td2"><%if(projectattributes[15]!=null){ %><%=projectattributes[15]%><%} %></td>
 										</tr>
 										<tr>
-											 <td  class="td-cp">(f)</td>
+											 <td  class="td-cp">(h)</td>
 											 <td  class="width150-padding5"><b>Objective</b></td>
 											 <td colspan="4" class="cst-td2 text-justify"> <%=projectattributes[4]%></td>
 										</tr>
 										<tr>
-											 <td  class="td-cp">(g)</td>
+											 <td  class="td-cp">(i)</td>
 											 <td  class="width150-padding5"><b>Deliverables</b></td>
 											 <td colspan="4" class=" cst-td2"> <%=projectattributes[5]%></td>
 										</tr>
 										<tr>
-											 <td rowspan="2" class="td-cp">(h)</td>
+											 <td rowspan="2" class="td-cp">(j)</td>
 											 <td rowspan="2" class="width150-padding5"><b>PDC</b></td>
 											 
-											<td colspan="2" class="textaligncenter">&nbsp;</td>					
+											<td colspan="2" class="textaligncenter">Original &nbsp;</td>					
 											<%if( ProjectRevList.get(z).size()>0){ %>	
 												<td colspan="2" class="textaligncenter">Revised</td>																			
 											<%}else{ %>													 
@@ -308,7 +331,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 								 		</tr>
 											 	
 										<tr>
-											<td rowspan="3" class="td-i">(i)</td>
+											<td rowspan="3" class="td-i">(k)</td>
 											<td rowspan="3" class="padding-left10"><b>Cost Breakup( &#8377; <span class="currency">Lakhs</span>)</b></td>
 											
 											<%if( ProjectRevList.get(z).size()>0 ){ %>
@@ -352,19 +375,19 @@ String isCCS = (String)request.getAttribute("isCCS");
 												
 																			 	
 										<tr>
-											<td  class="td-j">(j)</td>
+											<td  class="td-j">(l)</td>
 											<td class="width150-padding5"><b>No. of Meetings held</b> </td>
 											<td colspan="4">
 												<% if(ebandpmrccount!=null && ebandpmrccount.size()>0){
 													List<Object[]> ebandpmrcsub = ebandpmrccount.get(z); 
 													for(Object[] ebandpmrc: ebandpmrcsub) { %>
 												 	<b><%=ebandpmrc[0] %> : </b>
-													<span><%=ebandpmrc[1] %></span> &emsp;&emsp;
+													<span><%=ebandpmrc[1] !=null ? Long.parseLong(ebandpmrc[1].toString()) -1 : " - " %></span> &emsp;&emsp;
 												<%} }%>
 											</td>
 										</tr>
 										<tr>
-											<td  class="td-j">(k)</td>
+											<td  class="td-j">(m)</td>
 											<td  class="td-k"><b>Current Stage of Project</b></td>
 										  	<%
 											   String colorCode = projectdatadetails.get(z)!=null ? (String) projectdatadetails.get(z)[11] : "#77D970";
@@ -872,7 +895,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 										</div>	
 									<%} %>	
 				
-							<table  class="subtables table-subtables" >
+							<%-- <table  class="subtables table-subtables" >
 								<thead>
 								<tr>
 									<td colspan="10" class="border-0">
@@ -1055,26 +1078,115 @@ String isCCS = (String)request.getAttribute("isCCS");
 									
 									<%} %>
 							</table>
+			 --%>
+						<%if(lastmeetingVenue!=null && lastmeetingVenue[0]!=null){
+						
+							List<Object[]> list = milestoneBriefingMap!=null ? milestoneBriefingMap.get("5") : new ArrayList<>();
+							
+						%>
 			
-			
-								<div id="milestoneactivitychange" ></div>
-								
+								<form action="MilestoneActivityAddBriefingPaper.htm" method="post" id="milestoneBrefingDetails5">
+									<div class="row mt-4"align="center" >
+										<div class="row w-100 div-margin">
+											<div class="col-md-4">
+												<table class="table table-bordered table-hover table-striped table-condensed ">
+													<thead>
+														<tr>
+															<th class="width-5">SN</th>
+															<th >Details</th>
+															<th class="width-5">Action</th>
+														</tr>
+													</thead>
+													<tbody>
+														<%
+														if(list!=null && !list.isEmpty()){
+														int num = 1;
+														for(Object[] obj: list){ %>
+															<tr>
+																<td class="text-center width-5"><%= num++ %></td>
+																<%-- <%String pointdata = obj[2]!=null ? obj[2].toString() : " - "; 
+																%>
+																<td>
+																	<%if(pointdata.length()>30){%> <%=pointdata.substring(0,30)%>  <span onclick="MileStoneModal('<%=obj[0]%>')" class="color1176ab"><b> ...View More </b></span> <%}else{%> <%=pointdata%><%}%>
+																</td> --%>
+																<%
+																String raw = obj[2] != null ? obj[2].toString() : "-";
+																String plainText = raw.replaceAll("<[^>]*>", ""); // remove HTML tags
+																%>
+																
+																<td>
+																<% if(plainText.length() > 30){ %>
+																    <%= plainText.substring(0,30) %>
+																    <span onclick="MileStoneModal('<%=obj[0]%>')" class="color1176ab">
+																        <b> ...View More </b>
+																    </span>
+																<% } else { %>
+																    <%= plainText %>
+																<% } %>
+																</td>
+																<td class="text-center width-5"> 
+																	<button class="btn btn-warning btn-sm" type="button" onclick="milestoneEditPoint('<%=obj[0]%>' ,'5')" value="EDIT"  > <i class="fa fa-pencil-square-o color100f0e"  aria-hidden="true"></i></button>
+																	<button class="btn btn-sm btn-danger" type="button" onclick="milestoneActivityBriefingDelete('<%=obj[0]%>')" ><i class="fa fa-trash text-white" aria-hidden="true" ></i></button>
+																</td>
+															</tr>
+														<%}}else{ %>
+															<tr>
+																<td class="text-center" colspan="3">No Data Available</td>
+															</tr>
+														<%} %>
+													</tbody>
+												</table>
+												<button type="button" onclick="milestoneEditPoint('0','5');" class="btn btn-sm add ">Add</button>
+											</div>
+											<div class="col-md-8">
+												<textarea class="form-control" name="mileStonePoints" id="ckeditor5" rows="5" cols="50" maxlength="5"></textarea>
+												<!-- <input type="submit" value="Submit" class="btn btn-sm submit" style="margin-top:15px;margin-bottom:10px;" name="submit" onclick="return submitMileStoneActivity(this)"> -->
+												<div align="center">
+													<input type="hidden" name="MileStoneActivityBriefingId" id="MileStoneActivityBriefingId5">
+													<input type="hidden" name="scheduleid" value="<%=lastmeetingVenue[0]%>">
+													<button type="button"  class="btn btn-primary btn-sm add margin-top10"  onclick="return checkDataForMilestone('milestoneBrefingDetails5',5)">Submit </button>
+													<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+													<input type="hidden" name="projectid" value="<%=projectid%>"/>
+													<input type="hidden" name="committeeid" value="<%=committeeid%>"/>
+													<input type="hidden" name="briefingPointId" value="5"  />
+												</div>
+											</div>	
+										</div>
+									</div>
+								</form>
+								<form action="DeleteMilestoneActivityBriefing.htm" method="get" id="MileStoneActivityBriefingDelete">
+									<div align="center">
+										<input type="hidden" name="MileStoneActivityBriefingDeleteId" id="MileStoneActivityBriefingDeleteId">
+										<input type="hidden" name="scheduleid" value="<%=lastmeetingVenue[0]%>">
+										<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+										<input type="hidden" name="projectid" value="<%=projectid%>"/>
+										<input type="hidden" name="committeeid" value="<%=committeeid%>"/>
+										<input type="hidden" name="briefingPointId" value="5"  />
+									</div>
+								</form>
+								<%}else{ %>
+										<h5>Meeting is Not Scheduled!</h5>
+								<br><br><br><br><br>
+								<%} %>
+								<br><br>	
 							<%} %>
 						</div>
 				</details>
  				
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
-				 	
+			<%for(int z=0;z<1;z++){
+				List<Object[]> list = milestoneBriefingMap!=null ? milestoneBriefingMap.get("6") : new ArrayList<>();	%>
 						<details>
    						<summary role="button" tabindex="0" id="leveltab"><b>6. Details of work and current status of sub system with major milestones (since last <%=committee.getCommitteeShortName().trim().toUpperCase()%>)</b>  </summary>
 						<div class="content">
 							
-							<%for(int z=0;z<1;z++){ %>
+							
 								<%if(ProjectDetail.size()>1){ %>
 									<div>
 										<b>Project : <%=ProjectDetail.get(z)[1] %> 	<%if(z!=0){ %>(SUB)<%} %>	</b>
 									</div>	
 								<%} %>	
+								<%-- 
 								<div align="left" class="margin-left15">(a) Work carried out, Achievements, test result etc.
 									   <%if(z==0){ %>
 										<form action="FilterMilestone.htm" method="POST">  
@@ -1423,14 +1535,291 @@ String isCCS = (String)request.getAttribute("isCCS");
 												</tbody>		
 											</table>
  	 
-									
+ --%>									
 								
-								<% } %>
-							</div>
-							
+								
+								<div align="left" class="margin-left15">(a) Work carried out, Achievements, test result etc.</div>
+								
+								<%if(lastmeetingVenue!=null && lastmeetingVenue[0]!=null){
+						
 									
-						</details>
-				
+								%>
+			
+								<form action="MilestoneActivityAddBriefingPaper.htm" method="post" id="milestoneBrefingDetails6">
+									<div class="row mt-4"align="center" >
+										<div class="row w-100 div-margin">
+											<div class="col-md-4">
+												<table class="table table-bordered table-hover table-striped table-condensed ">
+													<thead>
+														<tr>
+															<th>SN</th>
+															<th>Details</th>
+															<th>Action</th>
+														</tr>
+													</thead>
+													<tbody>
+														<%
+														if(list!=null && !list.isEmpty()){
+														int num = 1;
+														for(Object[] obj: list){ %>
+															<tr>
+																<td class="text-center width-5"><%= num++ %></td>
+																<%-- <%String pointdata = obj[2]!=null ? obj[2].toString() : " - "; %>
+																<td>
+																	<%if(pointdata.length()>30){%> <%=pointdata.substring(0,30)%>  <span onclick="MileStoneModal('<%=obj[0]%>')" class="color1176ab"><b> ...View More </b></span> <%}else{%> <%=pointdata%><%}%>
+																</td> --%>
+																
+																<%
+																String raw = obj[2] != null ? obj[2].toString() : "-";
+																String plainText = raw.replaceAll("<[^>]*>", ""); // remove HTML tags
+																%>
+																
+																<td>
+																<% if(plainText.length() > 30){ %>
+																    <%= plainText.substring(0,30) %>
+																    <span onclick="MileStoneModal('<%=obj[0]%>')" class="color1176ab">
+																        <b> ...View More </b>
+																    </span>
+																<% } else { %>
+																    <%= plainText %>
+																<% } %>
+																</td>
+																<td class="text-center width-5"> 
+																	<button class="btn btn-warning btn-sm" type="button" onclick="milestoneEditPoint('<%=obj[0]%>','6' )" value="EDIT"  > <i class="fa fa-pencil-square-o color100f0e"  aria-hidden="true"></i></button>
+																	<button class="btn btn-sm btn-danger" type="button" onclick="milestoneActivityBriefingDelete('<%=obj[0]%>')" ><i class="fa fa-trash text-white" aria-hidden="true" ></i></button>
+																</td>
+															</tr>
+														<%}}else{ %>
+															<tr>
+																<td class="text-center" colspan="3">No Data Available</td>
+															</tr>
+														<%} %>
+													</tbody>
+												</table>
+												<button type="button" onclick="milestoneEditPoint('0','6');" class="btn btn-sm add ">Add</button>
+											</div>
+											<div class="col-md-8">
+												<textarea class="form-control" name="mileStonePoints" id="ckeditor6" rows="5" cols="50" maxlength="5"></textarea>
+												<!-- <input type="submit" value="Submit" class="btn btn-sm submit" style="margin-top:15px;margin-bottom:10px;" name="submit" onclick="return submitMileStoneActivity(this)"> -->
+												<div align="center">
+													<input type="hidden" name="MileStoneActivityBriefingId" id="MileStoneActivityBriefingId6">
+													<input type="hidden" name="scheduleid" value="<%=lastmeetingVenue[0]%>">
+													<button type="button"  class="btn btn-primary btn-sm add margin-top10"  onclick="return checkDataForMilestone('milestoneBrefingDetails6',6)">Submit </button>
+													<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+													<input type="hidden" name="projectid" value="<%=projectid%>"/>
+													<input type="hidden" name="committeeid" value="<%=committeeid%>"/>
+													<input type="hidden" name="briefingPointId" value="6"  />
+												</div>
+											</div>	
+										</div>
+									</div>
+								</form>
+								<form action="DeleteMilestoneActivityBriefing.htm" method="get" id="MileStoneActivityBriefingDelete">
+									<div align="center">
+										<input type="hidden" name="MileStoneActivityBriefingDeleteId" id="MileStoneActivityBriefingDeleteId">
+										<input type="hidden" name="scheduleid" value="<%=lastmeetingVenue[0]%>">
+										<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+										<input type="hidden" name="projectid" value="<%=projectid%>"/>
+										<input type="hidden" name="committeeid" value="<%=committeeid%>"/>
+										<input type="hidden" name="briefingPointId" value="6"  />
+									</div>
+								</form>
+								<%}else{ %>
+										<h5>Meeting is Not Scheduled!</h5>
+								<br><br><br><br><br>
+								<%} %>
+								<br><br>
+								
+
+								<div align="left" class="margin-left15">(b) TRL table with TRL at sanction stage and current stage indicating overall PRI.</div>
+									
+								<div>
+									<table  >
+										<tr><td class="border-0"></td>
+											<td class="border-0">  
+											<%if(projectdatadetails.get(z)!=null && projectdatadetails.get(z)[6]!=null ){ %>
+												<form action="ProjectDataSystemSpecsFileDownload.htm"  method="post" target="_blank" >	
+													<span class="anchorlink" onclick="$('#pearl<%=ProjectDetail.get(z)[0] %>').toggle();" ><b>As on File Attached</b></span>
+													<button  type="submit" class="btn btn-sm "  ><i class="fa fa-download fa-lg" ></i></button>
+													<input type="hidden" name="projectdataid" value="<%=projectdatadetails.get(z)[0]%>"/>
+													<input type="hidden" name="filename" value="pearl"/>
+													<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+												</form>	
+												
+												<%
+												Path trlPath = Paths.get(filePath,projectLabCode,"ProjectData",projectdatadetails.get(z)[6].toString());
+												File trlfile = trlPath.toFile();
+												if(trlfile.exists()){
+												if(FilenameUtils.getExtension(projectdatadetails.get(z)[6].toString()).equalsIgnoreCase("pdf")){ %>
+													<iframe	width="1200" height="600" src="data:application/pdf;base64,<%=Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(trlfile))%>"  id="pearl<%=ProjectDetail.get(z)[0] %>" class="display-none" > </iframe>
+												<%}else{
+													%>
+													<img class="img-maxwidth" src="data:image/<%=FilenameUtils.getExtension(projectdatadetails.get(z)[6].toString()) %>;base64,<%=Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(trlfile))%>"  id="pearl<%=ProjectDetail.get(z)[0] %>"  >											
+												  <%} %>
+												<%} %>
+											<% }else{ %>
+												File Not Found
+											<%} %>
+										</td>
+										</tr>
+									</table>
+								</div>
+					<%if(riskmatirxdata.get(z).size()>0){ %>
+						<div align="left" class="margin-left15">(c) Risk Matrix/Management Plan/Status. </div>
+						
+						<%-- <ul style="list-style: disc!important;padding-left: 35px!important;margin-top:20px;">
+						<%for(Object[] obj : riskmatirxdata.get(z)){ %>
+							<li style="padding-bottom:10px;"><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()):" - " %></li>
+						<%} %>
+						</ul> --%>
+						
+						
+							<table class="subtables table-subtables" style="width:95%!important;">
+								<thead>	
+										<tr>
+											<td colspan="9" class="border-0">
+												<p class="font-size10 text-center"> 
+													<span class="notassign">NA</span> : Not Assigned &nbsp;&nbsp;
+													<span class="assigned">AA</span> : Activity Assigned &nbsp;&nbsp; 
+													<span class="ongoing">OG</span> : On Going &nbsp;&nbsp; 
+													<span class="delay">DO</span> : Delay - On Going &nbsp;&nbsp; 
+													<span class="ongoing">RC</span> : Review & Close &nbsp;&nbsp;
+													<span class="delay">FD</span> : Forwarded With Delay &nbsp;&nbsp;
+													<span class="completed">CO</span> : Completed &nbsp;&nbsp; 
+													<span class="completeddelay">CD</span> : Completed with Delay &nbsp;&nbsp; 
+													<span class="inactive">IA</span> : InActive &nbsp;&nbsp;
+													<span class="delaydays">DD</span> : Delayed days &nbsp;&nbsp; 
+												</p>
+							   				</td>									
+										</tr>
+										<tr>
+											<td colspan="9" class="border-0 text-right"><b>RPN :</b>Risk Priority Number</td>
+										</tr>
+										<tr>
+											<th class="width15 text-center " rowspan="2">SN</th>
+											<th class="width330 " colspan="3">
+												Risk
+												<a data-toggle="modal" class="fa faa-pulse animated m-modal" data-target="#RiskTypesModal" data-whatever="@mdo" ><i class="fa fa-info-circle circle-font"  aria-hidden="true"></i> </a>
+											</th>
+											<th class="width100" rowspan="1" > ADC <br>PDC</th>
+											<th class="width160" rowspan="1"> Responsibility</th>
+											<th class="width50"  rowspan="1">Status(DD)</th>
+											<th class="width215" rowspan="1">Remarks</th>	
+										</tr>
+										<tr>
+											<th  class="text-center width110 " > Severity<br>(1-10)</th>
+											<th  class="text-center width110"> Probability<br>(1-10)</th>
+											<th  class="text-center width110"> RPN<br>(1-100)</th>
+											<th  class="width210" colspan="3" > Mitigation Plans</th>
+											<th  class="width315" colspan="2"> Impact</th>		
+										</tr>
+													
+								</thead>
+																					
+								<tbody>
+									<%
+										int i=0;
+									for(Object[] obj : riskmatirxdata.get(z)){
+											i++;%>
+												<tr>
+													<td class="text-center" rowspan="2"><%=i %></td>
+													<td class="text-justify text-danger" colspan="3" >
+														<%=obj[0] %> <span class="color-c font-weight-bold"> - <%=obj[23] %><%=obj[24]%></span>
+													</td>
+													<td class="text-center" rowspan="1">
+													<%	String actionstatus = obj[15].toString();
+															LocalDate pdcorg = LocalDate.parse(obj[9].toString());
+															LocalDate enddate = LocalDate.parse(obj[17].toString());
+															LocalDate lastdate = obj[20]!=null ? LocalDate.parse(obj[20].toString()): null;
+															LocalDate today = LocalDate.now();
+															int progress = obj[18]!=null ? Integer.parseInt(obj[18].toString()) : 0;
+														%> 
+															<% if(lastdate!=null && actionstatus.equalsIgnoreCase("C") ){%>
+																<%if(actionstatus.equals("C") && (pdcorg.isAfter(lastdate) || pdcorg.equals(lastdate))){%>
+																<span class="completed"><%= sdf.format(sdf1.parse(obj[20].toString()))%> </span>
+																<%}else if(actionstatus.equals("C") && pdcorg.isBefore(lastdate)){ %>	
+																<span class="completeddelay"><%= sdf.format(sdf1.parse(obj[20].toString()))%> </span>
+																<%} %>	
+															<%}else{ %>
+																-									
+															<%} %>
+															<br>
+													
+													
+														<%if(!pdcorg.equals(enddate)) {%>
+														<%=sdf.format(sdf1.parse(obj[17].toString()))%>
+														<%} %>
+														
+														<%=sdf.format(sdf1.parse(obj[9].toString()))%>
+													</td>
+													
+
+																
+													<td rowspan="1"  ><%=obj[7] %>, <%=obj[8] %></td>	
+													<td class="text-center" rowspan="1">
+															
+														<% if(lastdate!=null && actionstatus.equalsIgnoreCase("C") ){ %>
+															<%if(actionstatus.equals("C") && (pdcorg.isAfter(lastdate) || pdcorg.equals(lastdate))){%>
+																<span class="completed">CO</span>
+															<%}else if(actionstatus.equals("C") && pdcorg.isBefore(lastdate)){ %>	
+																<span class="completeddelay">CD (<%= ChronoUnit.DAYS.between(pdcorg, lastdate) %>) </span>
+															<%} %>	
+														<%}else{ %>
+															<%if(actionstatus.equals("F")  && (pdcorg.isAfter(lastdate) || pdcorg.isEqual(lastdate) )){ %>
+																<span class="ongoing">RC</span>												
+															<%}else if(actionstatus.equals("F")  && pdcorg.isBefore(lastdate)) { %>
+																<span class="delay">FD</span>
+															<%}else if(actionstatus.equals("A") && progress==0){  %>
+																<span class="assigned">
+																	AA <%if(pdcorg.isBefore(today)){ %> (<%= ChronoUnit.DAYS.between(pdcorg, today)  %>) <%} %>
+																</span>
+															<%} else if(pdcorg.isAfter(today) || pdcorg.isEqual(today)){  %>
+																<span class="ongoing">OG</span>
+															<%}else if(pdcorg.isBefore(today)){  %>
+																<span class="delay">DO (<%= ChronoUnit.DAYS.between(pdcorg, today)  %>)  </span>
+															<%} %>					
+																							
+														<%} %>
+														
+																	
+													</td>
+													<td class="text-justify" rowspan="1" ><%if(obj[19]!=null){ %> <%= StringEscapeUtils.escapeHtml4(obj[19].toString()) %><%} %></td>
+														
+												</tr>	
+												
+																
+												<tr>
+													<td class="text-center" ><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):"" %></td>
+													<td class="text-center" > <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):"" %></td>
+													<td class="text-center">
+														<%=obj[22]%>
+														<% int RPN =Integer.parseInt(obj[22].toString());
+																if(RPN>=1 && RPN<=25){ %>(Low)
+																<%}else if(RPN>=26 && RPN<=50){ %>(Medium)
+																<%}else if(RPN>=51 && RPN<=75){ %>(High)
+																<%}else if(RPN>=76){ %>(Very High)
+																<%} %>
+													</td>
+													<td class="text-justify" colspan="3" ><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()):"" %></td>
+													<td class="text-justify" colspan="2" ><%=obj[21]!=null?StringEscapeUtils.escapeHtml4(obj[21].toString()):"" %></td>
+												</tr>
+															
+												<%if(riskmatirxdata.get(z).size() > i){ %>
+													<tr>
+														<td colspan="9" class="color-transparent">.</td>
+													</tr>
+												<%} %>	
+												<%}%>
+										</tbody>		
+									</table>
+							
+							
+							<%}else{%>
+								Nil
+							<%} %>					
+					</div>
+				</details>		
+			<% } %>
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
 				 
 						<details>
@@ -1449,9 +1838,11 @@ String isCCS = (String)request.getAttribute("isCCS");
 								
 								<table class="subtables tbl-sub-copy"  >
 										<thead>
+										<%if(procurementOnDemand.get(z)!=null &&  procurementOnDemand.get(z).size()>0){ %>
 										<tr>
 											<th colspan="11" class="text-right"> <span class="currency" >(In &#8377; Lakhs)</span></th>
 										</tr>
+										
 										 <tr>
 										 	<th colspan="11" class="std">Demand Details ( > &#8377; <% if (projectdatadetails.get(0) != null && projectdatadetails.get(0)[13] != null) { %>
 													<%=projectdatadetails.get(0)[13].toString().replaceAll("\\.\\d+$", "")%> ) <% } else { %> - )<% } %>
@@ -1497,10 +1888,12 @@ String isCCS = (String)request.getAttribute("isCCS");
 										    
 										    <% }else{%>											
 												<tr><td colspan="11" class="std border1px text-center" >Nil </td></tr>
-											<%} %>
+											<%}} %>
 											<!-- ********************************Future Demand Start *********************************** -->
+											
+											<%--
 											<tr>
-											<th class="std border1px" colspan="11" ><span class="mainsubtitle">Future Demand</span></th>
+												 <th class="std border1px" colspan="11" ><span class="mainsubtitle">Future Demand</span></th>
 											</tr>
 											<tr>
 												 <th class="std border1px width15 text-center">SN</th>
@@ -1535,10 +1928,10 @@ String isCCS = (String)request.getAttribute("isCCS");
 										    
 										    <% }else{%>											
 												<tr><td colspan="11"  class="std border1px text-center" >Nil </td></tr>
-											<%} %>
+											<%} %> --%>
 											
 									<!-- ********************************Future Demand End *********************************** -->
-											
+											<%if(procurementOnSanction.get(z)!=null && procurementOnSanction.get(z).size()>0){ %>
 											 <tr >
 											 
 												<th  class="std"  colspan="11">Orders Placed ( > &#8377; <% if (projectdatadetails.get(0) != null && projectdatadetails.get(0)[13] != null) { %>
@@ -1633,7 +2026,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 										 <% }else{%>
 											
 												<tr><td colspan="8" class="std border1px text-center" >Nil </td></tr>
-											<%} %>
+											<%}} %>
 									</table> 
 								<div align="right" class="width980"> <span class="currency font-weight-bold" >(In &#8377; Lakhs)</span></div>
 								<table class="subtables tb-sub"  >
@@ -1874,7 +2267,87 @@ String isCCS = (String)request.getAttribute("isCCS");
 						<details>
    						<summary role="button" tabindex="0"><b>8. Overall Financial Status  <i class="text-underline">(&#8377; Crore)</i> </b> </summary>
    						
-											  	<div class="content">
+   						<%if(lastmeetingVenue!=null && lastmeetingVenue[0]!=null){%>
+   							
+   							<div class="content">
+   								<%for(int z=0;z<projectidlist.size();z++){ 
+		                		BigDecimal allotment = BigDecimal.ZERO, sanction = BigDecimal.ZERO,
+		                				balance = BigDecimal.ZERO, oustanding = BigDecimal.ZERO, exp = BigDecimal.ZERO, inr = BigDecimal.ZERO, fe = BigDecimal.ZERO ;
+				                int sn = 1;
+						  	%>
+						  	<%if(ProjectDetail.size()>1){ %>
+								<div>
+									<b>Project : <%=ProjectDetail.get(z)[1] %> 	<%if(z!=0){ %>(SUB)<%} %>	</b>
+								</div>	
+							<%} %>
+							<br>				 
+							  	<table  class="subtables width1100" style="margin-bottom:20px!important; ">
+							  		<thead>
+								  		<tr>
+								  			<th>Category No</th>
+								  			<th>Category Name</th>
+								  			<th>Allotment</th>
+								  			<th>Sanction</th>
+								  			<th>Balance</th>
+								  			<th>SO Value</th>
+								  			<th>Expenditure</th>
+								  			<th>INR </th>
+								  			<th>FE </th>
+								  			<th colspan="1" class="text-center border-0">
+					                          	<button data-toggle="tooltip" onclick ="showModal(<%=projectid %>,'<%=ProjectDetail.get(z)[0] %>','<%=ProjectDetail.get(z)[1] %>')" class="btn btn-sm cursor-pointer"   type="button"  data-toggle="tooltip" data-placement="right"  title="Upload Overall Finance"  ><i class="fa fa-file-excel-o bg-success" aria-hidden="true" ></i>&nbsp;Excel Upload</button>
+						                       	<jsp:include page="../print/OverallExcelUploadPgad.jsp"></jsp:include> 
+				                          	</th>
+								  		</tr>
+							  		</thead>
+							  		<tbody>
+							  			<%if(briefingFinanceDetials!=null && !briefingFinanceDetials.isEmpty()){
+							  				for(BriefingFinance finance : briefingFinanceDetials){
+							  					allotment = allotment.add(finance.getAllotment());
+							  					sanction = sanction.add(finance.getSanction());
+							  					balance = balance.add(finance.getBalance());
+							  					oustanding = oustanding.add(finance.getOutStanding());
+							  					exp = exp.add(finance.getExpenditure());
+							  					inr = inr.add(finance.getInr());
+							  					fe = fe.add(finance.getFe());
+							  					
+							  				%>
+							  				<tr>
+							  					<td class="text-center" ><%=sn++ %></td>
+							  					<td class="text-start" ><%=finance.getCategoryName() %></td>
+							  					<td style="text-align:right!important;"><%=df.format(finance.getAllotment()) %></td>
+							  					<td style="text-align:right!important;"><%=df.format(finance.getSanction()) %></td>
+							  					<td style="text-align:right!important;"><%=df.format(finance.getBalance()) %></td>
+							  					<td style="text-align:right!important;"><%=df.format(finance.getOutStanding()) %></td>
+							  					<td style="text-align:right!important;"><%=df.format(finance.getExpenditure()) %></td>
+							  					<td style="text-align:right!important;" ><%=df.format(finance.getInr()) %></td>
+							  					<td style="text-align:right!important;" ><%=df.format(finance.getFe()) %></td>
+							  				</tr>
+							  			<%}}else{ %>
+							  				<tr>
+							  					<td colspan="9" class="text-center">No Data Availabe</td>
+							  				</tr>
+							  			<%} %>
+							  			
+							  			<tr>
+							  				<td colspan="2" class="text-center" >Total:</td>
+							  				<td style="text-align:right!important;"><%= df.format(allotment)%></td>
+							  				<td style="text-align:right!important;"><%=df.format(sanction) %></td>
+							  				<td style="text-align:right!important;"><%=df.format(balance) %></td>
+							  				<td style="text-align:right!important;"><%=df.format(oustanding) %></td>
+							  				<td style="text-align:right!important;"><%=df.format(exp) %></td>
+							  				<td style="text-align:right!important;"><%=df.format(inr) %></td>
+							  				<td style="text-align:right!important;"><%=df.format(fe) %></td>
+							  			</tr>
+							  		</tbody>
+							  	</table>
+   						
+								
+								<%}}else{ %>
+										<h5>Meeting is Not Scheduled!</h5>
+								<br><br><br><br><br>
+								<%} %>
+   						
+										<%-- 	  	<div class="content">
 						  	<%for(int z=0;z<projectidlist.size();z++){ 
 		                		double totSanctionCost=0,totReSanctionCost=0,totFESanctionCost=0;
 			                	double totExpenditure=0,totREExpenditure=0,totFEExpenditure=0;
@@ -2070,8 +2543,8 @@ String isCCS = (String)request.getAttribute("isCCS");
 							<%} %>
 							
 							</div> 	
-						
-						</details>
+					 --%>	
+						 </details>
 	
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
 						
@@ -2091,7 +2564,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 							<%} %>
 					
 					
-				<table class="subtables table-subtables">
+				<%-- <table class="subtables table-subtables">
 				
 				
 						<thead>
@@ -2264,7 +2737,96 @@ String isCCS = (String)request.getAttribute("isCCS");
 								
 							</table>
 		
-		
+		 --%>
+		 
+		 						<%if(lastmeetingVenue!=null && lastmeetingVenue[0]!=null){
+						
+									List<Object[]> list = milestoneBriefingMap!=null ? milestoneBriefingMap.get("9") : new ArrayList<>();
+								%>
+			
+								<form action="MilestoneActivityAddBriefingPaper.htm" method="post" id="milestoneBrefingDetails9">
+									<div class="row mt-4"align="center" >
+										<div class="row w-100 div-margin">
+											<div class="col-md-4">
+												<table class="table table-bordered table-hover table-striped table-condensed ">
+													<thead>
+														<tr>
+															<th>SN</th>
+															<th>Details</th>
+															<th>Action</th>
+														</tr>
+													</thead>
+													<tbody>
+														<%
+														if(list!=null && !list.isEmpty()){
+														int num = 1;
+														for(Object[] obj: list){ %>
+															<tr>
+																<td class="text-center width-5"><%= num++ %></td>
+																<%-- <%String pointdata = obj[2]!=null ? obj[2].toString() : " - "; %>
+																<td>
+																	<%if(pointdata.length()>30){%> <%=pointdata.substring(0,30)%>  <span onclick="MileStoneModal('<%=obj[0]%>')" class="color1176ab"><b> ...View More </b></span> <%}else{%> <%=pointdata%><%}%>
+																</td> --%>
+																<%
+																String raw = obj[2] != null ? obj[2].toString() : "-";
+																String plainText = raw.replaceAll("<[^>]*>", ""); // remove HTML tags
+																%>
+																
+																<td>
+																<% if(plainText.length() > 30){ %>
+																    <%= plainText.substring(0,30) %>
+																    <span onclick="MileStoneModal('<%=obj[0]%>')" class="color1176ab">
+																        <b> ...View More </b>
+																    </span>
+																<% } else { %>
+																    <%= plainText %>
+																<% } %>
+																</td>
+																<td class="text-center width-5"> 
+																	<button class="btn btn-warning btn-sm" type="button" onclick="milestoneEditPoint('<%=obj[0]%>','9' )" value="EDIT"  > <i class="fa fa-pencil-square-o color100f0e"  aria-hidden="true"></i></button>
+																	<button class="btn btn-sm btn-danger" type="button" onclick="milestoneActivityBriefingDelete('<%=obj[0]%>')" ><i class="fa fa-trash text-white" aria-hidden="true" ></i></button>
+																</td>
+															</tr>
+														<%}}else{ %>
+															<tr>
+																<td class="text-center" colspan="3">No Data Available</td>
+															</tr>
+														<%} %>
+													</tbody>
+												</table>
+												<button type="button" onclick="milestoneEditPoint('0','9');" class="btn btn-sm add ">Add</button>
+											</div>
+											<div class="col-md-8">
+												<textarea class="form-control" name="mileStonePoints" id="ckeditor9" rows="5" cols="50" maxlength="5"></textarea>
+												<!-- <input type="submit" value="Submit" class="btn btn-sm submit" style="margin-top:15px;margin-bottom:10px;" name="submit" onclick="return submitMileStoneActivity(this)"> -->
+												<div align="center">
+													<input type="hidden" name="MileStoneActivityBriefingId" id="MileStoneActivityBriefingId9">
+													<input type="hidden" name="scheduleid" value="<%=lastmeetingVenue[0]%>">
+													<button type="button"  class="btn btn-primary btn-sm add margin-top10"  onclick="return checkDataForMilestone('milestoneBrefingDetails9','9')">Submit </button>
+													<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+													<input type="hidden" name="projectid" value="<%=projectid%>"/>
+													<input type="hidden" name="committeeid" value="<%=committeeid%>"/>
+													<input type="hidden" name="briefingPointId" value="9"  />
+												</div>
+											</div>	
+										</div>
+									</div>
+								</form>
+								<form action="DeleteMilestoneActivityBriefing.htm" method="get" id="MileStoneActivityBriefingDelete">
+									<div align="center">
+										<input type="hidden" name="MileStoneActivityBriefingDeleteId" id="MileStoneActivityBriefingDeleteId">
+										<input type="hidden" name="scheduleid" value="<%=lastmeetingVenue[0]%>">
+										<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+										<input type="hidden" name="projectid" value="<%=projectid%>"/>
+										<input type="hidden" name="committeeid" value="<%=committeeid%>"/>
+										<input type="hidden" name="briefingPointId" value="9"  />
+									</div>
+								</form>
+								<%}else{ %>
+										<h5>Meeting is Not Scheduled!</h5>
+								<br><br><br><br><br>
+								<%} %>
+								<br><br>
 						<%} %>
 						</div>
 					
@@ -2597,7 +3159,7 @@ String isCCS = (String)request.getAttribute("isCCS");
    						
 						  <div class="content">
 						  
-						  <%if(nextMeetVenue!=null && nextMeetVenue[0]!=null){%>
+						  <%if(lastmeetingVenue!=null && lastmeetingVenue[0]!=null){%>
 						  
 						  	<form action="RecDecDetailsAdd.htm" method="post" id="recdecdetails">
 								<div class="row margin-top10" >
@@ -2607,7 +3169,11 @@ String isCCS = (String)request.getAttribute("isCCS");
 												<tr><th class="width-5">SN</th><th class="width-80">Type</th><th class="width-5">Action</th></tr>
 											</thead>
 											<tbody>
-											<%int i=0; if(RecDecDetails!=null && RecDecDetails.size()>0){ 
+											<%
+											if(RecDecDetails!=null){
+												Collections.reverse(RecDecDetails);
+											}
+											int i=0; if(RecDecDetails!=null && RecDecDetails.size()>0){ 
 												for(Object[] obj :RecDecDetails){
 												String pointdata= "";
 												if(obj[3].toString().length()>30){
@@ -2654,7 +3220,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 										    <textarea class="form-control" name="RecDecPoints" id="ckeditor1" rows="5" cols="20" maxlength="5"  required="required"></textarea>
 											<div align="center">
 												<input type="hidden" name="RedDecID" id="recdecid">
-												<input type="hidden" name="schedulid" value="<%=nextMeetVenue[0]%>">
+												<input type="hidden" name="schedulid" value="<%=lastmeetingVenue[0]%>">
 												<button type="button"  class="btn btn-primary btn-sm add margin-top10"  onclick="return checkData('recdecdetails')">Submit </button>
 												<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 												<input type="hidden" name="projectid" value="<%=projectid%>"/>
@@ -3974,6 +4540,9 @@ var editor_config = {
 	
 CKEDITOR.replace('ckeditor', editor_config );
 CKEDITOR.replace('ckeditor1', editor_config );
+CKEDITOR.replace('ckeditor5', editor_config );
+CKEDITOR.replace('ckeditor6', editor_config );
+CKEDITOR.replace('ckeditor9', editor_config );
 
 $(document).ready(function() {
 	var locked=0;
@@ -4043,6 +4612,7 @@ function RecDecEdit(recdescid ){
 	 }
 }
 
+
 function RecDecmodal(recdescid)
 {
 	$.ajax({
@@ -4066,6 +4636,26 @@ function RecDecmodal(recdescid)
 	});
 	
 }
+
+
+function MileStoneModal(milestoneid)
+{
+	$.ajax({
+			type : "GET",
+			url : "GetMilestoneBriefingData.htm",
+			data : {
+				milestoneid : milestoneid,
+			},
+			datatype : 'json',
+			success : function(result) {
+				var result = JSON.parse(result);
+				$("#val1").html("Milestone Activity Points");
+				$("#recdecdata").html(result[2]);
+				$('#recdecmodel').modal('toggle');
+			}
+	});
+	
+}
 function checkData(formid)
 {
 	var recdec = CKEDITOR.instances['ckeditor1'].getData(); 
@@ -4080,6 +4670,19 @@ function checkData(formid)
 				return true;
 			}
 		}
+	}else{
+		alert("Fill all the details!");
+		return false;
+	}
+	
+}
+function checkDataForMilestone(formid,count)
+{
+	var recdec = CKEDITOR.instances['ckeditor'+count].getData(); 
+
+	if(recdec && confirm("Are you sure to submit!")){
+		document.getElementById(formid).submit();
+		return true;
 	}else{
 		alert("Fill all the details!");
 		return false;
@@ -4263,5 +4866,47 @@ function removeFileAttch(projectId,techDataId,techAttachId) {
         }
     });
 }
+
+function submitMileStoneActivity(event){
+	event.preventDefault();
+	return false;
+}
+
+
+function milestoneEditPoint(milestoneid,count ){
+	
+	 if(milestoneid=='0'){
+		     CKEDITOR.instances['ckeditor'+count].setData("");
+			 $("#MileStoneActivityBriefingId"+count).val("");
+	 }else{
+			$.ajax({
+				type : "GET",
+				url : "GetMilestoneBriefingData.htm",
+				data : {
+					milestoneid : milestoneid,
+				},
+				datatype : 'json',
+				success : function(result){
+					var result = JSON.parse(result);
+					var points = result[2];
+					
+					$("#MileStoneActivityBriefingId"+count).val(result[0]);
+					CKEDITOR.instances['ckeditor'+count].setData(points);
+				}
+			});
+	 }
+}
+
+
+function milestoneActivityBriefingDelete(a){
+	$('#MileStoneActivityBriefingDeleteId').val(a);
+	if(confirm("Are you sure,you want to remove?")){
+	$('#MileStoneActivityBriefingDelete').submit();
+	}else{
+		event.preventDefault();
+		return false;
+	}
+}
+
 </script>
 </body>

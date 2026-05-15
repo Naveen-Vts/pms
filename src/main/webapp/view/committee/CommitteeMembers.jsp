@@ -856,7 +856,7 @@ String logintype = (String)session.getAttribute("LoginType");
 														for (Object[] obj : committeeMemberreplist) {
 													%>
 													<tr id="repmem<%=obj[0]!=null?StringEscapeUtils.escapeHtml4(obj[0].toString()): " - " %>">
-														<td><sp> <%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - "%> </sp></td>
+														<td><span> <%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - "%> </span></td>
 														<td>
 															<%if(status.equals("A") || (status.equals("P") && (approvaldata[5].toString().equals("RTDO") || approvaldata[5].toString().equals("CCR"))) ){ %>
 															<button class="fa fa-trash btn btn-danger bg-white border border-white" type="button" onclick="memberrepdelete('<%=obj[0] %>');" ></button>

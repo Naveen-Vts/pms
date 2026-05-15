@@ -53,7 +53,7 @@
 	String lablogo=(String)request.getAttribute("lablogo");
 	/* String committeeid1=committeescheduleeditdata[0].toString(); */
 	/* newly Added  */
-	  SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+	  SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy",Locale.ENGLISH);
       SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
       String todayDate=outputFormat.format(new Date()).toString();
     /* ------- */
@@ -809,12 +809,19 @@ for( Object[]obj:specialMembers){ %>
 											<%if(lastpmrcactions.size()==0){ %>
 								<tr><td colspan="7"  style="text-align: center;" > Nil</td></tr>
 								<%}
-								else if(lastpmrcactions.size()>0)
-								{int i=1;String key="";
-								for(Object[] obj:lastpmrcactions ){ %>
+								else if(lastpmrcactions.size()>0){
+								Map<String,List<Object[]>> list = lastpmrcactions!=null ? lastpmrcactions.stream()
+										.collect(Collectors.groupingBy(array -> array[0].toString(), LinkedHashMap::new,Collectors.toList())) : new HashMap<>();
+							int i = 1;String key="";
+							for(Map.Entry<String, List<Object[]>> map : list.entrySet()){
+								int j=1;
+								List<Object[]> values = map.getValue();
+								int rowSpan = values.size();
+								for (Object[] obj : values) {
+								%>
 								<tr>
 									<td  class="std"  align="center"><%=i %></td>
-									<td class="std"  align="center">	
+									<td class="std"  align="center">
 								<!--newly added on 13th sept  -->	
 								<%if(obj[17]!=null && Long.parseLong(obj[17].toString())>0){ %>
 								<%if(committeescheduleeditdata[8].toString().equalsIgnoreCase("pmrc")){ %>
@@ -837,7 +844,7 @@ for( Object[]obj:specialMembers){ %>
 							<span style="font-size: 14px;">	<%=committeescheduleeditdata[8]!=null?committeescheduleeditdata[8].toString().toUpperCase():" - "%> <%=key%>/<%=obj[1]!=null?obj[1].toString().split("/")[4]:" - " %></span>
 								<%}%> 
 								</td>
-									<td class="std"   style="text-align: justify ;"><%=obj[2] %></td>
+								<%if(j++==1){ %><td rowspan="<%=rowSpan%>" class="std" style="text-align: left;"> <%=obj[2].toString()%> </td> <%} %>
 													<td class="std" style="text-align: center;">
 									<%	String actionstatus = obj[9].toString();
 										int progress = obj[15]!=null ? Integer.parseInt(obj[15].toString()) : 0;
@@ -872,7 +879,7 @@ for( Object[]obj:specialMembers){ %>
 	
 								</tr>			
 							<%i++;
-							}} %>
+							}}} %>
 							</tbody>
 								</tbody>
 								</table>			
@@ -948,7 +955,7 @@ for( Object[]obj:specialMembers){ %>
 									count++;%>
 									<tr>
 										<td style="text-align: justify;padding-left: 30px">
-											<%=speclist[1]!=null?speclist[10].toString(): " - "%> 
+											<%=speclist[1]!=null?speclist[1].toString(): " - "%> 
 										</td>	
 									</tr>					
 								<%}

@@ -19,6 +19,7 @@ import com.vts.pfms.milestone.model.FileRepNew;
 import com.vts.pfms.milestone.model.FileRepUploadNew;
 import com.vts.pfms.milestone.model.FileRepUploadPreProject;
 import com.vts.pfms.milestone.model.MilestoneActivity;
+import com.vts.pfms.milestone.model.MilestoneActivityBriefing;
 import com.vts.pfms.milestone.model.MilestoneActivityLevel;
 import com.vts.pfms.milestone.model.MilestoneActivityLevelRemarks;
 import com.vts.pfms.milestone.model.MilestoneActivityPredecessor;
@@ -152,4 +153,9 @@ public interface MilestoneService {
 	public long saveMilestoneSub(MilestoneActivitySub attach)throws Exception;
 	public Object[] getprojectDetails(String projectId)throws Exception;
 	public Object[] getFileRepUploadDetails(String projectId)throws Exception;
+	
+	// Naveen R 05-03-2026
+	public long saveMilestoneActivityBriefing(MilestoneActivityBriefing entity) throws Exception ;
+	public MilestoneActivityBriefing getMilestoneActivityBriefing(String mileStoneActivityBriefingId) throws Exception ;
+	public Object[] getMilestoneActivityBriefingById(String recdecid) throws Exception ;
 }

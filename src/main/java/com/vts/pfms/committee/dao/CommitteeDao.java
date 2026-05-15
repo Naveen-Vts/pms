@@ -364,19 +364,23 @@ public interface CommitteeDao {
 	public CommitteeCARS getCommitteeCARSById(String comCARSInitiationId) throws Exception;
 	public Long addCommitteeCARS(CommitteeCARS committeeCARS) throws Exception;
 //	---------------------------------- Naveen R 3/9/25 MOM Check ------------------------------------------
-	public List<Object[]> CommitteeScheduleMinutesforAction(String committeescheduleid);
-	public Long addRepresentative(CommitteeRepresentative rep);
-	public CommitteeRepresentative getRepresentativeById(String repId);
-	public Long getRepNameDuplicateCount(String repName);
-	public Long getRepCodeDuplicateCount(String repCode);
-	public List<Object[]> getAircraftList(String committeeScheduleId);
-	public List<Object[]> getSubSystemList(String committeeScheduleId);
-	public Long addAircraft(CommitteeAircraft aircraft);
-	public CommitteeAircraft getAircraftById(String aircraftId);
-	public Long addSubSystem(CommitteeSubSystem sub);
-	public CommitteeSubSystem getSubSystemById(String subsystemId);
-	public List<Object[]> committeeScheduleMinutesforActionForMomADE(String committeescheduleid);
-	public Object[] CommitteeScheduleEditDataforMom(String committeescheduleid);
-	public List<Object[]> PrgmAgendaList(String CommitteeScheduleId);
+	public List<Object[]> CommitteeScheduleMinutesforAction(String committeescheduleid) throws Exception;
+	public Long addRepresentative(CommitteeRepresentative rep) throws Exception;
+	public CommitteeRepresentative getRepresentativeById(String repId) throws Exception;
+	public Long getRepNameDuplicateCount(String repName) throws Exception;
+	public Long getRepCodeDuplicateCount(String repCode) throws Exception;
+	public List<Object[]> getAircraftList(String committeeScheduleId) throws Exception;
+	public List<Object[]> getSubSystemList(String committeeScheduleId) throws Exception;
+	public Long addAircraft(CommitteeAircraft aircraft) throws Exception;
+	public CommitteeAircraft getAircraftById(String aircraftId) throws Exception;
+	public Long addSubSystem(CommitteeSubSystem sub) throws Exception;
+	public CommitteeSubSystem getSubSystemById(String subsystemId) throws Exception;
+	public List<Object[]> committeeScheduleMinutesforActionForMomADE(String committeescheduleid) throws Exception;
+	public Object[] CommitteeScheduleEditDataforMom(String committeescheduleid) throws Exception;
+	public List<Object[]> PrgmAgendaList(String CommitteeScheduleId) throws Exception;
+
+	// Naveen R 05-03-2026 
+	public List<Object[]> getMeetingCountList(String committeeId) throws Exception;
+	public List<Object[]> CommitteeScheduleMinutesMom(String committeescheduleid) throws Exception;
 
 }

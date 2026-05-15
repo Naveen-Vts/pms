@@ -331,7 +331,7 @@
 							<tr>
 
 								<td class="text-center"><%=count%></td>
-								<td><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - " %></td>
+								<td><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - " %><%= obj[15]!=null && !obj[15].toString().isEmpty()? "  ("+ StringEscapeUtils.escapeHtml4(obj[15].toString())+")":"" %></td>
 								<%-- <td><%=obj[4] %>  </td>									
 									<td><%=obj[6] %></td> --%>
 								<td><%=obj[10]!=null?StringEscapeUtils.escapeHtml4(obj[10].toString()): " - "%>,  <%=obj[11]!=null?StringEscapeUtils.escapeHtml4(obj[11].toString()): " - " %></td>
@@ -577,7 +577,7 @@
 							<button class="btn btn-sm agp-32"   onclick="ActionDetails( <%=obj[0] %>);" ><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - " %> </button>		
 								</td>
 								<td class="std agp-33" >
-									<%=obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()): " - "%>
+									<%=obj[5]!=null?obj[5].toString(): " - "%>
 								</td>
 								<td class="std tetx-center"><%=sdf.format(sdf1.parse(StringEscapeUtils.escapeHtml4(obj[10].toString()))) %></td>
 								<td class="std .agp-34" ><%=obj[13]!=null?StringEscapeUtils.escapeHtml4(obj[13].toString()): " - " %></td>
@@ -686,7 +686,7 @@
 													<button class="btn btn-sm agp-32"    onclick="ActionDetails( <%=obj[0] %>);" ><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - " %> </button>		
 												</td>
 												<td class="std agp-33" >
-													<%=obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()): " - "%>
+													<%=obj[5]!=null?obj[5].toString(): " - "%>
 												</td>
 												<td class="std agp-34" ><%=sdf.format(sdf1.parse(StringEscapeUtils.escapeHtml4(obj[10].toString()))) %></td>
 												<td class="std agp-34" ><%=obj[13]!=null?StringEscapeUtils.escapeHtml4(obj[13].toString()): " - " %></td>
@@ -788,7 +788,7 @@
 													<button class="btn btn-sm agp-31"   onclick="ActionDetails( <%=obj[0] %>);" ><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - " %> </button>		
 												</td>
 												<td class="std agp-33" >
-													<%=obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()): " - " %>
+													<%=obj[5]!=null?obj[5].toString(): " - " %>
 												</td>
 												<td class="std"><%=sdf.format(sdf1.parse(obj[10].toString())) %></td>
 												<td class="std agp-34"><%=obj[13]!=null?StringEscapeUtils.escapeHtml4(obj[13].toString()): " - " %></td>
@@ -897,7 +897,7 @@
 												<button class="btn btn-sm agp-32"  onclick="ActionDetails( <%=obj[0] %>);" ><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - " %> </button>		
 											</td>
 											<td class="std agp-33" >
-												<%=obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()): " - "%>
+												<%=obj[5]!=null?obj[5].toString(): " - "%>
 											</td>
 											<td class="std agp-34" ><%=sdf.format(sdf1.parse(StringEscapeUtils.escapeHtml4(obj[10].toString()))) %></td>
 											<td class="std agp-34" ><%=obj[13]!=null?StringEscapeUtils.escapeHtml4(obj[13].toString()): " - " %></td>
@@ -996,7 +996,7 @@
 												<button class="btn btn-sm agp-31"   onclick="ActionDetails( <%=obj[0] %>);" ><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - " %> </button>		
 											</td>
 											<td class="std agp-33" >
-												<%=obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()): " - " %>
+												<%=obj[5]!=null?obj[5].toString(): " - " %>
 											</td>
 											<td class="std"><%=sdf.format(sdf1.parse(obj[10].toString())) %></td>
 											<td class="std agp-34" ><%=obj[13]!=null?StringEscapeUtils.escapeHtml4(obj[13].toString()): " - " %></td>
@@ -1104,7 +1104,7 @@
 							<button class="btn btn-sm agp-31"   onclick="ActionDetails( <%=obj[0] %>);" ><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - " %> </button>		
 								</td>
 								<td class="std agp-33" >
-									<%=obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()): " - " %>
+									<%=obj[5]!=null?obj[5].toString(): " - " %>
 								</td>
 								<td class="std"><%=sdf.format(sdf1.parse(obj[10].toString())) %></td>
 								<td class="std agp-34" ><%=obj[13]!=null?StringEscapeUtils.escapeHtml4(obj[13].toString()): " - " %></td>
@@ -1218,7 +1218,7 @@
 							<button class="btn btn-sm agp-32"  onclick="ActionDetails( <%=obj[0] %>);" ><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - " %> </button>		
 								</td>
 								<td class="std agp-33" >
-									<%=obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()): " - " %>
+									<%=obj[5]!=null?obj[5].toString(): " - " %>
 								</td>
 								<td class="std"><%=sdf.format(sdf1.parse(obj[10].toString())) %></td>
 								<td class="std agp-34"><%=obj[13]!=null?StringEscapeUtils.escapeHtml4(obj[13].toString()): " - " %></td>
@@ -1337,7 +1337,7 @@
 							<button class="btn btn-sm agp-32"   onclick="ActionDetails( <%=obj[0] %>);" ><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - " %> </button>		
 								</td>
 								<td class="std agp-33" >
-									<%=obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()): " - " %>
+									<%=obj[5]!=null?obj[5].toString(): " - " %>
 								</td>
 								<td class="std"><%=sdf.format(sdf1.parse(obj[10].toString())) %></td>
 								<td class="std agp-34" ><%=obj[13]!=null?StringEscapeUtils.escapeHtml4(obj[13].toString()): " - " %></td>

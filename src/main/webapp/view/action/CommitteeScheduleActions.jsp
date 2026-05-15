@@ -36,7 +36,6 @@ String labcode = (String)request.getAttribute("labcode");
 List<Object[]> Alllablist = (List<Object[]>)request.getAttribute("AllLabList");
 String projectid=committeescheduleeditdata!=null?committeescheduleeditdata[9].toString():"";
 List<Object[]> divisionList = (List<Object[]>) request.getAttribute("divisionList");
-//labcode = "PGAD";
 String GenId="GenAdd";
 String MinutesBack=null;
 MinutesBack=(String)request.getAttribute("minutesback");

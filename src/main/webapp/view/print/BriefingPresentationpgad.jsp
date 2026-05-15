@@ -120,6 +120,7 @@
 	Map<Integer,String> treeMapLevOne =(Map<Integer,String>)request.getAttribute("treeMapLevOne");
 	Map<Integer,String> treeMapLevTwo =(Map<Integer,String>)request.getAttribute("treeMapLevTwo");
 	List<Object[]> envisagedDemandlist = (List<Object[]>)request.getAttribute("envisagedDemandlist");
+	Map<String,List<Object[]>> milestoneBriefingMap = (Map<String,List<Object[]>>)request.getAttribute("milestoneBriefingMap");
 	%>
 	
 		<%
@@ -982,7 +983,7 @@ String baseUrl = scheme + "://" + serverName
 					</form>
 
 					<!-- CALL Pfms_Milestone_Level_Prior(:projectid) -->
-					<table class="subtables bp-55" >
+					<%-- <table class="subtables bp-55" >
 						<thead>
 							<tr>
 								<td colspan="10" class="border-0">
@@ -1059,7 +1060,7 @@ String baseUrl = scheme + "://" + serverName
 											<%=entry.getValue() %>
 									<%}}	
 									
-								%> <%-- B-<%=milcountB%> --%>
+								%> B-<%=milcountB%>
 								<%
 						
 								} else if (obj[21].toString().equals("3")) {
@@ -1183,7 +1184,37 @@ String baseUrl = scheme + "://" + serverName
 						<tr><td colspan="10" class="text-center">Nil</td></tr>
 						<% } %>
 					</table>
-					<div id="milestoneactivitychange"></div>
+					<div id="milestoneactivitychange"></div> --%>
+					
+					 <%
+				 List<Object[]> list = milestoneBriefingMap!=null ? milestoneBriefingMap.get("5") : new ArrayList<>();
+				 
+					 %>
+					<table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
+						<thead>
+							<tr>
+								<th style="width:5%!important;">SN</th>
+								<th style="width:95%!important" >Details</th>
+							</tr>
+						</thead>
+						<tbody>
+							<%
+							if(list!=null && !list.isEmpty()){
+							int num = 1;
+							for(Object[] obj: list){ %>
+								<tr>
+									<td class="text-center width-5"><%= num++ %></td>
+									<td>
+										<%=obj[2]!=null ? obj[2].toString() : " - " %>
+									</td>
+								</tr>
+							<%}}else{ %>
+								<tr>
+									<td style="text-align: center;" colspan="2">No Data Available</td>
+								</tr>
+							<%} %>
+						</tbody>
+					</table>
 					<% } %>
 				</div>
 			</div>
@@ -1196,7 +1227,7 @@ String baseUrl = scheme + "://" + serverName
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-						<h3>6 (a) Work Carried Out, Achievements, Test Result etc.</h3>
+						<h3>6. Work Carried Out, Achievements, Test Result etc.</h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -1210,6 +1241,7 @@ String baseUrl = scheme + "://" + serverName
 						<b>Project : <%=ProjectDetail.get(z)[1]%> <% if (z != 0) {  %>(SUB)<% }  %> </b>
 					</div>
 					<% } %>
+					<%--
 					<div align="left" class="ml-1">
 						<% if (z == 0) { %>
 						<form action="FilterMilestone.htm" method="POST">
@@ -1220,7 +1252,7 @@ String baseUrl = scheme + "://" + serverName
 						</form>
 						<% } %>
 					</div>
-					<table class="subtables bp-55" >
+					 <table class="subtables bp-55" >
 						<thead>
 							<tr>
 								<td colspan="10" class="border-0">
@@ -1282,7 +1314,7 @@ String baseUrl = scheme + "://" + serverName
 								if(entry.getKey().toString().equalsIgnoreCase(obj[2].toString())){%>
 								<%=entry.getValue() %>
 										<%}}
-								 %> <%-- A-<%=milcountA%> --%>
+								 %> A-<%=milcountA%>
 								<%
 								/* milcountA++;
 								milcountB = 1;
@@ -1294,7 +1326,7 @@ String baseUrl = scheme + "://" + serverName
 										if(entry.getKey().toString().equalsIgnoreCase(obj[3].toString())){%>
 											<%=entry.getValue() %>
 									<%}}
-								%><%--  B-<%=milcountB%> --%>
+								%> B-<%=milcountB%>
 								<%
 								/* milcountB += 1;
 								milcountC = 1;
@@ -1399,7 +1431,39 @@ String baseUrl = scheme + "://" + serverName
 						<%}%>
 					</table>
 
-					<%}%>
+					 --%>
+					 
+					 <%
+				 List<Object[]> list = milestoneBriefingMap!=null ? milestoneBriefingMap.get("6") : new ArrayList<>();
+				 
+					 %>
+					<table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
+						<thead>
+							<tr>
+								<th style="width:5%!important;">SN</th>
+								<th style="width:95%!important" >Details</th>
+							</tr>
+						</thead>
+						<tbody>
+							<%
+							if(list!=null && !list.isEmpty()){
+							int num = 1;
+							for(Object[] obj: list){ %>
+								<tr>
+									<td class="text-center width-5"><%= num++ %></td>
+									<td>
+										<%=obj[2]!=null ? obj[2].toString() : " - " %>
+									</td>
+								</tr>
+							<%}}else{ %>
+								<tr>
+									<td style="text-align: center;" colspan="2">No Data Available</td>
+								</tr>
+							<%} %>
+						</tbody>
+					</table>
+					
+					 <%}%>
 				</div>
 
 			</div>
@@ -1407,7 +1471,7 @@ String baseUrl = scheme + "://" + serverName
 			<!-- ----------------------------------------   P-6a Div ----------------------------------------------------- -->
 
 			<!-- ---------------------------------------- P-6b Div ----------------------------------------------------- -->
-
+<%-- 
 			<div class="carousel-item ">
 					<div class="content-header row ">
 					<div class="col-md-1" ><img class="bp-18"   <%if(Drdologo!=null ){ %> src="data:image/*;base64,<%=Drdologo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> ></div>
@@ -1595,7 +1659,7 @@ String baseUrl = scheme + "://" + serverName
 									<%} %>
 									<%=sdf.format(sdf1.parse(obj[9].toString()))%>
 								</td>
-								<td rowspan="1"><%=obj[7]%><%-- ,&nbsp;<%=obj[8] %> --%></td>
+								<td rowspan="1"><%=obj[7]%>,&nbsp;<%=obj[8] %></td>
 								<td class="text-center" rowspan="1">
 									<% if(lastdate!=null && actionstatus.equalsIgnoreCase("C") ){ %>
 										<%if(actionstatus.equals("C") && (pdcorg.isAfter(lastdate) || pdcorg.equals(lastdate))){%>
@@ -1660,7 +1724,7 @@ String baseUrl = scheme + "://" + serverName
 					<% } %>
 				</div>
 			</div>
-			<!-- ----------------------------------------   P-6c Div ----------------------------------------------------- -->
+			 --%><!-- ----------------------------------------   P-6c Div ----------------------------------------------------- -->
 
 			<!-- ---------------------------------------- P-7a  Details of Procurement Plan Div ----------------------------------------------------- -->
 <% int chapter=1;int chapter2=1;
@@ -2349,7 +2413,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<% } %>
 
 					<!-- CALL Pfms_Milestone_PDC_New(:projectid, :interval) -->
-					<table class="subtables bp-55" >
+					<%-- <table class="subtables bp-55" >
 						<thead>
 							<tr>
 								<td colspan="10" class="border-0">
@@ -2421,7 +2485,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 									 %> 
 									 
 									 
-									 <%-- A-<%=countA%>  --%><%
+									 A-<%=countA%> <%
 									/*  countA++;
 									 countB = 1;
 									 countC = 1;
@@ -2433,7 +2497,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 												if(entry.getKey().toString().equalsIgnoreCase(obj[3].toString())){%>
 													<%=entry.getValue() %>
 											<%}}  
-									 %> <%-- B-<%=countB%> --%> <%
+									 %> B-<%=countB%> <%
 								/* 	 countB += 1;
 									 countC = 1;
 									 countD = 1;
@@ -2473,7 +2537,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 								</td>
 																<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("ADE")) {%>
 								
-								<td><%=obj[24]%><%-- (<%=obj[25] %>) --%></td>
+								<td><%=obj[24]%>(<%=obj[25] %>)</td>
 								
 								<%} %>
 								<td class="text-center""><%=obj[16]%>%</td>
@@ -2523,6 +2587,37 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 									<td colspan="10" class="text-center">Nil</td>
 								</tr>
 							<% } %>
+						</tbody>
+					</table>
+					 --%>
+					
+					<%
+				 List<Object[]> list = milestoneBriefingMap!=null ? milestoneBriefingMap.get("9") : new ArrayList<>();
+				 
+					 %>
+					<table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
+						<thead>
+							<tr>
+								<th style="width:5%!important;">SN</th>
+								<th style="width:95%!important" >Details</th>
+							</tr>
+						</thead>
+						<tbody>
+							<%
+							if(list!=null && !list.isEmpty()){
+							int num = 1;
+							for(Object[] obj: list){ %>
+								<tr>
+									<td class="text-center width-5"><%= num++ %></td>
+									<td>
+										<%=obj[2]!=null ? obj[2].toString() : " - " %>
+									</td>
+								</tr>
+							<%}}else{ %>
+								<tr>
+									<td style="text-align: center;" colspan="2">No Data Available</td>
+								</tr>
+							<%} %>
 						</tbody>
 					</table>
 					<% } %>
@@ -2930,9 +3025,9 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="4 (b) Last <%=committee.getCommitteeShortName().trim().toUpperCase()%> Meeting action points with Probable Date of completion (PDC), Actual Date of Completion (ADC) and status"><b>4(b)</b></li>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="4 (c) Details of Technical/ User Reviews"><b>4 (c)</b></li>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="5. Milestones achieved prior to this Meeting"><b>5</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="6 (a) Work carried out, Achievements, test result etc"><b>6(a)</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="6 (b) TRL table with TRL at sanction stage and current stage indicating overall PRI"><b>6(b)</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="6 (c) Risk Matrix/Management Plan/Status."><b>6 (c)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="6 Work carried out, Achievements, test result etc"><b>6</b></li>
+<%-- 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="6 (b) TRL table with TRL at sanction stage and current stage indicating overall PRI"><b>6(b)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="6 (c) Risk Matrix/Management Plan/Status."><b>6 (c)</b></li> --%>
 			<%int chapter7a=1 ; int chapter7b=1;for (int z = 0; z < projectidlist.size(); z++) {%>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="7 (a<%if(projectidlist.size()>1) {%><%="."+chapter7a%><%} %>) Details of Procurement Plan (<%=ProjectDetail.get(z)[1]%>)"><b>7(a<%if(projectidlist.size()>1) {%><%="."+chapter7a++%><%} %>)</b></li>
 			

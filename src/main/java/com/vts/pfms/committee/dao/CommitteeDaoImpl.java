@@ -84,8 +84,10 @@ public class CommitteeDaoImpl  implements CommitteeDao
 	private static final String PROJECTLIST="SELECT projectid,projectmainid,projectcode,projectname,ProjectShortName FROM project_master WHERE isactive=1 and labcode=:labcode";
 	//private static final String AGENDALIST = "SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,b.projectname,b.projectid,a.remarks,b.projectcode,a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.title,' '),''), j.empname) as 'empname' ,h.designation,a.duration,j.desigid, a.PresentorLabCode  FROM project_master b,employee j,employee_desig h,committee_schedules_agenda a  WHERE a.projectid=b.projectid AND a.scheduleid=:committeescheduleid AND a.isactive=1 AND a.projectid<>0 AND a.presenterid=j.empid AND j.desigid=h.desigid  UNION   SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,cs.labcode AS 'projectname' , '0' AS projectid,a.remarks,'' AS projectcode,a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.title,' '),''), j.empname) as 'empname' ,h.designation,a.duration,j.desigid, a.PresentorLabCode  FROM employee j,employee_desig h, committee_schedules_agenda a, committee_schedule cs   WHERE a.scheduleid=:committeescheduleid AND a.scheduleid=cs.scheduleid  AND a.isactive=1 AND a.projectid=0 AND a.presenterid=j.empid AND j.desigid=h.desigid ORDER BY 9   ";
 	private static final String COMMITTEESPECLIST="SELECT a.minutesid,a.scheduleminutesid,a.schedulesubid,a.minutessubid,a.minutessubofsubid,a.details,a.scheduleid,a.idarck,b.outcomename, a.agendasubhead FROM committee_schedules_minutes_details a,committee_schedules_minutes_outcome b WHERE a.idarck=b.idarck and a.scheduleid=:scheduleid ORDER BY scheduleminutesid;";
-	private static final String COMMITTEEMINUTESPEC="SELECT a.minutesid,a.description,b.agendasubid,b.subdescription,c.agendaitem FROM committee_schedules_minutes a, committee_schedules_minutes_sub b,committee_schedules_agenda c WHERE minutesid=:minutesid AND agendasubid=:agendasubid AND scheduleagendaid=:scheduleagendaid  ";
-	private static final String COMMITTEEMINUTEEDIT="SELECT a.minutesid,a.details,a.scheduleid,a.scheduleminutesid,b.description,a.minutessubofsubid,a.minutessubid,c.subdescription,d.agendaitem,a.remarks,a.idarck  FROM committee_schedules_minutes_details a, committee_schedules_minutes b, committee_schedules_minutes_sub c,committee_schedules_agenda d WHERE a.minutesid=b.minutesid AND a.minutessubofsubid=c.agendasubid AND a.scheduleminutesid=:scheduleminutesid AND a.minutessubid=d.scheduleagendaid ";
+//	private static final String COMMITTEEMINUTESPEC="SELECT a.minutesid,a.description,b.agendasubid,b.subdescription,c.agendaitem FROM committee_schedules_minutes a, committee_schedules_minutes_sub b,committee_schedules_agenda c WHERE minutesid=:minutesid AND agendasubid=:agendasubid AND scheduleagendaid=:scheduleagendaid  ";
+	private static final String COMMITTEEMINUTESPEC="SELECT a.minutesid,a.description,b.agendasubid,b.subdescription,CONCAT(IFNULL(c.agendaitem, ''),CASE WHEN c.GroupName IS NOT NULL AND c.GroupName <> '' THEN CONCAT(' (', c.GroupName, ')') ELSE '' END) AS agendaItem FROM committee_schedules_minutes a, committee_schedules_minutes_sub b,committee_schedules_agenda c WHERE minutesid=:minutesid AND agendasubid=:agendasubid AND scheduleagendaid=:scheduleagendaid  ";
+//	private static final String COMMITTEEMINUTEEDIT="SELECT a.minutesid,a.details,a.scheduleid,a.scheduleminutesid,b.description,a.minutessubofsubid,a.minutessubid,c.subdescription,d.agendaitem,a.remarks,a.idarck  FROM committee_schedules_minutes_details a, committee_schedules_minutes b, committee_schedules_minutes_sub c,committee_schedules_agenda d WHERE a.minutesid=b.minutesid AND a.minutessubofsubid=c.agendasubid AND a.scheduleminutesid=:scheduleminutesid AND a.minutessubid=d.scheduleagendaid ";
+	private static final String COMMITTEEMINUTEEDIT="SELECT a.minutesid,a.details,a.scheduleid,a.scheduleminutesid,b.description,a.minutessubofsubid,a.minutessubid,c.subdescription,CONCAT(IFNULL(d.agendaitem, ''),CASE WHEN d.GroupName IS NOT NULL AND d.GroupName <> '' THEN CONCAT(' (', d.GroupName, ')') ELSE '' END) AS agendaItem,a.remarks,a.idarck  FROM committee_schedules_minutes_details a, committee_schedules_minutes b, committee_schedules_minutes_sub c,committee_schedules_agenda d WHERE a.minutesid=b.minutesid AND a.minutessubofsubid=c.agendasubid AND a.scheduleminutesid=:scheduleminutesid AND a.minutessubid=d.scheduleagendaid ";
 	private static final String COMMITTEEMINUTEEDITFORADE="SELECT a.minutesid,a.details,a.scheduleid,a.scheduleminutesid,b.description,a.minutessubofsubid,a.minutessubid,c.subdescription,d.agendaitem,a.remarks,a.idarck,a.AircraftId,a.SubSystemId  FROM committee_schedules_minutes_details a, committee_schedules_minutes b, committee_schedules_minutes_sub c,committee_schedules_agenda d WHERE a.minutesid=b.minutesid AND a.minutessubofsubid=c.agendasubid AND a.scheduleminutesid=:scheduleminutesid AND a.minutessubid=d.scheduleagendaid ";
 	private static final String COMMITTEESCHEDULEAGENDAPRIORITY="SELECT ScheduleAgendaId, ScheduleId,AgendaPriority FROM committee_schedules_agenda WHERE ScheduleId=:scheduleid ORDER BY AgendaPriority DESC";
 	private static final String COMMITTEESCHEDULEGETAGENDASAFTER ="SELECT ScheduleAgendaId,AgendaPriority FROM committee_schedules_agenda WHERE ScheduleId=:scheduleid AND AgendaPriority>:AgendaPriority ORDER BY AgendaPriority ASC";
@@ -151,7 +153,7 @@ public class CommitteeDaoImpl  implements CommitteeDao
 	private static final String INVITATIONMAXSERIALNO ="SELECT 'MaxSlNo', IFNULL(MAX(serialno),0) AS 'MAXserialno' FROM committee_schedules_invitation WHERE committeescheduleid=:scheduleid ";
 	private static final String LOGINDIVISIONLIST ="CALL Pfms_Emp_DivisiontList(:empid);";
 	private static final String COMMITTEEINVITATIONSERIALNOAFTER="SELECT committeeInvitationid, serialno FROM committee_schedules_invitation WHERE serialno> (SELECT serialno FROM committee_schedules_invitation WHERE committeeInvitationid=:committeeinvitationid ) AND committeescheduleid=(SELECT committeescheduleid FROM committee_schedules_invitation WHERE committeeInvitationid=:committeeinvitationid )  ";
-	private static final String COMMITTEELASTSCHEDULEDATE="SELECT MAX(scheduledate),scheduleid FROM committee_schedule WHERE committeeid=:committeeid AND isactive=1";
+	private static final String COMMITTEELASTSCHEDULEDATE="SELECT scheduledate,scheduleid FROM committee_schedule WHERE committeeid = :committeeid AND isactive = 1 ORDER BY scheduledate DESC LIMIT 1;";
 	private static final String INTERNALEMPLOYEELISTFORMATION = "SELECT a.empid, a.empname,a.empno,b.designation FROM employee a,employee_desig b WHERE a.desigid=b.desigid AND labcode=:labcode AND a.empid NOT IN (SELECT  empid FROM committee_member   WHERE isactive=1  AND labcode=:labcode AND committeemainid=:committeemainid)  ORDER BY a.srno=0,a.srno ";
 	private static final String DIVISIONDATA = "SELECT divisionid, divisioncode,divisionname,divisionheadid,groupid FROM division_master WHERE divisionid=:divisionid";
 	private static final String DIVISIONCOMMITTEEMAINLIST ="SELECT  b.committeeid,a.Divisionid, a.autoschedule,b.committeeshortname,b.committeename FROM committee_division a,committee b WHERE a.committeeid=b.committeeid AND b.projectapplicable='N' AND a.Divisionid = :divisionid";
@@ -544,30 +546,30 @@ public class CommitteeDaoImpl  implements CommitteeDao
 	private static final String AGENDALIST="""
 			SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,b.projectname,b.projectid,a.remarks,b.projectcode,
 			a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.Title,' '),(IFNULL(CONCAT(j.Salutation, ' '), ''))), j.EmpName) AS 'EmpName' ,h.designation,a.duration,
-			j.desigid, a.PresentorLabCode  FROM project_master b,employee j,employee_desig h,committee_schedules_agenda a,committee_schedule cs
+			j.desigid, a.PresentorLabCode ,NULLIF(TRIM(a.GroupName), '') AS GroupName FROM project_master b,employee j,employee_desig h,committee_schedules_agenda a,committee_schedule cs
 			WHERE CASE WHEN cs.ProgrammeId<>0 THEN a.ProjectId=b.ProjectId ELSE a.projectid=cs.projectid AND cs.projectid=b.projectid AND a.scheduleid=cs.scheduleid END AND a.scheduleid=:committeescheduleid AND a.isactive=1 AND a.projectid NOT IN (0, -1) AND a.presenterid=j.empid AND 
 			j.desigid=h.desigid AND a.PresentorLabCode<>'@EXP'
 			UNION
 			SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,b.projectname,b.projectid,a.remarks,b.projectcode,
 			a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.Title,' '),(IFNULL(CONCAT(j.Salutation, ' '), ''))), j.ExpertName) AS 'EmpName' ,h.designation,a.duration,
-			j.desigid, a.PresentorLabCode  FROM project_master b,expert j,employee_desig h,committee_schedules_agenda a,committee_schedule cs
+			j.desigid, a.PresentorLabCode ,NULLIF(TRIM(a.GroupName), '') AS GroupName FROM project_master b,expert j,employee_desig h,committee_schedules_agenda a,committee_schedule cs
 			WHERE a.projectid=cs.projectid AND cs.projectid=b.projectid AND a.scheduleid=cs.scheduleid AND a.scheduleid=:committeescheduleid AND a.isactive=1 AND a.projectid NOT IN (0, -1) AND a.presenterid=j.expertid AND j.desigid=h.desigid AND a.PresentorLabCode='@EXP'
 			UNION  
 			SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,cs.labcode AS 'projectname' , '0' AS projectid,
 			a.remarks,'' AS projectcode,a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.Title,' '),(IFNULL(CONCAT(j.Salutation, ' '), ''))), j.EmpName) AS 'EmpName' ,
-			h.designation,a.duration,j.desigid, a.PresentorLabCode  FROM employee j,employee_desig h, committee_schedules_agenda a, committee_schedule cs
+			h.designation,a.duration,j.desigid, a.PresentorLabCode ,NULLIF(TRIM(a.GroupName), '') AS GroupName FROM employee j,employee_desig h, committee_schedules_agenda a, committee_schedule cs
 			WHERE a.scheduleid=:committeescheduleid AND a.scheduleid=cs.scheduleid  AND a.isactive=1 AND a.projectid IN (0, -1)
 			AND a.presenterid=j.empid AND j.desigid=h.desigid AND a.PresentorLabCode<>'@EXP' 
 			UNION
 			SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,cs.labcode AS 'projectname' , '0' AS projectid,
 			a.remarks,'' AS projectcode,a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.Title,' '),(IFNULL(CONCAT(j.Salutation, ' '), ''))), j.ExpertName) AS 'EmpName' ,
-			h.designation,a.duration,j.desigid, a.PresentorLabCode  FROM expert j,employee_desig h, committee_schedules_agenda a, committee_schedule cs
+			h.designation,a.duration,j.desigid, a.PresentorLabCode ,NULLIF(TRIM(a.GroupName), '') AS GroupName FROM expert j,employee_desig h, committee_schedules_agenda a, committee_schedule cs
 			WHERE a.scheduleid=:committeescheduleid AND a.scheduleid=cs.scheduleid  AND a.isactive=1 AND a.projectid IN (0, -1)
 			AND a.presenterid=j.expertid AND j.desigid=h.desigid AND a.PresentorLabCode='@EXP'
 			UNION
 			SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,b.ProjectTitle,b.initiationId,a.remarks,b.ProjectShortName,
 			a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.Title,' '),(IFNULL(CONCAT(j.Salutation, ' '), ''))), j.EmpName) AS 'EmpName' ,h.designation,a.duration,
-			j.desigid, a.PresentorLabCode  FROM pfms_initiation b,employee j,employee_desig h,committee_schedules_agenda a,committee_schedule cs
+			j.desigid, a.PresentorLabCode ,NULLIF(TRIM(a.GroupName), '') AS GroupName FROM pfms_initiation b,employee j,employee_desig h,committee_schedules_agenda a,committee_schedule cs
 			WHERE a.projectid=cs.initiationId AND cs.initiationId=b.initiationId AND a.scheduleid=cs.scheduleid AND a.scheduleid=:committeescheduleid AND a.isactive=1 AND a.projectid NOT IN (0, -1) AND a.presenterid=j.empid AND 
 			j.desigid=h.desigid AND a.PresentorLabCode<>'@EXP'
 			ORDER BY agendapriority """;
@@ -793,21 +795,22 @@ public class CommitteeDaoImpl  implements CommitteeDao
 	}
 
 	
-	private static final String AGENDASPECLIST="SELECT  a.ScheduleMinutesId, a.Details,a.ScheduleId,a.MinutesId,a.ScheduleSubId,a.MinutesSubOfSubId,a.MinutesSubId,a.idarck,a.remarks,b.outcomename,c.agendaitem AS agenda, a.agendasubhead\r\n"
-			+ " FROM committee_schedules_minutes_details a,committee_schedules_minutes_outcome b,committee_schedules_agenda c\r\n"
-			+ " WHERE a.scheduleid =:InScheduleId  AND a.idarck=b.idarck AND c.scheduleagendaid=a.minutessubid AND a.minutesid='3'\r\n"
-			+ " \r\n"
-			+ " UNION\r\n"
-			+ " \r\n"
-			+ " SELECT  a.ScheduleMinutesId, a.Details,a.ScheduleId,a.MinutesId,a.ScheduleSubId,a.MinutesSubOfSubId,a.MinutesSubId,a.idarck,a.remarks,b.outcomename,\r\n"
-			+ " CASE WHEN a.minutesid='4' THEN 'Other Discussion' ELSE 'Other Outcomes' END AS agenda, a.agendasubhead\r\n"
-			+ " FROM committee_schedules_minutes_details a,committee_schedules_minutes_outcome b\r\n"
-			+ " WHERE a.scheduleid =:InScheduleId  AND a.idarck=b.idarck AND a.minutesid<>'3'\r\n"
-			+ " ORDER BY  CASE WHEN minutesid = '3' THEN 1  ELSE 2 END, agenda,ScheduleMinutesId" ;
+	private static final String AGENDASPECLIST="""
+			SELECT  a.ScheduleMinutesId, a.Details,a.ScheduleId,a.MinutesId,a.ScheduleSubId,a.MinutesSubOfSubId,a.MinutesSubId,a.idarck,a.remarks,b.outcomename,c.agendaitem AS agenda, a.agendasubhead,c.scheduleAgendaId
+			FROM committee_schedules_minutes_details a,committee_schedules_minutes_outcome b,committee_schedules_agenda c
+			WHERE a.scheduleid =:InScheduleId  AND a.idarck=b.idarck AND c.scheduleagendaid=a.minutessubid AND a.minutesid='3'
+			
+			UNION
+			
+			SELECT  a.ScheduleMinutesId, a.Details,a.ScheduleId,a.MinutesId,a.ScheduleSubId,a.MinutesSubOfSubId,a.MinutesSubId,a.idarck,a.remarks,b.outcomename,
+			CASE WHEN a.minutesid='4' THEN 'Other Discussion' ELSE 'Other Outcomes' END AS agenda, a.agendasubhead, NULL AS scheduleAgendaId
+			FROM committee_schedules_minutes_details a,committee_schedules_minutes_outcome b
+			WHERE a.scheduleid =:InScheduleId  AND a.idarck=b.idarck AND a.minutesid<>'3'
+			ORDER BY  CASE WHEN minutesid = '3' THEN 1  ELSE 2 END, scheduleAgendaId, agenda,ScheduleMinutesId
+			""";
 	
 	@Override
-	public List<Object[]> CommitteeScheduleMinutes(String scheduleid) throws Exception
-	{
+	public List<Object[]> CommitteeScheduleMinutes(String scheduleid) throws Exception{
 		Query query=manager.createNativeQuery(AGENDASPECLIST);
 		query.setParameter("InScheduleId", Long.parseLong(scheduleid));
 		List<Object[]> CommitteeScheduleMinutes =(List<Object[]>)query.getResultList();
@@ -3396,14 +3399,18 @@ public class CommitteeDaoImpl  implements CommitteeDao
 		Query query = manager.createNativeQuery(COMMENOTELIST);
 		query.setParameter("CommitteeMainId", Long.parseLong(CommitteeMainId));
 		query.setParameter("ScheduleId", Long.parseLong(ScheduleId));
-		Object[]CommitteMainEnoteList = null;
+		List<Object[]> CommitteMainEnoteList = null;
 		try {
-		CommitteMainEnoteList = (Object[])query.getSingleResult();
-		return CommitteMainEnoteList;
+		CommitteMainEnoteList = query.getResultList();
+		if(CommitteMainEnoteList!=null && CommitteMainEnoteList.size()>0){
+			return CommitteMainEnoteList.get(0);
+		}else {
+			return null;
+		}
 		}catch(Exception e) {
 			
 			e.printStackTrace();
-			return CommitteMainEnoteList;
+			return null;
 		}
 	}
 	
@@ -4005,7 +4012,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 			WHERE a.scheduleid = :InScheduleId ORDER BY CASE WHEN MinutesId = 3 THEN 1 ELSE 3 END, AgendaPriority, minutesSubOfSubId, agenda, ScheduleMinutesId ,idarck, ActionNo IS NULL; 			
 			""";
 	@Override
-	public List<Object[]> CommitteeScheduleMinutesforAction(String committeescheduleid) {
+	public List<Object[]> CommitteeScheduleMinutesforAction(String committeescheduleid) throws Exception {
 		Query query=manager.createNativeQuery(AGENDAACTIONLIST); 
 		query.setParameter("InScheduleId", Long.parseLong(committeescheduleid));
 		List<Object[]> CommitteeScheduleMinutes =(List<Object[]>)query.getResultList();
@@ -4013,7 +4020,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 	}
 
 	@Override
-	public Long addRepresentative(CommitteeRepresentative rep) {
+	public Long addRepresentative(CommitteeRepresentative rep) throws Exception {
 		try {
 			manager.persist(rep);
 			manager.flush();
@@ -4025,7 +4032,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 	}
 
 	@Override
-	public CommitteeRepresentative getRepresentativeById(String repId) {
+	public CommitteeRepresentative getRepresentativeById(String repId) throws Exception {
 		try {
 			return manager.find(CommitteeRepresentative.class, Long.parseLong(repId));
 		}catch (Exception e) {
@@ -4036,7 +4043,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 
 	private static final String DUPLICATEREPNAMECOUNT = "SELECT COUNT(RepName) FROM committee_rep WHERE RepName=:RepName";
 	@Override
-	public Long getRepNameDuplicateCount(String repName) {
+	public Long getRepNameDuplicateCount(String repName) throws Exception {
 		try {
 			Query query = manager.createNativeQuery(DUPLICATEREPNAMECOUNT);
 			query.setParameter("RepName", repName);
@@ -4049,7 +4056,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 
 	private static final String DUPLICATEREPCODECOUNT = "SELECT COUNT(RepCode) FROM committee_rep WHERE RepCode=:RepCode";
 	@Override
-	public Long getRepCodeDuplicateCount(String repCode) {
+	public Long getRepCodeDuplicateCount(String repCode) throws Exception {
 		try {
 			Query query = manager.createNativeQuery(DUPLICATEREPCODECOUNT);
 			query.setParameter("RepCode", repCode);
@@ -4062,7 +4069,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 
 	private static final String AIRCRAFTLIST = "SELECT AircraftId, Aircraft FROM committee_aircraft ORDER BY AircraftId; ";
 	@Override
-	public List<Object[]> getAircraftList(String committeeScheduleId) {
+	public List<Object[]> getAircraftList(String committeeScheduleId) throws Exception {
 		Query query=manager.createNativeQuery(AIRCRAFTLIST);
 		List<Object[]> aircraftList =(List<Object[]>)query.getResultList();
 		return aircraftList;
@@ -4070,14 +4077,14 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 
 	private static final String SUBSYSTEMLIST = "SELECT SubSystemId, SubSystem FROM committee_subsystem ORDER BY SubSystemId; ";
 	@Override
-	public List<Object[]> getSubSystemList(String committeeScheduleId) {
+	public List<Object[]> getSubSystemList(String committeeScheduleId) throws Exception {
 		Query query=manager.createNativeQuery(SUBSYSTEMLIST);
 		List<Object[]> subsystemList =(List<Object[]>)query.getResultList();
 		return subsystemList;
 	}
 
 	@Override
-	public Long addAircraft(CommitteeAircraft aircraft) {
+	public Long addAircraft(CommitteeAircraft aircraft) throws Exception {
 		try {
 			manager.persist(aircraft);
 			manager.flush();
@@ -4089,7 +4096,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 	}
 
 	@Override
-	public CommitteeAircraft getAircraftById(String aircraftId) {
+	public CommitteeAircraft getAircraftById(String aircraftId) throws Exception {
 		try {
 			return manager.find(CommitteeAircraft.class, Long.parseLong(aircraftId));
 		}catch (Exception e) {
@@ -4099,7 +4106,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 	}
 
 	@Override
-	public Long addSubSystem(CommitteeSubSystem sub) {
+	public Long addSubSystem(CommitteeSubSystem sub) throws Exception {
 		try {
 			manager.persist(sub);
 			manager.flush();
@@ -4111,7 +4118,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 	}
 
 	@Override
-	public CommitteeSubSystem getSubSystemById(String subsystemId) {
+	public CommitteeSubSystem getSubSystemById(String subsystemId) throws Exception {
 		try {
 			return manager.find(CommitteeSubSystem.class, Long.parseLong(subsystemId));
 		}catch (Exception e) {
@@ -4132,28 +4139,30 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 			+ "ON e.Assignee = j.ExpertId LEFT JOIN employee_desig gd ON gd.DesigId = j.DesigId  WHERE a.scheduleid = :InScheduleId "
 			+ "ORDER BY CASE WHEN MinutesId = 3 THEN 1 ELSE 3 END, AgendaPriority,agenda,idarck,ActionNo,ScheduleMinutesId";
 	@Override
-	public List<Object[]> committeeScheduleMinutesforActionForMomADE(String committeescheduleid) {
+	public List<Object[]> committeeScheduleMinutesforActionForMomADE(String committeescheduleid)  throws Exception{
 		Query query=manager.createNativeQuery(ACTIONLISTFORMOMADE);
 		query.setParameter("InScheduleId", Long.parseLong(committeescheduleid));
 		List<Object[]> CommitteeScheduleMinutes =(List<Object[]>)query.getResultList();
 		return CommitteeScheduleMinutes;
 	}
 	
-	private static final String COMMITTEESCHEDULEEDITFORMOM = "SELECT a.committeeid,a.committeemainid,a.scheduledate,a.schedulestarttime,a.scheduleflag,a.schedulesub,a.scheduleid, "
-			+ "b.committeename,b.committeeshortname,a.projectid,c.meetingstatusid,a.meetingid,a.meetingvenue,a.confidential,a.Reference, "
-			+ "(SELECT d.classification FROM pfms_security_classification d WHERE a.confidential=d.classificationid) AS 'classification',a.divisionid  ,"
-			+ "a.initiationid ,a.pmrcdecisions,a.kickoffotp ,(SELECT minutesattachmentid "
-			+ "FROM committee_minutes_attachment WHERE scheduleid=a.scheduleid) AS 'attachid', "
-			+ "b.periodicNon,a.MinutesFrozen,a.briefingpaperfrozen,a.labcode, a.CARSInitiationId, a.ProgrammeId ,d.ReferenceNo, d.FormationDate "
-			+ "FROM committee_schedule a,committee b ,committee_meeting_status c,committee_main d WHERE a.scheduleflag=c.MeetingStatus AND "
-			+ "a.scheduleid=:committeescheduleid AND a.committeeid=b.committeeid AND d.committeeId = b.committeeid AND d.ProgrammeId = a.ProgrammeId;";
+	private static final String COMMITTEESCHEDULEEDITFORMOM = """
+			SELECT a.committeeid,a.committeemainid,a.scheduledate,a.schedulestarttime,a.scheduleflag,a.schedulesub,a.scheduleid, 
+			b.committeename,b.committeeshortname,a.projectid,c.meetingstatusid,a.meetingid,a.meetingvenue,a.confidential,a.Reference, 
+			(SELECT d.classification FROM pfms_security_classification d WHERE a.confidential=d.classificationid) AS 'classification',a.divisionid  ,
+			a.initiationid ,a.pmrcdecisions,a.kickoffotp ,(SELECT minutesattachmentid 
+			FROM committee_minutes_attachment WHERE scheduleid=a.scheduleid) AS 'attachid', 
+			b.periodicNon,a.MinutesFrozen,a.briefingpaperfrozen,a.labcode, a.CARSInitiationId, a.ProgrammeId ,d.ReferenceNo, d.FormationDate 
+			FROM committee_schedule a,committee b ,committee_meeting_status c,committee_main d WHERE a.scheduleflag=c.MeetingStatus AND 
+			a.scheduleid=:committeescheduleid AND a.committeeid=b.committeeid AND d.committeeId = b.committeeid AND d.ProgrammeId = a.ProgrammeId;
+			""";
 
 	@Override
-	public Object[] CommitteeScheduleEditDataforMom(String committeescheduleid) {
+	public Object[] CommitteeScheduleEditDataforMom(String committeescheduleid) throws Exception {
 		Query query=manager.createNativeQuery(COMMITTEESCHEDULEEDITFORMOM);
 		query.setParameter("committeescheduleid", Long.parseLong(committeescheduleid));
-		Object[] CommitteeScheduleEditData=(Object[])query.getSingleResult();
-		return CommitteeScheduleEditData;
+		List<Object[]> CommitteeScheduleEditData=(List<Object[]>)query.getResultList();
+		return CommitteeScheduleEditData!=null && !CommitteeScheduleEditData.isEmpty() ? CommitteeScheduleEditData.get(0) : null;
 	}
 
 	private static final String PRGMAGENDALIST = """
@@ -4189,12 +4198,49 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 			ORDER BY agendapriority 
 			""";
 	@Override
-	public List<Object[]> PrgmAgendaList(String CommitteeScheduleId) {
+	public List<Object[]> PrgmAgendaList(String CommitteeScheduleId) throws Exception {
 		Query query=manager.createNativeQuery(PRGMAGENDALIST);
 		query.setParameter("committeescheduleid", Long.parseLong(CommitteeScheduleId));
 		List<Object[]> AgendaList=(List<Object[]>)query.getResultList();
 		
 		return AgendaList;
+	}
+
+	// Naveen R 05-03-2026
+	private static final String MEETINGCOUNTPROJECT = """
+			SELECT pm.projectShortName, pm.projectCode, pm.projectName,cs.projectId,COUNT(cs.projectId) AS meetingcount, c.committeeShortName, c.committeeName
+			FROM committee c LEFT JOIN committee_schedule cs ON c.committeeId = cs.committeeId
+			LEFT JOIN project_master pm ON cs.projectId = pm.projectId
+			WHERE cs.committeeId = :committeeId AND c.isBriefing = 'Y' AND c.isActive = 1 AND pm.projectId > 0 AND cs.isActive = 1 AND cs.ScheduleFlag IN ('MKV','MMR','MMF','MMS','MMA')
+			GROUP BY c.committeeShortName, c.committeeName, cs.projectId, pm.projectName, pm.projectShortName;
+			"""; 
+	@Override
+	public List<Object[]> getMeetingCountList(String committeeId) throws Exception {
+		Query query=manager.createNativeQuery(MEETINGCOUNTPROJECT);
+		query.setParameter("committeeId", Long.parseLong(committeeId));
+		List<Object[]> meetingCounts=(List<Object[]>)query.getResultList();		
+		return meetingCounts;
+	}
+
+	private static final String AGENDASPECLISTORDERWISE = """
+			SELECT  a.ScheduleMinutesId, a.Details,a.ScheduleId,a.MinutesId,a.ScheduleSubId,a.MinutesSubOfSubId,a.MinutesSubId,a.idarck,a.remarks,b.outcomename,c.agendaitem AS agenda, a.agendasubhead,c.scheduleAgendaId,c.AgendaPriority
+			FROM committee_schedules_minutes_details a,committee_schedules_minutes_outcome b,committee_schedules_agenda c
+			WHERE a.scheduleid =:InScheduleId  AND a.idarck=b.idarck AND c.scheduleagendaid=a.minutessubid AND a.minutesid='3'
+			
+			UNION
+			
+			SELECT  a.ScheduleMinutesId, a.Details,a.ScheduleId,a.MinutesId,a.ScheduleSubId,a.MinutesSubOfSubId,a.MinutesSubId,a.idarck,a.remarks,b.outcomename,
+			CASE WHEN a.minutesid='4' THEN 'Other Discussion' ELSE 'Other Outcomes' END AS agenda, a.agendasubhead, NULL AS scheduleAgendaId, NULL AS AgendaPriority
+			FROM committee_schedules_minutes_details a,committee_schedules_minutes_outcome b
+			WHERE a.scheduleid =:InScheduleId  AND a.idarck=b.idarck AND a.minutesid<>'3'
+			ORDER BY  CASE WHEN minutesid = '3' THEN 1  ELSE 2 END, AgendaPriority, scheduleAgendaId, agenda,ScheduleMinutesId;
+			""";
+	@Override
+	public List<Object[]> CommitteeScheduleMinutesMom(String committeescheduleid) throws Exception {
+		Query query=manager.createNativeQuery(AGENDASPECLISTORDERWISE);
+		query.setParameter("InScheduleId", Long.parseLong(committeescheduleid));
+		List<Object[]> CommitteeScheduleMinutes =(List<Object[]>)query.getResultList();
+		return CommitteeScheduleMinutes;
 	}
 	
 	

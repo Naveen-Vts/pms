@@ -35,7 +35,7 @@ public class HeaderDaoImpl implements HeaderDao {
 	private static final String PASSWORDUPDATECHANGE="update login set password=:newpassword,modifiedby=:modifiedby,modifieddate=:modifieddate where username=:username ";
 	private static final String LOGINTYPENAME="SELECT logindesc FROM login_type WHERE logintype=:logintype";
 	private static final String PROJECTLIST="SELECT projectid,projectcode,projectname,projectmainid,projecttype FROM project_master WHERE isactive=1";
-	private static final String GANTTCHARTLIST="SELECT milestoneactivityid,projectid,activityname,milestoneno,orgstartdate,orgenddate,startdate,enddate,progressstatus,revisionno FROM milestone_activity WHERE isactive=1 AND projectid=:projectid";
+	private static final String GANTTCHARTLIST="SELECT milestoneactivityid,projectid,activityname,milestoneno,orgstartdate,orgenddate,startdate,enddate,progressstatus,revisionno FROM milestone_activity WHERE isactive=1 AND projectid=:projectid ORDER BY MilestoneNo";
 	private static final String PROJECTMASTER="SELECT a.projectid,a.projectcode,a.projectname FROM project_master a WHERE  a.isactive='1'";
 	private static final String PROJECTDETAILS="SELECT a.projectid,a.projectcode,a.projectname FROM project_master a WHERE a.projectid=:projectid and  a.isactive='1'";
 	private static final String LABDETAILS ="SELECT labid,clusterid,labcity FROM lab_master WHERE labcode=:labcode"; 
@@ -388,7 +388,7 @@ public class HeaderDaoImpl implements HeaderDao {
 		Query query = manager.createNativeQuery("SELECT COUNT(FormRoleAccessId) FROM `pfms_form_role_access` WHERE LoginType=:logintype AND isactive=1 AND FormDetailId =:formModuleId");
 		query.setParameter("logintype",logintype);
 		query.setParameter("formModuleId", Long.parseLong(formModuleId));
-		List<BigInteger> result = query.getResultList();
+		List<Long> result = query.getResultList();
 		if (result.get(0).intValue()==0)return false;
 		else return true;
 	}

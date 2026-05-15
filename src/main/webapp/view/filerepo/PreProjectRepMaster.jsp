@@ -231,7 +231,7 @@
 	            <input type="hidden" name="fileType" id="fileType" value="">
 	        </div>
 			 <div align="center">
-					<input type="button" class="btn btn-primary btn-sm submit mb-3"  id="submitversion" onclick="submitUpload()"/>
+				<input type="button" class="btn btn-primary btn-sm submit mb-3"  id="submitversion" onclick="submitUpload()"/>
 			</div>
 		  </div>
 	  </div>
@@ -682,6 +682,16 @@ function submitLevelEdit(levelType, pkId, parentId, previousName) {
             title: 'Validation Error',
             text: 'File name cannot be empty.',
         });
+        return;
+    }
+    const regex =/^[A-Za-z0-9 _-]+$/;
+
+    if (!regex.test(inputvalue)) {
+        Swal.fire({
+        	icon:'warning',
+        	title:'Validation Error',
+        	text: "Only letters, numbers, spaces, underscores ( _ ) and hyphens (-) are allowed."
+        	});
         return;
     }
     

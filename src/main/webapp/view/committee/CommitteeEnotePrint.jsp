@@ -1,3 +1,4 @@
+<%@page import="java.util.Locale"%>
 <%@page import="org.apache.commons.text.StringEscapeUtils"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="java.time.LocalDate"%>
@@ -149,7 +150,7 @@ SimpleDateFormat rdtf= new SimpleDateFormat("dd-MM-yyyy hh:mm a");
 FormatConverter fc = new FormatConverter();
 SimpleDateFormat sdf = fc.getRegularDateFormat();
 SimpleDateFormat sdf1 = fc.getSqlDateFormat();
-SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy",Locale.ENGLISH);
 SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 List<Object[]>EnotePrintDetails = (List<Object[]>)request.getAttribute("EnotePrintDetails");
 String path=request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath()+"/";

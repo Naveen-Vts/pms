@@ -159,7 +159,7 @@ Map<String,List<List<Object[]>>> actualdecisionsought = (Map<String,List<List<Ob
 																	</form>
 																</td>
 																<td>
-																	<%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()):" - "%>
+																	<%=obj[3]!=null?obj[3].toString():" - "%>
 																 </td>
 																<td> <%=obj[4]!=null?StringEscapeUtils.escapeHtml4(obj[4].toString()):" - " %> </td>
 														</tr>

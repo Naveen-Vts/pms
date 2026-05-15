@@ -21,7 +21,7 @@ Object[]NewApprovalList = (Object[])request.getAttribute("NewApprovalList");
 FormatConverter fc = new FormatConverter();
 SimpleDateFormat sdf = fc.getRegularDateFormat();
 SimpleDateFormat sdf1 = fc.getSqlDateFormat();
-SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy",Locale.ENGLISH);
 SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 List<Object[]>employeelist = (List<Object[]>)request.getAttribute("employeelist");
 

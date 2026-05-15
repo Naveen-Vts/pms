@@ -8,6 +8,9 @@ import com.vts.pfms.committee.model.Committee;
 import com.vts.pfms.committee.model.CommitteeMeetingDPFMFrozen;
 import com.vts.pfms.committee.model.PfmsNotification;
 import com.vts.pfms.milestone.model.MilestoneActivityLevelConfiguration;
+import com.vts.pfms.model.BriefingFinance;
+import com.vts.pfms.model.BriefingHeading;
+import com.vts.pfms.model.BriefingHeadingDetails;
 import com.vts.pfms.model.LabMaster;
 import com.vts.pfms.print.model.CommitteeProjectBriefingFrozen;
 import com.vts.pfms.print.model.FavouriteSlidesModel;
@@ -141,5 +144,21 @@ public interface PrintDao {
 	public List<Object[]> getProjectMeetings(String committeeName) throws Exception;
 	public List<Object[]> getprojectListProjectDirectorWise() throws Exception;
 	public List<Object[]> getProjectClosureReport() throws Exception;
+
+	// Naveen R 06-03-2026
+	public List<Object[]> getMilestoneBriefingList(String scheduleId) throws Exception;
+	public Object[] getLastMeetingCreated(String projectId, String committeeId) throws Exception;
+
+	// Naveen R 08-04-2026
+	public List<BriefingFinance> getBriefingFinanceDetails(String scheduleId) throws Exception;
+	public long addOverallFinaceForPgad(List<BriefingFinance> list,String scheduleId) throws Exception;
+	public long addHeadings(List<BriefingHeading> list, String projectid) throws Exception;
+	public List<BriefingHeading> getBriefingHeading(String projectid) throws Exception;
+	public List<Object[]> getHeadingDetails(String headingid, String projectid, String scheduleid) throws Exception;
+	public BriefingHeadingDetails getDetailsById(String detailid) throws Exception;
+	public long addDetails(BriefingHeadingDetails dto) throws Exception;
+	public List<Object[]> getAllHeadingDetails(String projectid,String scheduleid) throws Exception;
+	public List<BriefingHeadingDetails> getDetailsByHeadingAndSCheduleId(String headingid, String scheduleid) throws Exception;
+	public long saveAllDetails(List<BriefingHeadingDetails> list) throws Exception;
 
 }

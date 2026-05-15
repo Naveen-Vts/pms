@@ -1,3 +1,5 @@
+<%@page import="java.util.regex.Matcher"%>
+<%@page import="java.util.regex.Pattern"%>
 <%@page import="org.apache.commons.text.StringEscapeUtils"%>
 <%@page import="java.nio.file.Paths"%>
 <%@page import="java.nio.file.Path"%>
@@ -43,7 +45,7 @@
 
 
 <%
-
+int index = 1;
 Committee committee=(Committee)request.getAttribute("committeeData");
 String isprint=(String)request.getAttribute("isprint"); 
 List<Object[]> projectattributes = (List<Object[]> )request.getAttribute("projectattributes");
@@ -52,18 +54,20 @@ for(int i=0;i<projectattributes.size();i++){
 	ProjectCode = ProjectCode +projectattributes.get(i)[0].toString()  ;
 	if(i!=projectattributes.size()-1)ProjectCode=ProjectCode+"/";
 }
+
 List<TotalDemand> totalprocurementdetails = (List<TotalDemand>)request.getAttribute("TotalProcurementDetails");
 String lablogo=(String)request.getAttribute("lablogo");
 LabMaster labInfo=(LabMaster)request.getAttribute("labInfo");
 String filePath=(String)request.getAttribute("filePath");
 String projectLabCode=(String)request.getAttribute("projectLabCode");
-SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy",Locale.ENGLISH);
+SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy", Locale.ENGLISH);
 SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");	
 Object[] committeeMetingsCount =  (Object[]) request.getAttribute("committeeMetingsCount");
 String CommitteeCode = committee.getCommitteeShortName().trim();
 String No2 = CommitteeCode+(Long.parseLong(committeeMetingsCount[1].toString())+1);
 
 List<Object[]> otherMeetingList = (List<Object[]>)request.getAttribute("otherMeetingList");
+Map<String,List<Object[]>> milestoneBriefingMap = (Map<String,List<Object[]>>)request.getAttribute("milestoneBriefingMap");
 
 List<List<Object[]>> overallfinance = (List<List<Object[]>>)request.getAttribute("overallfinance");//b
 String IsIbasConnected=(String)request.getAttribute("IsIbasConnected");
@@ -76,6 +80,9 @@ String thankYouImg = (String)request.getAttribute("thankYouImg");
 p{
   text-align: justify;
   text-justify: inter-word;
+}
+table{
+	border-collapse: collapse;
 }
 
  th
@@ -105,7 +112,7 @@ th, td
 		page-break-after: always;
 		margin: 25px 0px 25px 0px;
 	} 
-	 
+	 /* 
 #pageborder {
       position:fixed;
       left: 0;
@@ -114,35 +121,36 @@ th, td
       bottom: 0;
       border: 2px solid black;
 }     
- 
+  */
 @page {             
-          size: 1120px 790px; 
+           size: A4;  
+          /* size: 1123px 794px;  */  /* A4 Landscape */
+          /*  size: 794px 1123px;  */  /* A4 Portrait */
           margin-top: 49px;
           margin-left: 72px;
           margin-right: 39px;
-          margin-buttom: 49px; 	
-          border: 1px solid black; 
+          margin-bottom: 49px; 	
+          /* border: 1px solid black;  */
           padding-top: 15px;
           
-          @bottom-left {          		
+          <%-- @bottom-left {          		
         
              content : "The information in this Document is proprietary of <%=labInfo.getLabCode()!=null?(labInfo.getLabCode()): " - " %> /DRDO , MOD Government of India. Unauthorized possession/use is violating the Government procedure which may be liable for prosecution. ";
              margin-bottom: 30px;
              margin-right: 5px;
              font-size: 10px;
-          }
+          } --%>
              
-           @bottom-right {          		
-             content: "Page " counter(page) " of " counter(pages);
-             margin-bottom: 30px;
-             margin-right: 10px;
-          }
-           @top-right {
+            @bottom-right {
+		      content: "Page " counter(page) " of " counter(pages);
+		   }
+		   
+          <%--  @top-right {
              
              content: "<%= projectattributes.get(0)[12]!=null?(projectattributes.get(0)[12].toString()): " - " %>";
              margin-top: 30px;
              margin-right: 50px;
-          }
+          } --%>
           
           <%-- @top-left {
           	margin-top: 30px;
@@ -150,7 +158,7 @@ th, td
             content: url("data:image/*;base64,<%=lablogo%>");  
           }   --%>     
           
-            @top-left {
+           <%--  @top-left {
 	          content: "Project: <%=ProjectCode!=null?(ProjectCode): " - "%>"; 
 			  margin-top: 30px;
               margin-left: 50px;
@@ -162,7 +170,7 @@ th, td
 			
 			margin-top: 30px;
              
-  			} 
+  			}  --%>
           
  }
  .border
@@ -174,7 +182,7 @@ th, td
  }
  div
  {
-  	width: 1000px;
+  	width: 100%;
  }
  
  th
@@ -314,7 +322,9 @@ img
 }
 
 .subtables{
-	width: 970px !important;
+	/* width: 970px !important; */
+	width: 100%!important;
+	max-width: 650px!important;
 }
 
 .date-column{
@@ -401,6 +411,7 @@ List<List<Object[]>> MilestoneDetails6 = (List<List<Object[]>>)request.getAttrib
 
 String AppFilesPath= (String) request.getAttribute("AppFilesPath");
 Object[] nextMeetVenue =  (Object[]) request.getAttribute("nextMeetVenue");
+Object[] lastmeetingVenue =  (Object[]) request.getAttribute("lastmeetingVenue");
 
 String text=(String)request.getAttribute("text");
 List<Object[]> RecDecDetails = (List<Object[]>)request.getAttribute("recdecDetails");
@@ -420,18 +431,13 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 
 <body <%if(text!=null && text.equalsIgnoreCase("p")) {%>style="background-color: rgba(245, 222, 179, 0.2);"<%} %>>
 
-	<div class="firstpage" id="firstpage" align="center" "> 
+	<div class="firstpage" id="firstpage" align="center"> 
 	
-		<%if(text!=null && text.equalsIgnoreCase("p")) {%>
-		<div align="center" ><h1 style="color: #145374 !important;font-family: 'Muli'!important">Presentation <br> for </h1></div>
-		<%}else{ %>
-		<div align="center" ><h1 style="color: #145374 !important;font-family: 'Muli'!important">Briefing Paper </h1></div>
-		<%} %>
 		<!-- <div align="center" ><h2 style="color: #145374 !important">for</h2></div> -->
-		
-			<div align="center" ><h2 <%if(text!=null && text.equalsIgnoreCase("p")) {%>style="color: #4C9100 !important;"<%}else{ %> style="color: #145374 !important" <%} %>><%=CommitteeCode!=null?(CommitteeCode): " - " %> #<%=Long.parseLong(committeeMetingsCount[1].toString())+1 %> Meeting </h2></div>
-		
-			<div align="center" ><h2 <%if(text!=null && text.equalsIgnoreCase("p")) {%>style="color: #4C9100 !important;"<%}else{ %> style="color: #145374 !important" <%} %>><%= projectattributes.get(0)[1]!=null?(projectattributes.get(0)[1].toString()): " - " %> (<%= projectattributes.get(0)[0]!=null?(projectattributes.get(0)[0].toString()): " - " %>)
+
+			<div align="center" ><h2 <%if(text!=null && text.equalsIgnoreCase("p")) {%>style="color: #4C9100 !important;"<%}else{ %> style="color: #145374 !important" <%} %>><%=CommitteeCode!=null?(CommitteeCode): " - " %> #<%=Long.parseLong(committeeMetingsCount[1].toString()) %> Meeting </h2></div>
+			
+			<div align="center" ><h2 <%if(text!=null && text.equalsIgnoreCase("p")) {%>style="color: #4C9100 !important;"<%}else{ %> style="color: #145374 !important" <%} %>>Project : <%= projectattributes.get(0)[0]!=null?projectattributes.get(0)[0].toString(): " - " %>
 			
 			<%if(projectattributes.size()>1) {
 						for(int item=1;item<projectattributes.size();item++){
@@ -440,57 +446,63 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 						<span style="font-size: 1rem;"><%= projectattributes.get(item)[1]!=null?(projectattributes.get(item)[1].toString()): " - " %> (<%= projectattributes.get(item)[0]!=null?(projectattributes.get(item)[0].toString()): " - " %>) (SUB)</span>
 						 <%}} %>
 			</h2></div>
+			<%if(text!=null && text.equalsIgnoreCase("p")) {%>
+		<div align="center" ><h1 style="color: #145374 !important;font-family: 'Muli'!important">Presentation <br> for </h1></div>
+		<%}else{ %>
+		<div align="center" ><h1 style="color: #145374 !important;font-family: 'Muli'!important">Briefing Paper </h1></div>
+		<%} %>
 		
-		
+		<br>
 			<table class="executive" style="align: center;margin-left: auto;margin-right:auto;  font-size: 16px;"  >
 				<tr>			
 					<th colspan="8" style="text-align: center; font-weight: 700;">
-					<img class="logo" style="width:120px;height: 120px;margin-bottom: 5px"  <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> > 
+					<img class="logo" style="width:150px;height: 150px;margin-bottom: 5px"  <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> > 
 					</th>
 				</tr>
 			</table>
-		
-						<% if(nextMeetVenue!=null){ %>
+		<br><br>
+						<% if(lastmeetingVenue!=null){ %>
 							<div class="executive" align="center">
-							<table style="margin-left: auto;margin-right:auto; " >
+							<table style="margin-left: auto;margin-right:auto;width:650px;" >
 								<tr >
 									 <th  style="text-align: center; font-size: 20px;padding: 0px; "> <u>Meeting Id </u> </th></tr><tr>
-									 <th  style="text-align: center;  font-size: 20px;padding: 0px;  "> <%=nextMeetVenue[1]!=null?(nextMeetVenue[1].toString()): " - " %> </th>				
+									 <th  style="text-align: center;  font-size: 20px;padding: 0px;  "> <%=lastmeetingVenue[1]!=null?(lastmeetingVenue[1].toString()): " - " %> </th>				
 								 </tr>
 							</table>
-							
-							 <table style="margin-left: auto;margin-right:auto;width:900px; " >
+							<br><br>
+							 <table style="margin-left: auto;margin-right:auto;width:650px;maring-top:20px; " >
 								 <tr>
 									 <th  style="text-align: center; width: 50%;font-size: 20px;padding: 0px; "> <u> Meeting Date </u></th>
 									 <th  style="text-align: center;  width: 50%;font-size: 20px;padding: 0px; "><u> Meeting Time </u></th>
 								 </tr>
 								 <tr>
 								 	<%-- <%LocalTime starttime = LocalTime.parse(LocalTime.parse(nextMeetVenue[3].toString(),DateTimeFormatter.ofPattern("HH:mm:ss")).format( DateTimeFormatter.ofPattern("HH:mm") ));   %> --%>
-									 <td  style="text-align: center;  width: 50%;font-size: 20px ;padding: 0px;border:0px !important;"> <b><%=sdf.format(sdf1.parse(nextMeetVenue[2].toString()))%></b></td>
-									 <td  style="text-align: center;  width: 50%;font-size: 20px ;padding: 0px;border:0px !important;"> <b><%=nextMeetVenue[3]!=null?(nextMeetVenue[3].toString()): " - "/* starttime.format( DateTimeFormatter.ofPattern("hh:mm a") ) */ %></b></td>
+									 <td  style="text-align: center;  width: 50%;font-size: 20px ;padding: 0px;border:0px !important;"> <b><%=sdf.format(sdf1.parse(lastmeetingVenue[2].toString()))%></b></td>
+									 <td  style="text-align: center;  width: 50%;font-size: 20px ;padding: 0px;border:0px !important;"> <b><%=lastmeetingVenue[3]!=null?(lastmeetingVenue[3].toString()): " - "/* starttime.format( DateTimeFormatter.ofPattern("hh:mm a") ) */ %></b></td>
 								 </tr>
 							 </table>
-							 <table style=" margin-left: auto;margin-right:auto; " >
+							 <br><br>
+							 <table style=" margin-left: auto;margin-right:auto;width:650px; " >
 								<tr >
 									 <th  style="text-align: center; font-size: 20px;padding: 0px "> <u>Meeting Venue</u> </th></tr><tr>
-									 <th  style="text-align: center;  font-size: 20px;padding: 0px  "> <% if(nextMeetVenue[5]!=null){ %><%=(nextMeetVenue[5].toString()) %> <%}else{ %> - <%} %></th>				
+									 <th  style="text-align: center;  font-size: 20px;padding: 0px  "> <% if(lastmeetingVenue[5]!=null){ %><%=(lastmeetingVenue[5].toString()) %> <%}else{ %> - <%} %></th>				
 								 </tr>
 							</table>
 							</div>
 						<%}else{ %>
-							<br><br><br><br><br><br><br><br><br>
+							<br><br><br><br><br><br><br><br><br><br><br><br><br>
 						<%} %>
 						
 						<br><br>
 		<table class="executive" style="align: center;margin-bottom:0px; margin-left: auto;margin-right:auto;  font-size: 16px;margin-top:0px;"  >
-		<% if(labInfo!=null){ %>
+		
 			<tr>
-				<th colspan="8" style="text-align: center; font-weight: 700;font-size: 22px;padding-bottom: 0px;"><%if(labInfo.getLabName()!=null){ %><%=(labInfo.getLabName())  %><%}else{ %>LAB NAME<%} %></th>
+				<th colspan="8" style="text-align: center; font-weight: 700;font-size: 22px;padding-bottom: 0px;">PGAD/RCI</th>
 			</tr>
-		<% } %>
-		<tr>
+		
+		<!-- <tr>
 			<th colspan="8" style="text-align: center; font-weight: 700;font-size:15px;padding-bottom: 0px;">Government of India, Ministry of Defence</th>
-		</tr>
+		</tr> -->
 		<tr>
 			<th colspan="8" style="text-align: center; font-weight: 700;font-size:15px;padding-bottom: 0px;">Defence Research & Development Organization</th>
 		</tr>
@@ -502,19 +514,19 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 	</div>
 	
 	
-<h1 class="break"></h1>
+<h1 class="break"></h1> 
 <%char ch='a'; for(int z=0 ; z<projectidlist.size();z++) {   %>
-	<%if(z>0){ %><h1 class="break"></h1> <%} %>
+	<%if(z>0){ %><%-- <h1 class="break"></h1> --%> <%} %>
 	
 	<div  id="detailContainer" align="center" >
 	
 <!-- ------------------------------------heading commented------------------------------------------------- -->	
 	
 <!-- ------------------------------------project attributes------------------------------------------------- -->
-			<div style="margin-left: 10px;" align="left"><b class="sub-title"> 
+			<div style="margin-left: 10px;<%if(ch!='a') {%>margin-top:30px!important;<%} %>" align="left"><b class="sub-title"> 
 			
 				<%-- <a class="sub-title" href="<%= HyperlinkPath+ "/ProjectSubmit.htm?ProjectId="+projectid + "&action=edit" %>" target="_top" rel="noopener noreferrer" >1. Project Attributes: </a> --%> 
-				<span class="sub-title"  >1<%if(projectidlist.size()>1) {%>(<%=(char)(ch++)%>)<%} %> . Project Attributes: </span>
+				<span class="sub-title" ><%= index %><%if(projectidlist.size()>1) {%>(<%=(char)(ch++)%>)<%} %> . Project Attributes: </span>
 			</b>
 			<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  </b>
 			</div>
@@ -528,39 +540,49 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										</tr>
 										<tr>
 											 <td  style="padding: 5px; padding-left: 10px">(b)</td>
+											 <th style="width: 150px;padding: 5px; padding-left: 10px"><b>Project No </b></th>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"> <%=projectattributes.get(z)[2]!=null?(projectattributes.get(z)[2].toString()): " - "%></td>
+										</tr>
+										<tr>
+											 <td  style="padding: 5px; padding-left: 10px">(c)</td>
+											 <th style="width: 150px;padding: 5px; padding-left: 10px"><b>Project Unit Code </b></th>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"> <%=projectattributes.get(z)[18]!=null?(projectattributes.get(z)[18].toString()): " - "%> </td>
+										</tr>
+										<tr>
+											 <td  style="padding: 5px; padding-left: 10px">(d)</td>
 											 <th style="width: 150px;padding: 5px; padding-left: 10px"><b>Project Code </b></th>
 											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"> <%=projectattributes.get(z)[0]!=null?(projectattributes.get(z)[0].toString()): " - "%> </td>
 										</tr>
 										<tr>
-											 <td  style=" padding: 5px; padding-left: 10px">(c)</td>
+											 <td  style=" padding: 5px; padding-left: 10px">(e)</td>
 											 <th  style="width: 150px;padding: 5px; padding-left: 10px"><b>Category</b></th>
 											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"><%=projectattributes.get(z)[14]!=null?(projectattributes.get(z)[14].toString()): " - "%></td>
 										</tr>
 										<tr>
-											 <td  style="padding: 5px; padding-left: 10px">(d)</td>
+											 <td  style="padding: 5px; padding-left: 10px">(f)</td>
 											 <th  style="width: 150px;padding: 5px; padding-left: 10px"><b>Date of Sanction</b></th>
 											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"><%=sdf.format(sdf1.parse(projectattributes.get(z)[3].toString()))%></td>
 										</tr>
 										<tr>
-											 <td  style="width: 20px; padding: 5px; padding-left: 10px">(e)</td>
+											 <td  style="width: 20px; padding: 5px; padding-left: 10px">(g)</td>
 											 <th  style="width: 150px;padding: 5px; padding-left: 10px"><b>Nodal and Participating Labs</b></th>
 											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"><%if(projectattributes.get(z)[15]!=null){ %><%=(projectattributes.get(z)[15].toString())%><%} %></td>
 										</tr>
 										<tr>
-											 <td  style=" padding: 5px; padding-left: 10px">(f)</td>
+											 <td  style=" padding: 5px; padding-left: 10px">(h)</td>
 											 <th  style="width: 150px;padding: 5px; padding-left: 10px"><b>Objective</b></th>
 											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px;text-align: justify"> <%=projectattributes.get(z)[4]!=null?(projectattributes.get(z)[4].toString()): " - "%></td>
 										</tr>
 										<tr>
-											 <td  style="padding: 5px; padding-left: 10px">(g)</td>
+											 <td  style="padding: 5px; padding-left: 10px">(i)</td>
 											 <th  style="width: 150px;padding: 5px; padding-left: 10px"><b>Deliverables</b></th>
 											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"> <%=projectattributes.get(z)[5]!=null?(projectattributes.get(z)[5].toString()): " - "%></td>
 										</tr>
 										<tr>
-											 <td rowspan="2" style="padding: 5px; padding-left: 10px">(h)</td>
+											 <td rowspan="2" style="padding: 5px; padding-left: 10px">(j)</td>
 											 <th rowspan="2" style="width: 150px;padding: 5px; padding-left: 10px"><b>PDC</b></th>
 											 
-											<th colspan="2" style="text-align: center !important"><!-- Original -->&nbsp;</th>					
+											<th colspan="2" style="text-align: center !important"> Original &nbsp;</th>					
 											<%if( ProjectRevList.get(z).size()>0){ %>	
 												<th colspan="2" style="text-align: center !important">Revised</th>																			
 											<%}else{ %>													 
@@ -586,7 +608,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								 		</tr>
 											 	
 										<tr>
-											<td rowspan="3" style="width: 30px; padding: 5px; padding-left: 10px">(i)</td>
+											<td rowspan="3" style="width: 30px; padding: 5px; padding-left: 10px">(k)</td>
 											<th rowspan="3" style="padding-left: 10px"><b>Cost Breakup( &#8377; <span class="currency">Lakhs</span>)</b></th>
 											
 											<%if( ProjectRevList.get(z).size()>0 ){ %>
@@ -630,19 +652,19 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 												
 																			 	
 										<tr>
-											<td  style="width: 20px; padding: 5px; padding-left: 10px">(j)</td>
+											<td  style="width: 20px; padding: 5px; padding-left: 10px">(l)</td>
 											<th style="width: 150px;padding: 5px; padding-left: 10px"><b>No. of Meetings held</b> </th>
 								 			<td colspan="4">
 												<% if(ebandpmrccount!=null && ebandpmrccount.size()>0){
 													List<Object[]> ebandpmrcsub = ebandpmrccount.get(z); 
 													for(Object[] ebandpmrc: ebandpmrcsub) { %>
 												 	<b><%=ebandpmrc[0]!=null?(ebandpmrc[0].toString()): " - " %> : </b>
-													<span><%=ebandpmrc[1]!=null?(ebandpmrc[1].toString()): " - " %></span> &emsp;&emsp;
+													<span><%=ebandpmrc[1] !=null ? Long.parseLong(ebandpmrc[1].toString()) -1 : " - " %></span> &emsp;&emsp;
 												<%} }%>
 											</td>
 										</tr>
 										<tr>
-											<td  style="width: 20px; padding: 5px; padding-left: 10px">(k)</td>
+											<td  style="width: 20px; padding: 5px; padding-left: 10px">(m)</td>
 											<th  style="width: 210px;padding: 5px; padding-left: 10px"><b>Current Stage of Project</b></th>
 											<td colspan="4" style=" width: 200px;color:blue; padding: 5px; padding-left: 10px ; <%if(projectdatadetails.get(z)!=null){ %> background-color: <%=projectdatadetails.get(z)[11] !=null?(projectdatadetails.get(z)[11].toString()): " - "%> ;   <%} %>" >
 													 <span> <%if(projectdatadetails.get(z)!=null){ %><b><%=(projectdatadetails.get(z)[10].toString()) %> </b>  <%}else{ %>Data Not Found<%} %></span>
@@ -656,21 +678,27 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 		</div>
 		<% } %>
 <!-- ------------------------------------project attributes------------------------------------------------- -->
-		<h1 class="break"></h1>
+		<%-- <h1 class="break"></h1> --%>
 <!-- ------------------------------------system configuration and Specification------------------------------------------------- -->	
 		<% for(int z=0 ; z<1;z++) {   %>
-	<%if(z>0){ %><h1 class="break"></h1> <%} %>
-		<div style="margin-left: 10px;" align="left" class="sub-title"><b>2. Schematic Configuration</b></div><br>
-		<div align="left" style="margin-top: 5px;margin-left: 10px;"><b class="mainsubtitle">2 (a) System Configuration : </b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<%if(projectdatadetails.get(z)!=null && projectdatadetails.get(z)[3]!=null){ %>
-				
-				<%
+	<%if(z>0){ %><%-- <h1 class="break"></h1> --%> <%} %>
+	<%if(projectdatadetails.get(z)!=null && projectdatadetails.get(z)[3]!=null && projectdatadetails.get(z)[4]!=null){ 
+			
+				Path systemPath1 = Paths.get(filePath,projectLabCode,"ProjectData",projectdatadetails.get(z)[3].toString());
+				File systemfile1 = systemPath1.toFile();
+				Path systemPath2 = Paths.get(filePath,projectLabCode,"ProjectData",projectdatadetails.get(z)[4].toString());
+				File systemfile2 = systemPath2.toFile();
+				if(systemfile1.exists() || systemfile2.exists()){ %> 
+		<div style="margin-left: 10px;" align="left" class="sub-title"><b><%= ++index %>. Schematic Configuration</b></div><br>
+		<div align="left" style="margin-bottom: 15px;margin-top:20px;margin-left: 10px;"><b class="mainsubtitle"><%= index %> (a) System Configuration : </b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<%if(projectdatadetails.get(z)!=null && projectdatadetails.get(z)[3]!=null){ 
+			
 				Path systemPath = Paths.get(filePath,projectLabCode,"ProjectData",projectdatadetails.get(z)[3].toString());
 				File systemfile = systemPath.toFile();
 				if(systemfile.exists()){ %>
 					<%if(!FilenameUtils.getExtension(projectdatadetails.get(z)[3].toString()).equalsIgnoreCase("pdf") ){ %>
 						<div align="center">
-						<img class="logo" style="max-width:25cm;max-height:17cm;"  src="data:image/*;base64,<%=Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(systemfile))%>" alt="confi" >
+						<img class="logo" style="max-width:15cm;max-height:17cm;"  src="data:image/*;base64,<%=Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(systemfile))%>" alt="confi" >
 						</div>
 					<% }else{ %>
 						<b>  System Configuration Annexure </b>
@@ -693,11 +721,11 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 				<%if(projectdatadetails.get(z)!=null && projectdatadetails.get(z)[3]!=null){ %>
 				
 				<%
-				Path systemPath1 = Paths.get(filePath,projectLabCode,"ProjectData",projectdatadetails.get(z)[3].toString());
-				File systemfile1 = systemPath1.toFile();
-				if(systemfile1.exists()){ %>
+				Path systemPath3 = Paths.get(filePath,projectLabCode,"ProjectData",projectdatadetails.get(z)[3].toString());
+				File systemfile3 = systemPath3.toFile();
+				if(systemfile3.exists()){ %>
 					<%if(!FilenameUtils.getExtension(projectdatadetails.get(z)[3].toString()).equalsIgnoreCase("pdf") ){ %>
-							<h1 class="break"></h1>
+							<%-- <h1 class="break"></h1> --%>
 					<% }else{ %>
 					<% }}}%>
 	
@@ -705,7 +733,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 
 		
 	
-		<div align="left" style="margin-left: 15px;margin-top: 5px;"><b class="mainsubtitle">2 (b) System Specification : </b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<div align="left" style="margin-left: 15px;margin-bottom: 15px;margin-top:20px;"><b class="mainsubtitle"><%= index %> (b) System Specification : </b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	
 		<%if(projectdatadetails.get(z)!=null && projectdatadetails.get(z)[4]!=null){ %>
 				
@@ -715,7 +743,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 				if(specificfile.exists()){ %>
 					<%if(!FilenameUtils.getExtension(projectdatadetails.get(z)[4].toString()).equalsIgnoreCase("pdf") ){ %>
 						<div align="center"><br>
-							<img class="logo" style="max-width:25cm;max-height:17cm;"  src="data:image/*;base64,<%=Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(specificfile))%>" alt="Speci" >
+							<img class="logo" style="max-width:15cm;max-height:17cm;"  src="data:image/*;base64,<%=Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(specificfile))%>" alt="Speci" >
 						</div> 
 					<% }else{ %>
 						<b> System Specification Annexure </b>
@@ -739,7 +767,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 		
 		
 	</div>	
-	<!-- <h1 class="break"></h1> -->
+	<!-- <%-- <h1 class="break"></h1> --%> -->
 					<%if(projectdatadetails.get(z)!=null && projectdatadetails.get(z)[4]!=null){ %>
 				
 				<%
@@ -747,23 +775,25 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 				File specificfile1 = specificPath1.toFile();
 				if(specificfile1.exists()){ %>
 					<%if(!FilenameUtils.getExtension(projectdatadetails.get(z)[4].toString()).equalsIgnoreCase("pdf") ){ %> <!-- changed -->
-							<h1 class="break"></h1>
+							<%-- <h1 class="break"></h1> --%>
 					<% }else{ %>
-					<% }}}%>
+					<% }}}}}%>
 <!-- --------------------------------------------- ----------------------------------------------- -->
-		<div align="left" style="margin-left: 10px;margin-top: 5px;"><b class="mainsubtitle">3. Overall Product tree/WBS:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-				<%if(projectdatadetails.get(z)!=null && projectdatadetails.get(z)[5]!=null){ %>
-				
-				<%
+	<%if(projectdatadetails.get(z)!=null && projectdatadetails.get(z)[5]!=null){
+					
 				Path productTreePath = Paths.get(filePath,projectLabCode,"ProjectData",projectdatadetails.get(z)[5].toString());
 				File productTreeFile = productTreePath.toFile();
 				if(productTreeFile.exists()){ %>
+		<div align="left" style="margin-left: 10px;margin-bottom: 15px;margin-top:20px;"><b class="mainsubtitle"><%= ++index %>. Overall Product tree/WBS:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+				<%
+				if(projectdatadetails.get(z)!=null && projectdatadetails.get(z)[5]!=null){
+				if(productTreeFile.exists()){ %>
 					<%if(!FilenameUtils.getExtension(projectdatadetails.get(z)[5].toString()).equalsIgnoreCase("pdf") ){ %>
 						<div align="center"><br>
-							<img class="logo" style="max-width:25cm;max-height:17cm;margin-bottom: 5px"  src="data:image/*;base64,<%=Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(productTreeFile))%>" alt="Speci" >
+							<img class="logo" style="max-width:15cm;max-height:17cm;margin-bottom: 5px"  src="data:image/*;base64,<%=Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(productTreeFile))%>" alt="Speci" >
 						</div> 
-					<% }else{ %>
+					<% } else{ %>
 						<b> Overall Product tree/WBS Annexure </b>
 					<% }%>
 				
@@ -783,13 +813,16 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 			<%} %>
 			
 		</div>	
-		<%} %>
+		<%} }}%>
 
 
-		<h1 class="break"></h1> 
-<!-- ----------------------------------------------4.Details of work------------------------------------------------- -->			
-		<% for(int z=0 ; z<1;z++) {   %>
-		<div align="left" style="margin-left: 10px;"><b class="sub-title">4. Particulars of Meeting</b></div><br>
+		<%-- <h1 class="break"></h1> --%> 
+<!-- ----------------------------------------------4.Details of work------------------------------------------------- -->		
+
+		<div align="left" style="margin-left: 10px;"><b class="sub-title"><%= ++index %>. Particulars of Meeting (Annexure - A)</b></div><br>
+	
+		<%-- <% for(int z=0 ; z<1;z++) {   %>
+		<div align="left" style="margin-left: 10px;"><b class="sub-title"><%= ++index %>. Particulars of Meeting</b></div><br>
 		<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(a) <%if(CommitteeCode.equalsIgnoreCase("PMRC")){ %>
 															   						Approval 
 															   						<%}else { %>
@@ -856,7 +889,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								</td>
 							<td>
 								<%if(obj[4]!= null){ %>  
-									<%=obj[12]!=null?(obj[12].toString()): " - " %><%-- , <%=obj[13] %> --%>
+									<%=obj[12]!=null?(obj[12].toString()): " - " %>, <%=obj[13] %>
 								<%}else { %> <!-- <span class="notassign">NA</span>  --> <span class="">Not Assigned</span> <%} %> 
 							</td>
 						
@@ -892,7 +925,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								<th  style="width: 120px; ">ADC<br>PDC</th>
 						<!-- 		<th  style="width: 80px; "> ADC</th> -->
 								<th  style="width: 210px; "> Responsibility</th>
-								<th  style="width: 80px; ">Status</th> 
+								<!-- <th  style="width: 80px; ">Status</th>  -->
 								<th  style="width: 205px; ">Remarks</th>			
 							</tr>
 						</thead>
@@ -955,7 +988,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 									</span>	
 									<%} %>
 								</td>
-									<td > <%=obj[11]!=null?(obj[11].toString()): " - " %><%-- , <%=obj[12] %> --%> </td>
+									<td > <%=obj[11]!=null?(obj[11].toString()): " - " %>, <%=obj[12] %> </td>
 									<td  class="text-center" > 
 										<% if(lastdate!=null && actionstatus.equalsIgnoreCase("C") ){ %>
 										<%if(actionstatus.equals("C") && (pdcorg.isAfter(lastdate) || pdcorg.equals(lastdate))){%>
@@ -991,7 +1024,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 					
 						<% for(int z=0 ; z<1;z++) {   %>
 					<h1 class="break"></h1>
-						<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(c) Details of Technical/ User Reviews (if any).</b></div>
+						<div align="left" style="margin-left: 15px;margin-top:20px;"><b class="mainsubtitle">(c) Details of Technical/ User Reviews (if any).</b></div>
 							<div >
 							<%for(Map.Entry<String, List<Object[]>> entry : reviewMeetingListMap.entrySet()) { 
 								if(entry.getValue().size()>0) {%>
@@ -1029,19 +1062,24 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								<td  style="text-align: center; " ><%= sdf.format(sdf1.parse(obj[1].toString()))%></td>
 								</tr>
 									</tbody><%}%></table></div> <%} %>		</div>
-			<%} %>
+			<%} %> --%>
 			
-				<% for(int z=0 ; z<1;z++) {   %>
-							 <h1 class="break"></h1>
+				<% for(int z=0 ; z<1;z++) {   
+				
+					List<Object[]> list = milestoneBriefingMap!=null ? milestoneBriefingMap.get("5") : new ArrayList<>();
+					
+					if(list!=null && !list.isEmpty()){
+				%>
+							 <%-- <h1 class="break"></h1> --%>
 <!-- -------------------------------------------------------------------------------------------- -->
-		<div align="left" style="margin-left: 10px;">
+		<div align="left" style="margin-left: 10px;margin-bottom: 15px;">
 		
 			<%-- <a href="<%= HyperlinkPath+ "/MilestoneActivityList.htm?ProjectId="+projectid %>" target="_top" rel="noopener noreferrer" > --%>
-				<b class="sub-title">5. Milestones achieved prior to this <%=CommitteeCode!=null?(CommitteeCode).toUpperCase(): " - " %> Meeting period.  </b>
+				<b class="sub-title"><%= ++index %>.&nbsp;Milestones achieved prior to this <%=CommitteeCode!=null?(CommitteeCode).toUpperCase(): " - " %> Meeting period.  </b>
 			<!-- </a> -->
    		</div>
 
-						
+				<%-- 		
 							<table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
 								<thead>
 									<tr>
@@ -1110,7 +1148,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 													<%}} 
 													
 													%>
-													<%-- A-<%=milcountA %> --%>
+													A-<%=milcountA %>
 												<% /* milcountA++;
 													milcountB=1;
 													milcountC=1;
@@ -1122,7 +1160,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 															<%=entry.getValue()!=null?(entry.getValue()): " - " %>
 													<%}}	
 													%>
-													<%-- B-<%=milcountB %> --%>
+													B-<%=milcountB %>
 												<%/* milcountB+=1;
 												milcountC=1;
 												milcountD=1;
@@ -1209,19 +1247,99 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								
 								<%} %>
 							</table>
-				<%} %>
 				
-	<% for(int z=0 ; z<1;z++) {   %>
+				 --%>
+				 
+					<%-- <table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
+						<thead>
+							<tr>
+								<th style="width:5%!important;">SN</th>
+								<th style="width:95%!important" >Details</th>
+							</tr>
+						</thead>
+						<tbody>
+							<%
+							if(list!=null && !list.isEmpty()){
+							int num = 1;
+							for(Object[] obj: list){ %>
+								<tr>
+									<td class="width-5" style="text-align: center;"><%= num++ %></td>
+									<td>
+										<%=obj[2]!=null ? obj[2].toString() : " - " %>
+									</td>
+								</tr>
+							<%}}else{ %>
+								<tr>
+									<td style="text-align: center;" colspan="2">No Data Available</td>
+								</tr>
+							<%} %>
+						</tbody>
+					</table>
+			 --%>
+			 
+			 <ul style="list-style-type:none; width:680px; margin-top:5px; font-size:16px; padding-left:0;">
+						<%
+						if(list != null && !list.isEmpty()){
+						    for(Object[] obj : list){
+						%>
+						    <li style="margin-bottom:10px;text-align:left;">
+						        <%
+						        String editorContent = obj[2] != null ? obj[2].toString() : " - ";
+						
+						        // Convert inner <ol> to numbered format
+						        Pattern pattern = Pattern.compile("(?i)<ol[^>]*>(.*?)</ol>", Pattern.DOTALL);
+						        Matcher matcher = pattern.matcher(editorContent);
+						
+						        while (matcher.find()) {
+						            String olContent = matcher.group(1);
+						
+						            Pattern liPattern = Pattern.compile("(?i)<li[^>]*>(.*?)</li>");
+						            Matcher liMatcher = liPattern.matcher(olContent);
+						
+						            StringBuilder numberedList = new StringBuilder();
+						            int znum = 1;
+						
+						            while (liMatcher.find()) {
+						                numberedList.append(znum++)
+						                              .append(". ")
+						                              .append(liMatcher.group(1).trim())
+						                              .append("<br/>");
+						            }
+						
+						            editorContent = editorContent.replace(matcher.group(0), numberedList.toString());
+						        }
+						
+						        // Remove unwanted tags
+						        editorContent = editorContent.replaceAll("(?i)</?(p|div|)[^>]*>", "");
+						        %>
+						
+						        <%= editorContent %>
+						    </li>
+						<%
+						    }
+						} else {
+						%>
+						    <li>No Data Available</li>
+						<%
+						}
+						%>
+						</ul>
+			 	<%}} %>
+				
+	<% for(int z=0 ; z<1;z++) {  
+
+				 List<Object[]> list = milestoneBriefingMap!=null ? milestoneBriefingMap.get("6") : new ArrayList<>();
+					 
+	%>
 	
-	
-						 <h1 class="break"></h1>
+						 <%-- <h1 class="break"></h1> --%>
 <!-- ------------------------------------------------------------------------------------------------------------ -->
 
-		<div align="left" style="margin-left: 10px;"><b class="sub-title">6. Details of work and current status of sub system with major milestones ( since last <%= CommitteeCode!=null?(CommitteeCode).toUpperCase():" - " %> meeting ) period </b></div> 
+		<div align="left" style="margin-left: 10px;margin-bottom: 15px;margin-top:20px;"><b class="sub-title"><%= ++index %>. Details of work and current status of sub system with major milestones ( since last <%= CommitteeCode!=null?(CommitteeCode).toUpperCase():" - " %> meeting ) period </b></div> 
 						
-			
+<%-- 			
 			<div align="left" style="margin-left: 15px;">
-				<%-- <a href="<%= HyperlinkPath+ "/MilestoneActivityList.htm?ProjectId="+projectid %>" target="_top" rel="noopener noreferrer" > --%>
+				<a href="<%= HyperlinkPath+ "/MilestoneActivityList.htm?ProjectId="+projectid %>" target="_top" rel="noopener noreferrer" >
 					<b class="mainsubtitle"><br>(a) Work carried out, Achievements, test result etc.</b>
 				<!-- </a> -->	
 			</div>	
@@ -1283,7 +1401,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 													<%}} 
 												 
 												%>
-													<%-- A-<%=milcountA %> --%>
+													A-<%=milcountA %>
 												<% /* milcountA++;
 													milcountB=1;
 													milcountC=1;
@@ -1295,7 +1413,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 															<%=entry.getValue()!=null?(entry.getValue()): " - " %>
 													<%}}	
 												%>
-													<%-- B-<%=milcountB %> --%>
+													B-<%=milcountB %>
 												<%/* milcountB+=1;
 												milcountC=1;
 												milcountD=1;
@@ -1372,7 +1490,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 									if(trlfile.exists()){ %>
 										<%if(!FilenameUtils.getExtension(projectdatadetails.get(z)[6].toString()).equalsIgnoreCase("pdf") ){ %>
 											<div align="center"><br>
-												<img class="logo" style="max-width:23cm;max-height:15cm;margin-bottom: 5px"  src="data:image/*;base64,<%=Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(trlfile))%>" alt="Speci" >
+												<img class="logo" style="max-width:15cm;max-height:15cm;margin-bottom: 5px"  src="data:image/*;base64,<%=Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(trlfile))%>" alt="Speci" >
 											</div> 
 										<% }else{ %>
 												<div align="center"><br>
@@ -1476,8 +1594,8 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 																		-									
 																	<%} %>
 																	<br>
-<%-- 											<% if (obj[11] != null && !LocalDate.parse(obj[11].toString()).equals(LocalDate.parse(obj[10].toString())) ) { %><span style="font-size:0.9rem;"><%=sdf.format(sdf1.parse(obj[11].toString()))%></span><br> <% } %>
-											<% if (obj[10] != null && !LocalDate.parse(obj[10].toString()).equals(LocalDate.parse(obj[9].toString())) ) { %><span style="font-size:0.9rem;"><%=sdf.format(sdf1.parse(obj[10].toString()))%></span><br><% } %> --%>
+											<% if (obj[11] != null && !LocalDate.parse(obj[11].toString()).equals(LocalDate.parse(obj[10].toString())) ) { %><span style="font-size:0.9rem;"><%=sdf.format(sdf1.parse(obj[11].toString()))%></span><br> <% } %>
+											<% if (obj[10] != null && !LocalDate.parse(obj[10].toString()).equals(LocalDate.parse(obj[9].toString())) ) { %><span style="font-size:0.9rem;"><%=sdf.format(sdf1.parse(obj[10].toString()))%></span><br><% } %>
 											<%if(!pdcorg.equals(enddate)) {%>
 											<span style="font-size:0.9rem"><b><%=sdf.format(sdf1.parse(obj[17].toString()))%></b></span>
 											<br>
@@ -1489,7 +1607,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										
 										</td> -->
 													
-										<td rowspan="1"  ><%=obj[7]!=null?(obj[7].toString()): " - " %><%-- ,&nbsp;<%=obj[8] %> --%></td>	
+										<td rowspan="1"  ><%=obj[7]!=null?(obj[7].toString()): " - " %>,&nbsp;<%=obj[8] %></td>	
 										<td style="text-align: justify" colspan="2" rowspan="1"><%if(obj[19]!=null){ %> <%=(obj[19].toString())%><%} %></td>
 											
 									</tr>	
@@ -1547,18 +1665,281 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 							<%} }%>
 						</tbody>
 					</table>							
-		<%} %>
+		
+		 --%>
+		 
+		 	<%if(list!=null && !list.isEmpty()){%>
+		 	
+		 		<div align="left" class="margin-left15">(a) Work carried out, Achievements, test result etc.</div>
+		 		
+					<%-- <table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
+						<thead>
+							<tr>
+								<th style="width:5%!important;">SN</th>
+								<th style="width:95%!important" >Details</th>
+							</tr>
+						</thead>
+						<tbody>
+							<%
+							if(list!=null && !list.isEmpty()){
+							int num = 1;
+							for(Object[] obj: list){ %>
+								<tr>
+									<td class="width-5" style="text-align: center;"><%= num++ %></td>
+									<td>
+										<%=obj[2]!=null ? obj[2].toString() : " - " %>
+									</td>
+								</tr>
+							<%}}else{ %>
+								<tr>
+									<td style="text-align: center;" colspan="2">No Data Available</td>
+								</tr>
+							<%} %>
+						</tbody>
+					</table> --%>
+					 
+			 <ul style="list-style-type:none; width:680px; margin-top:5px; font-size:16px; padding-left:0;">
+						<%
+						if(list != null && !list.isEmpty()){
+						    for(Object[] obj : list){
+						%>
+						    <li style="margin-bottom:10px;text-align:left;">
+						        <%
+						        String editorContent = obj[2] != null ? obj[2].toString() : " - ";
+						
+						        // Convert inner <ol> to numbered format
+						        Pattern pattern = Pattern.compile("(?i)<ol[^>]*>(.*?)</ol>", Pattern.DOTALL);
+						        Matcher matcher = pattern.matcher(editorContent);
+						
+						        while (matcher.find()) {
+						            String olContent = matcher.group(1);
+						
+						            Pattern liPattern = Pattern.compile("(?i)<li[^>]*>(.*?)</li>");
+						            Matcher liMatcher = liPattern.matcher(olContent);
+						
+						            StringBuilder numberedList = new StringBuilder();
+						            int znum = 1;
+						
+						            while (liMatcher.find()) {
+						                numberedList.append(znum++)
+						                              .append(". ")
+						                              .append(liMatcher.group(1).trim())
+						                              .append("<br/>");
+						            }
+						
+						            editorContent = editorContent.replace(matcher.group(0), numberedList.toString());
+						        }
+						
+						        // Remove unwanted tags
+						        editorContent = editorContent.replaceAll("(?i)</?(p|div|)[^>]*>", "");
+						        %>
+						
+						        <%= editorContent %>
+						    </li>
+						<%
+						    }
+						} else {
+						%>
+						    <li>No Data Available</li>
+						<%
+						}
+						%>
+						</ul>
+		<%}%>
+		<% if(projectdatadetails.get(z)!=null && projectdatadetails.get(z)[6]!=null){ %>
+		 	<div align="left" style="margin-left:15px;">(b) TRL table with TRL at sanction stage and current stage indicating overall PRI.</div>
+		 	<div>
+						<%
+						Path trlPath = Paths.get(filePath,projectLabCode,"ProjectData",projectdatadetails.get(z)[6].toString());
+						File trlfile = trlPath.toFile();
+						if(trlfile.exists()){ %>
+							<%if(!FilenameUtils.getExtension(projectdatadetails.get(z)[6].toString()).equalsIgnoreCase("pdf") ){ %>
+								<div align="center"><br>
+									<img class="logo" style="max-width:15cm;max-height:15cm;margin-bottom: 5px"  src="data:image/*;base64,<%=Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(trlfile))%>" alt="Speci" >
+								</div> 
+							<% }else{ %>
+									<div align="center"><br>
+								 	<b> TRL table with TRL at sanction stage Annexure </b>
+									</div>
+							<% }%>
+						<%}else{ %>
+							<div align="center">
+								<br>
+								File Missing in File System
+							</div>
+						<%} %>
+					<%}else{ %>
+					<div align="center"><br>
+					<b> File Not Found</b>
+					</div>
+		</div>
+		<%} if(riskmatirxdata.get(z).size()>0){ %>
+		
+			<div align="left" style="margin-left: 25px;margin-top: 10px;">(c) Risk Matrix/Management Plan/Status. </div>
+			
+			<ul style="list-style: disc!important;padding-left: 35px!important;margin-top:20px;">
+			<%for(Object[] obj : riskmatirxdata.get(z)){ %>
+				<li style="padding-bottom:10px;"><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()):" - " %></li>
+			<%} %>
+			</ul>
+			
+			<%-- 
+				<table class="subtables table-subtables" style="width:95%!important;">
+					<thead>	
+							<tr>
+								<td colspan="9" class="border-0">
+									<p class="font-size10 text-center"> 
+										<span class="notassign">NA</span> : Not Assigned &nbsp;&nbsp;
+										<span class="assigned">AA</span> : Activity Assigned &nbsp;&nbsp; 
+										<span class="ongoing">OG</span> : On Going &nbsp;&nbsp; 
+										<span class="delay">DO</span> : Delay - On Going &nbsp;&nbsp; 
+										<span class="ongoing">RC</span> : Review & Close &nbsp;&nbsp;
+										<span class="delay">FD</span> : Forwarded With Delay &nbsp;&nbsp;
+										<span class="completed">CO</span> : Completed &nbsp;&nbsp; 
+										<span class="completeddelay">CD</span> : Completed with Delay &nbsp;&nbsp; 
+										<span class="inactive">IA</span> : InActive &nbsp;&nbsp;
+										<span class="delaydays">DD</span> : Delayed days &nbsp;&nbsp; 
+									</p>
+				   				</td>									
+							</tr>
+							<tr>
+								<td colspan="9" class="border-0 text-right"><b>RPN :</b>Risk Priority Number</td>
+							</tr>
+							<tr>
+								<th class="width15 text-center " rowspan="2">SN</th>
+								<th class="width330 " colspan="3">
+									Risk
+									<a data-toggle="modal" class="fa faa-pulse animated m-modal" data-target="#RiskTypesModal" data-whatever="@mdo" ><i class="fa fa-info-circle circle-font"  aria-hidden="true"></i> </a>
+								</th>
+								<th class="width100" rowspan="1" > ADC <br>PDC</th>
+								<th class="width160" rowspan="1"> Responsibility</th>
+								<th class="width50"  rowspan="1">Status(DD)</th>
+								<th class="width215" rowspan="1">Remarks</th>	
+							</tr>
+							<tr>
+								<th  class="text-center width110 " > Severity<br>(1-10)</th>
+								<th  class="text-center width110"> Probability<br>(1-10)</th>
+								<th  class="text-center width110"> RPN<br>(1-100)</th>
+								<th  class="width210" colspan="3" > Mitigation Plans</th>
+								<th  class="width315" colspan="2"> Impact</th>		
+							</tr>
+										
+					</thead>
+																		
+					<tbody>
+						<%
+							int i=0;
+						for(Object[] obj : riskmatirxdata.get(z)){
+								i++;%>
+									<tr>
+										<td class="text-center" rowspan="2"><%=i %></td>
+										<td class="text-justify text-danger" colspan="3" >
+											<%=obj[0] %> <span class="color-c font-weight-bold"> - <%=obj[23] %><%=obj[24]%></span>
+										</td>
+										<td class="text-center" rowspan="1">
+										<%	String actionstatus = obj[15].toString();
+												LocalDate pdcorg = LocalDate.parse(obj[9].toString());
+												LocalDate enddate = LocalDate.parse(obj[17].toString());
+												LocalDate lastdate = obj[20]!=null ? LocalDate.parse(obj[20].toString()): null;
+												LocalDate today = LocalDate.now();
+												int progress = obj[18]!=null ? Integer.parseInt(obj[18].toString()) : 0;
+											%> 
+												<% if(lastdate!=null && actionstatus.equalsIgnoreCase("C") ){%>
+													<%if(actionstatus.equals("C") && (pdcorg.isAfter(lastdate) || pdcorg.equals(lastdate))){%>
+													<span class="completed"><%= sdf.format(sdf1.parse(obj[20].toString()))%> </span>
+													<%}else if(actionstatus.equals("C") && pdcorg.isBefore(lastdate)){ %>	
+													<span class="completeddelay"><%= sdf.format(sdf1.parse(obj[20].toString()))%> </span>
+													<%} %>	
+												<%}else{ %>
+													-									
+												<%} %>
+												<br>
+										
+										
+											<%if(!pdcorg.equals(enddate)) {%>
+											<%=sdf.format(sdf1.parse(obj[17].toString()))%>
+											<%} %>
+											
+											<%=sdf.format(sdf1.parse(obj[9].toString()))%>
+										</td>
+										
+
+												
+									<td rowspan="1"  ><%=obj[7] %>, <%=obj[8] %></td>	
+									<td class="text-center" rowspan="1">
+											
+										<% if(lastdate!=null && actionstatus.equalsIgnoreCase("C") ){ %>
+											<%if(actionstatus.equals("C") && (pdcorg.isAfter(lastdate) || pdcorg.equals(lastdate))){%>
+												<span class="completed">CO</span>
+											<%}else if(actionstatus.equals("C") && pdcorg.isBefore(lastdate)){ %>	
+												<span class="completeddelay">CD (<%= ChronoUnit.DAYS.between(pdcorg, lastdate) %>) </span>
+											<%} %>	
+										<%}else{ %>
+											<%if(actionstatus.equals("F")  && (pdcorg.isAfter(lastdate) || pdcorg.isEqual(lastdate) )){ %>
+												<span class="ongoing">RC</span>												
+											<%}else if(actionstatus.equals("F")  && pdcorg.isBefore(lastdate)) { %>
+												<span class="delay">FD</span>
+											<%}else if(actionstatus.equals("A") && progress==0){  %>
+												<span class="assigned">
+													AA <%if(pdcorg.isBefore(today)){ %> (<%= ChronoUnit.DAYS.between(pdcorg, today)  %>) <%} %>
+												</span>
+											<%} else if(pdcorg.isAfter(today) || pdcorg.isEqual(today)){  %>
+												<span class="ongoing">OG</span>
+											<%}else if(pdcorg.isBefore(today)){  %>
+												<span class="delay">DO (<%= ChronoUnit.DAYS.between(pdcorg, today)  %>)  </span>
+											<%} %>					
+																			
+										<%} %>
+										
+													
+									</td>
+									<td class="text-justify" rowspan="1" ><%if(obj[19]!=null){ %> <%= StringEscapeUtils.escapeHtml4(obj[19].toString()) %><%} %></td>
+										
+								</tr>	
+								
+												
+								<tr>
+									<td class="text-center" ><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):"" %></td>
+									<td class="text-center" > <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):"" %></td>
+									<td class="text-center">
+										<%=obj[22]%>
+										<% int RPN =Integer.parseInt(obj[22].toString());
+												if(RPN>=1 && RPN<=25){ %>(Low)
+												<%}else if(RPN>=26 && RPN<=50){ %>(Medium)
+												<%}else if(RPN>=51 && RPN<=75){ %>(High)
+												<%}else if(RPN>=76){ %>(Very High)
+												<%} %>
+									</td>
+									<td class="text-justify" colspan="3" ><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()):"" %></td>
+									<td class="text-justify" colspan="2" ><%=obj[21]!=null?StringEscapeUtils.escapeHtml4(obj[21].toString()):"" %></td>
+								</tr>
+											
+								<%if(riskmatirxdata.get(z).size() > i){ %>
+									<tr>
+										<td colspan="9" class="color-transparent">.</td>
+									</tr>
+								<%} %>	
+								<%}%>
+						</tbody>		
+					</table>
+			 --%>
+			
+			<%} } %>
 		
 		<%int chapter=1;int chapter2=1;
-		for(int z=0 ; z<projectidlist.size();z++) {   %>
+		for(int z=0 ; z<projectidlist.size();z++) {  %>
+			<%if(procurementOnSanction.get(z)!=null ){ %>
+		 					
 		<!-- ----------------------------------------------7a. Procurement Status------------------------------------------------- -->
-						<h1 class="break"></h1>
-						<div align="left" style="margin-left: 10px;"><b class="sub-title">7. Details of Procurement</b></div>
-							<div align="left" style="margin-left: 15px;margin-top: 5px;"><b class="mainsubtitle">(a<%if(projectidlist.size()>1) {%><%="."+chapter++%><%} %>)Details of Procurement plan (Major Items) 			 </b>  <%if(projectidlist.size()>1) {%> (<b><%=ProjectDetail.get(z)[1]%><% if (z > 0) { %>(SUB)<% } %>  <%} %></b>)</div>
-							<div align="right"> <span class="currency" style="font-weight: bold;width: 970px !important;" >(In &#8377; Lakhs)</span></div>
+						
+						<div align="left" style="margin-left: 10px;margin-bottom: 15px;margin-top:20px;"><b class="sub-title"><% if(chapter==1){ %> <%= ++index %><%}else{ %><%= index %><%} %>. Details of Procurement</b></div>
+						
+							<div align="left" style="margin-left: 15px;margin-bottom: 15px;margin-top:20px;"><b class="mainsubtitle">(a<%if(projectidlist.size()>1) {%><%="."+chapter++%><%} %>)Details of Procurement plan (Major Items) 			 </b>  <%if(projectidlist.size()>1) {%> (<b><%=ProjectDetail.get(z)[1]%><% if (z > 0) { %>(SUB)<% } %> </b>)<%} %></div>
+							<!-- <div align="right"> <span class="currency" style="font-weight: bold;width: 970px !important;" >(In &#8377; Lakhs)</span></div> -->
 							
 							<table class="subtables" style=" margin-left: 8px;margin-top:5px;font-size: 16px; border-collapse: collapse;border: 1px solid black" >
 										<thead>
+										<%if(procurementOnDemand.get(z)!=null &&  procurementOnDemand.get(z).size()>0){ %>
 										<tr>
 											<th colspan="11" style="text-align: right;"> <span class="currency" >(In &#8377; Lakhs)</span></th>
 										</tr>
@@ -1599,19 +1980,19 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										    }%>
 										    
 										    <tr>
-										    	<td class="std" colspan="8" style="text-align: right;"><b>Total</b></td>
+										    	<td class="std" colspan="6" style="text-align: right;"><b>Total</b></td>
 										    	<td class="std" style="text-align: right;"><b><%=df.format(estcost)%></b></td>
 										    	
-										    	<td class="std" colspan="2" style="text-align: right;"></td>
+										    	<td class="std" colspan="4" style="text-align: right;"></td>
 
 										    </tr>
 										    
 										    
 										    <% }else{%>											
 												<tr><td colspan="11" style="border: 1px solid black;text-align: center;" class="std" >Nil </td></tr>
-											<%} %>
+											<%}} %>
 											<!-- ********************************Future Demand Start *********************************** -->
-											<tr>
+											<%-- <tr>
 											<th class="std" colspan="11" style="border: 1px solid black"><span class="mainsubtitle">Future Demand</span></th>
 											</tr>
 											<tr>
@@ -1647,10 +2028,10 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										    
 										    <% }else{%>											
 												<tr><td colspan="11" style="border: 1px solid black;text-align: center;" class="std" >Nil </td></tr>
-											<%} %>
+											<%} %> --%>
 											
 									<!-- ********************************Future Demand End *********************************** -->
-											
+										<%if(procurementOnSanction.get(z)!=null && procurementOnSanction.get(z).size()>0){ %>	
 											 <tr >
 											 
 												<th  class="std"  colspan="11">Orders Placed ( > &#8377; <% if (projectdatadetails.get(0) != null && projectdatadetails.get(0)[13] != null) { %>
@@ -1748,7 +2129,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										 <% }else{%>
 											
 												<tr><td colspan="8" style="border: 1px solid black;" class="std"  style="text-align: center;">Nil </td></tr>
-											<%} %>
+											<%}} %>
 									</table> 
 							
 									 
@@ -1789,11 +2170,13 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										   <%} %>
 										   </tbody>
 									  </table>
+									  
+									  <%} %>
 								
 <!-- ----------------------------------------------7b. Procurement Status------------------------------------------------- -->								
-					  <h1 class="break"></h1>
-								
-								<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(b<%if(projectidlist.size()>1) {%><%="."+chapter2++%><%} %>) Procurement Status</b> 			<%if(projectidlist.size()>1) {%> (<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  <%} %></b>) </b></div>
+					  
+						<%if(procurementOnSanction.get(z)!=null){ %>
+								<div align="left" style="margin-left: 15px;margin-bottom: 15px;margin-top:20px;"><b class="mainsubtitle">(b<%if(projectidlist.size()>1) {%><%="."+chapter2++%><%} %>) Procurement Status</b> 			<%if(projectidlist.size()>1) {%> (<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  <%} %></b>)</div>
 								<div align="right" style="width:980px !important;"> <span class="currency" style="font-weight: bold;" >(In &#8377; Lakhs)</span></div>
 								
 								<table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 0px; margin-left: 25px;width:980px !important;  border-collapse:collapse;" >
@@ -2000,13 +2383,15 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 									  
                
 					
-		<%} %>	
-			<% char fch='a'; for(int z=0 ; z<projectidlist.size();z++) {   %>
+		<%}} %>	
+			 <%-- <% char fch='a'; for(int z=0 ; z<projectidlist.size();z++) {   			
+			%> --%>
 					<!-- ----------------------------------------------8. Overall financial Status------------------------------------------------- -->
-					<h1 class="break"></h1>	
-		 
-   					<div align="left" style="margin-left: 10px;"><b class="sub-title">8 <%if(projectidlist.size()>1) {%> (<%=(fch++) %>) <%} %>. Overall Financial Status </b> 			<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  </b></div><div align="right"><b><span class="currency" >(&#8377; <span>Crore</span>)</span></b></div>
-						 
+						
+		    					<div align="left" style="margin-left: 10px;margin-bottom: 15px;margin-top:20px;"><b class="sub-title"><%= ++index %>. Overall Financial Status (Annexure - B) </b> 		</div>
+		 <%--
+   					<div align="left" style="margin-left: 10px;"><b class="sub-title"><%if(fch=='a'){ %><%= ++index %><%}else{ %><%=index %><%} %> <%if(projectidlist.size()>1) {%> (<%=(fch++) %>) <%} %>. Overall Financial Status </b> 			<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  </b></div><div align="right"><b><span class="currency" >(&#8377; <span>Crore</span>)</span></b></div>
+.						 
 						  	<table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
 						  	    <thead>
 		                           <tr>
@@ -2181,17 +2566,20 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 			     <% } %>
 			</table>  
 		
-		<%} %>
+		<%}} %> --%>
 			
 	<% for(int z=0 ; z<1;z++) {   %>
-			<h1 class="break"></h1>	
-			
-				<div align="left" style="margin-left: 10px;">
+				
+			<%
+				 List<Object[]> list = milestoneBriefingMap!=null ? milestoneBriefingMap.get("9") : new ArrayList<>();
+				 if(list!=null && !list.isEmpty()){
+					 %>
+				<div align="left" style="margin-left: 10px;margin-bottom: 15px;margin-top:20px;">
 				<%-- <a href="<%= HyperlinkPath+ "/MilestoneActivityList.htm?ProjectId="+projectid %>" target="_top" rel="noopener noreferrer" > --%>
 				<%if(CommitteeCode.equalsIgnoreCase("EB")){ %>
-   							<b class="sub-title">9. Action Plan for Next Six Months - Technical Milestones with Financial Outlay : </b>  
+   							<b class="sub-title"><%= ++index %>. Action Plan for Next Six Months - Technical Milestones with Financial Outlay : </b>  
 				<%}else { %>
-							<b class="sub-title">9. Action Plan for Next Three Months - Technical Milestones with Financial Outlay : </b> 
+							<b class="sub-title"><%= ++index %>. Action Plan for Next Three Months - Technical Milestones with Financial Outlay : </b> 
 				<%} %>
 				<!-- </a> -->
 		
@@ -2199,7 +2587,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 		
 			<!-- Tharun code after Level -->
 		
-				<table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;   border-collapse:collapse;" >
+<%-- 				<table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;   border-collapse:collapse;" >
 				
 				
 						<thead>
@@ -2260,7 +2648,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 													<%}} 
 												
 												%>
-													<%-- A-<%=countA %> --%>
+													A-<%=countA %>
 												<% /* countA++;
 												    countB=1;
 												    countC=1;
@@ -2274,7 +2662,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 												
 												
 												%>
-												<%-- 	B-<%=countB %> --%>
+													B-<%=countB %>
 												<%/* countB+=1;
 												countC=1;
 												countD=1;
@@ -2321,7 +2709,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 											</td>
 																			<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("ADE")) {%>
 											
-											<td ><%=obj[24]!=null?(obj[24].toString()): " - " %><%-- (<%=obj[25] %>) --%></td>
+											<td ><%=obj[24]!=null?(obj[24].toString()): " - " %>(<%=obj[25] %>)</td>
 											
 											<%} %>
 											<td style="text-align: center"><%=obj[16]!=null?(obj[16].toString()): " - " %>%</td>		
@@ -2348,14 +2736,100 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								<%} %>
 								</tbody>
 							</table>
-<% } %>
+ --%>
+ 		
+					<%-- <table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
+						<thead>
+							<tr>
+								<th style="width:5%!important;">SN</th>
+								<th style="width:95%!important" >Details</th>
+							</tr>
+						</thead>
+						<tbody>
+							<%
+							if(list!=null && !list.isEmpty()){
+							int num = 1;
+							for(Object[] obj: list){ %>
+								<tr>
+									<td class="width-5" style="text-align: center;"><%= num++ %></td>
+									<td>
+										<%=obj[2]!=null ? obj[2].toString() : " - " %>
+									</td>
+								</tr>
+							<%}}else{ %>
+								<tr>
+									<td style="text-align: center;" colspan="2">No Data Available</td>
+								</tr>
+							<%} %>
+						</tbody>
+					</table> --%>
+					
+					 
+			 <ul style="list-style-type:none; width:680px; margin-top:5px; font-size:16px; padding-left:0;">
+						<%
+						if(list != null && !list.isEmpty()){
+						    for(Object[] obj : list){
+						%>
+						    <li style="margin-bottom:10px;text-align:left;">
+						        <%
+						        String editorContent = obj[2] != null ? obj[2].toString() : " - ";
+						
+						        // Convert inner <ol> to numbered format
+						        Pattern pattern = Pattern.compile("(?i)<ol[^>]*>(.*?)</ol>", Pattern.DOTALL);
+						        Matcher matcher = pattern.matcher(editorContent);
+						
+						        while (matcher.find()) {
+						            String olContent = matcher.group(1);
+						
+						            Pattern liPattern = Pattern.compile("(?i)<li[^>]*>(.*?)</li>");
+						            Matcher liMatcher = liPattern.matcher(olContent);
+						
+						            StringBuilder numberedList = new StringBuilder();
+						            int znum = 1;
+						
+						            while (liMatcher.find()) {
+						                numberedList.append(znum++)
+						                              .append(". ")
+						                              .append(liMatcher.group(1).trim())
+						                              .append("<br/>");
+						            }
+						
+						            editorContent = editorContent.replace(matcher.group(0), numberedList.toString());
+						        }
+						
+						        // Remove unwanted tags
+						        editorContent = editorContent.replaceAll("(?i)</?(p|div|)[^>]*>", "");
+						        %>
+						
+						        <%= editorContent %>
+						    </li>
+						<%
+						    }
+						} else {
+						%>
+						    <li>No Data Available</li>
+						<%
+						}
+						%>
+						</ul>
+
+<% }} %>
 
 	<% for(int z=0 ; z<1;z++) {   %>
-			<h1 class="break"></h1>
+			
 <!-- ----------------------------------------------8. Action plan for next three------------------------------------------------- -->
 <!-- ----------------------------------------------9.GANTT chart---------------------------------------------------------- -->
-			<div align="left" style="margin-left: 15px;">
-					<b class="sub-title">10. PERT/GANTT chart of overall project schedule :
+
+ <% 
+              String fileName12 = String.format("grantt_%s_%s.png", projectidlist.get(z).toString(), No2);
+              String fileName112 = String.format("grantt_%s_%s.pdf", projectidlist.get(z).toString(), No2);
+              Path uploadPath12 = Paths.get(filePath,projectLabCode,"gantt",fileName12);
+              Path uploadPath112 = Paths.get(filePath,projectLabCode,"gantt",fileName112);
+			  File file12 = uploadPath12.toFile();
+			  File file112 = uploadPath112.toFile();
+              if(file12.exists()){ %>
+			<div align="left" style="margin-left: 15px;margin-bottom: 15px;margin-top:20px;">
+					<b class="sub-title"><%= ++index %>. PERT/GANTT chart of overall project schedule :
 					<!--  [<span style="text-decoration: underline;">Original (as per Project sanction / Latest PDC extension) and Current</span>]: --> 
 				</b>
 			</div>
@@ -2377,7 +2851,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 					</span>
 				</div>
 				<div align="center"><br>
-					<img class="logo" style="max-width:25cm;max-height:17cm;margin-bottom: 5px" src="data:image/*;base64,<%=Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(file))%>" alt="confi" > 
+					<img class="logo" style="max-width:15cm;max-height:17cm;margin-bottom: 5px" src="data:image/*;base64,<%=Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(file))%>" alt="confi" > 
 				</div>
 				
               <%} else if(file1.exists()){ %>
@@ -2392,11 +2866,12 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 			<%} %>
 
 			<div>
-	<%} %>
+	<%}} %>
 	
 		<% for(int z=0 ; z<1;z++) {   %>
-			<h1 class="break"></h1>
-			<div align="left" style="margin-left: 10px;"><b class="sub-title">11. Issues:</b></div>
+		<%if(oldpmrcissueslist.get(z)!=null && !oldpmrcissueslist.get(z).isEmpty()){ %>
+			
+			<div align="left" style="margin-left: 10px;margin-bottom: 15px;margin-top:20px;"><b class="sub-title"><%= ++index %>. Issues:</b></div>
 			
 			<table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;   border-collapse:collapse;" >
 						<thead>
@@ -2473,15 +2948,19 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										}} }%>
 								</tbody>			
 							</table>
-			<%} %>
+			<%}} %>
 				
-			<% for(int z=0 ; z<1;z++) {   %>
-			<h1 class="break"></h1>	
-			<div align="left" style="margin-left: 10px;"><b class="sub-title"> 
+			<% for(int z=0 ; z<1;z++) {  
+				
+				if(TechWorkDataList.get(z)!=null && TechWorkDataList.get(z)[2]!=null && !TechWorkDataList.get(z)[2].toString().isBlank()){
+					System.out.println(TechWorkDataList.get(z)[2].toString()+"==========================================");
+					%>
+				
+			<div align="left" style="margin-left: 10px;margin-bottom: 15px;margin-top:20px;"><b class="sub-title"> 
    							<%if(CommitteeCode.equalsIgnoreCase("EB")){ %>
-   								12. Other Relevant Points (if any) and Technical Work Carried Out For Last Six Months
+   								<%= ++index %>. Other Relevant Points (if any) and Technical Work Carried Out For Last Six Months
 							<%}else { %>
-								12. Other Relevant Points (if any) and Technical Work Carried Out For Last Three Months
+								<%= ++index %>. Other Relevant Points (if any) and Technical Work Carried Out For Last Three Months
 							<%} %>
    						</b></div>
    						
@@ -2496,7 +2975,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 											<td style="text-align: justify;"><%=(TechWorkDataList.get(z)[2].toString()) %></td>
 										</tr>
 								<%}else{ %>
-									<tr><td colspan="2" style="text-align: left ;">Nil </td></tr>
+									<tr><td colspan="2" style="text-align: center ;">Nil </td></tr>
 								<%} %>
 									
 						</table>
@@ -2505,7 +2984,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 							List<TechImages>  TechImagesList= TechImages.get(z); 
 							if(TechImagesList.size()>0){%>
 						
-						<h1 class="break"></h1>	
+							
 						<b class="mainsubtitle"> &nbsp;&nbsp;Technical Images</b> 
 						
 						<%} }%>
@@ -2537,31 +3016,44 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 							<%}}} %>
 						
 						
-			<%} %>	
+			<%}} %>	
 			<% for(int z=0 ; z<1;z++) {   %>
-											<h1 class="break"></h1>		
+													
 <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------- -->
-						<div align="left" style="margin-left: 10px;"><b class="sub-title">13. Decision/Recommendations sought from <%=CommitteeCode.toUpperCase() %> Meeting :</b></div>
+		<%if(RecDecDetails!=null && !RecDecDetails.isEmpty()){  %>
+						<div align="left" style="margin-left: 10px;width:650px!important;margin-bottom: 15px;margin-top:20px;"><b class="sub-title"><%= ++index %>. Decision/Recommendations sought from <%=CommitteeCode.toUpperCase() %> Meeting :</b></div>
 							
-							<table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;   border-collapse:collapse;" >
+							<table class="subtables" style="width:650px!important;align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;   border-collapse:collapse;" >
 			
 											<thead>
-												<tr><th style="width: 5%;">SN</th><th style="width: 5%;">Type</th><th style="width: 85%;">Details</th></tr>
+												<tr>
+													<th style="width: 25px;">SN</th>
+													<th style="width: 25px;">Type</th>
+													<th style="width: 600px;">Details</th>
+												</tr>
 											</thead>
 											<tbody>
 												<%int i=0; if(RecDecDetails!=null && RecDecDetails.size()>0){ 
 												for(Object[] obj :RecDecDetails){%>
 												<tr>
-													<td style="width: 5%; text-align: center;">  <%=++i%></td>
-													<td style="width: 5%; text-align: center;"> <%=obj[2]!=null?(obj[2].toString()): " - "%></td>
-													<td style="width: 85%;  word-wrap: break-word;"> <%=obj[3]!=null?(obj[3].toString()): " - "%></td>
+													<td style="width: 25px; text-align: center;">  <%=++i%></td>
+													<td style="width: 25px; text-align: center;"> <%=obj[2]!=null?(obj[2].toString()): " - "%></td>
+													<%
+													String content = obj[3] != null ? obj[3].toString() : " - ";
+													//content = content.replaceAll("(?i)</?(p)[^>]*>", "");
+													%>											
+													<td style="width: 600px; word-wrap: break-word;"> <%=content%></td>
 													
 												</tr>
-												<%}}else{%><td colspan="3" style="text-align: center;"> No Data Available!</td><%}%>
+												<%}}else{%>
+												<tr>
+													<td colspan="3" style="text-align: center;"> No Data Available!</td>
+												</tr>
+												<%}%>
 					</tbody>
 					</table>	
-				<%} %>	
-		<h1 class="break"></h1> 
+				<%}} %>	
+		<%-- <h1 class="break"></h1> 
 
 		<!-- <div align="center" style="text-align: center; vertical-align: middle ;font-size:60px;font-weight: 600;margin: auto; position: relative;color: #145374 !important" >THANK YOU</div> -->
        <%if(thankYouImg!=null ){ %>
@@ -2571,7 +3063,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 					</div>	
 				<%}else{ %>
 			 <div align="center" style="text-align: center; vertical-align: middle ;font-size:60px;font-weight: 600;margin-top: 250px; position: relative;color: #145374 !important" >THANK YOU</div>
-				<%} %>
+				<%} %> --%>
 			
 </body>
 </html>

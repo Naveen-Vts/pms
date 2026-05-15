@@ -577,13 +577,16 @@ public class CommitteeServiceImpl implements CommitteeService{
 		while(iterator.hasNext()) 
 		{
 			CommitteeScheduleAgendaDto AgendaDto = iterator.next();
+			
+			Long presentorId = AgendaDto.getPresenterId() !=null ? Long.parseLong(AgendaDto.getPresenterId()) : null;
+			
 			CommitteeScheduleAgenda scheduleagenda=new CommitteeScheduleAgenda();
 //			CommitteeSchedulesAttachment attachment = new CommitteeSchedulesAttachment();
 			scheduleagenda.setPresentorLabCode(AgendaDto.getPresentorLabCode());
 			scheduleagenda.setScheduleId(Long.parseLong(AgendaDto.getScheduleId()));
 			scheduleagenda.setScheduleSubId(Long.parseLong(AgendaDto.getScheduleSubId()));
 			scheduleagenda.setAgendaItem(AgendaDto.getAgendaItem());
-			scheduleagenda.setPresenterId(Long.parseLong(AgendaDto.getPresenterId()));
+			scheduleagenda.setPresenterId(presentorId);
 			scheduleagenda.setDuration(Integer.parseInt(AgendaDto.getDuration()));
 			scheduleagenda.setProjectId(Long.parseLong(AgendaDto.getProjectId()));
 			scheduleagenda.setRemarks(AgendaDto.getRemarks());
@@ -3681,7 +3684,7 @@ public Long UpdateMomAttach(Long scheduleId) throws Exception {
 			EnoteStatusCodeNext="APR";
 			pe.setEnoteStatusCode(EnoteStatusCode);
 			pe.setEnoteStatusCodeNext(EnoteStatusCodeNext);
-			//upadte committee Main
+			//Update committee Main
 			CommitteeConstitutionApprovalDto dto = new CommitteeConstitutionApprovalDto();
 			dto.setCommitteeMainId(pe.getCommitteeMainId()+"");
 			dto.setActionBy(Username);
@@ -4145,73 +4148,84 @@ public Long UpdateMomAttach(Long scheduleId) throws Exception {
 //	---------------------------------- Naveen R 3/9/25 MOM Check ------------------------------------------
 	
 	@Override
-	public List<Object[]> CommitteeScheduleMinutesforAction(String committeescheduleid) {
+	public List<Object[]> CommitteeScheduleMinutesforAction(String committeescheduleid) throws Exception {
 		return dao.CommitteeScheduleMinutesforAction(committeescheduleid);
 	}
 
 	@Override
-	public Long addRepresentative(CommitteeRepresentative rep) {
+	public Long addRepresentative(CommitteeRepresentative rep) throws Exception {
 		return dao.addRepresentative(rep);
 	}
 
 	@Override
-	public CommitteeRepresentative getRepresentativeById(String repId) {
+	public CommitteeRepresentative getRepresentativeById(String repId) throws Exception {
 		return dao.getRepresentativeById(repId);
 	}
 
 	@Override
-	public Long getRepNameDuplicateCount(String repName) {
+	public Long getRepNameDuplicateCount(String repName) throws Exception {
 		return dao.getRepNameDuplicateCount(repName);
 	}
 
 	@Override
-	public Long getRepCodeDuplicateCount(String repCode) {
+	public Long getRepCodeDuplicateCount(String repCode) throws Exception {
 		return dao.getRepCodeDuplicateCount(repCode);
 	}
 
 	@Override
-	public List<Object[]> getAircraftList(String committeeScheduleId) {
+	public List<Object[]> getAircraftList(String committeeScheduleId) throws Exception {
 		return dao.getAircraftList(committeeScheduleId);
 	}
 
 	@Override
-	public List<Object[]> getSubSystemList(String committeeScheduleId) {
+	public List<Object[]> getSubSystemList(String committeeScheduleId) throws Exception {
 		return dao.getSubSystemList(committeeScheduleId);
 	}
 	
 	@Override
-	public Long addAircraft(CommitteeAircraft aircraft) {
+	public Long addAircraft(CommitteeAircraft aircraft) throws Exception {
 		return dao.addAircraft(aircraft);
 	}
 
 	@Override
-	public CommitteeAircraft getAircraftById(String aircraftId) {
+	public CommitteeAircraft getAircraftById(String aircraftId) throws Exception {
 		return dao.getAircraftById(aircraftId);
 	}
 
 	@Override
-	public Long addSubSystem(CommitteeSubSystem sub) {
+	public Long addSubSystem(CommitteeSubSystem sub) throws Exception {
 		return dao.addSubSystem(sub);
 	}
 
 	@Override
-	public CommitteeSubSystem getSubSystemById(String subsystemId) {
+	public CommitteeSubSystem getSubSystemById(String subsystemId) throws Exception {
 		return dao.getSubSystemById(subsystemId);
 	}
 
 	@Override
-	public List<Object[]> committeeScheduleMinutesforActionForMomADE(String committeescheduleid) {
+	public List<Object[]> committeeScheduleMinutesforActionForMomADE(String committeescheduleid) throws Exception {
 		return dao.committeeScheduleMinutesforActionForMomADE(committeescheduleid);
 	}
 
 	@Override
-	public Object[] CommitteeScheduleEditDataforMom(String committeescheduleid) {
+	public Object[] CommitteeScheduleEditDataforMom(String committeescheduleid) throws Exception {
 		return dao.CommitteeScheduleEditDataforMom(committeescheduleid);
 	}
 
 	@Override
-	public List<Object[]> PrgmAgendaList(String scheduleid) {
+	public List<Object[]> PrgmAgendaList(String scheduleid) throws Exception {
 		return dao.PrgmAgendaList(scheduleid);
+	}
+	
+	// Naveen R 05-03-2026 
+	@Override
+	public List<Object[]> getMeetingCountList(String committeeId) throws Exception {
+		return dao.getMeetingCountList(committeeId);
+	}
+
+	@Override
+	public List<Object[]> CommitteeScheduleMinutesMom(String committeescheduleid) throws Exception {
+		return dao.CommitteeScheduleMinutesMom(committeescheduleid);
 	}
 	
 }
