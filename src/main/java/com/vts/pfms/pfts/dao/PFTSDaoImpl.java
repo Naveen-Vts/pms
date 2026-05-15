@@ -416,7 +416,7 @@ public  class PFTSDaoImpl implements PFTSDao{
 		return null;
 	}
 	
-	private static final String GETPFTSPRIJECRDATE="SELECT ProjectCode,ProjectShortName,SanctionDate,PDC FROM project_master WHERE ProjectId=:ProjectId";
+	private static final String GETPFTSPRIJECRDATE="SELECT project_code,project_short_name,sanction_date,pdc FROM project_master WHERE project_id=:ProjectId";
 	@Override
 	public Object[] getpftsProjectDate(String projectId) throws Exception {
 		try {

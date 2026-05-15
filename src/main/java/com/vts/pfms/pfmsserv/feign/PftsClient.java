@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "PftsClient", url = "${pfts.url}")
+@FeignClient(name = "PftsClient", url = "${pfts.url:NA}")
 public interface PftsClient {
 
 	

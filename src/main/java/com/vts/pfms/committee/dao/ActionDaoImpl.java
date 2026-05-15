@@ -1682,7 +1682,7 @@ public class ActionDaoImpl implements ActionDao{
 	@Override
 	public List<Object[]> getProjectByDirectorID(String empId)throws Exception {
 		// TODO Auto-generated method stub
-		Query query = manager.createNativeQuery("SELECT projectmainid, projectcode FROM project_main WHERE projectdirector=:id");
+		Query query = manager.createNativeQuery("SELECT project_main_id, project_code FROM project_main WHERE project_director=:id");
 		query.setParameter("id", Long.parseLong(empId));
 		return query.getResultList();
 	}
@@ -1741,7 +1741,7 @@ public class ActionDaoImpl implements ActionDao{
 	@Override
 	public Object getEmpnameById(int empId)throws Exception {
 		// TODO Auto-generated method stub
-		Query query = manager.createNativeQuery("select EmpName from employee where empid=:empId");
+		Query query = manager.createNativeQuery("select emp_name from employee where emp_id=:empId");
 		query.setParameter("empId", empId );
 		return query.getResultList();
 	}
@@ -1749,7 +1749,7 @@ public class ActionDaoImpl implements ActionDao{
 	@Override
 	public Object getProjectCodeById(int projectId)throws Exception {
 		// TODO Auto-generated method stub
-		Query query = manager.createNativeQuery("SELECT projectcode FROM project_master WHERE projectid=:projectId");
+		Query query = manager.createNativeQuery("SELECT project_code FROM project_master WHERE project_id=:projectId");
 		query.setParameter("projectId", projectId );
 		return query.getResultList();
 	}
@@ -1757,7 +1757,7 @@ public class ActionDaoImpl implements ActionDao{
 	@Override
 	public Object getProjectShortNameById(int projectId)throws Exception {
 		// TODO Auto-generated method stub
-		Query query = manager.createNativeQuery("SELECT projectshortname FROM project_master WHERE projectid=:projectId");
+		Query query = manager.createNativeQuery("SELECT project_short_name FROM project_master WHERE project_id=:projectId");
 		query.setParameter("projectId", projectId );
 		return query.getResultList();
 	}
@@ -2098,20 +2098,19 @@ public class ActionDaoImpl implements ActionDao{
 		}
 	}
 
-	private static final String getMeetingAction=" SELECT DISTINCT aas.actionno,CONCAT(IFNULL(CONCAT(ab.title,' '),''), ab.empname) AS 'assigneemp',dc.designation, CONCAT(IFNULL(CONCAT(d.title,' '),''), d.empname) AS 'assignoremp' ,\r\n"
+	private static final String getMeetingAction="SELECT DISTINCT aas.actionno,CONCAT(IFNULL(CONCAT(ab.title,' '),''), ab.emp_name) AS 'assigneemp',dc.designation, CONCAT(IFNULL(CONCAT(d.title,' '),''), d.emp_name) AS 'assignoremp' ,\r\n"
 			+ "e.designation AS desig,a.actiondate,aas.enddate,a.actionitem,aas.actionstatus,aas.actionflag,a.actionmainid,\r\n"
 			+ "(SELECT c.progress FROM action_sub c  WHERE c.actionassignid = aas.actionassignid AND c.actionsubid = (SELECT MAX(f.actionsubid) FROM action_sub f WHERE f.actionassignid = aas.actionassignid) )AS progress ,\r\n"
 			+ "aas.actionassignid,a.actionlinkid,a.actionlevel ,a.projectid,aas.assignee,aas.assignor \r\n"
 			+ "FROM action_main a,  employee ab ,employee_desig dc ,  employee d  ,employee_desig e , action_assign aas,\r\n"
 			+ "committee_main cc, committee_schedule cs, committee_schedules_minutes_details csm\r\n"
-			+ "WHERE aas.assignee=ab.empid AND ab.isactive='1' AND dc.desigid=ab.desigid \r\n"
-			+ "AND  aas.assignor=d.empid  AND a.actionmainid=aas.actionmainid AND d.isactive='1' AND e.desigid=d.desigid \r\n"
+			+ "WHERE aas.assignee=ab.emp_id AND ab.is_active='1' AND dc.desig_id=ab.desig_id \r\n"
+			+ "AND  aas.assignor=d.emp_id  AND a.actionmainid=aas.actionmainid AND d.is_active='1' AND e.desig_id=d.desig_id \r\n"
 			+ "AND a.scheduleminutesid=csm.scheduleminutesid AND csm.scheduleid=cs.scheduleid\r\n"
 			+ "AND cs.committeeid=cc.committeeid AND  cs.projectid=cc.projectid AND cc.projectid=a.projectid \r\n"
 			+ " AND cs.scheduleid=:meetingId  AND (CASE \r\n"
 			+ "WHEN :loginType IN ('A','Z','E','L','P') \r\n"
-			+ "THEN 1=1 ELSE aas.assignee=:empId END)\r\n"
-			+ "     \r\n"
+			+ "THEN 1=1 ELSE aas.assignee=:empId END)     \r\n"
 			+ "ORDER BY  actionmainid DESC;";
 	@Override
 	public List<Object[]> getMeetingAction(long meetingId, String loginType, String empId) throws Exception {
@@ -2207,7 +2206,7 @@ public class ActionDaoImpl implements ActionDao{
 	
 	
 	
-	private final String PROJECTS="SELECT projectid,projectmainid,projectcode,projectname FROM project_master WHERE ProjectDirector= :empid";
+	private final String PROJECTS="SELECT project_id,project_main_id,project_code,project_name FROM project_master WHERE project_director= :empid";
 	
 	@Override
 	public List<Object[]> getProjects(String empId) throws Exception {

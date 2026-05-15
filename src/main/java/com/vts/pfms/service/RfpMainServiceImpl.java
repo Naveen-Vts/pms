@@ -109,14 +109,14 @@ public class RfpMainServiceImpl implements RfpMainService {
 		
 	}
 	@Override
-	@CacheEvict(value = "getnotice", allEntries = true)
+	//@CacheEvict(value = "getnotice", allEntries = true)
 	public Long addNotice(Notice notice)throws Exception{
 		
 		return dao.addNotice(notice);
 	}
 	
 	@Override
-	@Cacheable(value = "allActionsCount", key = "#empid")
+//	@Cacheable(value = "allActionsCount", key = "#empid")
 	public List<Object[]> AllActionsCount(String logintype, String empid,String LoginId,String LabCode) throws Exception 
 	{		
 		logger.info(new Date() +"Inside SERVICE AllActionsCount ");
@@ -133,7 +133,7 @@ public class RfpMainServiceImpl implements RfpMainService {
 	}
 	
 	@Override
-	@Cacheable(value = "getnotice", key = "#LabCode")
+//	@Cacheable(value = "getnotice", key = "#LabCode")
 	public List<Object[]> GetNotice(String LabCode)throws Exception{
 		
 		return dao.GetNotice(LabCode);
@@ -224,7 +224,7 @@ public class RfpMainServiceImpl implements RfpMainService {
 	
 	
 	@Override
-	@Cacheable(value = "projectMeetingCount", key = "#empid")
+//	@Cacheable(value = "projectMeetingCount", key = "#empid")
 	public List<Object[]> ProjectMeetingCount(String LoginType,String empid,String labcode) throws Exception {
 		logger.info(new Date() +"Inside SERVICE ProjectMeetingCount ");
 	
@@ -353,7 +353,7 @@ public class RfpMainServiceImpl implements RfpMainService {
 	}
 	
 	@Override
-	@Cacheable(value = "projectHealth", key = "#LabCode")
+//	@Cacheable(value = "projectHealth", key = "#LabCode")
 	public List<Object[]> ProjectHealthData(String LabCode) throws Exception{
 		
 		return dao.ProjectHealthData(LabCode);
@@ -367,13 +367,13 @@ public class RfpMainServiceImpl implements RfpMainService {
 
 
 	@Override
-	@Caching(evict = {
-	    @CacheEvict(value = "projectHealth", allEntries = true),
-	    @CacheEvict(value = "todaySchedulesList", allEntries = true),
-	    @CacheEvict(value = "allActionsCount", allEntries = true),
-	    @CacheEvict(value = "projectMeetingCount", allEntries = true),
-	    @CacheEvict(value = "dashboardFinanceCashOutGo", allEntries = true)
-	})
+//	@Caching(evict = {
+//	    @CacheEvict(value = "projectHealth", allEntries = true),
+//	    @CacheEvict(value = "todaySchedulesList", allEntries = true),
+//	    @CacheEvict(value = "allActionsCount", allEntries = true),
+//	    @CacheEvict(value = "projectMeetingCount", allEntries = true),
+//	    @CacheEvict(value = "dashboardFinanceCashOutGo", allEntries = true)
+//	})
 	public long ProjectHealthUpdate(String EmpId, String UserName) throws Exception {
 		List<Object[]> proList=dao.ProjectList(EmpId).stream().filter(e-> !"0".equalsIgnoreCase(e[0].toString())).collect(Collectors.toList());
 		long result=0;
@@ -591,7 +591,7 @@ public class RfpMainServiceImpl implements RfpMainService {
 	
 	
 	@Override
-	@Cacheable(value = "dashboardFinanceCashOutGo", key = "#EmpId")
+//	@Cacheable(value = "dashboardFinanceCashOutGo", key = "#EmpId")
 	public List<Object[]> DashboardFinanceCashOutGo(String LoginType,String EmpId,String LabCode,String ClusterId)throws Exception
 	{
 		List<Object[]> CashOutGo = dao.DashboardFinanceCashOutGo(LoginType, EmpId, LabCode, ClusterId);

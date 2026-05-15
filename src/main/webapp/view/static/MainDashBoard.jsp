@@ -787,15 +787,15 @@ String IsDG = (String)request.getAttribute("IsDG");
 														<% actionCounts+=Integer.parseInt(obj[3].toString());} } %>
 													</tr>
 													<tr>
-														<td  class="p505">Fracas</td>
+														<%-- <td  class="p505">Fracas</td>
 														<%for(Object[] obj : MyTaskList){
 														  	if(obj[0].toString().equalsIgnoreCase("Fracas")){ %>
 														<td><button type="button" onclick="document.location='FracasAssigneeList.htm'" class="btn btn-sm <%if(!obj[1].toString().equals("0")){ %>  <%} %> bg1-3" ><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - " %></button></td>
 														<td><button type="button" onclick="document.location='FracasAssigneeList.htm'" class="btn btn-sm bg1-4" ><%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()): " - " %></button></td>
 														<td><button type="button" onclick="document.location='FracasAssigneeList.htm'" class="btn btn-sm bg1-5<%if(!obj[3].toString().equals("0")){ %> fa faa-pulse animated faa-fast <%} %> " ><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - " %></button></td>
-<%-- 														
- --%>														<td><button type="button" onclick="document.location='FracasToReviewList.htm'" class="btn btn-sm bg1-6" s><%=obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()): " - " %></button></td>
-														<% actionCounts+=Integer.parseInt(obj[3].toString());} } %>
+														
+														<td><button type="button" onclick="document.location='FracasToReviewList.htm'" class="btn btn-sm bg1-6" s><%=obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()): " - " %></button></td>
+														<% actionCounts+=Integer.parseInt(obj[3].toString());} } %> --%>
 													</tr>
 													<%} %>
 												 </table>

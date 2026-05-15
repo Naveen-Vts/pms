@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "TmdsMasterClient", url = "${tmds.url}")
+@FeignClient(name = "TmdsMasterClient", url = "${tmds.url:NA}")
 public interface TmdsMasterClient {
 
 	 @GetMapping( value = "/api/logins/user-login-access", consumes = MediaType.APPLICATION_JSON_VALUE )

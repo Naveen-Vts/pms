@@ -242,7 +242,7 @@ milestoneStatus.add(new Object[]{13, "Available for Integration"});
                                                   	  	<i class="fa fa-calendar" aria-hidden="true"></i>
                                                   	   </button> --%>
                                                   	   <%} %>
-	                                                   <%if(Long.parseLong(fileStatus[7].toString())>9 && fileStatus[10]!=null && !fileStatus[10].toString().equalsIgnoreCase("M")){ %>
+	                                                   <%if(Long.parseLong(fileStatus[7].toString())>9 && fileStatus[10]!=null ){ %>
 	                                                   <button class="btn btn-sm " data-toggle="tooltip" title="Refresh Demand" formaction="FileOrderRetrive.htm" title="Refresh Order"> <i class="fa fa-refresh" aria-hidden="true"></i></button>
 	                                                   <%} %>
                                                    </form>

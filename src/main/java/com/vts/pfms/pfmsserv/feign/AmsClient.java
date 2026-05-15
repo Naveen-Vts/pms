@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "AmsClient", url = "${ams.url}")
+@FeignClient(name = "AmsClient", url = "${ams.url:NA}")
 public interface AmsClient {
 
 	

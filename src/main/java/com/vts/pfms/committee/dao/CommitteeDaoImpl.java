@@ -132,7 +132,7 @@ public class CommitteeDaoImpl  implements CommitteeDao
 	private static final String CLUSTERLABLIST="SELECT lab_id,cluster_id,lab_name,lab_code FROM cluster_lab";
 	private static final String EXTERNALMEMBERSNOTADDEDCOMMITTEE="SELECT a.expertid,a.expertname,b.designation  FROM expert a,employee_desig b WHERE a.isactive='1' AND a.desigid=b.desig_id AND a.expertid NOT IN (SELECT  empid FROM committee_member  WHERE isactive=1 AND labcode='@EXP' AND committeemainid=:committeemainid);";
 	private static final String EXTERNALEMPLOYEELISTFORMATION="SELECT a.empid, a.empname,a.empno,b.designation FROM employee_external a,employee_desig b WHERE a.labid>0 AND a.labid=:labid AND a.desigid=b.desigid AND a.empid NOT IN (SELECT  empid FROM committee_member   WHERE isactive=1  AND labid=:labid AND committeemainid=:committeemainid)   ";
-	private static final String EXTERNALEMPLOYEELISTINVITATIONS =" SELECT a.empid, a.empname,a.empno,b.designation, a.desigid  FROM employee a,employee_desig b   WHERE a.isActive='1' AND labcode=:labcode AND a.desigid=b.desigid AND a.empid NOT IN (SELECT empid  FROM committee_schedules_invitation WHERE  committeescheduleid=:scheduleid AND labcode=:labcode)  ";
+	private static final String EXTERNALEMPLOYEELISTINVITATIONS ="SELECT a.emp_id, a.emp_name,a.emp_no,b.designation, a.desig_id  FROM employee a,employee_desig b   WHERE a.is_active='1' AND lab_code=:labcode AND a.desig_id=b.desig_id AND a.emp_id NOT IN (SELECT empid  FROM committee_schedules_invitation WHERE  committeescheduleid=:scheduleid AND labcode=:labcode)  ";
 	private static final String EMPLOYEELISTNOINVITEDMEMBERS="SELECT a.emp_id, CONCAT(IFNULL(CONCAT(a.title,' '),''), a.emp_name) as 'empname' ,b.designation,a.desig_id FROM employee a,employee_desig b WHERE a.is_active='1' AND a.lab_code = :LabCode AND a.desig_id=b.desig_id AND a.emp_id NOT IN ( SELECT c.empid FROM committee_schedules_invitation c WHERE c.committeescheduleid=:scheduleid AND c.labcode=:LabCode ) ORDER BY a.sr_no=0,a.sr_no";
 	private static final String EXPERTLISTNOINVITEDMEMBERS = "SELECT a.expertid,CONCAT(IFNULL(CONCAT(a.title,' '),''),a.expertname) as 'expertname'  ,b.designation,a.desigid FROM expert a,employee_desig b WHERE a.isactive='1' AND a.desigId=b.desig_id AND a.expertid NOT IN( SELECT empid FROM committee_schedules_invitation WHERE committeescheduleid=:scheduleid AND labcode='@EXP'  ) ORDER BY a.expertname ";
 	private static final String ALLPROJECTDETAILSLIST ="SELECT a.project_id,a.project_code,a.project_name,a.project_main_id,a.project_description,a.unit_code,a.project_type,a.project_category,a.sanction_no,a.sanction_date,a.pdc,a.project_director, a.project_short_name FROM project_master a WHERE a.is_active=1 ";
@@ -3346,11 +3346,11 @@ public class CommitteeDaoImpl  implements CommitteeDao
 	@Override
 	public List<Object[]> SpecialEmployeeListInvitations(String labCode,String scheduleid) throws Exception {
 		
-		String sql1="  SELECT a.empid, a.empname,a.empno,b.designation, a.desigid  FROM employee a,employee_desig b WHERE labcode=:labCode AND a.desigid=b.desigid AND a.empid NOT IN \r\n"
-				+ "  (SELECT empid  FROM committee_schedules_invitation WHERE  committeescheduleid=:scheduleid AND membertype ='SPL')  ";
+		String sql1="  SELECT a.emp_id, a.emp_name,a.emp_no,b.designation, a.desig_id  FROM employee a,employee_desig b WHERE lab_code=:labCode AND a.desig_id=b.desig_id AND a.emp_id NOT IN \\r\\n\"\r\n"
+				+ "				+ \"  (SELECT empid  FROM committee_schedules_invitation WHERE  committeescheduleid=:scheduleid AND membertype ='SPL')  ";
 		
-		String sql2 = "  SELECT a.expertid,a.expertname,a.expertno,b.designation,a.desigid FROM expert a ,employee_desig b WHERE a.desigid=b.desigid\r\n"
-				+ " AND a.expertid NOT IN  (SELECT empid  FROM committee_schedules_invitation WHERE  committeescheduleid=:scheduleid AND membertype ='SPL')  AND a.isactive='1'";
+		String sql2 = "  SELECT a.expertid,a.expertname,a.expertno,b.designation,a.desigid FROM expert a ,employee_desig b WHERE a.desigid=b.desig_id\\r\\n\"\r\n"
+				+ "				+ \" AND a.expertid NOT IN  (SELECT empid  FROM committee_schedules_invitation WHERE  committeescheduleid=:scheduleid AND membertype ='SPL')  AND a.isactive='1'";
 		
 		List<Object[]>list= new ArrayList<>();
 		

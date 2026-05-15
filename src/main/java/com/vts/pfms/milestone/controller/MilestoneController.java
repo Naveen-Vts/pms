@@ -3831,7 +3831,6 @@ private boolean isValidFileType(MultipartFile file) {
 					}
 				}
 			}
-			
 			req.setAttribute("tabNo", tabNo!=null?tabNo:"1");
 			req.setAttribute("activityType", activityType!=null?activityType:"A");
 			req.setAttribute("empId", empId);

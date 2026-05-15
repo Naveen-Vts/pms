@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "DmsClient", url = "${dms.url}")
+@FeignClient(name = "DmsClient", url = "${dms.url:NA}")
 public interface DmsClient {
 
 	 @GetMapping( value = "/user-login-access", consumes = MediaType.APPLICATION_JSON_VALUE )

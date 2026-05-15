@@ -43,20 +43,20 @@ public class MasterClientService {
 		}
 
 
-	    @PostConstruct
-	    public void init() {
-	        accessCheckMap = Map.of(
-	                ProjectCode.DMS, dmsClient::checkUserLoginAccess,
-	                ProjectCode.IBAS, ibasClient::checkUserLoginAccess,
-	                ProjectCode.PFTS, pftsClient::checkUserLoginAccess,
-	               // ProjectCode.SIS, (token, username) -> sisClient.checkUserLoginAccess(apiKey, username),
-	                ProjectCode.AMS, amsClient::checkUserLoginAccess,
-	                ProjectCode.HRMS, hrmsClient::checkUserLoginAccess,
-	                ProjectCode.EMS, emsClient::checkUserLoginAccess,
-	                ProjectCode.TMDS, tmdsMasterClient::checkUserLoginAccess
-	                
-	        );
-	    }
+		    @PostConstruct
+		    public void init() {
+		        accessCheckMap = Map.of(
+		                ProjectCode.DMS, dmsClient::checkUserLoginAccess,
+		                ProjectCode.IBAS, ibasClient::checkUserLoginAccess,
+		                ProjectCode.PFTS, pftsClient::checkUserLoginAccess,
+		               // ProjectCode.SIS, (token, username) -> sisClient.checkUserLoginAccess(apiKey, username),
+		                ProjectCode.AMS, amsClient::checkUserLoginAccess,
+		                ProjectCode.HRMS, hrmsClient::checkUserLoginAccess,
+		                ProjectCode.EMS, emsClient::checkUserLoginAccess,
+		                ProjectCode.TMDS, tmdsMasterClient::checkUserLoginAccess
+		                
+		        );
+		    }
 		
 		public boolean checkUserLoginAccess(String token, String username, ProjectCode projectCode) {
 			try {

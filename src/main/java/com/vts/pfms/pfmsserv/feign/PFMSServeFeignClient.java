@@ -44,7 +44,7 @@ public interface PFMSServeFeignClient {
 	@GetMapping(value="/newDemandsDetails",consumes = MediaType.APPLICATION_JSON_VALUE )
 	List<DemandDetails> DemandsDetails(@RequestParam(name="projectcode")String projectcode);
 	
-	@GetMapping(value="/newDemandsDetails",consumes = MediaType.APPLICATION_JSON_VALUE )
+	@GetMapping(value="/newDemandsOrderDetails",consumes = MediaType.APPLICATION_JSON_VALUE )
 	List<DemandOrderDetails> DemandsOrderDetails(@RequestParam(name="demandNo")String demandNo);
 	
 	@GetMapping(value="/pfms-finance-changes",consumes = MediaType.APPLICATION_JSON_VALUE )

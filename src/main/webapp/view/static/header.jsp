@@ -50,7 +50,20 @@
         background-color: #ffffff !important;
         border-radius: 12px !important;
     }
-
+/* Hidden by default */
+#global-loader {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
     /* Individual Item Styling */
     .pms-grid-item {
         display: flex !important;
@@ -118,7 +131,9 @@ String labcode= (String)session.getAttribute("labcode");
 				<% String EmpName =(String)session.getAttribute("EmpName");  %>
 				<% long FormRole =(Long)session.getAttribute("FormRole");  %>
 				<% String FormRoleName =(String)session.getAttribute("LoginTypeName");  %>
-				<% String IsDG =(String)session.getAttribute("IsDG");  %>
+				<% String IsDG =(String)session.getAttribute("IsDG"); 
+				  String encryptedUser = Base64.getEncoder().encodeToString(Username.getBytes());
+				%>
 
 				<nav
 					class="navbar navbar-expand-lg navbar-dark mx-background-top-linear header-top">
@@ -192,33 +207,37 @@ String labcode= (String)session.getAttribute("labcode");
     
     <div class="dropdown-menu dropdown-menu-right pms-grid-dropdown-menu" aria-labelledby="appGridMenu">
         <div class="pms-grid-container">
-            <a class="pms-grid-item" onclick="openAMS()">
+            <a class="pms-grid-item" onclick="openAMS()" data-toggle="tooltip" title="Audit Management System" >
                 <i class="fa fa-tasks" style="color: #e74c3c !important;"></i>
                 <span>AMS</span>
             </a>
-            <a class="pms-grid-item" onclick="openTMDS()">
+            <a class="pms-grid-item" onclick="openTMDS()" data-toggle="tooltip" title="TMDS">
                 <i class="fa fa-file-code-o" style="color: #3498db !important;"></i>
                 <span>TMDS</span>
             </a>
-            <a class="pms-grid-item" onclick="openDMS()">
+            <a class="pms-grid-item" onclick="openDMS()" data-toggle="tooltip" title="DAK Management System">
                 <i class="fa fa-envelope-open" style="color: #9b59b6 !important;"></i>
                 <span>DMS</span>
             </a>
-            <a class="pms-grid-item" onclick="openPFTS()">
+            <a class="pms-grid-item" onclick="openPFTS()" data-toggle="tooltip" title="PFTS">
                 <i class="fa fa-file-text" style="color: #f1c40f !important;"></i>
                 <span>PFTS</span>
             </a>
-            <a class="pms-grid-item" onclick="openEMS()">
+            <a class="pms-grid-item" onclick="openEMS()" data-toggle="tooltip" title="Employee Management System">
                 <i class="fa fa-user-circle" style="color: #7f8c8d !important;"></i>
                 <span>EMS</span>
             </a>
-            <a class="pms-grid-item" onclick="openIBAS()">
+            <a class="pms-grid-item" onclick="openIBAS()" data-toggle="tooltip" title="DAK Management System">
                 <i class="fa fa-rupee" style="color: #27ae60 !important;"></i>
                 <span>IBAS</span>
             </a>
-            <a class="pms-grid-item" onclick="openHRMS()">
+            <a class="pms-grid-item" onclick="openHRMS()" data-toggle="tooltip" title="Human Resource Management System">
                 <i class="fa fa-users" style="color: #16a085 !important;"></i>
                 <span>HRMS</span>
+            </a>
+             <a class="pms-grid-item"  data-toggle="tooltip" target="_blank" title="STORES INVENTORY SYSTEM" href="http://192.168.1.87:8898/Inventory/TMDS?api_key=VTS_<%=encryptedUser %>">
+                <i class="fa fa-shopping-cart" style="color:Orange !important;"></i>
+                <span>SIS</span>
             </a>
         </div>
     </div>
@@ -395,7 +414,10 @@ String labcode= (String)session.getAttribute("labcode");
 <!-- <button type="button" style="display: none;" id="storeSessionData"></button> -->
 			</div>
 
-
+<div id="global-loader">
+    <div class="spinner-border text-primary"></div>
+    <p>Verifying Access...</p>
+</div>
 <script type="text/javascript">
 	$(document).ready(function() {
 		var loginPage = '<%=loginPage%>';
@@ -1124,7 +1146,7 @@ function changed() {
 					
 					const openHRMS = async () => {
 					    const userData = localStorage.getItem("user");
-					    
+					    const $loader = $('#global-loader');
 					    // Validation: Don't open if no user data exists
 					    if (!userData || userData === '{"token":"","username":""}') {
 					        console.error("No session data found. Please log in.");
@@ -1133,10 +1155,11 @@ function changed() {
 
 					    try {
 					        // Wait for verification
+					        $loader.css('display', 'flex'); // Show Loader
 					        const exist = await checkAccess("HRMS");
 
 					        if (exist) {
-					            const targetOrigin = "http://192.168.1.150:3001";
+					            const targetOrigin = "http://192.168.1.150:3000";
 					            const hrmsWindow = window.open(targetOrigin + "/dashboard?hrms=true", "_blank");
 
 					            let count = 0;
@@ -1157,6 +1180,9 @@ function changed() {
 					    } catch (error) {
 					        console.error("Error verifying HRMS access:", error);
 					        alert("An error occurred while verifying system permissions.");
+					    }
+					    finally {
+					        $loader.hide(); // Hide Loader
 					    }
 					};
 										  function checkAccess(app) {

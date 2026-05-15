@@ -97,12 +97,12 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 					<!--   <li class="nav-item">
 					    <a class="nav-link" href="LoginPage/PPFMDoc2016.htm" target="_blank" ><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; PPFM-2016</a>
 					  </li> -->
-					  <li class="nav-item">
+					<!--   <li class="nav-item">
 					    <a class="nav-link" href="LoginPage/DPFMDoc2021.htm" target="_blank" ><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; DPFM-2021</a>
 					  </li>
 					  <li class="nav-item">
 					    <a class="nav-link" href="LoginPage/DPFMDoc2021Handbook.htm" target="_blank" ><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; DPFM Handbook-2021</a>
-					  </li>
+					  </li> -->
 				</ul>
 				
   		

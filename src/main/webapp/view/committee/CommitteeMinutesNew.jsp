@@ -1008,9 +1008,9 @@ for( Object[]obj:specialMembers){ %>
 								{ 
 									 %>
 									<%if(speclist[7].toString().equalsIgnoreCase("R")){ count++; %>
-									<tr>
+									<%-- <tr>
 										<th  style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%=committeemin[0]!=null?committeemin[0].toString(): " - "+"."+count%>.&nbsp;&nbsp;&nbsp;<%=speclist[9]!=null?speclist[9].toString(): " - "%></th>
-									</tr>
+									</tr> --%>
 									<tr>
 										<td style="text-align: justify;padding-left: 30px">
 											<%=speclist[1]!=null?speclist[1].toString(): " - "%> 
