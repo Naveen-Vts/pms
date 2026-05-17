@@ -2307,7 +2307,7 @@ List<List<ProjectFinancialDetails>> projectFinancialDetails = (List<List<Project
 			              					<table align="center"  >
 			               						<tr>
 			               							<td class="trup style113">
-			                							PD -  <%if(PDData!=null) {%><%=PDData[2]!=null?StringEscapeUtils.escapeHtml4(PDData[1].toString()): " - " %> <%} else{%>GD<%} %>
+			                							PD -  <%if(PDData!=null) {%><%=PDData[2]!=null?StringEscapeUtils.escapeHtml4(PDData[2].toString()): " - " %> <%} else{%>GD<%} %>
 			                						</td>
 			                		
 		                        					<td rowspan="2">

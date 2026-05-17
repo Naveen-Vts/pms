@@ -84,7 +84,7 @@ String projectName = "", committeName = "", meetingName = "", statusName = "";
                                                <select class="form-control selectdee" id="projectid" required="required" name="projectid" onchange='submitForm1();' >
 										<% if(ProjectsList!=null && ProjectsList.size()>0){
 										 for (Object[] obj : ProjectsList) {
-											 String projectshortName=(obj[17]!=null)?" ( "+obj[17].toString()+" ) ":"";			 
+											 String projectshortName=(obj[17]!=null)?" ( "+obj[17].toString().trim()+" ) ":"";			 
 										 %>
 												<option value="<%=obj[0]%>" <%if(obj[0].toString().equals(projectid)){ projectName = obj[4].toString()+projectshortName; %>selected<%} %> ><%=obj[4]!=null?StringEscapeUtils.escapeHtml4(obj[4].toString()):" - "%> <%= projectshortName!=null?StringEscapeUtils.escapeHtml4(projectshortName):" - " %></option>
 										<%}} %>

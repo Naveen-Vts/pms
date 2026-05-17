@@ -94,20 +94,20 @@ p{
           @top-left {
           	margin-top: 30px;
             margin-left: 10px;
-            content: "<%=committeescheduleeditdata[11]!=null?StringEscapeUtils.escapeHtml4(committeescheduleeditdata[1].toString()): " - " %>";
+            content: "<%=committeescheduleeditdata[11]!=null?StringEscapeUtils.escapeHtml4(committeescheduleeditdata[11].toString()): " - " %>";
             font-size: 13px;
           }            
           
           @top-center { 
           margin-top: 30px;
-          content: "<%=committeescheduleeditdata[15]!=null?StringEscapeUtils.escapeHtml4(committeescheduleeditdata[1].toString()): " - "%>"; 
+          content: "<%=committeescheduleeditdata[15]!=null?StringEscapeUtils.escapeHtml4(committeescheduleeditdata[15].toString()): " - "%>"; 
            font-size: 13px;
           
           }
          
           @bottom-center { 
 	          margin-bottom: 30px;
-	          content: "<%=committeescheduleeditdata[15]!=null?StringEscapeUtils.escapeHtml4(committeescheduleeditdata[1].toString()): " - "%>"; 
+	          content: "<%=committeescheduleeditdata[15]!=null?StringEscapeUtils.escapeHtml4(committeescheduleeditdata[15].toString()): " - "%>"; 
           
           }
           
@@ -143,7 +143,7 @@ p{
  
 </style>
 <meta charset="ISO-8859-1">
-<title><%=committeescheduleeditdata[8]!=null?StringEscapeUtils.escapeHtml4(committeescheduleeditdata[1].toString()): " - "%> Minutes View</title>
+<title><%=committeescheduleeditdata[8]!=null?StringEscapeUtils.escapeHtml4(committeescheduleeditdata[8].toString()): " - "%> Minutes View</title>
 </head>
 <body>
 	<%if(flagforView==null) { %>
@@ -606,7 +606,7 @@ p{
 										</tbody>        
 										<%}else{ int z= 0;%>
 										<%-- <% char fch='a'; for (int z = 0; z < projectidlist.size(); z++) {%> --%>
-									     <tbody id="tbody<%=ProjectDetail.get(z)[0].toString()%>">
+									     <tbody id="tbody">
 									     <%int count=0;
 									     if(overallfinance!=null && overallfinance.size()>0 && overallfinance.get(z)!=null && overallfinance.get(z).size()>0)  {
 									    	for(Object[]obj:overallfinance.get(z)){ 

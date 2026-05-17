@@ -170,7 +170,7 @@
 														</tr>
 												<% count++; } }else{%>
 												<tr>
-													<td colspan="6" class="text-center">No List Found</td>
+													<td colspan="8" class="text-center">No List Found</td>
 												</tr>
 												<%} %>
 											</tbody>

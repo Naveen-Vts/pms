@@ -23,7 +23,7 @@ SimpleDateFormat  sdf1=fc.getSqlDateFormat();
 
 List<Object[]> projectList=(List<Object[]>) request.getAttribute("projectList");
 List<Object[]>  projectCommitteList=(List<Object[]>)request.getAttribute("projectCommitteList");
-
+String labCode = (String) session.getAttribute("labcode");
 String projectId=(String)request.getAttribute("projectId");
 String committeeId=(String)request.getAttribute("committeeId");
 
@@ -68,6 +68,15 @@ SimpleDateFormat sdfInput = new SimpleDateFormat("HH:mm:ss");
 											        <%}} %>   
 							  	             </select>
 											</td>
+											<%if(labCode.equalsIgnoreCase("PGAD")){ %>
+											<!-- <td>
+												<label class="control-label fs-17px mb-0rem">Cover Letter: </label>
+											</td> -->
+											<td>
+												<input type="submit" formtarget="_blank" formaction="CoverLetter.htm" class="btn btn-sm view" value="Cover Letter" >
+					   							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> 
+											</td>
+											<%} %>
 					   					</tr>   					   				
 					   				</table>
 					   				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> 
@@ -115,9 +124,15 @@ SimpleDateFormat sdfInput = new SimpleDateFormat("HH:mm:ss");
 													    <td align="center"><%=ScheduleTime %></td>
 													    <td ><%if(obj[5]!=null){%><%=StringEscapeUtils.escapeHtml4(obj[5].toString()) %><%}else{ %>-<%} %></td>
 													    <td align="center">
-													    <button type="submit" class="btn  btn-sm view minutesViewBtnStyle"  formaction="CommitteeMinutesNewDownload.htm" id=<%="committeescheduleid"+obj[0]%> value="<%=obj[0] %>" name="committeescheduleid" formmethod="get" formtarget="_blank">MINUTES
-	                                                        <i class="fa fa-download blink colorWhite" aria-hidden="true"></i>
-	                                                    </button>&nbsp;&nbsp;
+													    <%if(labCode.equalsIgnoreCase("PGAD")){ %>
+														    <button type="submit" class="btn  btn-sm view minutesViewBtnStyle"  formaction="CommitteeMinutesNewMOMDownload.htm" id=<%="committeescheduleid"+obj[0]%> value="<%=obj[0] %>" name="committeescheduleid" formmethod="get" formtarget="_blank">MINUTES
+		                                                        <i class="fa fa-download blink colorWhite" aria-hidden="true"></i>
+		                                                    </button>&nbsp;&nbsp;
+	                                                    <%}else{ %>
+														    <button type="submit" class="btn  btn-sm view minutesViewBtnStyle"  formaction="CommitteeMinutesNewDownload.htm" id=<%="committeescheduleid"+obj[0]%> value="<%=obj[0] %>" name="committeescheduleid" formmethod="get" formtarget="_blank">MINUTES
+		                                                        <i class="fa fa-download blink colorWhite" aria-hidden="true"></i>
+		                                                    </button>&nbsp;&nbsp;
+	                                                    <%} %>
 													   <%--  <button type="submit" class="btn btn-sm " formaction="CommitteeMinutesNewDownload.htm" id=<%="committeescheduleid"+obj[0]%> value="<%=obj[0] %>"  name="committeescheduleid" formmethod="post" formtarget="_blank">
 												           <i class="fa fa-download fa-lg"></i>
 											            </button> --%>

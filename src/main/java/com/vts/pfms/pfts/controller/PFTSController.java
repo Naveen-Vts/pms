@@ -9,11 +9,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.Part;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -28,9 +23,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.tomcat.util.http.fileupload.FileItem;
-import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
-import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -55,6 +47,7 @@ import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.google.gson.Gson;
 import com.vts.pfms.FormatConverter;
 import com.vts.pfms.master.dto.DemandDetails;
+import com.vts.pfms.pfmsserv.feign.PFMSServeFeignClient;
 import com.vts.pfms.pfts.dto.DemandOrderDetails;
 import com.vts.pfms.pfts.dto.PFTSFileDto;
 import com.vts.pfms.pfts.model.PFTSFile;
@@ -62,8 +55,12 @@ import com.vts.pfms.pfts.model.PftsFileMilestone;
 import com.vts.pfms.pfts.model.PftsFileMilestoneRev;
 import com.vts.pfms.pfts.model.PftsFileOrder;
 import com.vts.pfms.pfts.service.PFTSService;
-import com.vts.pfms.print.model.ProjectOverallFinance;
 import com.vts.pfms.utils.InputValidator;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
 
 @Controller
 public class PFTSController {
@@ -71,10 +68,13 @@ public class PFTSController {
 	@Autowired
 	PFTSService service;
 	
-	private static final RestTemplate restTemplate = new RestTemplate();
+//	private static final RestTemplate restTemplate = new RestTemplate();
 	
 	@Value("${server_uri}")
     private String uri;
+	
+	@Autowired
+	PFMSServeFeignClient serv;
 	
 	private static final Logger logger=LogManager.getLogger(PFTSController.class);
 	FormatConverter fc = new FormatConverter();
@@ -141,32 +141,39 @@ public class PFTSController {
 			String projectcode = service.ProjectData(projectId)[1].toString();
 			
 			
-			final String localUri=uri+"/pfms_serv/newDemandsDetails?projectcode="+projectcode;
+			//final String localUri=uri+"/pfms_serv/newDemandsDetails?projectcode="+projectcode;
 			List<DemandDetails> demandList=null;
-	 		HttpHeaders headers = new HttpHeaders();
-	 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON)); 
-	 		headers.set("labcode", LabCode);
-	 		String jsonResult=null;
 			try {
-				HttpEntity<String> entity = new HttpEntity<String>(headers);
-				ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
-				jsonResult=response.getBody();
-		
-			}catch(HttpClientErrorException e) {
-				req.setAttribute("errorMsg", "errorMsg");
+				demandList = serv.DemandsDetails(projectcode);	
+			}catch (Exception e) {
+				e.printStackTrace();
+				// TODO: handle exception
 			}
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-			mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-			if(jsonResult!=null) {
-				try {
-				
-					demandList = mapper.readValue(jsonResult, new TypeReference<List<DemandDetails>>(){});
-				} catch (JsonProcessingException e) {
-	
-					e.printStackTrace();
-				}
-			}
+//	 		HttpHeaders headers = new HttpHeaders();
+//	 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON)); 
+//	 		headers.set("labcode", LabCode);
+//	 		String jsonResult=null;
+//			try {
+//				HttpEntity<String> entity = new HttpEntity<String>(headers);
+//				ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
+//				jsonResult=response.getBody();
+//		
+//			}catch(HttpClientErrorException e) {
+//				req.setAttribute("errorMsg", "errorMsg");
+//			}
+//			ObjectMapper mapper = new ObjectMapper();
+//			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//			mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+//			if(jsonResult!=null) {
+//				try {
+//				
+//					demandList = mapper.readValue(jsonResult, new TypeReference<List<DemandDetails>>(){});
+//				} catch (JsonProcessingException e) {
+//	
+//					e.printStackTrace();
+//				}
+//			}
+			
 		    List<DemandDetails> prevDemandFile=service.getprevDemandFile(projectId);
 		    if(demandList!=null && prevDemandFile!=null) {
 		    	demandList.removeAll(prevDemandFile);
@@ -263,34 +270,41 @@ public class PFTSController {
              redir.addFlashAttribute("projectid",projectId);
              
              if(statusId.equals("10")) {
-            	   	final String localUri=uri+"/pfms_serv/newDemandsOrderDetails?demandNo="+demandNo;
+            	   	//final String localUri=uri+"/pfms_serv/newDemandsOrderDetails?demandNo="+demandNo;
     				List<DemandOrderDetails> demandOrderList=null;
-    		 		HttpHeaders headers = new HttpHeaders();
-    		 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON)); 
-    		 		headers.set("labcode", LabCode);
-    		 		String jsonResult=null;
+//    		 		HttpHeaders headers = new HttpHeaders();
+//    		 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON)); 
+//    		 		headers.set("labcode", LabCode);
+//    		 		String jsonResult=null;
+//    				try {
+//    					HttpEntity<String> entity = new HttpEntity<String>(headers);
+//    					ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
+//    					jsonResult=response.getBody();
+//    			
+//    				}catch(HttpClientErrorException e) {
+//    					redir.addFlashAttribute("resultfail","Order not placed in IBAS");
+//						return  "redirect:/ProcurementStatus.htm";
+//    				}
+//    				ObjectMapper mapper = new ObjectMapper();
+//    				mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//    				mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+//    			
+//    				if(jsonResult!=null && jsonResult.length()>2) {
+//    					try {
+//    					
+//    						demandOrderList = mapper.readValue(jsonResult, new TypeReference<List<DemandOrderDetails>>(){});
+//    					} catch (JsonProcessingException e) {
+//    						redir.addAttribute("resultfail","Order not placed in IBAS");
+//    						return  "redirect:/ProcurementStatus.htm";
+//    					}
+//    				}else {
+//    					redir.addAttribute("resultfail","Order not placed in IBAS");
+//						return  "redirect:/ProcurementStatus.htm";
+//    				}
+    				
     				try {
-    					HttpEntity<String> entity = new HttpEntity<String>(headers);
-    					ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
-    					jsonResult=response.getBody();
-    			
-    				}catch(HttpClientErrorException e) {
-    					redir.addFlashAttribute("resultfail","Order not placed in IBAS");
-						return  "redirect:/ProcurementStatus.htm";
-    				}
-    				ObjectMapper mapper = new ObjectMapper();
-    				mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-    				mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-    			
-    				if(jsonResult!=null && jsonResult.length()>2) {
-    					try {
-    					
-    						demandOrderList = mapper.readValue(jsonResult, new TypeReference<List<DemandOrderDetails>>(){});
-    					} catch (JsonProcessingException e) {
-    						redir.addAttribute("resultfail","Order not placed in IBAS");
-    						return  "redirect:/ProcurementStatus.htm";
-    					}
-    				}else {
+    					demandOrderList = serv.DemandsOrderDetails(demandNo);
+    				}catch(Exception e) {
     					redir.addAttribute("resultfail","Order not placed in IBAS");
 						return  "redirect:/ProcurementStatus.htm";
     				}
@@ -395,33 +409,41 @@ public class PFTSController {
              String fileId=req.getParameter("fileId");
              String demandNo=req.getParameter("demandNo");
              redir.addFlashAttribute("projectid",projectId);
-            	   	final String localUri=uri+"/pfms_serv/newDemandsOrderDetails?demandNo="+demandNo;
+            	   	//final String localUri=uri+"/pfms_serv/newDemandsOrderDetails?demandNo="+demandNo;
     				List<DemandOrderDetails> demandOrderList=null;
-    		 		HttpHeaders headers = new HttpHeaders();
-    		 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON)); 
-    		 		headers.set("labcode", LabCode);
-    		 		String jsonResult=null;
+//    		 		HttpHeaders headers = new HttpHeaders();
+//    		 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON)); 
+//    		 		headers.set("labcode", LabCode);
+//    		 		String jsonResult=null;
+//    				try {
+//    					HttpEntity<String> entity = new HttpEntity<String>(headers);
+//    					ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
+//    					jsonResult=response.getBody();
+//    			
+//    				}catch(HttpClientErrorException e) {
+//    					redir.addAttribute("resultfail","Order not placed in IBAS");
+//						return  "redirect:/ProcurementStatus.htm";
+//    				}
+//    				ObjectMapper mapper = new ObjectMapper();
+//    				mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//    				mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+//    				if(jsonResult!=null) {
+//    					try {
+//    					
+//    						demandOrderList = mapper.readValue(jsonResult, new TypeReference<List<DemandOrderDetails>>(){});
+//    					} catch (JsonProcessingException e) {
+//    						redir.addAttribute("resultfail","Order not placed in IBAS");
+//    						return  "redirect:/ProcurementStatus.htm";
+//    					}
+//    				}
+    				
     				try {
-    					HttpEntity<String> entity = new HttpEntity<String>(headers);
-    					ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
-    					jsonResult=response.getBody();
-    			
-    				}catch(HttpClientErrorException e) {
+    				demandOrderList = serv.DemandsOrderDetails(demandNo);
+    				}catch (Exception e) {
+    					e.printStackTrace();
     					redir.addAttribute("resultfail","Order not placed in IBAS");
 						return  "redirect:/ProcurementStatus.htm";
-    				}
-    				ObjectMapper mapper = new ObjectMapper();
-    				mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-    				mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-    				if(jsonResult!=null) {
-    					try {
-    					
-    						demandOrderList = mapper.readValue(jsonResult, new TypeReference<List<DemandOrderDetails>>(){});
-    					} catch (JsonProcessingException e) {
-    						redir.addAttribute("resultfail","Order not placed in IBAS");
-    						return  "redirect:/ProcurementStatus.htm";
-    					}
-    				}
+					}
             	long result= service.updateCostOnDemand(demandOrderList,fileId,UserId);
 
             	if(result>0) {

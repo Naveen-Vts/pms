@@ -1016,7 +1016,8 @@ private boolean isValidFileType(MultipartFile file) {
 	 
 	 
 	 	@RequestMapping(value = "ActionStatusList.htm")
-		public String ActionStatusList(HttpServletRequest req, HttpSession ses, RedirectAttributes redir)throws Exception 
+		public String ActionStatusList(HttpServletRequest req, HttpSession ses, RedirectAttributes redir)
+				throws Exception 
 	 	{
 		 	String UserId = (String) ses.getAttribute("Username");
 			logger.info(new Date() +"Inside ActionStatusList.htm "+UserId);		
@@ -4920,10 +4921,16 @@ private boolean isValidFileType(MultipartFile file) {
         				redir.addAttribute("result","Action Remarks Update unsuccessful");
         			}
 
-        			redir.addFlashAttribute("ActionMainId", req.getParameter("ActionMainId"));
-        			redir.addFlashAttribute("ActionAssignId",req.getParameter("ActionAssignId"));
-        			redir.addFlashAttribute("projectid",req.getParameter("projectid"));
-        			redir.addFlashAttribute("flag",req.getParameter("flag"));
+        			//DLRL changes
+        			redir.addAttribute("ActionMainId", req.getParameter("ActionMainId"));
+        			redir.addAttribute("ActionAssignId",req.getParameter("ActionAssignId"));
+        			redir.addAttribute("projectid",req.getParameter("projectid"));
+        			redir.addAttribute("flag",req.getParameter("flag"));
+        			
+        			//DLRL changes
+        			if(req.getParameter("redirect")!=null && req.getParameter("redirect").equalsIgnoreCase("C")) {
+        				return "redirect:/CloseAction.htm";
+        			}
         			return "redirect:/ActionSubLaunchRedirect.htm";
         			
 				} catch (Exception e) {

@@ -112,7 +112,7 @@ if(proList!=null && proList.size()>0){
 										<select class="form-control  selectdee items prjDropDown" name="projectid"  required="required"  data-live-search="true" data-container="body" onchange="this.form.submit();">
 											<option disabled="disabled"  selected value="">Choose...</option>
 											<%for(Object[] obj : proList){ 
-												String projectshortName=(obj[17]!=null)?" ( "+obj[17].toString()+" ) ":"";
+												String projectshortName=(obj[17]!=null)?" ("+obj[17].toString()+") ":"";
 											%>
 												<option  value="<%=obj[0] %>" <%if (Project.equalsIgnoreCase(obj[0].toString())) {%>
 														selected="selected" <%}%>><%=obj[4]!=null?StringEscapeUtils.escapeHtml4(obj[4].toString()):"" %> <%=projectshortName!=null?StringEscapeUtils.escapeHtml4(projectshortName):""%></option>

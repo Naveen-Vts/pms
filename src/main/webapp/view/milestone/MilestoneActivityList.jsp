@@ -53,7 +53,7 @@
                               		<select class="form-control selectdee" id="ProjectId" required="required" name="ProjectId">
     									<option disabled="true"  selected value="">Choose...</option>
     										<% for (Object[] obj : ProjectList) {
-    										 projectshortName=(obj[17]!=null)?" ("+obj[17].toString()+") ":"";
+    										 projectshortName=(obj[17]!=null)?" ("+obj[17].toString().trim()+") ":"";
     										%>
 											<option value="<%=obj[0]%>" <%if(obj[0].toString().equalsIgnoreCase(ProjectId)){ %>selected="selected" <%projectDirector = Long.parseLong(obj[23].toString());selectedProject=projectshortName; %> <%} %>> <%=obj[4]!=null?StringEscapeUtils.escapeHtml4(obj[4].toString()): " - "%> <%=projectshortName!=null?StringEscapeUtils.escapeHtml4(projectshortName): " - "%>  </option>
 											<%} %>

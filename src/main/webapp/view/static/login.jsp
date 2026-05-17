@@ -97,12 +97,12 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 					<!--   <li class="nav-item">
 					    <a class="nav-link" href="LoginPage/PPFMDoc2016.htm" target="_blank" ><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; PPFM-2016</a>
 					  </li> -->
-					  <li class="nav-item">
+					<!--   <li class="nav-item">
 					    <a class="nav-link" href="LoginPage/DPFMDoc2021.htm" target="_blank" ><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; DPFM-2021</a>
 					  </li>
 					  <li class="nav-item">
 					    <a class="nav-link" href="LoginPage/DPFMDoc2021Handbook.htm" target="_blank" ><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; DPFM Handbook-2021</a>
-					  </li>
+					  </li> -->
 				</ul>
 				
   		
@@ -175,29 +175,7 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 																		
 												</div>
 
-														<%-- <div class="form-group">
-															<label for="captchaInput">Enter Captcha:</label>
-															<div style="display: flex; align-items: center;">
-																<input type="text" name="captchaInput" id="captchaInput"
-																	class="form-control" required
-																	style="max-width: 150px; margin-right: 10px;">
-																<span
-																	style="font-weight: bold; font-size: 20px; background: #f0f0f0; padding: 5px 10px; letter-spacing: 3px; user-select: none;">
-																	${captcha} </span>
-															</div>
-														</div> --%>
-																<div class="form-group w150" >
-																    <label for="captchaInput">Enter Captcha:</label>
-																    <div class="g2s">
-																        <input type="text" name="captchaInput" id="captchaInput"
-																               class="form-control" required
-																              >
-																        <img id="captchaImage" src="data:image/png;base64,${captcha}"
-																             alt="Captcha" >
-																        <button type="button" id="refreshCaptcha" class="btn btn-secondary">&#x21bb;</button>
-																    </div>
-																</div>
-
+									
 														<div class="form-submit">
 													<div class="row align-items-center mb-5">
 														<div class="col-md-5">
@@ -248,7 +226,7 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 	<div class="credentials-info-container d2s" >
     	<%
         	boolean expstatus = (boolean)request.getAttribute("expstatus");
-       		if(!expstatus) {%>
+       		if(!expstatus) { %>
 				<marquee  class="news-scroll c2s" behavior="scroll" direction="left" scrollamount="7" onmouseover="this.stop();" onmouseout="this.start();" >Your License has been Expired..!</marquee>
 		<%} %>
 		<!-- <marquee  class="news-scroll" behavior="scroll" direction="left" scrollamount="7" onmouseover="this.stop();" onmouseout="this.start();" style="color: red;font-weight: bold;">Please ensure the Work Register details for January 2025 are filled in by 10 February 2025. Kindly disregard if it has already been completed.</marquee> -->
@@ -258,7 +236,7 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 
 </div>	
 
-   <div id="footer">
+   <div id="footer" class="fixed-bottom">
 	<footer class="footer"  >
 	
 		<section id="fontSize" class="clearfix f1s" >

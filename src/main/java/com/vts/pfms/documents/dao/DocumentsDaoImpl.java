@@ -140,8 +140,8 @@ public class DocumentsDaoImpl implements DocumentsDao{
 	/* ************************************************ IGI Document ***************************************************** */
 	
 	private static final String IGIDOCUMENTLIST="SELECT a.IGIDocId, a.IGIVersion, a.LabCode, a.InitiatedBy, a.InitiatedDate, a.IGIStatusCode, a.IGIStatusCodeNext, a.CreatedBy, a.CreatedDate, a.Remarks, \r\n"
-			+ "CONCAT(IFNULL(CONCAT(b.Title,' '),(IFNULL(CONCAT(b.Salutation, ' '), ''))), b.EmpName) AS 'EmpName', c.Designation, d.ReqStatus, d.ReqStatusColor \r\n"
-			+ "FROM pfms_igi_document a JOIN employee b ON a.InitiatedBy=b.EmpId LEFT JOIN employee_desig c ON b.DesigId=c.DesigId LEFT JOIN pfms_req_approval_status d ON a.IGIStatusCode=d.ReqStatusCode WHERE a.IsActive=1  ORDER BY a.IGIDocId DESC";
+			+ "CONCAT(IFNULL(CONCAT(b.Title,' '),(IFNULL(CONCAT(b.Salutation, ' '), ''))), b.emp_name) AS 'EmpName', c.Designation, d.ReqStatus, d.ReqStatusColor \r\n"
+			+ "FROM pfms_igi_document a JOIN employee b ON a.InitiatedBy=b.emp_id LEFT JOIN employee_desig c ON b.desig_id=c.desig_id LEFT JOIN pfms_req_approval_status d ON a.IGIStatusCode=d.ReqStatusCode WHERE a.IsActive=1  ORDER BY a.IGIDocId DESC";
 	@Override
 	public List<Object[]> getIGIDocumentList() throws Exception {
 		try {
@@ -170,10 +170,10 @@ public class DocumentsDaoImpl implements DocumentsDao{
 	}
 
 	private static final String IGIDOCUMENTSUMMARYlIST="SELECT a.SummaryId, a.AdditionalInformation, a.Abstract, a.Keywords, a.Distribution, a.Reviewer, a.Approver, a.PreparedBy,\r\n"
-			+ " CONCAT(IFNULL(CONCAT(e1.Title,' '),(IFNULL(CONCAT(e1.Salutation, ' '), ''))), e1.EmpName, ', ', d1.Designation) AS 'Approver1', \r\n"
-			+ " CONCAT(IFNULL(CONCAT(e2.Title,' '),(IFNULL(CONCAT(e2.Salutation, ' '), ''))), e2.EmpName, ', ', d2.Designation) AS 'Reviewer1', \r\n"
-			+ " CONCAT(IFNULL(CONCAT(e3.Title,' '),(IFNULL(CONCAT(e3.Salutation, ' '), ''))), e3.EmpName, ', ', d3.Designation) AS 'PreparedBy1', a.ReleaseDate \r\n"
-			+ "FROM pfms_igi_document_summary a LEFT JOIN employee e1 ON e1.EmpId = a.Approver LEFT JOIN employee_desig d1 ON d1.DesigId = e1.DesigId LEFT JOIN employee e2 ON e2.EmpId = a.Reviewer LEFT JOIN employee_desig d2 ON d2.DesigId = e2.DesigId LEFT JOIN employee e3 ON e3.EmpId = a.PreparedBy LEFT JOIN employee_desig d3 ON d3.DesigId = e3.DesigId \r\n"
+			+ " CONCAT(IFNULL(CONCAT(e1.Title,' '),(IFNULL(CONCAT(e1.Salutation, ' '), ''))), e1.emp_name, ', ', d1.Designation) AS 'Approver1', \r\n"
+			+ " CONCAT(IFNULL(CONCAT(e2.Title,' '),(IFNULL(CONCAT(e2.Salutation, ' '), ''))), e2.emp_name, ', ', d2.Designation) AS 'Reviewer1', \r\n"
+			+ " CONCAT(IFNULL(CONCAT(e3.Title,' '),(IFNULL(CONCAT(e3.Salutation, ' '), ''))), e3.emp_name, ', ', d3.Designation) AS 'PreparedBy1', a.ReleaseDate \r\n"
+			+ "FROM pfms_igi_document_summary a LEFT JOIN employee e1 ON e1.emp_id = a.Approver LEFT JOIN employee_desig d1 ON d1.desig_id = e1.desig_id LEFT JOIN employee e2 ON e2.emp_id = a.Reviewer LEFT JOIN employee_desig d2 ON d2.desig_id = e2.desig_id LEFT JOIN employee e3 ON e3.emp_id = a.PreparedBy LEFT JOIN employee_desig d3 ON d3.desig_id = e3.desig_id \r\n"
 			+ "WHERE a.IsActive = 1 AND a.DocId=:DocId AND a.DocType=:DocType";
 	@Override
 	public List<Object[]> getDocumentSummaryList(String docId, String docType) throws Exception {
@@ -1154,8 +1154,8 @@ public class DocumentsDaoImpl implements DocumentsDao{
 	
 	/* ************************************************ ICD Document ***************************************************** */
 	private static final String ICDDOCUMENTLIST = "SELECT a.ICDDocId, a.ICDVersion, a.LabCode, a.InitiatedBy, a.InitiatedDate, a.ICDStatusCode, a.ICDStatusCodeNext, a.CreatedBy, a.CreatedDate, a.Remarks, \r\n"
-			+ "CONCAT(IFNULL(CONCAT(b.Title,' '),(IFNULL(CONCAT(b.Salutation, ' '), ''))), b.EmpName) AS 'EmpName', c.Designation, a.ProjectId, a.InitiationId, d.ReqStatus, d.ReqStatusColor, a.productTreeMainId \r\n"
-			+ "FROM pfms_icd_document a JOIN employee b ON a.InitiatedBy=b.EmpId LEFT JOIN employee_desig c ON b.DesigId=c.DesigId LEFT JOIN pfms_req_approval_status d ON a.ICDStatusCode=d.ReqStatusCode WHERE a.IsActive=1 AND a.ProjectId=:ProjectId AND a.InitiationId=:InitiationId AND ProductTreeMainId=:ProductTreeMainId ORDER BY a.ICDDocId DESC";
+			+ "CONCAT(IFNULL(CONCAT(b.Title,' '),(IFNULL(CONCAT(b.Salutation, ' '), ''))), b.emp_name) AS 'EmpName', c.Designation, a.ProjectId, a.InitiationId, d.ReqStatus, d.ReqStatusColor, a.productTreeMainId \r\n"
+			+ "FROM pfms_icd_document a JOIN employee b ON a.InitiatedBy=b.emp_id LEFT JOIN employee_desig c ON b.desig_id=c.desig_id LEFT JOIN pfms_req_approval_status d ON a.ICDStatusCode=d.ReqStatusCode WHERE a.IsActive=1 AND a.ProjectId=:ProjectId AND a.InitiationId=:InitiationId AND ProductTreeMainId=:ProductTreeMainId ORDER BY a.ICDDocId DESC";
 	@Override
 	public List<Object[]> getICDDocumentList(String projectId, String initiationId, String productTreeMainId) throws Exception {
 		try {
@@ -1797,8 +1797,8 @@ public class DocumentsDaoImpl implements DocumentsDao{
 	/* ************************************************ IRS Document ***************************************************** */
 	
 	private static final String IRSDOCUMENTLIST = "SELECT a.IRSDocId, a.IRSVersion, a.LabCode, a.InitiatedBy, a.InitiatedDate, a.IRSStatusCode, a.IRSStatusCodeNext, a.CreatedBy, a.CreatedDate, a.Remarks, \r\n"
-			+ "CONCAT(IFNULL(CONCAT(b.Title,' '),(IFNULL(CONCAT(b.Salutation, ' '), ''))), b.EmpName) AS 'EmpName', c.Designation, a.ProjectId, a.InitiationId, d.ReqStatus, d.ReqStatusColor, a.ProductTreeMainId \r\n"
-			+ "FROM pfms_irs_document a JOIN employee b ON a.InitiatedBy=b.EmpId LEFT JOIN employee_desig c ON b.DesigId=c.DesigId LEFT JOIN pfms_req_approval_status d ON a.IRSStatusCode=d.ReqStatusCode WHERE a.IsActive=1 AND a.ProjectId=:ProjectId AND a.InitiationId=:InitiationId AND a.ProductTreeMainId=:ProductTreeMainId ORDER BY a.IRSDocId DESC";
+			+ "CONCAT(IFNULL(CONCAT(b.Title,' '),(IFNULL(CONCAT(b.Salutation, ' '), ''))), b.emp_name) AS 'EmpName', c.Designation, a.ProjectId, a.InitiationId, d.ReqStatus, d.ReqStatusColor, a.ProductTreeMainId \r\n"
+			+ "FROM pfms_irs_document a JOIN employee b ON a.InitiatedBy=b.emp_id LEFT JOIN employee_desig c ON b.desig_id=c.desig_id LEFT JOIN pfms_req_approval_status d ON a.IRSStatusCode=d.ReqStatusCode WHERE a.IsActive=1 AND a.ProjectId=:ProjectId AND a.InitiationId=:InitiationId AND a.ProductTreeMainId=:ProductTreeMainId ORDER BY a.IRSDocId DESC";
 	@Override
 	public List<Object[]> getIRSDocumentList(String projectId, String initiationId, String productTreeMainId) throws Exception {
 		try {
@@ -2080,8 +2080,8 @@ public class DocumentsDaoImpl implements DocumentsDao{
 	/* ************************************************ IDD Document ***************************************************** */
 	
 	private static final String IDDDOCUMENTLIST = "SELECT a.IDDDocId, a.IDDVersion, a.LabCode, a.InitiatedBy, a.InitiatedDate, a.IDDStatusCode, a.IDDStatusCodeNext, a.CreatedBy, a.CreatedDate, a.Remarks, \r\n"
-			+ "CONCAT(IFNULL(CONCAT(b.Title,' '),(IFNULL(CONCAT(b.Salutation, ' '), ''))), b.EmpName) AS 'EmpName', c.Designation, a.ProjectId, a.InitiationId, d.ReqStatus, d.ReqStatusColor, a.ProductTreeMainId \r\n"
-			+ "FROM pfms_idd_document a JOIN employee b ON a.InitiatedBy=b.EmpId LEFT JOIN employee_desig c ON b.DesigId=c.DesigId LEFT JOIN pfms_req_approval_status d ON a.IDDStatusCode=d.ReqStatusCode WHERE a.IsActive=1 AND a.ProjectId=:ProjectId AND a.InitiationId=:InitiationId AND a.ProductTreeMainId=:ProductTreeMainId ORDER BY a.IDDDocId DESC";
+			+ "CONCAT(IFNULL(CONCAT(b.Title,' '),(IFNULL(CONCAT(b.Salutation, ' '), ''))), b.emp_name) AS 'EmpName', c.Designation, a.ProjectId, a.InitiationId, d.ReqStatus, d.ReqStatusColor, a.ProductTreeMainId \r\n"
+			+ "FROM pfms_idd_document a JOIN employee b ON a.InitiatedBy=b.emp_id LEFT JOIN employee_desig c ON b.desig_id=c.desig_id LEFT JOIN pfms_req_approval_status d ON a.IDDStatusCode=d.ReqStatusCode WHERE a.IsActive=1 AND a.ProjectId=:ProjectId AND a.InitiationId=:InitiationId AND a.ProductTreeMainId=:ProductTreeMainId ORDER BY a.IDDDocId DESC";
 	@Override
 	public List<Object[]> getIDDDocumentList(String projectId, String initiationId, String productTreeMainId) throws Exception {
 		try {

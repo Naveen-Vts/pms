@@ -1146,7 +1146,7 @@ function getEmployeeForDH(ele){
 	
 }
 
-let index = 1000;
+let cloneIndex = 1000;
 
 $(document).on("click", ".btn-remove", function () {
     let row = $(this).closest("tr");
@@ -1184,7 +1184,7 @@ $(document).on("click", ".btn-clone", function () {
     });
 
     let clone = row.clone(false, false);
-    //let index = row.closest("table").find("tr").length;
+    let index = cloneIndex++;
 
     // Restore Select2 on original row
     row.find("select").select2({
@@ -1211,7 +1211,7 @@ $(document).on("click", ".btn-clone", function () {
         
         let onchange = $(this).attr("onchange");
         if (onchange) {
-            let newOnchange = onchange.replace(/\('\d+'\)/, "('" + index++ + "')");
+            let newOnchange = onchange.replace(/\('\d+'\)/, "('" + index + "')");
             $(this).attr("onchange", newOnchange);
         }
     });

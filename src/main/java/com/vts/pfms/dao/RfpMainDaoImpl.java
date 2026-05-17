@@ -32,18 +32,18 @@ public class RfpMainDaoImpl implements RfpMainDao {
 	private static final Logger logger=LogManager.getLogger(RfpMainDaoImpl.class);
 	
 	private static final String DASHBOARDFORMURLLIST = "select a.formdispname,a.formurl,a.formcolor from form_detail a,form_role_access b,login c where c.loginid=:loginid and a.formmoduleid=:formmoduleid AND b.formroleid=c.formroleid AND a.formdetailid=b.formdetailid AND a.isactive='1' AND b.isactive='1' ORDER BY a.FormSerialNo  ";
-	private static final String USERMANAGELIST = "select a.loginid, a.username, b.divisionname,c.formrolename  from login a , division_master b , formrole c where a.divisionid=b.divisionid and a.formroleid=c.formroleid and a.isactive=1";
+	private static final String USERMANAGELIST = "select a.loginid, a.username, b.division_name,c.formrolename  from login a , division_master b , formrole c where a.divisionid=b.division_id and a.formroleid=c.formroleid and a.isactive=1";
 	private static final String LASTLOGINEMPID = "select a.auditstampingid from  auditstamping a where a.auditstampingid=(select max(b.auditstampingid) from auditstamping b WHERE b.loginid=:loginid)";
-	private static final String DESGID="select desigid from employee where  empid=:empid";
+	private static final String DESGID="select desig_id from employee where  emp_id=:empid";
 	private static final String LABDETAILS="select labmasterid, labcode, labname, lablogo from lab_master";
 	
 	private static final String NOTICEEDITDATA="SELECT * FROM pfms_notice WHERE NoticeId=:NOTICEID AND IsActive=1" ;
 	private static final String SELFACTIONSLIST="SELECT ActionId,EmpId,ActionItem,ActionDate,ActionTime,ActionType FROM pfms_action_self WHERE isactive='1'AND actiondate=CURDATE() AND empid=:empid ORDER BY createddate ASC";	
 	private static final String NOTICEDATEWOSE= "SELECT noticeid, notice, fromdate,todate,noticeby,createdby,createddate FROM pfms_notice WHERE NoticeBy=:EMPID AND IsActive=1 AND ( (FromDate BETWEEN :FROMDATE AND :TODATE) OR  (todate BETWEEN :FROMDATE  AND :TODATE )   OR( fromdate < :FROMDATE  AND todate > :TODATE  ))";
 	private static final String NOTICELIST="SELECT * FROM pfms_notice WHERE NoticeBy=:empid AND IsActive=1 AND MONTH(CreatedDate) = MONTH(CURRENT_DATE())";
-	private static final String NOTICE="SELECT n.noticeid,n.notice, e.EmpName FROM pfms_notice n, employee e   WHERE   DATE(NOW()) >=n.FromDate AND DATE(NOW()) <= n.ToDate AND e.EmpId=n.NoticeBy AND n.IsActive=1 AND n.labcode=:labcode ORDER BY n.NoticeId DESC";	
-	private static final String getEmpNoQuery="SELECT empno FROM employee WHERE empid =:empid";	
-	private static final String PROJECTLIST="SELECT a.projectid AS id,a.projectcode,a.projectname,a.projectmainid,a.projecttype,b.empname AS 'project_director',b.mobileno,a.projectdirector,a.sanctiondate,a.pdc FROM project_master a , employee b WHERE a.projectdirector=b.empid AND a.isactive=1 AND a.labcode = (SELECT labcode FROM employee WHERE empid=:empid)";
+	private static final String NOTICE="SELECT n.noticeid,n.notice, e.emp_name FROM pfms_notice n, employee e   WHERE   DATE(NOW()) >=n.FromDate AND DATE(NOW()) <= n.ToDate AND e.emp_id=n.NoticeBy AND n.IsActive=1 AND n.labcode=:labcode ORDER BY n.NoticeId DESC";	
+	private static final String getEmpNoQuery="SELECT emp_no FROM employee WHERE emp_id =:empid";	
+	private static final String PROJECTLIST="SELECT a.project_id AS id,a.project_code,a.project_name,a.project_main_id,a.project_type,b.emp_name AS 'project_director',b.mobile_no,a.project_director,a.sanction_date,a.pdc FROM project_master a , employee b WHERE a.project_director=b.emp_id AND a.is_active=1 AND a.lab_code = (SELECT lab_code FROM employee WHERE emp_id=:empid)";
 	private static final String QUATERS="SELECT a.sanctiondate, a.pdc, TIMESTAMPDIFF(YEAR,a.sanctiondate,a.pdc)+1 FROM project_master a WHERE a.projectid=:projectid";
 	private static final String MILEQUATER="CALL Pfms_Milestone_Quarter(:proid,:Quater,:yr)"; 
 	private static final String GANTTCHARTLIST="SELECT milestoneactivityid,projectid,activityname,milestoneno,orgstartdate,orgenddate,startdate,enddate,progressstatus,revisionno FROM milestone_activity WHERE isactive=1 ";
@@ -333,6 +333,8 @@ public class RfpMainDaoImpl implements RfpMainDao {
 		query.setParameter("logintype", logintype);
 		query.setParameter("labcode", LabCode);
 		List<Object[]> ProjectEmployeeList=(List<Object[]>)query.getResultList();
+		
+		System.out.println(ProjectEmployeeList.size()+"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 		return ProjectEmployeeList;
 	}
 	
@@ -606,7 +608,7 @@ public class RfpMainDaoImpl implements RfpMainDao {
 		return CCMData ;
 	}
 	
-	private static final String PROJECTATTRIBUTES = "SELECT pm.projectcode, pm.projectname, pm.ProjectDescription, pm.sanctiondate, pm.objective, pm.deliverable, pm.pdc,   ROUND(pm.TotalSanctionCost/100000,2) AS 'TotalSanctionCost',   ROUND(pm.SanctionCostRE/100000,2) AS 'SanctionCostRE', ROUND(pm.SanctionCostFE/100000,2) AS 'SanctionCostFE', pm.WorkCenter, pm.projectcategory,pc.classification,  pm.projecttype AS 'projecttypeid',pt.projecttype ,pma.labparticipating,  (SELECT ps.projectstage FROM pfms_project_stage ps, pfms_project_data pd WHERE ps.projectstageid=pd.CurrentStageId AND pd.projectid=pm.projectid ) AS 'projectstage'FROM project_master pm, pfms_security_classification pc, project_type pt , project_main pma  WHERE pm.projectcategory=pc.classificationid AND pm.projecttype=pt.projecttypeid AND pm.projectmainid=pma.projectmainid AND pm.projectcode=:projectcode  ";
+	private static final String PROJECTATTRIBUTES = "SELECT pm.project_code, pm.project_name, pm.project_description, pm.sanction_date, pm.objective, pm.deliverable, pm.pdc,   ROUND(pm.total_sanction_cost/100000,2) AS 'TotalSanctionCost',   ROUND(pm.sanction_cost_re/100000,2) AS 'SanctionCostRE', ROUND(pm.sanction_cost_fe/100000,2) AS 'SanctionCostFE', pm.work_center, pm.project_category,pc.classification,  pm.project_type AS 'projecttypeid',pt.project_type ,pma.lab_participating,  (SELECT ps.projectstage FROM pfms_project_stage ps, pfms_project_data pd WHERE ps.projectstageid=pd.CurrentStageId AND pd.projectid=pm.project_id ) AS 'projectstage'FROM project_master pm, pfms_security_classification pc, project_type pt , project_main pma  WHERE pm.project_category=pc.classification_id AND pm.project_type=pt.project_type_id AND pm.project_main_id=pma.project_main_id AND pm.project_code=:projectcode";
 	@Override
 	public Object[] ProjectAttributes(String projectcode)throws Exception
 	{

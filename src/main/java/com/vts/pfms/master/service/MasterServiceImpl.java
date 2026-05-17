@@ -267,8 +267,9 @@ public class MasterServiceImpl implements MasterService {
 		  result = dao.updateAllSeniority(empIdL, ++newSeniorityNumberL);
 		  if(result>0)list.add(result);		  
 		}
-		
+
 		return list.size();
+
 	}
 	
 	

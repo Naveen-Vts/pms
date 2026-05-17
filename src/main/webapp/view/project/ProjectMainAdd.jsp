@@ -157,7 +157,7 @@ List<Object[]> PlatformList=(List<Object[]>) request.getAttribute("PlatformList"
 															
 													</td>
 													<th><label  class="mb-n10">Project Sanction Letter No: <span class="mandatory text-danger">*</span></label></th>
-													<td><input type="text" name="sano" placeholder="Enter Project Sanc Letter No" class="form-control alphanum-symbols-no-leading-space" maxlength="100" required="required"></td>
+													<td><input type="text" name="sano" placeholder="Enter Project Sanc Letter No" class="form-control" maxlength="100" required="required"></td>
 												</tr>
 
 												<tr>

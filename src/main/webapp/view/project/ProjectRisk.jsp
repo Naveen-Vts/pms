@@ -82,7 +82,7 @@ List<String> riskdatapresentlist=(List<String>)request.getAttribute("riskdatapre
 													
 													String projectShortName=(obj[17]!=null)?"( "+obj[17].toString()+" )":"";
 													%>
-													<option <%if(projectid!=null && projectid.equals(obj[0].toString())) { %>selected <%} %>value="<%=obj[0]%>" ><%=obj[4]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - " %> <%=projectShortName!=null?StringEscapeUtils.escapeHtml4(projectShortName): " - "%></option>
+													<option <%if(projectid!=null && projectid.equals(obj[0].toString())) { %>selected <%} %>value="<%=obj[0]%>" ><%=obj[4]!=null?StringEscapeUtils.escapeHtml4(obj[4].toString()): " - " %> <%=projectShortName!=null?StringEscapeUtils.escapeHtml4(projectShortName): " - "%></option>
 													<%} %>
 													<option <%if(projectid!=null && projectid.equals("0")) { %>selected <%} %>value="0" >General</option>
 												</select>

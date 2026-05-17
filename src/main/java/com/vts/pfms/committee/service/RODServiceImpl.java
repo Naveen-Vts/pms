@@ -117,7 +117,6 @@ public class RODServiceImpl implements RODService{
 		else if(Long.parseLong(committeescheduledto.getInitiationId())>0) 
 		{
 			ProjectName=committeedao.Initiationdetails(committeescheduledto.getInitiationId())[1].toString();
-			System.out.println(ProjectName+"=========");
 		}
 		else
 		{

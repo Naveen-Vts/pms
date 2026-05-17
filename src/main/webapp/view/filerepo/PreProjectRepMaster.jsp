@@ -684,6 +684,16 @@ function submitLevelEdit(levelType, pkId, parentId, previousName) {
         });
         return;
     }
+    const regex =/^[A-Za-z0-9 _-]+$/;
+
+    if (!regex.test(inputvalue)) {
+        Swal.fire({
+        	icon:'warning',
+        	title:'Validation Error',
+        	text: "Only letters, numbers, spaces, underscores ( _ ) and hyphens (-) are allowed."
+        	});
+        return;
+    }
     
     if (previousName === inputvalue) {
         return;

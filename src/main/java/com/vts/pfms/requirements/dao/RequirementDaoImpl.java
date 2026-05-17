@@ -62,11 +62,11 @@ public class RequirementDaoImpl implements RequirementDao {
 	}
 
 	private static final String SPECIFICATIONMASTERLIST="SELECT a.SpecsMasterId, a.SpecificationName,a.Description, a.SpecsParameter, a.SpecsUnit, a.SpecsInitiationId, a.SpecValue,\r\n"
-			+ "CONCAT(IFNULL(CONCAT(c.title,' '),IFNULL(CONCAT(c.salutation,' '),'')), c.empname) AS 'empname',\r\n"
+			+ "CONCAT(IFNULL(CONCAT(c.title,' '),IFNULL(CONCAT(c.salutation,' '),'')), c.emp_name) AS 'empname',\r\n"
 			+ "a.CreatedDate, a.ModifiedBy, a.ModifiedDate, a.IsActive,a.sid,a.mainid,a.ParentId,a.maximumValue,a.minimumValue,a.specCount,d.SpecTypeCode, a.SpecTypeId, d.SpecType \r\n"
 			+ "FROM pfms_specification_master a\r\n"
 			+ "JOIN login b ON a.CreatedBy=b.UserName\r\n"
-			+ "JOIN employee c ON b.empid=c.empid \r\n"
+			+ "JOIN employee c ON b.empid=c.emp_id \r\n"
 			+ "LEFT JOIN pfms_spec_types d ON d.SpecTypeId = a.SpecTypeId\r\n"
 			+ "WHERE a.IsActive = '1' ORDER BY a.MainId,a.SpecTypeId";
 	@Override
@@ -492,7 +492,7 @@ public class RequirementDaoImpl implements RequirementDao {
 		return count;
 	}
 
-	private static final String PRODUCTTREELISTBYPROJECTID = "SELECT a.MainId, a.SubLevelId, a.LevelName, a.Stage, a.Module, a.RevisionNo, a.SystemMainId, a.LevelCode FROM pfms_product_tree a,project_master b WHERE a.MainId>0 AND a.ProjectId=b.ProjectId AND b.ProjectId=:ProjectId AND a.IsActive='1' AND a.LevelId < 3 ORDER BY a.SubLevelId";
+	private static final String PRODUCTTREELISTBYPROJECTID = "SELECT a.MainId, a.SubLevelId, a.LevelName, a.Stage, a.Module, a.RevisionNo, a.SystemMainId, a.LevelCode FROM pfms_product_tree a,project_master b WHERE a.MainId>0 AND a.ProjectId=b.project_id AND b.project_id=:ProjectId AND a.IsActive='1' AND a.LevelId < 3 ORDER BY a.SubLevelId";
 	@Override
 	public List<Object[]> productTreeListByProjectId(String projectId)throws Exception
 	{
@@ -507,7 +507,7 @@ public class RequirementDaoImpl implements RequirementDao {
 
 	}
 
-	private static final String INITIATIONREQLIST = "SELECT a.ReqInitiationId,a.ProjectId,a.InitiationId,a.ProductTreeMainId,a.InitiatedBy,a.InitiatedDate,b.EmpName,c.Designation,a.ReqVersion,d.ReqStatusCode,d.ReqStatus,d.ReqStatusColor FROM pfms_req_initiation a,employee b,employee_desig c,pfms_req_approval_status d WHERE a.IsActive=1 AND a.InitiatedBy=b.EmpId AND b.DesigId=c.DesigId AND a.ReqStatusCode=d.ReqStatusCode AND a.ProjectId=:ProjectId AND a.ProductTreeMainId=:ProductTreeMainId AND a.InitiationId=:InitiationId ORDER BY a.ReqInitiationId DESC";
+	private static final String INITIATIONREQLIST = "SELECT a.ReqInitiationId,a.ProjectId,a.InitiationId,a.ProductTreeMainId,a.InitiatedBy,a.InitiatedDate,b.emp_name,c.Designation,a.ReqVersion,d.ReqStatusCode,d.ReqStatus,d.ReqStatusColor FROM pfms_req_initiation a,employee b,employee_desig c,pfms_req_approval_status d WHERE a.IsActive=1 AND a.InitiatedBy=b.emp_id AND b.desig_id=c.desig_id AND a.ReqStatusCode=d.ReqStatusCode AND a.ProjectId=:ProjectId AND a.ProductTreeMainId=:ProductTreeMainId AND a.InitiationId=:InitiationId ORDER BY a.ReqInitiationId DESC";
 	@Override
 	public List<Object[]> initiationReqList(String projectId, String mainId, String initiationId)throws Exception
 	{
@@ -779,7 +779,7 @@ public class RequirementDaoImpl implements RequirementDao {
 		return pt.getTestToolsId();
 	}
 
-	private static final String INITIATIONTESTPLANLIST = "SELECT a.TestPlanInitiationId,a.ProjectId,a.InitiationId,a.ProductTreeMainId,a.InitiatedBy,a.InitiatedDate,b.EmpName,c.Designation,a.TestPlanVersion,d.ReqStatusCode,d.ReqStatus,d.ReqStatusColor FROM pfms_test_plan_initiation a,employee b,employee_desig c,pfms_req_approval_status d WHERE a.IsActive=1 AND a.InitiatedBy=b.EmpId AND b.DesigId=c.DesigId AND a.ReqStatusCode=d.ReqStatusCode AND a.ProjectId=:ProjectId AND a.ProductTreeMainId=:ProductTreeMainId AND a.InitiationId=:InitiationId ORDER BY a.TestPlanInitiationId DESC";
+	private static final String INITIATIONTESTPLANLIST = "SELECT a.TestPlanInitiationId,a.ProjectId,a.InitiationId,a.ProductTreeMainId,a.InitiatedBy,a.InitiatedDate,b.emp_name,c.Designation,a.TestPlanVersion,d.ReqStatusCode,d.ReqStatus,d.ReqStatusColor FROM pfms_test_plan_initiation a,employee b,employee_desig c,pfms_req_approval_status d WHERE a.IsActive=1 AND a.InitiatedBy=b.emp_id AND b.desig_id=c.desig_id AND a.ReqStatusCode=d.ReqStatusCode AND a.ProjectId=:ProjectId AND a.ProductTreeMainId=:ProductTreeMainId AND a.InitiationId=:InitiationId ORDER BY a.TestPlanInitiationId DESC";
 	@Override
 	public List<Object[]> initiationTestPlanList(String projectId, String mainId, String initiationId)throws Exception
 	{
@@ -927,9 +927,9 @@ public class RequirementDaoImpl implements RequirementDao {
 		}
 	}
 
-	private static final String TESTPLANAPPROVALFLOWDATA = "SELECT (SELECT CONCAT(c.EmpName,', ',d.Designation) FROM employee c,employee_desig d WHERE c.EmpId=a.PreparedBy AND c.DesigId=d.DesigId) AS PreparedBy, \r\n"
-			+ "	(SELECT CONCAT(c.EmpName,', ',d.Designation) FROM employee c,employee_desig d WHERE c.EmpId=a.Reviewer AND c.DesigId=d.DesigId) AS Reviewer, \r\n"
-			+ "	(SELECT CONCAT(c.EmpName,', ',d.Designation) FROM employee c,employee_desig d WHERE c.EmpId=a.Approver AND c.DesigId=d.DesigId) AS Approver\r\n"
+	private static final String TESTPLANAPPROVALFLOWDATA = "SELECT (SELECT CONCAT(c.emp_name,', ',d.Designation) FROM employee c,employee_desig d WHERE c.emp_id=a.PreparedBy AND c.desig_id=d.desig_id) AS PreparedBy, \r\n"
+			+ "	(SELECT CONCAT(c.emp_name,', ',d.Designation) FROM employee c,employee_desig d WHERE c.emp_id=a.Reviewer AND c.desig_id=d.desig_id) AS Reviewer, \r\n"
+			+ "	(SELECT CONCAT(c.emp_name,', ',d.Designation) FROM employee c,employee_desig d WHERE c.emp_id=a.Approver AND c.desig_id=d.desig_id) AS Approver\r\n"
 			+ "FROM pfms_test_plan_summary a WHERE a.TestPlanInitiationId = (SELECT b.TestPlanInitiationId FROM pfms_test_plan_initiation b WHERE b.InitiationId=:InitiationId AND b.ProjectId=:ProjectId AND ProductTreeMainId=:ProductTreeMainId AND b.TestPlanVersion=1.0 AND b.IsActive=1 LIMIT 1)";
 	@Override
 	public Object[] getTestPlanApprovalFlowData(String initiationId, String projectId, String productTreeMainId) throws Exception {
@@ -1015,9 +1015,9 @@ public class RequirementDaoImpl implements RequirementDao {
 		}
 	}
 
-	private static final String REQUIRMENTAPPROVALFLOWDATA = "SELECT (SELECT CONCAT(c.EmpName,', ',d.Designation) FROM employee c,employee_desig d WHERE c.EmpId=a.PreparedBy AND c.DesigId=d.DesigId) AS PreparedBy, \r\n"
-			+ "	(SELECT CONCAT(c.EmpName,', ',d.Designation) FROM employee c,employee_desig d WHERE c.EmpId=a.Reviewer AND c.DesigId=d.DesigId) AS Reviewer, \r\n"
-			+ "	(SELECT CONCAT(c.EmpName,', ',d.Designation) FROM employee c,employee_desig d WHERE c.EmpId=a.Approver AND c.DesigId=d.DesigId) AS Approver\r\n"
+	private static final String REQUIRMENTAPPROVALFLOWDATA = "SELECT (SELECT CONCAT(c.emp_name,', ',d.Designation) FROM employee c,employee_desig d WHERE c.emp_id=a.PreparedBy AND c.desig_id=d.desig_id) AS PreparedBy, \r\n"
+			+ "	(SELECT CONCAT(c.emp_name,', ',d.Designation) FROM employee c,employee_desig d WHERE c.emp_id=a.Reviewer AND c.desig_id=d.desig_id) AS Reviewer, \r\n"
+			+ "	(SELECT CONCAT(c.emp_name,', ',d.Designation) FROM employee c,employee_desig d WHERE c.emp_id=a.Approver AND c.desig_id=d.desig_id) AS Approver\r\n"
 			+ "FROM pfms_initiation_req_summary a WHERE a.ReqInitiationId = (SELECT b.ReqInitiationId FROM pfms_req_initiation b WHERE b.ProjectId=:ProjectId AND b.InitiationId=:InitiationId AND ProductTreeMainId=:ProductTreeMainId AND b.ReqVersion=1.0 AND b.IsActive=1 LIMIT 1)";
 	@Override
 	public Object[] getRequirementApprovalFlowData(String initiationId, String projectId, String productTreeMainId) throws Exception {
@@ -1067,9 +1067,9 @@ public class RequirementDaoImpl implements RequirementDao {
 		}
 	}
 
-	private static final String SPECSAPPROVALFLOW="SELECT (SELECT CONCAT(c.EmpName,', ',d.Designation) FROM employee c,employee_desig d WHERE c.EmpId=a.PreparedBy AND c.DesigId=d.DesigId) AS PreparedBy, \r\n"
-			+ "			(SELECT CONCAT(c.EmpName,', ',d.Designation) FROM employee c,employee_desig d WHERE c.EmpId=a.Reviewer AND c.DesigId=d.DesigId) AS Reviewer,\r\n"
-			+ "			(SELECT CONCAT(c.EmpName,', ',d.Designation) FROM employee c,employee_desig d WHERE c.EmpId=a.Approver AND c.DesigId=d.DesigId) AS Approver\r\n"
+	private static final String SPECSAPPROVALFLOW="SELECT (SELECT CONCAT(c.emp_name,', ',d.Designation) FROM employee c,employee_desig d WHERE c.emp_id=a.PreparedBy AND c.desig_id=d.desig_id) AS PreparedBy, \r\n"
+			+ "			(SELECT CONCAT(c.emp_name,', ',d.Designation) FROM employee c,employee_desig d WHERE c.emp_id=a.Reviewer AND c.desig_id=d.desig_id) AS Reviewer,\r\n"
+			+ "			(SELECT CONCAT(c.emp_name,', ',d.Designation) FROM employee c,employee_desig d WHERE c.emp_id=a.Approver AND c.desig_id=d.desig_id) AS Approver\r\n"
 			+ "			FROM pfms_test_plan_summary a WHERE a.SpecsInitiationId = (SELECT b.SpecsInitiationId FROM pfms_specifications_initiation b WHERE b.ProjectId=:ProjectId AND b.InitiationId=:InitiationId AND ProductTreeMainId=:ProductTreeMainId AND b.SpecsVersion=1.0 AND b.IsActive=1 LIMIT 1)";
 
 	@Override
@@ -1276,8 +1276,8 @@ public class RequirementDaoImpl implements RequirementDao {
 	}
 
 
-	private static final String TESTPLANMASTER="SELECT a.TestMasterId,a.Name,a.Objective,a.Description,CONCAT(IFNULL(CONCAT(c.title,' '),IFNULL(CONCAT(c.salutation,' '),'')), c.empname) AS 'empname'\r\n"
-			+ ",a.PreConditions ,a.PostConditions,a.Constraints,a.SafetyRequirements,a.Methodology,a.ToolsSetup,a.PersonnelResources,a.Pass_Fail_Criteria,a.Remarks,a.StageApplicable FROM pfms_testplan_master a,login b,employee c WHERE  a.CreatedBy=b.UserName AND b.empid=c.empid AND a.IsActive = '1'";
+	private static final String TESTPLANMASTER="SELECT a.TestMasterId,a.Name,a.Objective,a.Description,CONCAT(IFNULL(CONCAT(c.title,' '),IFNULL(CONCAT(c.salutation,' '),'')), c.emp_name) AS 'empname'\r\n"
+			+ ",a.PreConditions ,a.PostConditions,a.Constraints,a.SafetyRequirements,a.Methodology,a.ToolsSetup,a.PersonnelResources,a.Pass_Fail_Criteria,a.Remarks,a.StageApplicable FROM pfms_testplan_master a,login b,employee c WHERE  a.CreatedBy=b.UserName AND b.empid=c.emp_id AND a.IsActive = '1'";
 	@Override
 	public List<Object[]> TestPlanMaster() throws Exception {
 		List<Object[]> TestPlanMasterList=null;

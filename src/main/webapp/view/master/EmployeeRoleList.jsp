@@ -96,7 +96,7 @@ String labcode = (String)request.getAttribute("labcode");
 	   <td ><%=obj[4]!=null? StringEscapeUtils.escapeHtml4(obj[4].toString()):"-" %></td>
 	   <td>
 	   
-	   <button class="btn bg-transparent" onclick="showRole('<%=obj[5]!=null? StringEscapeUtils.escapeHtml4(obj[5].toString()):"-"%>','<%=obj[1]!=null? StringEscapeUtils.escapeHtml4(obj[1].toString()):"-"%>','<%=obj[2]!=null? StringEscapeUtils.escapeHtml4(obj[2].toString()):"-"%>','<%=obj[4]!=null? StringEscapeUtils.escapeHtml4(obj[4].toString()):"-"%>')"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+	   <button class="btn bg-transparent" onclick="showRole('<%=obj[5]!=null? StringEscapeUtils.escapeHtml4(obj[5].toString()):"-"%>','<%=obj[1]!=null? StringEscapeUtils.escapeHtml4(obj[1].toString()):"0"%>','<%=obj[2]!=null? StringEscapeUtils.escapeHtml4(obj[2].toString()):"-"%>','<%=obj[4]!=null? StringEscapeUtils.escapeHtml4(obj[4].toString()):"-"%>')"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
 	   
 	   </td>
 	   </tr>

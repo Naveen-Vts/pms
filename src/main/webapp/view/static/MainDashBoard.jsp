@@ -249,6 +249,8 @@
 <!-- end -->
 <%
 String Username =(String)session.getAttribute("Username");  
+
+String token =(String)session.getAttribute("token"); 
 String EmpNo=(String)session.getAttribute("empNo");
 String LabCode=(String)session.getAttribute("labcode");
 String ibasUri=(String)request.getAttribute("ibasUri");
@@ -371,12 +373,12 @@ String IsDG = (String)request.getAttribute("IsDG");
 								<div id="carouselExampleSlidesOnly" class=""  data-ride=""  >
 									<div class="carousel-inner">	
 										<%	for (Object[] obj : ProjectList) { 
-											String projectshortName=(obj[17]!=null)?" ( "+obj[17].toString()+" ) ":"";
+											String projectshortName=(obj[17]!=null)?" ("+obj[17].toString().trim()+") ":"";
 										%>
 										 <div class="carousel-item" id="projectname<%=obj[0]%>">
 										 	<div class="row" >
 												<div class="col-md-12 t1U" >
-													<%=obj[4]!=null?StringEscapeUtils.escapeHtml4(obj[4].toString()): " - "+projectshortName!=null?StringEscapeUtils.escapeHtml4(projectshortName): " - " %>
+													<%=obj[4]!=null?(obj[4].toString()): " - " %>
 													<br><br>
 												</div>
 											</div>
@@ -507,9 +509,9 @@ String IsDG = (String)request.getAttribute("IsDG");
 							<div class="col-md-12 pd-1"  id="projectdropdown" >
 								<select class="form-control selectdee" id="projectid" required="required" name="projectid" onchange="dropdown()"  >
 									<%	for (Object[] obj2 : ProjectList) {
-										String projectshortName=(obj2[17]!=null)?" ( "+obj2[17].toString()+" ) ":"";
+										String projectshortName=(obj2[17]!=null)?" ("+obj2[17].toString().trim()+") ":"";
 										%>
-										<option value="<%=obj2[0]%>"   ><%=obj2[4]!=null?StringEscapeUtils.escapeHtml4(obj2[4].toString()): " - "+projectshortName!=null?StringEscapeUtils.escapeHtml4(projectshortName): " - "%></option>
+										<option value="<%=obj2[0]%>"   ><%=obj2[4]!=null?StringEscapeUtils.escapeHtml4(obj2[4].toString()+projectshortName): " - "%></option>
 									<%} %>
 								</select>
 								<br><br>
@@ -785,15 +787,15 @@ String IsDG = (String)request.getAttribute("IsDG");
 														<% actionCounts+=Integer.parseInt(obj[3].toString());} } %>
 													</tr>
 													<tr>
-														<td  class="p505">Fracas</td>
+														<%-- <td  class="p505">Fracas</td>
 														<%for(Object[] obj : MyTaskList){
 														  	if(obj[0].toString().equalsIgnoreCase("Fracas")){ %>
 														<td><button type="button" onclick="document.location='FracasAssigneeList.htm'" class="btn btn-sm <%if(!obj[1].toString().equals("0")){ %>  <%} %> bg1-3" ><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - " %></button></td>
 														<td><button type="button" onclick="document.location='FracasAssigneeList.htm'" class="btn btn-sm bg1-4" ><%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()): " - " %></button></td>
 														<td><button type="button" onclick="document.location='FracasAssigneeList.htm'" class="btn btn-sm bg1-5<%if(!obj[3].toString().equals("0")){ %> fa faa-pulse animated faa-fast <%} %> " ><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - " %></button></td>
-<%-- 														
- --%>														<td><button type="button" onclick="document.location='FracasToReviewList.htm'" class="btn btn-sm bg1-6" s><%=obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()): " - " %></button></td>
-														<% actionCounts+=Integer.parseInt(obj[3].toString());} } %>
+														
+														<td><button type="button" onclick="document.location='FracasToReviewList.htm'" class="btn btn-sm bg1-6" s><%=obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()): " - " %></button></td>
+														<% actionCounts+=Integer.parseInt(obj[3].toString());} } %> --%>
 													</tr>
 													<%} %>
 												 </table>
@@ -1781,12 +1783,13 @@ String IsDG = (String)request.getAttribute("IsDG");
 												</td>
 												<td class="custom-td">
 													<%if(Integer.parseInt(obj[20].toString())>0){ %>
-													<div class="row">
+														<div class="row">
 														<div class="col-md-11">
 															<div class="progress" onclick="overallcommonredirect('mil','<%=obj[2]%>')">
 															  <div class="progress-bar progress-bar-striped bg-success width-<%=obj[19]%>"  data-toggle="tooltip" title="Completed : <%=obj[18]%> / <%=obj[20] %>" ></div>
 															  <div class="progress-bar progress-bar-striped bg-warning width-<%=obj[17]%>"  data-toggle="tooltip" title="Delayed : <%=obj[16]%> / <%=obj[20] %>" ></div>
 															  <div class="progress-bar progress-bar-striped bg-danger width-<%=obj[15]%>" data-toggle="tooltip" title="Pending : <%=obj[14]%> / <%=obj[20] %>" ></div>															  
+															  <div class="progress-bar progress-bar-striped bg-primary width-<%=obj[71]%>" data-toggle="tooltip" title="Upcoming : <%=obj[72]%> / <%=obj[20] %>" ></div>															  
 															</div>
 														</div>
 														<div class="col-md-1 pl-0" >
@@ -2031,6 +2034,7 @@ String IsDG = (String)request.getAttribute("IsDG");
 									<li><span class="modal-span green" >&#8226;</span><span class="modal-text">Completed</span></li>
 									<li><span class="modal-span yellow" >&#8226;</span><span class="modal-text">Delayed</span></li>
 						          	<li><span class="modal-span red" >&#8226;</span><span class="modal-text">Pending</span></li>
+					           		 	<!-- // DLRL --><li><span class="modal-span blue" >&#8226;</span><span class="modal-text">Upcoming</span></li>
 					            </ul>
 							</div>
 					</div>		
@@ -3653,30 +3657,20 @@ $projectid=value;
 		
 				
 				
-		$.ajax({
-		
+		/* $.ajax({
 			type:"GET",
 			url:"ChangesDataTotalCount.htm",
 			data :{
-				
 				ProjectId : $projectid
-				
 			},
 			datatype : 'json',
 			success : function(result){
-				
 				var result = JSON.parse(result);
 				var values = Object.values(result).map(function(key,value){
-					
-					return result[key,value]
+				return result[key,value]
 				})
-			/* 	
-				document.getElementById('todaychangescount').innerHTML = values[0] + values[3] + values[6] + values[9] ;
-				document.getElementById('weeklychangescount').innerHTML = values[1] + values[4] + values[7] + values[10] ;
-				document.getElementById('monthlychangescount').innerHTML = values[2] + values[5] + values[8] + values[11] ; */
 			}
-
-		})
+		}) */
 
 
 }
@@ -3722,7 +3716,7 @@ function openModalDetails(a,b){
 	if(a==="M" && b>0){
 		jsObjectList = JSON.parse('<%= jsonArray %>');
 	}
-	console.log(jsObjectList)
+	
 	const dateFromTimestamp = new Date(1703097000000);
 
 	var html="";
@@ -3771,7 +3765,7 @@ window.onclick = function(event) {
   }
 }
 
-//clicked the modal 
+   //clicked the modal 
     document.addEventListener('DOMContentLoaded', function() {
     	openModal();
       });
@@ -3782,7 +3776,9 @@ window.onclick = function(event) {
 		}, 4500);
     	});
 </script> 
+<script>
 
+</script>
 </body>
 
 
