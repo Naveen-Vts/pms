@@ -19,7 +19,7 @@
 <% 
 SimpleDateFormat sdf1=new SimpleDateFormat("dd-MM-yyyy");
 SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
-Object[] committeedata=(Object[])request.getAttribute("committeedata");
+Object[] committeedata= request.getAttribute("committeedata") !=null ? (Object[])request.getAttribute("committeedata") : new Object[100];
 Object[] startdate=(Object[])request.getAttribute("startdate");
 List<Object[]> CommitteeAutoScheduleList=(List<Object[]>)request.getAttribute("CommitteeAutoScheduleList");
 String Dashboard= (String)request.getAttribute("dashboard");
@@ -208,6 +208,9 @@ String committeeid=(String)request.getAttribute("committeeid");
 													<tbody>
 														<%int count=1;
 										   					for (Object[] obj :CommitteeAutoScheduleList) {
+										   						if(obj[3]==null || !obj[3].toString().equalsIgnoreCase(committeedata[1].toString())){
+										   							continue;
+										   						}
 										   					%>
 														<tr>
 															<td><%=count %></td>

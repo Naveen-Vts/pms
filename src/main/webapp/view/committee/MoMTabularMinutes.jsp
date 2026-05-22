@@ -211,7 +211,7 @@
 	  <!----------------------------------------------------------------- ATTENDANCE -------------------------------------------------->
 	  
 	 	<%if(invitedlist.size()>0){ %>
-		<% ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","CW","CO","CH"));
+		<% ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","CW","CO","CH","I","W","P"));
 		   ArrayList<String> members = new ArrayList<String>();
 		   String memberSec ="";
 		   /* invitedlist.sort((obj,obj1) -> {

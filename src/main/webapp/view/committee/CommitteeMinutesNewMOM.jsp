@@ -352,7 +352,7 @@ table{
 
 
 <%if(invitedlist.size()>0){ %>
-<% ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","CW","CO","CH"));
+<% ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","CW","CO","CH","I","W","P"));
 
 int memPresent=0,memAbscent=0,ParPresent=0,parAbscent=0;
 int j=0;

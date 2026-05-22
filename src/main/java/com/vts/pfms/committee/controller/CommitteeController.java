@@ -6555,7 +6555,7 @@ private boolean isValidFileType(MultipartFile file) {
 			req.setAttribute("committeelist", service.CommitteeMainList(labcode));
 			req.setAttribute("dashboard", Dashboard);
 			req.setAttribute("startdate",service.CommitteeLastScheduleDate(committeeid));
-			req.setAttribute("CommitteeAutoScheduleList", service.CommitteeAutoScheduleList("0", committeeid,"0","0"));
+			req.setAttribute("CommitteeAutoScheduleList", service.CommitteeAutoScheduleList("0", "0","0","0"));
 			req.setAttribute("committeedata", committeedata);
 
 		}catch (Exception e) {
