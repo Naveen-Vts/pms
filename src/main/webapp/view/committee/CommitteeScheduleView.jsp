@@ -423,7 +423,7 @@
 						<%} %>
 
 						<div class="form-group mt-25px" align="center">
-							<%	if(Integer.parseInt(committeescheduleeditdata[10].toString())<6 && (userview==null || userview.equalsIgnoreCase("CS") || userview.equalsIgnoreCase("CC") )) { %>
+							<%	if((("PGAD".equalsIgnoreCase(labcode) && !"0".equals(projectid)) || Integer.parseInt(committeescheduleeditdata[10].toString())<6) && (userview==null || userview.equalsIgnoreCase("CS") || userview.equalsIgnoreCase("CC") )) { %>
 							<%if(!committeeagendalist.isEmpty()){%>
 							<%if(useraccess>1){ %>
 							<form <%if(programmeId.equals("0")) {%>

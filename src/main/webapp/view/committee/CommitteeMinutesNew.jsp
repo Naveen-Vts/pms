@@ -100,7 +100,7 @@ p{
           margin-top: 49px;
           margin-left: 39px;
           margin-right: 39px;
-          margin-buttom: 49px; 	
+          margin-bottom: 49px; 	
           border: 1px solid black;    
           @bottom-right {          		
              content: "Page " counter(page) " of " counter(pages);

@@ -1957,14 +1957,14 @@ function showAttachmentModal(){
 					</div>
    					
    				 <div class="col-md-12 ml-0px w-100"  align="left">
-						 <% if(!LabCode.equalsIgnoreCase("PGAD")){ %>
+						  <% if(!LabCode.equalsIgnoreCase("PGAD")){ %>
 						 		<label >Action Name</label>
 						 		<textarea class="form-control w-100 height-140px" required="required"  name="NoteText" id="editorair" maxlength="5000"></textarea>
-						 <%}else{ %>						 
+						 <%}else{ %> 						 
 						<div   id="summernoteair" class="center">
 						</div>
 						 <textarea class="textAreaClass" name="NoteText" id="editorair"></textarea>
-						 <%} %> 
+						  <%} %> 
 					</div>
 
   					
