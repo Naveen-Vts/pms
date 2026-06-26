@@ -1780,7 +1780,7 @@ String IsDG = (String)request.getAttribute("IsDG");
 													<%} %>
 												</td>
 												<td class="custom-td">
-													<%if(Integer.parseInt(obj[20].toString())>0){ %>
+													<%if(obj[20] != null && Integer.parseInt(obj[20].toString())>0){ %>
 													<div class="row">
 														<div class="col-md-11">
 															<div class="progress" onclick="overallcommonredirect('mil','<%=obj[2]%>')">

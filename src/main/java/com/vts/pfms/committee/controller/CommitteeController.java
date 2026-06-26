@@ -1244,12 +1244,12 @@ public class CommitteeController {
 			String labcode = (String)ses.getAttribute("labcode");
 			System.out.println("flow" +flow);
 			
-			String Subject=req.getParameter("subject").trim();
-			String Comment=req.getParameter("Comment").trim();
-			String officer1Role=req.getParameter("Rec1_Role").toUpperCase();
-			String officer2Role=req.getParameter("Rec2_Role").toUpperCase();
-			String officer3Role=req.getParameter("Rec3_Role").toUpperCase();
-			String approvingOfficerRole=req.getParameter("Approving_Role").toUpperCase();
+			String Subject=req.getParameter("subject");
+			String Comment=req.getParameter("Comment");
+			String officer1Role=req.getParameter("Rec1_Role");
+			String officer2Role=req.getParameter("Rec2_Role");
+			String officer3Role=req.getParameter("Rec3_Role");
+			String approvingOfficerRole=req.getParameter("Approving_Role");
 
 			long flagcount=0;
 			
@@ -1313,8 +1313,8 @@ public class CommitteeController {
 				
 				pe.setRefNo(req.getParameter("RefNo"));
 				pe.setRefDate(pe.getRefDate()!=null ? pe.getRefDate(): java.sql.Date.valueOf(req.getParameter("RefDate")));
-				pe.setSubject(Subject);
-				pe.setComment(Comment);
+				pe.setSubject(Subject != null ? Subject.trim() : null);
+				pe.setComment(Comment != null ? Comment.trim() : null);
 				pe.setCommitteeMainId(0l);
 				pe.setEnoteFrom("S");
 				pe.setEnoteStatusCode(pe.getEnoteStatusCode()==null?"INI":pe.getEnoteStatusCode());
@@ -1323,18 +1323,18 @@ public class CommitteeController {
 				pe.setInitiatedBy(Long.parseLong(req.getParameter("InitiatedBy")));
 				if(req.getParameter("Recommend1")!=null) {
 					pe.setRecommend1(Long.parseLong(req.getParameter("Recommend1")));
-					pe.setRec1_Role(officer1Role);
+					pe.setRec1_Role(officer1Role != null ? officer1Role.toUpperCase() : null);
 				}
 				if(req.getParameter("Recommend2").length()>0) {;
 				pe.setRecommend2(Long.parseLong(req.getParameter("Recommend2")));
-				pe.setRec2_Role(officer2Role);
+				pe.setRec2_Role(officer2Role != null ? officer2Role.toUpperCase() : null);
 				}else {
 					pe.setRecommend2(null);
 					pe.setRec2_Role(null);
 				}
 				if(req.getParameter("Recommend3").length()>0) {
 					pe.setRecommend3(Long.parseLong(req.getParameter("Recommend3")));
-					pe.setRec3_Role(officer3Role);
+					pe.setRec3_Role(officer3Role != null ? officer3Role.toUpperCase() : null);
 				}else {
 					pe.setRecommend3(null);
 					pe.setRec3_Role(null);
@@ -1343,7 +1343,7 @@ public class CommitteeController {
 					pe.setApprovingOfficer(Long.parseLong(req.getParameter("ApprovingOfficer")));;
 					pe.setApprovingOfficerLabCode(labcode);
 				}
-				pe.setApproving_Role(approvingOfficerRole);
+				pe.setApproving_Role(approvingOfficerRole !=null ? approvingOfficerRole.toUpperCase() : null);
 				if(pe.getCreatedBy()==null) {
 					pe.setCreatedBy(Username);	
 					pe.setCreatedDate(sdf1.format(new Date()));	
