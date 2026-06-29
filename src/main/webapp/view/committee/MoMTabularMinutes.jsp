@@ -287,7 +287,7 @@
 			 		}
 			 		else{
 			 			if(!labcode.equalsIgnoreCase(invitedlist.get(i)[11].toString()) && invitedlist.get(i)[16]!=null){
-			 				name = name.concat(" ("+invitedlist.get(i)[16].toString()+")");
+			 				name = name.concat(" ("+invitedlist.get(i)[16].toString()+" Through VC )");
 			 			}
 			 			//System.out.println("==========="+labcode+"======"+invitedlist.get(i)[11].toString()+"==========="+name);
 			 			 members.add(name);	
