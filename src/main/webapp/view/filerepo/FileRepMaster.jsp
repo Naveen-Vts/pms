@@ -584,6 +584,17 @@ console.log(labcode);
         const id = $('#' + levelType + '_' + pkId).val();
         const inputvalue = $('#input_' + pkId).val().trim();
 
+        const regex =/^[A-Za-z0-9 _-]+$/;
+
+        if (!regex.test(inputvalue)) {
+            Swal.fire({
+            	icon:'warning',
+            	title:'Validation Error',
+            	text: "Only letters, numbers, spaces, underscores ( _ ) and hyphens (-) are allowed."
+            	});
+            return;
+        }
+        
         // Input validation
         if (!inputvalue) {
             Swal.fire({
@@ -720,7 +731,16 @@ console.log(labcode);
             });
             return;
         }
+        const regex =/^[A-Za-z0-9 _-]+$/;
         
+        if (!regex.test(inputvalue)) {
+            Swal.fire({
+            	icon:'warning',
+            	title:'Validation Error',
+            	text: "Only letters, numbers, spaces, underscores ( _ ) and hyphens (-) are allowed."
+            	});
+            return;
+        }
         Swal.fire({
             title: 'Are you sure to add?',
             icon: 'question',
@@ -748,7 +768,16 @@ console.log(labcode);
             });
             return;
         }
+        const regex =/^[A-Za-z0-9 _-]+$/;
         
+        if (!regex.test(inputvalue)) {
+            Swal.fire({
+            	icon:'warning',
+            	title:'Validation Error',
+            	text: "Only letters, numbers, spaces, underscores ( _ ) and hyphens (-) are allowed."
+            	});
+            return;
+        }
         Swal.fire({
             title: 'Are you sure to add?',
             icon: 'question',

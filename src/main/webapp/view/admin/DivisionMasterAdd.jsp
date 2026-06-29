@@ -105,7 +105,7 @@ String labCode  = (String) session.getAttribute("labcode");
                     	<select class="custom-select selectdee" name="labCode" onChange="showEmployees(this.value)">		
                       		<option value="" selected="selected" disabled="disabled">Select Labcode</option>											
 								<% for (  Object[] obj : lablist){ %>
-								<option value=<%=obj[3]%> <%if(labCode.equalsIgnoreCase(obj[3].toString())){ %> selected="selected" <%} %> ><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()):"-"%></option>
+								<option value=<%=obj[3]%> ><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()):"-"%></option>
 								<%} %>
 						</select> 
                     </div>
@@ -116,11 +116,11 @@ String labCode  = (String) session.getAttribute("labcode");
 				<select class="custom-select" id="dHName" required="required" name="dHName">
 								<option  selected value="">---Select---</option>
 								
-								<% for (  Object[] obj : DivisionHeadListAdd){ %>
+							<%-- 	<% for (  Object[] obj : DivisionHeadListAdd){ %>
 						
 								<option value=<%=obj[0]%>><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - "%>, <%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - " %> </option>
 							
-								<%} %>
+								<%} %> --%>
 				</select>
 		</div>
 </div>

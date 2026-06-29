@@ -36,7 +36,6 @@ String labcode = (String)request.getAttribute("labcode");
 List<Object[]> Alllablist = (List<Object[]>)request.getAttribute("AllLabList");
 String projectid=committeescheduleeditdata!=null?committeescheduleeditdata[9].toString():"";
 List<Object[]> divisionList = (List<Object[]>) request.getAttribute("divisionList");
-//labcode = "PGAD";
 String GenId="GenAdd";
 String MinutesBack=null;
 MinutesBack=(String)request.getAttribute("minutesback");
@@ -168,7 +167,7 @@ String programmeId = (String) request.getAttribute("programmeId");
 									<form name="myForm<%=obj[0] %>" id="myFormgen<%=obj[0] %>" action="ItemSpecAdd.htm" method="post">
 										<input type="hidden" name="specname" value="myFormgen<%=obj[0] %>"> 
 										<input type="hidden" name="ScheduleId" value="<%=obj[3] %>"> 
-										<input type="hidden" name="ProjectId" value="<%=obj[10] %>">
+										<input type="hidden" name="ProjectId" value="<%=projectid %>">
 										<input type="hidden" name="scheduleminutesid" value="<%=obj[0] %>" readonly="readonly"> 
 										<input type="hidden" name="minutesid" value="<%=obj[6] %>" readonly="readonly"> 
 										<input type="hidden" name="agendasubid" value="<%=obj[9] %>" readonly="readonly"> 

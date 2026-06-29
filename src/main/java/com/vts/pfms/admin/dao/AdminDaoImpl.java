@@ -38,52 +38,54 @@ public class AdminDaoImpl implements AdminDao{
 	private static final Logger logger=LogManager.getLogger(AdminDaoImpl.class);
 	private SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-	private static final String LOGINTYPELIST ="SELECT a.username,CONCAT(IFNULL(CONCAT(b.title,' '),''), b.empname) AS 'empname',c.divisionname,d.rolename,a.loginid FROM login a,employee b,division_master c,pfms_role_security d,pfms_login_role_security e WHERE a.empid=b.empid AND a.divisionid=c.divisionid AND a.loginid=e.loginid AND e.roleid=d.roleid AND a.isactive='1' AND a.pfms='Y' AND b.isactive=1 ORDER BY b.srno";
-	private static final String EMPLOYEELIST ="SELECT a.loginid,a.username,CONCAT(IFNULL(CONCAT(b.title,' '),''), b.empname) AS 'empname' FROM login a, employee b WHERE a.empid=b.empid AND b.isactive=1 AND a.isactive='1' AND a.pfms='N' ORDER BY b.srno ";
+	private static final String LOGINTYPELIST ="SELECT a.username,CONCAT(IFNULL(CONCAT(b.title,' '),''), b.emp_name) AS 'empname',c.division_name,d.rolename,a.loginid FROM login a,employee b,division_master c,pfms_role_security d,pfms_login_role_security e WHERE a.empid=b.emp_id AND a.divisionid=c.division_id AND a.loginid=e.loginid AND e.roleid=d.roleid AND a.isactive='1' AND a.pfms='Y' AND b.is_active=1 ORDER BY b.srno";
+	private static final String EMPLOYEELIST ="SELECT a.loginid,a.username,CONCAT(IFNULL(CONCAT(b.title,' '),''), b.emp_name) AS 'empname' FROM login a, employee b WHERE a.empid=b.emp_id AND b.is_active=1 AND a.isactive='1' AND a.pfms='N' ORDER BY b.srno ";
 	private static final String ROLELIST="SELECT RoleId, RoleName FROM  pfms_role_security ";
-	private static final String LOGINTYPEEDITDATA="SELECT a.username,CONCAT(IFNULL(CONCAT(b.title,' '),''), b.empname) AS 'empname' ,c.divisionname,d.rolename,a.loginid FROM login a,employee b,division_master c,pfms_role_security d,pfms_login_role_security e WHERE a.empid=b.empid AND a.divisionid=c.divisionid AND a.loginid=e.loginid AND e.roleid=d.roleid AND a.isactive='1' AND a.pfms='Y' and a.loginid=:loginid ";
+	private static final String LOGINTYPEEDITDATA="SELECT a.username,CONCAT(IFNULL(CONCAT(b.title,' '),''), b.emp_name) AS 'empname' ,c.division_name,d.rolename,a.loginid FROM login a,employee b,division_master c,pfms_role_security d,pfms_login_role_security e WHERE a.empid=b.emp_id AND a.divisionid=c.division_id AND a.loginid=e.loginid AND e.roleid=d.roleid AND a.isactive='1' AND a.pfms='Y' and a.loginid=:loginid ";
 	private static final String PFMSLOGINREVOKE="DELETE from pfms_login_role_security WHERE loginid=:loginid";
-	private static final String EMPLOYEELISTALL="select a.empid,CONCAT(IFNULL(CONCAT(a.title,' '),''), a.empname) AS 'empname',b.designation,a.labcode FROM employee a,employee_desig b WHERE a.isactive='1' AND a.DesigId=b.DesigId";
-	private static final String RTMDDO="SELECT 'empid1',a.empid,CONCAT(IFNULL(CONCAT(a.title,' '),''), a.empname) AS 'empname',b.designation,c.validfrom,c.validto  FROM employee a,employee_desig b,pfms_initiation_approver c WHERE a.empid=c.empid AND c.isactive='1' AND a.isactive='1' AND a.DesigId=b.DesigId AND c.type='DO-RTMD'";
+	private static final String EMPLOYEELISTALL="select a.emp_id,CONCAT(IFNULL(CONCAT(a.title,' '),''), a.emp_name) AS 'empname',b.designation,a.lab_code FROM employee a,employee_desig b WHERE a.is_active='1' AND a.desig_id=b.desig_id";
+	private static final String RTMDDO="SELECT 'empid1',a.emp_id,CONCAT(IFNULL(CONCAT(a.title,' '),''), a.emp_name) AS 'empname',b.designation,c.validfrom,c.validto  FROM employee a,employee_desig b,pfms_initiation_approver c WHERE a.emp_id=c.empid AND c.isactive='1' AND a.is_active='1' AND a.desig_id=b.DesigId AND c.type='DO-RTMD'";
 	// new code
 	private static final String NOTIFICATIONLIST="SELECT notificationdate, notificationmessage, notificationurl, notificationid FROM pfms_notification WHERE empid =:empid AND isactive = 1 ORDER BY CreatedDate DESC LIMIT 0, 1000";
 	private static final String RTMDDOUPDATE="update pfms_initiation_approver set isactive='0' WHERE Type=:type";
-	private static final String DIVISIONLIST ="select divisionid,divisioncode from division_master where isactive='1'";
+	private static final String DIVISIONLIST ="select division_id,division_code from division_master where is_active='1'";
 	private static final String AUDITSTAMPING="SELECT a.username,a.logindate, a.logindatetime,a.ipaddress, a.macaddress, ( CASE WHEN a.logouttype='L' THEN 'Logout' ELSE 'Session Expired' END ) AS logouttype, 	a.logoutdatetime FROM auditstamping a WHERE a.`LoginDate` BETWEEN :fromdate AND :todate AND a.loginid=:loginid ORDER BY a.`LoginDateTime` DESC ";
-	private static final String USERNAMELIST="SELECT l.loginid, l.empid,l.username, CONCAT(IFNULL(CONCAT(e.title,' '),''), e.empname) AS 'empname',e.labcode FROM login l , employee e WHERE e.isactive=1 AND l.isactive=1 AND l.EmpId=e.EmpId ORDER BY e.srno=0,e.srno"; 
+	private static final String USERNAMELIST="SELECT l.loginid, l.empid,l.username, CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) AS 'empname',e.lab_code FROM login l , employee e WHERE e.is_active=1 AND l.isactive=1 AND l.EmpId=e.emp_id ORDER BY e.sr_no=0,e.sr_no"; 
 	private static final String LOGINEDITDATA="FROM Login WHERE LoginId=:LoginId";
-	private static final String USERMANAGELIST = "SELECT a.loginid, a.username, b.divisionname,c.formrolename, a.Pfms , CONCAT(IFNULL(CONCAT(e.title,' '),''), e.empname) AS 'empname', d.designation ,lt.logindesc ,e.empno ,e.labcode FROM login a , division_master b , form_role c , employee e, employee_desig d,  login_type lt WHERE a.divisionid=b.divisionid AND a.formroleid=c.formroleid AND a.isactive=1 AND a.empid=e.empid AND e.desigid=d.desigid AND a.logintype=lt.logintype ";
+	private static final String USERMANAGELIST = "SELECT a.loginid, a.username, b.division_name,c.formrolename, a.Pfms , CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) AS 'empname', d.designation ,lt.logindesc ,e.emp_no ,e.lab_code FROM login a , division_master b , form_role c , employee e, employee_desig d,  login_type lt WHERE a.divisionid=b.division_id AND a.formroleid=c.formroleid AND a.isactive=1 AND a.empid=e.emp_id AND e.desig_id=d.desig_id AND a.logintype=lt.logintype ";
 	private static final String USERNAMEPRESENTCOUNT ="select count(*) from login where username=:username and isactive IN ('1','0')";
-	private static final String EMPLOYEELIST1="SELECT empid,CONCAT(IFNULL(CONCAT(title,' '),''), empname) AS 'empname' FROM employee e WHERE e.isactive='1' AND labcode=:labcode AND empid NOT IN (SELECT empid FROM login WHERE isactive=1) ORDER BY srno ";
+	private static final String EMPLOYEELIST1="SELECT emp_id,CONCAT(IFNULL(CONCAT(title,' '),''), emp_name) AS 'empname' FROM employee e WHERE e.is_active='1' AND lab_code=:labcode AND emp_id NOT IN (SELECT empid FROM login WHERE isactive=1) ORDER BY sr_no ";
 	private final static String CHECKUSER = "SELECT COUNT(LoginId) FROM pfms_login_role_security WHERE LoginId=:loginid";
 	private final static String UPDATEPFMSLOGINROLE="UPDATE pfms_login_role_security SET RoleId=:roleid WHERE LoginId=:loginid";
 	private static final String CURRENTADDORTMT="SELECT r.RtmddoId, r.EmpId, r.ValidFrom, r.ValidTo, r.Type,r.labcode FROM pfms_initiation_approver r WHERE r.IsActive=1 ORDER BY r.Type DESC";
-	private static final String DIVISIONLIST1 ="SELECT a.divisionid,a.divisioncode,a.divisionname, CONCAT(IFNULL(CONCAT(b.title,' '),''), b.empname) AS 'empname' ,c.groupname ,a.labcode, d.Designation, a.DivisionShortName FROM division_master a,employee b,division_group c, employee_desig d WHERE a.isactive='1' AND b.isactive='1' AND b.DesigId = d.DesigId and a.divisionheadid=b.empid AND a.groupid=c.groupid AND a.labcode=:labcode ORDER BY a.divisionid desc"; //srikant
-	private static final String DIVISIONADDCHECK="SELECT SUM(IF(DivisionCode =:divisionCode,1,0))   AS 'dCode',SUM(IF(DivisionName = :divisionName,1,0)) AS 'dName' FROM division_master where isactive=1 ";
-	private static final String DIVISIONGROUPLIST="SELECT a.groupid,a.groupname,a.labcode FROM division_group a WHERE a.isactive=1";
-	private static final String DIVISIONHEADLIST="SELECT a.empid,CONCAT(IFNULL(CONCAT(a.title,' '),''), a.empname) AS 'empname',a.labcode,b.designation FROM employee a , employee_desig b WHERE a.isactive=1 AND a.desigid=b.desigid";
-	private static final String DIVISIONEDITDATA="SELECT d.divisionid,d.divisioncode, d.divisionname, d.divisionheadid, d.groupid, d.IsActive, d.DivisionShortName, e.labcode AS 'Division Head Labcode' FROM division_master d LEFT JOIN employee e ON e.empId = d.divisionheadid WHERE d.divisionid=:divisionid ";	//srikant
-	private static final String DESIGNATIONDATA="SELECT desigid,desigcode,designation,desiglimit,DesigSr,DesigCadre FROM employee_desig WHERE desigid=:desigid";
-	private static final String DESIGNATIONLIST="SELECT desigid,desigcode,designation,desiglimit,DesigSr,DesigCadre FROM employee_desig ORDER BY DesigSr";
-	private static final String DESIGNATIONCODECHECK="SELECT COUNT(desigcode),'desigcode' FROM employee_desig WHERE desigcode=:desigcode";
+
+	private static final String DIVISIONLIST1 ="SELECT a.division_id,a.division_code,a.division_name, CONCAT(IFNULL(CONCAT(b.title,' '),''), b.emp_name) AS 'empname' ,c.group_name ,a.division_name, d.Designation, a.division_short_name FROM division_master a,employee b,division_group c, employee_desig d WHERE a.is_active='1' AND b.is_active='1' AND b.desig_id = d.desig_id and a.division_head_id=b.emp_id AND a.group_id=c.group_id AND a.lab_code=:labcode ORDER BY a.division_id desc"; //srikant
+	private static final String DIVISIONADDCHECK="SELECT SUM(IF(division_code =:divisionCode,1,0))   AS 'dCode',SUM(IF(division_name = :divisionName,1,0)) AS 'dName' FROM division_master where is_active=1 ";
+	private static final String DIVISIONGROUPLIST="SELECT a.group_id,a.group_name,a.lab_code FROM division_group a WHERE a.is_active=1";
+	private static final String DIVISIONHEADLIST="SELECT a.emp_id,CONCAT(IFNULL(CONCAT(a.title,' '),''), a.emp_name) AS 'empname',a.lab_code,b.designation FROM employee a , employee_desig b WHERE a.is_active=1 AND a.desig_id=b.desig_id";
+	private static final String DIVISIONEDITDATA="SELECT d.division_id,d.division_code, d.division_name, d.division_head_id, d.group_id, d.is_active, d.division_short_name , e.lab_code AS 'Division Head Labcode' FROM division_master d LEFT JOIN employee e ON e.emp_id = d.division_head_id WHERE d.division_id=:divisionid ";	//srikant
+	private static final String DESIGNATIONDATA="SELECT desig_id,desig_code,designation,desig_limit,desig_sr,desig_cadre FROM employee_desig WHERE desig_id=:desigid";
+	private static final String DESIGNATIONLIST="SELECT desig_id,desig_code,designation,desig_limit,desig_sr,desig_cadre FROM employee_desig ORDER BY desig_sr";
+	private static final String DESIGNATIONCODECHECK="SELECT COUNT(desig_code),'desigcode' FROM employee_desig WHERE desig_code=:desigcode";
+
 	private static final String DESIGNATIONCHECK="SELECT COUNT(designation),'designation' FROM employee_desig WHERE designation=:designation";
-	private static final String DESIGNATIONCODEEDITCHECK="SELECT COUNT(desigcode),'desigcode' FROM employee_desig WHERE desigcode=:desigcode AND desigid<>:desigid";
-	private static final String DESIGNATIONEDITCHECK="SELECT COUNT(designation),'designation' FROM employee_desig WHERE designation=:designation AND desigid<>:desigid";
-	private static final String LISTOFDESIGSENIORITYNUMBER ="SELECT DesigSr,desigid FROM employee_desig WHERE DesigSr!=0 ORDER BY Desigsr ASC ";
+	private static final String DESIGNATIONCODEEDITCHECK="SELECT COUNT(desig_code),'desigcode' FROM employee_desig WHERE desig_code=:desigcode AND desig_id<>:desigid";
+	private static final String DESIGNATIONEDITCHECK="SELECT COUNT(designation),'designation' FROM employee_desig WHERE designation=:designation AND desig_id<>:desigid";
+	private static final String LISTOFDESIGSENIORITYNUMBER ="SELECT desig_sr,desig_id FROM employee_desig WHERE desig_sr!=0 ORDER BY desig_sr ASC ";
 	private static final String LOGINTYPEROLES="SELECT LoginTypeId,LoginType,LoginDesc FROM login_type";
 	private static final String FORMDETAILSLIST="SELECT b.formroleaccessid,b.logintype,a.formname,b.isactive ,b.labhq ,a.formdetailid FROM  (SELECT fd.formdetailid,fd.formmoduleid,fd.formname FROM pfms_form_detail fd WHERE  fd.isactive=1 AND CASE WHEN :moduleid <> 'A' THEN fd.formmoduleid =:moduleid ELSE 1=1 END) AS a LEFT JOIN  (SELECT b.formroleaccessid,b.logintype,a.formname,b.isactive ,b.labhq , b.formdetailid FROM pfms_form_detail a ,pfms_form_role_access b  WHERE a.formdetailid=b.formdetailid AND a.isactive=1 AND b.logintype=:logintype AND  CASE WHEN :moduleid <> 'A' THEN a.formmoduleid =:moduleid ELSE 1=1 END ) AS b ON a.formdetailid = b.formdetailid";
 	private static final String FORMMODULELIST="SELECT FormModuleId,FormModuleName,ModuleUrl,IsNav,IsActive FROM pfms_form_module WHERE isactive=1";
 	private static final String FORMROLEACTIVELIST="SELECT isactive FROM pfms_form_role_access WHERE formroleaccessid=:formroleaccessid";
-	private static final String EMPLOYEEDATA ="SELECT a.empid, a.srno,a.empno,a.empname,a.desigid,a.divisionid ,b.groupid  FROM employee  a , division_master b WHERE a.divisionid =b.divisionid  AND a.empid=:empid";
+	private static final String EMPLOYEEDATA ="SELECT a.emp_id, a.sr_no,a.emp_no,a.emp_name,a.desig_id,a.division_id ,b.group_id  FROM employee  a , division_master b WHERE a.division_id =b.division_id  AND a.emp_id=:empid";
 	private static final String LOGINTYPELIST1="select logintype,logindesc,logintypeid from login_type";	
-	private static final String LOGINEDITEMPLIST = "SELECT empid,CONCAT(IFNULL(CONCAT(title,' '),''), empname) AS 'empname' FROM employee WHERE labcode=:labcode ORDER BY srno ";
-	private static final String GETEXPERTLIST= "SELECT e.ExpertId, e.ExpertNo,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.ExpertName)AS 'ExpertName', d.Designation , e.MobileNo, e.ExtNo, e.Email, e.Organization, e.IsActive FROM expert e, employee_desig d WHERE  e.DesigId=d.DesigId ";
-	private static final String GETDESIGNATION = "SELECT DesigId, DesigCode, Designation FROM employee_desig";
+	private static final String LOGINEDITEMPLIST = "SELECT emp_id,CONCAT(IFNULL(CONCAT(title,' '),''), emp_name) AS 'empname' FROM employee WHERE lab_code=:labcode ORDER BY sr_no ";
+	private static final String GETEXPERTLIST= "SELECT e.ExpertId, e.ExpertNo,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.ExpertName)AS 'ExpertName', d.Designation , e.MobileNo, e.ExtNo, e.Email, e.Organization, e.IsActive FROM expert e, employee_desig d WHERE  e.DesigId=d.desig_id ";
+	private static final String GETDESIGNATION = "SELECT desig_id, desig_code, designation FROM employee_desig";
 	private static final String  ABILITYOFEXPERTNO ="SELECT COUNT(*)FROM expert WHERE ExpertNo=:EXPERTNO ";
 	private static final String ABILITYOFEXTENSIONNO = "SELECT COUNT(*)FROM expert WHERE ExtNo=:EXTNO ";
 	private static final String  GETEDITDETAILS = "SELECT expertid , title , salutation , expertname, desigid , mobileno , email , organization , expertno FROM expert WHERE ExpertId=:EXPERTID";
 	private static final String CHECKABILITY2 ="SELECT COUNT(*)FROM expert WHERE ExtNo=:EXTNO AND  ExpertId NOT IN (:ExpertId)";
-	private static final String CLUSTERLABLIST="SELECT labid,clusterid,labname,labcode FROM cluster_lab";
+	private static final String CLUSTERLABLIST="SELECT lab_id,cluster_id,lab_name,lab_code FROM cluster_lab";
 
 
 
@@ -961,7 +963,7 @@ public class AdminDaoImpl implements AdminDao{
 		return (List<Object[]>)query.getResultList();
 	}
 
-	private static final String INITIATINAPPROVALAUTH="SELECT a.RtmddoId,a.LabCode,a.EmpId,a.ValidFrom,a.ValidTo,a.Type,b.EmpName,b.EmpNo,c.Designation FROM pfms_initiation_approver a,employee b,employee_desig c WHERE a.IsActive=1 AND a.InitiationId=0 AND b.IsActive=1 AND a.EmpId=b.EmpId AND b.DesigId=c.DesigId AND a.LabCode=:labcode";
+	private static final String INITIATINAPPROVALAUTH="SELECT a.RtmddoId,a.LabCode,a.EmpId,a.ValidFrom,a.ValidTo,a.Type,b.emp_name,b.emp_no,c.Designation FROM pfms_initiation_approver a,employee b,employee_desig c WHERE a.IsActive=1 AND a.InitiationId=0 AND b.is_active=1 AND a.EmpId=b.emp_id AND b.desig_id=c.desig_id AND a.LabCode=:labcode";
 	@Override
 	public List<Object[]> initiationApprovalAuthority(String labcode) throws Exception {
 		try {
@@ -1070,7 +1072,7 @@ public class AdminDaoImpl implements AdminDao{
 
 	}
 
-	private static final String LastUpdate = "SELECT pwu.UpdatedDate, pwu.projectId  FROM pfms_weekly_update AS pwu  JOIN project_master pm ON pwu.projectid=pm.projectid  WHERE DATEDIFF(NOW(),pwu.updateddate)<6 ORDER BY pwu.UpdatedDate DESC";
+	private static final String LastUpdate = "SELECT pwu.UpdatedDate, pwu.projectId  FROM pfms_weekly_update AS pwu  JOIN project_master pm ON pwu.projectid=pm.project_id  WHERE DATEDIFF(NOW(),pwu.updateddate)<6 ORDER BY pwu.UpdatedDate DESC";
 
 	@Override
 	public List<Object[]> lastUpdate() {
@@ -1098,7 +1100,7 @@ public class AdminDaoImpl implements AdminDao{
 	@Override
 	public List<Object[]> ProjectListPD(String empId) throws Exception {
 		// TODO Auto-generated method stub
-		Query query = manager.createNativeQuery("SELECT * FROM project_master WHERE projectdirector=:empId");
+		Query query = manager.createNativeQuery("SELECT * FROM project_master WHERE project_director=:empId");
 		query.setParameter("empId", Long.parseLong(empId));
 		try {
 			return query.getResultList();
@@ -1112,7 +1114,7 @@ public class AdminDaoImpl implements AdminDao{
 	@Override
 	public List<Object[]> ProjectListIC(String empId) throws Exception {
 		// TODO Auto-generated method stub
-		Query query = manager.createNativeQuery("SELECT pe.projectid,pm.labcode, pm.projectmainid, pm.projecttype, pm.projectshortname,pm.UnitCode , pm.projectname FROM project_employee pe JOIN project_master pm ON pe.projectid=pm.projectid WHERE pe.empid=:empId");
+		Query query = manager.createNativeQuery("SELECT pe.projectid,pm.lab_code, pm.project_main_id, pm.project_type, pm.project_type,pm.unit_code , pm.project_name FROM project_employee pe JOIN project_master pm ON pe.projectid=pm.project_id WHERE pe.empid=:empId");
 		query.setParameter("empId", Long.parseLong(empId));
 		try {
 			return query.getResultList();
@@ -1227,7 +1229,7 @@ public class AdminDaoImpl implements AdminDao{
 		}
 	}
 	
-	public static final String CHECKDIVISIONMASTER="SELECT de.EmpId,de.isactive FROM division_master dm, division_employee de WHERE dm.DivisionId =de.DivisionId  AND de.isactive=1 AND de.DivisionId=:divId ORDER BY de.empid ASC";
+	public static final String CHECKDIVISIONMASTER="SELECT de.EmpId,de.isactive FROM division_master dm, division_employee de WHERE dm.division_id =de.DivisionId  AND de.isactive=1 AND de.DivisionId=:divId ORDER BY de.empid ASC";
 	@Override
 	public List<Object[]> checkDivisionMasterId(String divisionId) {
 		Query query=manager.createNativeQuery(CHECKDIVISIONMASTER);

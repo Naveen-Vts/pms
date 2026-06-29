@@ -45,10 +45,11 @@
 					   						<td class="tdStyleWidth">
 					   						<form method="post" action="MeetingStatusWiseReport.htm" name="ststusform" id="ststusform">
                                                         <select class="form-control selectdee " name="projectid" id="projectid" required="required"  data-live-search="true"  >
-                                                           <option value="0" <%if(projectid.equalsIgnoreCase("0")){ %> selected="selected" <%} %>>General</option>	
-                                                           <%
-                                                           for(Object[] obj:projectslist){ %>
-														   <option value="<%=obj[0] %>" <%if(projectid.equalsIgnoreCase(obj[0].toString())){ %> selected="selected" <%} %>><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - " %> </option>	
+<%--                                                            <option value="0" <%if(projectid.equalsIgnoreCase("0")){ %> selected="selected" <%} %>>General</option>	
+ --%>                                                           <%
+                                                           for(Object[] obj:projectslist){ 
+                                                        	   String projectshortName=(obj[12]!=null)?" ("+obj[12].toString().trim()+") ":"";%>
+														   <option value="<%=obj[0] %>" <%if(projectid.equalsIgnoreCase(obj[0].toString())){ %> selected="selected" <%} %>><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - " %> <%= projectshortName!=null?StringEscapeUtils.escapeHtml4(projectshortName):" - " %></option>	
 														<%} %>
 																</select>	
 													<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> 

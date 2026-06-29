@@ -49,8 +49,8 @@ import groovyjarjarantlr4.v4.parse.ANTLRParser.exceptionGroup_return;
 @Repository
 public class PrintDaoImpl implements PrintDao {
 
-	private static final String LABLIST="select labcode, labname,labaddress, labcity,lablogo from lab_master where labcode=:labcode";
-	private static final String PFMSINITLIST="SELECT a.initiationid,a.projectprogramme,b.projecttypeshort,c.classification,a.projectshortname,a.projecttitle,a.projectcost,a.projectduration,a.isplanned,a.ismultilab,a.createddate,a.deliverable,a.ismain,d.projecttitle AS initiatedproject,a.remarks,a.fecost,a.recost,a.labcode ,a.classificationid , a.projecttypeid FROM pfms_initiation a,project_type b,pfms_security_classification c ,pfms_initiation d WHERE a.classificationid=c.classificationid  AND a.projecttypeid=b.projecttypeid AND a.isactive='1' AND a.initiationid=:initiationid AND a.mainid=d.initiationid UNION SELECT a.initiationid,a.projectprogramme,b.projecttypeshort,c.classification,a.projectshortname,a.projecttitle,a.projectcost,a.projectduration, a.isplanned,a.ismultilab,a.createddate,a.deliverable,a.ismain,a.projecttitle AS initiatedproject,a.remarks,a.fecost,a.recost,a.labcode ,a.classificationid , a.projecttypeid FROM pfms_initiation a,project_type b,pfms_security_classification c WHERE a.classificationid=c.classificationid  AND a.projecttypeid=b.projecttypeid AND a.isactive='1' AND a.initiationid=:initiationid AND a.mainid=0";
+	private static final String LABLIST="select lab_code, lab_name,lab_address, lab_city,lab_logo from lab_master where lab_code=:labcode";
+	private static final String PFMSINITLIST="SELECT a.initiationid,a.projectprogramme,b.project_type_short,c.classification,a.projectshortname,a.projecttitle,a.projectcost,a.projectduration,a.isplanned,a.ismultilab,a.createddate,a.deliverable,a.ismain,d.projecttitle AS initiatedproject,a.remarks,a.fecost,a.recost,a.labcode ,a.classificationid , a.projecttypeid FROM pfms_initiation a,project_type b,pfms_security_classification c ,pfms_initiation d WHERE a.classificationid=c.classification_id  AND a.projecttypeid=b.project_type_id AND a.isactive='1' AND a.initiationid=:initiationid AND a.mainid=d.initiationid UNION SELECT a.initiationid,a.projectprogramme,b.project_type_short,c.classification,a.projectshortname,a.projecttitle,a.projectcost,a.projectduration, a.isplanned,a.ismultilab,a.createddate,a.deliverable,a.ismain,a.projecttitle AS initiatedproject,a.remarks,a.fecost,a.recost,a.labcode ,a.classificationid , a.projecttypeid FROM pfms_initiation a,project_type b,pfms_security_classification c WHERE a.classificationid=c.classification_id  AND a.projecttypeid=b.project_type_id AND a.isactive='1' AND a.initiationid=:initiationid AND a.mainid=0";
 	private static final String PROJECTDETAILSLIST= "SELECT a.Requirements,a.Objective,a.Scope,a.MultiLabWorkShare,a.EarlierWork,a.CompentencyEstablished,a.NeedOfProject,a.TechnologyChallanges,a.RiskMitigation,a.Proposal,a.RealizationPlan,a.initiationid,a.worldscenario,a.ReqBrief,a.ObjBrief,a.ScopeBrief,a.MultiLabBrief,a.EarlierWorkBrief,a.CompentencyBrief,a.NeedOfProjectBrief,a.TechnologyBrief,a.RiskMitigationBrief,a.ProposalBrief,a.RealizationBrief,a.WorldScenarioBrief FROM pfms_initiation_detail a WHERE a.initiationid=:initiationid ";	
 	private static final String COSTDETAILSLIST="SELECT c.headofaccounts,CONCAT (c.majorhead,'-',c.minorhead,'-',c.subhead) AS headcode,a.itemdetail,a.itemcost,c.sanctionitemid,c.refe  FROM pfms_initiation_cost a,budget_item_sanc c WHERE a.budgetsancid=c.sanctionitemid AND a.isactive='1' AND a.initiationid=:initiationid AND a.budgetheadid=c.budgetheadid  ORDER BY sanctionitemid";
 	private static final String PROJECTSCHEDULELIST="select milestoneno,milestoneactivity,milestonemonth,initiationscheduleid,milestoneremark,milestonestartedfrom,milestonetotalmonth from pfms_initiation_schedule where initiationid=:initiationid and isactive='1'";
@@ -58,7 +58,7 @@ public class PrintDaoImpl implements PrintDao {
 	private static final String PROJECTSLIST="SELECT projectid, projectcode, projectname FROM project_master";
 	
 	private static final String MILESTONESUBSYSTEMS="SELECT maa.activityId, maa.Parentactivityid, maa.activityname, maa.orgenddate, maa.enddate,maa.activitystatusid,mas.activityshort,  maa.ProgressStatus,ma.milestoneno, maa.StatusRemarks FROM milestone_activity ma,milestone_activity_level maa,milestone_activity_status mas WHERE ma.milestoneactivityid = maa.parentactivityid AND maa.activitylevelid='1' AND maa.activitystatusid=mas.activitystatusid  AND ma.projectid=:projectid ORDER BY ma.milestoneno";
-	private static final String PROJECTDETAILS="SELECT a.projectid,a.projectcode,a.projectname,a.projectname AS 'name',a.projectcode AS 'code',a.labcode, a.IsCCS, a.IsMainWC FROM project_master a WHERE a.projectid=:projectid AND  a.isactive=1";
+	private static final String PROJECTDETAILS="SELECT a.project_id,a.project_code,a.project_name,a.project_name AS 'name',a.project_code AS 'code',a.lab_code, a.is_ccs, a.is_main_wc FROM project_master a WHERE a.project_id=:projectid AND  a.is_active=1";
 	private static final String GANTTCHARTLIST="SELECT milestoneactivityid,projectid,activityname,milestoneno,orgstartdate,orgenddate,startdate,enddate,progressstatus,revisionno FROM milestone_activity WHERE isactive=1 AND projectid=:projectid";
 //	private static final String MILESTONES="SELECT ma.milestoneactivityid,ma.projectid,ma.milestoneno,ma.activityname,ma.orgstartdate,ma.orgenddate,ma.startdate,ma.enddate, ma.activitytype AS 'activitytypeid' , mat.activitytype,ma.activitystatusid,mas.activityshort, ma.ProgressStatus,ma.StatusRemarks ,ma. dateofcompletion FROM milestone_activity ma, milestone_activity_type mat ,milestone_activity_status mas  WHERE ma.activitytype=mat.activitytypeid AND ma.activitystatusid=mas.activitystatusid AND ma.ProgressStatus>0 AND projectid=:projectid";
 	private static final String MILESTONES="CALL Pfms_Milestone_Level_Prior(:projectid,:committeeid)";
@@ -66,10 +66,10 @@ public class PrintDaoImpl implements PrintDao {
 			+ "WHERE a.CommitteeId = c.CommitteeId AND a.ScheduleFlag=b.MeetingStatus AND MeetingStatusId>6 AND scheduledate<=CURDATE() AND c.IsBriefing='Y' AND a.IsActive=1\r\n"
 			+ "AND CASE WHEN a.ProjectId=0 THEN a.ProgrammeId IN (SELECT pp.programmeid FROM pfms_programme_projects pp WHERE pp.projectid =:projectid AND pp.IsActive=1) ELSE a.ProjectId =:projectid END\r\n"
 			+ "GROUP BY c.CommitteeShortName";
-	private static final String PROJECTATTRIBUTES="SELECT pm.projectcode, pm.projectname, pm.ProjectDescription, pm.sanctiondate, pm.objective, pm.deliverable, pm.pdc,   ROUND(pm.TotalSanctionCost/100000,2) AS 'TotalSanctionCost',   ROUND(pm.SanctionCostRE/100000,2) AS 'SanctionCostRE', ROUND(pm.SanctionCostFE/100000,2) AS 'SanctionCostFE', pm.WorkCenter, pm.projectcategory,pc.classification,  pm.projecttype AS 'projecttypeid',pt.projecttype ,pma.labparticipating,pm.EndUser,pm.Scope  FROM project_master pm, pfms_security_classification pc, project_type pt , project_main pma  WHERE pm.projectcategory=pc.classificationid AND pm.projecttype=pt.projecttypeid AND pm.projectmainid=pma.projectmainid AND projectid=:projectid";
-	private static final String PROJECTDATADETAILS="SELECT ppd.projectdataid,ppd.projectid,ppd.filespath,ppd.systemconfigimgname,ppd.SystemSpecsFileName,ppd.ProductTreeImgName,ppd.PEARLImgName,ppd.CurrentStageId,ppd.RevisionNo,pps.projectstagecode,pps.projectstage,pps.stagecolor,pm.projectcode,ppd.proclimit/100000  FROM pfms_project_data ppd, pfms_project_stage pps,project_master pm WHERE ppd.projectid=pm.projectid AND ppd.CurrentStageId=pps.projectstageid AND ppd.projectid=:projectid";
+	private static final String PROJECTATTRIBUTES="SELECT pm.project_code, pm.project_name, pm.project_description, pm.sanction_date, pm.objective, pm.deliverable, pm.pdc,   ROUND(pm.total_sanction_cost/100000,2) AS 'TotalSanctionCost',   ROUND(pm.sanction_cost_re/100000,2) AS 'SanctionCostRE', ROUND(pm.sanction_cost_fe/100000,2) AS 'SanctionCostFE', pm.work_center, pm.project_category,pc.classification,  pm.project_type AS 'projecttypeid',pt.project_type ,pma.lab_participating,pm.end_user,pm.scope  FROM project_master pm, pfms_security_classification pc, project_type pt , project_main pma  WHERE pm.project_category=pc.classification_id AND pm.project_type=pt.project_type_id AND pm.project_main_id=pma.project_main_id AND project_id=:projectid";
+	private static final String PROJECTDATADETAILS="SELECT ppd.projectdataid,ppd.projectid,ppd.filespath,ppd.systemconfigimgname,ppd.SystemSpecsFileName,ppd.ProductTreeImgName,ppd.PEARLImgName,ppd.CurrentStageId,ppd.RevisionNo,pps.projectstagecode,pps.projectstage,pps.stagecolor,pm.project_code,ppd.proclimit/100000  FROM pfms_project_data ppd, pfms_project_stage pps,project_master pm WHERE ppd.projectid=pm.project_id AND ppd.CurrentStageId=pps.projectstageid AND ppd.projectid=:projectid";
 	private static final String PROCUREMETSSTATUSLIST="SELECT f.PftsFileId, f.DemandNo, f.OrderNo, f.DemandDate, f.DpDate, ROUND(f.EstimatedCost/100000,2) AS 'EstimatedCost',ROUND(f.OrderCost/100000, 2) AS 'OrderCost', f.PDRDate ,f.ItemNomenclature, s.PftsStatus, s.PftsStageName, f.Remarks,'' AS vendorname,f.PftsStatusId,f.PDC, f.IntegrationDate,f.spcdate   FROM pfts_file f, pfts_status s  WHERE f.ProjectId=:projectid AND f.isactive='1' AND f.EstimatedCost> (SELECT ppd.proclimit FROM pfms_project_data ppd WHERE ppd.ProjectId=f.ProjectId )   AND f.PftsStatusId=s.PftsStatusId AND f.PftsFileId NOT IN(SELECT PftsFileId FROM pfts_file_order) UNION SELECT f.PftsFileId, f.DemandNo, o.OrderNo, f.DemandDate, o.DpDate, ROUND(f.EstimatedCost/100000,2) AS 'EstimatedCost',ROUND(o.OrderCost/100000, 2) AS 'OrderCost', f.PDRDate ,f.ItemNomenclature, s.PftsStatus, s.PftsStageName, f.Remarks,o.vendorname,f.PftsStatusId,f.PDC, f.IntegrationDate,o.orderdate FROM pfts_file f, pfts_status s,pfts_file_order o  WHERE f.ProjectId=:projectid AND f.isactive='1' AND o.isactive='1' AND f.PftsFileId=o.PftsFileId  AND f.PftsStatusId=s.PftsStatusId AND o.OrderCost>(SELECT ppd.proclimit FROM pfms_project_data ppd WHERE ppd.ProjectId=f.ProjectId ) ORDER BY  DemandNo , PftsStatusId ASC";
-	private static final String RISKMATIRXDATA="SELECT pr.description, pr.severity, pr.probability, pr.mitigationplans, pr.revisionno,pr.projectid,pr.actionmainid , CONCAT(IFNULL(CONCAT(e.title,' '),''), e.empname) AS 'empname' ,ed.designation,asi.pdcorg, asi.pdc1,asi.pdc2,asi.revision, asi.actionno, am.actiondate,asi.actionstatus,asi.actionstatus AS 'actionflag',asi.enddate ,asi.progress,asi.progressremark,asi.progressdate,pr.impact,pr.RPN, pr.category, prt.riskcode,asi.actionassignid FROM pfms_risk pr, action_main am, employee e, employee_desig ed , action_assign asi ,pfms_risk_type prt WHERE prt.risktypeid=pr.risktypeid  AND pr.status='O' AND am.actionmainid=asi.actionmainid AND asi.actionmainid= pr.actionmainid AND asi.assignee = e.empid AND e.desigid=ed.desigid AND asi.assigneelabcode<>'@EXP' AND pr.projectid=:projectid UNION SELECT pr.description, pr.severity, pr.probability, pr.mitigationplans, pr.revisionno,pr.projectid,pr.actionmainid ,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.expertname) AS 'empname' ,'Expert' AS 'designation',asi.pdcorg, asi.pdc1,asi.pdc2,asi.revision, asi.actionno, am.actiondate,asi.actionstatus,asi.actionstatus AS 'actionflag',asi.enddate ,asi.progress,asi.progressremark,asi.progressdate,pr.impact,pr.RPN, pr.category, prt.riskcode,asi.actionassignid FROM pfms_risk pr, action_main am, expert e,  action_assign asi ,pfms_risk_type prt WHERE prt.risktypeid=pr.risktypeid  AND pr.status='O' AND am.actionmainid=asi.actionmainid AND asi.actionmainid= pr.actionmainid AND asi.assignee = e.Expertid AND asi.assigneelabcode='@EXP' AND   pr.projectid=:projectid";
+	private static final String RISKMATIRXDATA="SELECT pr.description, pr.severity, pr.probability, pr.mitigationplans, pr.revisionno,pr.projectid,pr.actionmainid , CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) AS 'empname' ,ed.designation,asi.pdcorg, asi.pdc1,asi.pdc2,asi.revision, asi.actionno, am.actiondate,asi.actionstatus,asi.actionstatus AS 'actionflag',asi.enddate ,asi.progress,asi.progressremark,asi.progressdate,pr.impact,pr.RPN, pr.category, prt.riskcode,asi.actionassignid FROM pfms_risk pr, action_main am, employee e, employee_desig ed , action_assign asi ,pfms_risk_type prt WHERE prt.risktypeid=pr.risktypeid  AND pr.status='O' AND am.actionmainid=asi.actionmainid AND asi.actionmainid= pr.actionmainid AND asi.assignee = e.emp_id AND e.desig_id=ed.desig_id AND asi.assigneelabcode<>'@EXP' AND pr.projectid=:projectid AND pr.isactive=1 AND asi.IsActive=1 UNION SELECT pr.description, pr.severity, pr.probability, pr.mitigationplans, pr.revisionno,pr.projectid,pr.actionmainid ,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.expertname) AS 'empname' ,'Expert' AS 'designation',asi.pdcorg, asi.pdc1,asi.pdc2,asi.revision, asi.actionno, am.actiondate,asi.actionstatus,asi.actionstatus AS 'actionflag',asi.enddate ,asi.progress,asi.progressremark,asi.progressdate,pr.impact,pr.RPN, pr.category, prt.riskcode,asi.actionassignid FROM pfms_risk pr, action_main am, expert e,  action_assign asi ,pfms_risk_type prt WHERE prt.risktypeid=pr.risktypeid  AND pr.status='O' AND am.actionmainid=asi.actionmainid AND asi.actionmainid= pr.actionmainid AND asi.assignee = e.Expertid AND asi.assigneelabcode='@EXP' AND   pr.projectid=:projectid AND pr.IsActive=1 AND asi.IsActive=1";
 	private static final String LASTPMRCDECISIONS="SELECT cs.pmrcdecisions,cs.scheduleid,cs.scheduledate FROM committee_schedule cs ,committee_meeting_status cms  WHERE cs.committeeid=:committeeid AND cs.isactive=1 AND cs.projectid=:projectid AND cs.scheduleflag=cms.meetingstatus AND cms.meetingstatusid>=7 ORDER BY cs.scheduledate DESC LIMIT 1";
 	private static final String MILESTONESCHANGE="SELECT ma.milestoneactivityid,ma.projectid,ma.milestoneno,ma.activityname,ma.orgstartdate,ma.orgenddate,ma.startdate,ma.enddate, ma.activitytype AS 'activitytypeid' ,mat.activitytype,ma.activitystatusid,mas.activityshort, ma.ProgressStatus,IFNULL(ma.StatusRemarks,'-') AS 'Status Remarks' FROM milestone_activity ma, milestone_activity_type mat ,milestone_activity_status mas WHERE ma.activitytype=mat.activitytypeid AND ma.activitystatusid=mas.activitystatusid AND projectid=:projectid AND CASE WHEN :milestoneactivitystatusid='A' THEN 1=1 ELSE ma.activitystatusid =:milestoneactivitystatusid END  AND ma.progressstatus <> 0";
 	
@@ -433,7 +433,7 @@ public class PrintDaoImpl implements PrintDao {
 		return LastPMRCActions;		
 	}
 	
-	private static final String PROJECTSUBPROJECTIDLIST ="SELECT CAST(a.projectid AS CHAR) FROM project_master a,project_master b WHERE b.projectid=:projectid AND  CASE WHEN b.ismainwc = 1 THEN a.projectid IN (SELECT projectid FROM project_master WHERE projectmainid= b.projectmainid AND isactive=1) WHEN  b.ismainwc = 0 THEN a.projectid=b.projectid END ORDER BY a.projectid=:projectid DESC  ";
+	private static final String PROJECTSUBPROJECTIDLIST ="SELECT CAST(a.project_id AS CHAR) FROM project_master a,project_master b WHERE b.project_id=:projectid AND  CASE WHEN b.is_main_wc = 1 THEN a.project_id IN (SELECT project_id FROM project_master WHERE project_main_id= b.project_main_id AND is_active=1) WHEN  b.is_main_wc = 0 THEN a.project_id=b.project_id END ORDER BY a.project_id=:projectid DESC  ";
 	
 	@Override
 	public List<String> ProjectsubProjectIdList(String projectid ) throws Exception 
@@ -478,7 +478,7 @@ public class PrintDaoImpl implements PrintDao {
 	 
 	}
 	
-	private static final String PROJECTREVLIST = "SELECT pr.projectid, pr.revisionno,pm.projectcode AS 'ProjectMainCode', pr.projectcode, pr.projectname, pr.projectdescription, pr.unitcode, pt.projecttype,ps.classification,pr.sanctionno,pr.sanctiondate, CASE WHEN pr.totalsanctioncost>0 THEN ROUND(pr.totalsanctioncost/100000,2) ELSE pr.totalsanctioncost END AS 'TotalSanctionCost', pr.pdc, e.empname AS 'ProjectDirector' , ed.designation,  CAST(pr.createddate AS DATE),CASE WHEN pr.SanctionCostFE>0 THEN ROUND(pr.SanctionCostFE/100000,2) ELSE pr.SanctionCostFE END AS 'SanctionCostFE',CASE WHEN pr.SanctionCostRE>0 THEN ROUND(pr.SanctionCostRE/100000,2) ELSE pr.SanctionCostRE END AS 'SanctionCostRE'     FROM project_master p, project_master_rev pr , project_main pm, project_type pt, pfms_security_classification ps, employee e, employee_desig ed WHERE p.projectid=pr.projectid AND pr.projectmainid = pm.projectmainid AND pr.projecttype=pt.projecttypeid AND ps.classificationid =pr.projectcategory AND e.empid=pr.projectdirector AND e.desigid=ed.desigid  AND p.projectid=:projectid ORDER BY  revisionno ASC";
+	private static final String PROJECTREVLIST = "SELECT pr.project_id, pr.revision_no,pm.project_code AS 'ProjectMainCode', pr.project_code, pr.project_name, pr.project_description, pr.unit_code, pt.project_type,ps.classification,pr.sanction_no,pr.sanction_date, CASE WHEN pr.total_sanction_cost>0 THEN ROUND(pr.total_sanction_cost/100000,2) ELSE pr.total_sanction_cost END AS 'TotalSanctionCost', pr.pdc, e.emp_name AS 'ProjectDirector' , ed.designation,  CAST(pr.created_date AS DATE),CASE WHEN pr.sanction_cost_fe>0 THEN ROUND(pr.sanction_cost_fe/100000,2) ELSE pr.sanction_cost_fe END AS 'SanctionCostFE',CASE WHEN pr.sanction_cost_re>0 THEN ROUND(pr.sanction_cost_re/100000,2) ELSE pr.sanction_cost_re END AS 'SanctionCostRE'     FROM project_master p, project_master_rev pr , project_main pm, project_type pt, pfms_security_classification ps, employee e, employee_desig ed WHERE p.project_id=pr.project_id AND pr.project_main_id = pm.project_main_id AND pr.project_type=pt.project_type_id AND ps.classification_id =pr.project_category AND e.emp_id=pr.project_director AND e.desig_id=ed.desig_id  AND p.project_id=:projectid ORDER BY  revision_no ASC";
 	
 	@Override
 	public List<Object[]> ProjectRevList(String projectid) throws Exception {
@@ -498,7 +498,7 @@ public class PrintDaoImpl implements PrintDao {
 		return (List<Object[]>)query.getResultList();
 	}
 	
-	private static final String COMMITTEESCHEDULEEDITDATA="SELECT a.committeeid,a.committeemainid,a.scheduledate,a.schedulestarttime,a.scheduleflag,a.schedulesub,a.scheduleid,b.committeename,b.committeeshortname,a.projectid,c.meetingstatusid,a.meetingid,a.meetingvenue,a.confidential,a.Reference,d.classification ,a.divisionid  ,a.initiationid ,a.pmrcdecisions,a.kickoffotp ,(SELECT minutesattachmentid FROM committee_minutes_attachment WHERE scheduleid=a.scheduleid) AS 'attachid', b.periodicNon,a.MinutesFrozen,a.briefingpaperfrozen,a.labcode, a.ProgrammeId, a.ScheduleType FROM committee_schedule a,committee b ,committee_meeting_status c, pfms_security_classification d WHERE a.scheduleflag=c.MeetingStatus AND a.scheduleid=:committeescheduleid AND a.committeeid=b.committeeid AND a.confidential=d.classificationid";
+	private static final String COMMITTEESCHEDULEEDITDATA="SELECT a.committeeid,a.committeemainid,a.scheduledate,a.schedulestarttime,a.scheduleflag,a.schedulesub,a.scheduleid,b.committeename,b.committeeshortname,a.projectid,c.meetingstatusid,a.meetingid,a.meetingvenue,a.confidential,a.Reference,d.classification ,a.divisionid  ,a.initiationid ,a.pmrcdecisions,a.kickoffotp ,(SELECT minutesattachmentid FROM committee_minutes_attachment WHERE scheduleid=a.scheduleid) AS 'attachid', b.periodicNon,a.MinutesFrozen,a.briefingpaperfrozen,a.labcode, a.ProgrammeId, a.ScheduleType FROM committee_schedule a,committee b ,committee_meeting_status c, pfms_security_classification d WHERE a.scheduleflag=c.MeetingStatus AND a.scheduleid=:committeescheduleid AND a.committeeid=b.committeeid AND a.confidential=d.classification_id";
 
 	
 	@Override
@@ -849,7 +849,7 @@ public class PrintDaoImpl implements PrintDao {
 			}
 		}
 		
-		private static final String AGENDALIST = "SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,b.projectname,b.projectid,a.remarks,b.projectcode,a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.title,' '),''), j.empname) as 'empname' ,h.designation,a.duration,j.desigid, a.PresentorLabCode  FROM project_master b,employee j,employee_desig h,committee_schedules_agenda a  WHERE a.projectid=b.projectid AND a.scheduleid=:committeescheduleid AND a.isactive=1 AND a.projectid NOT IN (0, -1) AND a.presenterid=j.empid AND j.desigid=h.desigid  UNION   SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,cs.labcode AS 'projectname' , '0' AS projectid,a.remarks,'' AS projectcode,a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.title,' '),''), j.empname) as 'empname' ,h.designation,a.duration,j.desigid, a.PresentorLabCode  FROM employee j,employee_desig h, committee_schedules_agenda a, committee_schedule cs   WHERE a.scheduleid=:committeescheduleid AND a.scheduleid=cs.scheduleid  AND a.isactive=1 AND a.projectid IN (0, -1) AND a.presenterid=j.empid AND j.desigid=h.desigid ORDER BY 9   ";
+		private static final String AGENDALIST = "SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,b.project_name,b.project_id,a.remarks,b.project_code,a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.title,' '),''), j.emp_name) as 'empname' ,h.designation,a.duration,j.desig_id, a.PresentorLabCode,NULLIF(TRIM(a.GroupName), '') AS GroupName   FROM project_master b,employee j,employee_desig h,committee_schedules_agenda a  WHERE a.projectid=b.project_id AND a.scheduleid=:committeescheduleid AND a.isactive=1 AND a.projectid NOT IN (0, -1) AND a.presenterid=j.emp_id AND j.desig_id=h.desig_id  UNION   SELECT a.scheduleagendaid,a.scheduleid,a.schedulesubid,a.agendaitem,cs.labcode AS 'projectname' , '0' AS projectid,a.remarks,'' AS projectcode,a.agendapriority,a.presenterid ,CONCAT(IFNULL(CONCAT(j.title,' '),''), j.emp_name) as 'empname' ,h.designation,a.duration,j.desig_id, a.PresentorLabCode,NULLIF(TRIM(a.GroupName), '') AS GroupName   FROM employee j,employee_desig h, committee_schedules_agenda a, committee_schedule cs   WHERE a.scheduleid=:committeescheduleid AND a.scheduleid=cs.scheduleid  AND a.isactive=1 AND a.projectid IN (0, -1) AND a.presenterid=j.emp_id AND j.desig_id=h.desig_id ORDER BY 9   ";
 		@Override
 		public List<Object[]> AgendaList(String scheduleId) throws Exception 
 		{
@@ -969,19 +969,19 @@ public class PrintDaoImpl implements PrintDao {
 			 }
 			return result;
 		}
-		private static final String PROJECTDATA="SELECT a.ProjectId, a.ProjectName, b.ProjectType, a.TotalSanctionCost, a.PDC, a.SanctionDate, a.EndUser, a.Objective, a.Deliverable, a.Scope, a.Application, a.ProjectDescription, a.ProjectCode, \r\n"
-				+ "a.ProjectShortName, h.ProjectStage, e.Brief, f.Expenditure, f.OutCommitment, f.Dipl, f.Balance, e.Status AS 'CurrentStatus', a.IsMainWC AS 'isMain',  e.Status, e.Slide, e.ImageName, e.Path, e.SlideId,\r\n"
-				+ "e.AttachmentName, e.Brief AS 'Brief2', e.ProjectId AS 'ProjectId2', e.VideoName, e.WayForward, f.ProjectType AS 'ProjectType2', CONCAT(IFNULL(CONCAT(c.Title,' '),''), c.EmpName) AS 'empname',d.Designation, i.PDC AS 'RevPDC' \r\n"
+		private static final String PROJECTDATA="SELECT a.project_id, a.project_name, b.project_type, a.total_sanction_cost, a.pdc, a.sanction_date, a.end_user, a.objective, a.deliverable, a.scope, a.application, a.project_description, a.project_code, \r\n"
+				+ "a.project_short_name, h.ProjectStage, e.Brief, f.Expenditure, f.OutCommitment, f.Dipl, f.Balance, e.Status AS 'CurrentStatus', a.is_main_wc AS 'isMain',  e.Status, e.Slide, e.ImageName, e.Path, e.SlideId,\r\n"
+				+ "e.AttachmentName, e.Brief AS 'Brief2', e.ProjectId AS 'ProjectId2', e.VideoName, e.WayForward, f.ProjectType AS 'ProjectType2', CONCAT(IFNULL(CONCAT(c.Title,' '),''), c.emp_name) AS 'empname',d.Designation, i.PDC AS 'RevPDC' \r\n"
 				+ "FROM project_master a\r\n"
-				+ "JOIN project_type b ON a.ProjectType=b.projectTypeId\r\n"
-				+ "LEFT JOIN employee c ON a.ProjectDirector=c.EmpId\r\n"
-				+ "LEFT JOIN employee_desig d ON c.DesigId=d.DesigId\r\n"
-				+ "LEFT JOIN pfms_project_slides e ON e.IsActive=1 AND e.ProjectId=a.ProjectId\r\n"
-				+ "LEFT JOIN project_health f ON f.ProjectId=a.ProjectId\r\n"
-				+ "LEFT JOIN pfms_project_data g ON g.ProjectId=a.ProjectId\r\n"
+				+ "JOIN project_type b ON a.project_type=b.project_type_id\r\n"
+				+ "LEFT JOIN employee c ON a.project_director=c.emp_id\r\n"
+				+ "LEFT JOIN employee_desig d ON c.desig_id=d.desig_id\r\n"
+				+ "LEFT JOIN pfms_project_slides e ON e.IsActive=1 AND e.ProjectId=a.project_id\r\n"
+				+ "LEFT JOIN project_health f ON f.ProjectId=a.project_id\r\n"
+				+ "LEFT JOIN pfms_project_data g ON g.ProjectId=a.project_id\r\n"
 				+ "LEFT JOIN pfms_project_stage h ON g.CurrentStageId=h.ProjectStageId  \r\n"
-				+ "LEFT JOIN project_master_rev i ON i.ProjectId=a.ProjectId AND i.RevisionNo='0'\r\n"
-				+ "WHERE a.ProjectId=:ProjectId LIMIT 1";		
+				+ "LEFT JOIN project_master_rev i ON i.project_id=a.project_id AND i.revision_no='0'\r\n"
+				+ "WHERE a.project_id=:ProjectId LIMIT 1";		
 		@Override
 		public Object[] GetProjectdata(String projectid)throws Exception
 		{
@@ -1081,7 +1081,7 @@ public class PrintDaoImpl implements PrintDao {
 			List<Object[]> RiskTypes=(List<Object[]> )query.getResultList();
 			return RiskTypes;
 		}
-		private static final String ALLPROJECTSLIDEDATA="SELECT a.freezeid , a.path  ,a.attachname , a.projectid ,a.reviewby , ReviewDate , b.projectcode FROM pfms_project_slides_freeze a , project_master b WHERE a.projectid = :projectid  AND b.projectid=a.projectid  AND a.createddate = (SELECT MAX(a.createddate) FROM pfms_project_slides_freeze a WHERE a.projectid = :projectid)";
+		private static final String ALLPROJECTSLIDEDATA="SELECT a.freezeid , a.path  ,a.attachname , a.projectid ,a.reviewby , ReviewDate , b.project_code FROM pfms_project_slides_freeze a , project_master b WHERE a.projectid = :projectid  AND b.project_id=a.projectid  AND a.createddate = (SELECT MAX(a.createddate) FROM pfms_project_slides_freeze a WHERE a.projectid = :projectid)";
 		@Override
 		public List<Object[]> GetAllProjectSildedata(String projectid)throws Exception
 		{
@@ -1268,7 +1268,7 @@ public class PrintDaoImpl implements PrintDao {
 					return  0;
 				}
 			}
-			private static final String GETDIVISIONHEADLIST = "SELECT DivisionHeadId,DivisionId FROM division_master WHERE IsActive='1'";
+			private static final String GETDIVISIONHEADLIST = "SELECT division_head_id,division_id FROM division_master WHERE is_active='1'";
 			
 			@Override
 			public List<Object[]> getDivisionHeadList() throws Exception {
@@ -1281,7 +1281,7 @@ public class PrintDaoImpl implements PrintDao {
 				}
 				return null;
 			}
-			private static final String GETDHID = "SELECT DivisionHeadId,DivisionId FROM division_master WHERE DivisionId IN (SELECT DivisionId FROM employee WHERE EmpId IN(SELECT ProjectDirector FROM  project_master WHERE ProjectId=:projectid))";
+			private static final String GETDHID = "SELECT division_head_id,division_id FROM division_master WHERE division_id IN (SELECT DivisionId FROM employee WHERE EmpId IN(SELECT ProjectDirector FROM  project_master WHERE ProjectId=:projectid))";
 			
 			@Override
 			public Object[] getDHId(String projectid) throws Exception {
@@ -1295,7 +1295,7 @@ public class PrintDaoImpl implements PrintDao {
 					return null;
 				}
 			}
-			private static final String GETGHID = "SELECT GroupHeadId,GroupId FROM division_group WHERE GroupId IN(SELECT GroupId FROM division_master WHERE DivisionId IN (SELECT DivisionId FROM employee WHERE EmpId IN(SELECT ProjectDirector FROM  project_master WHERE ProjectId=:projectid)))";
+			private static final String GETGHID = "SELECT group_head_id,group_id FROM division_group WHERE group_id IN(SELECT group_id FROM division_master WHERE division_id IN (SELECT DivisionId FROM employee WHERE EmpId IN(SELECT ProjectDirector FROM  project_master WHERE ProjectId=:projectid)))";
 			@Override
 			public Object getGHId(String projectid) throws Exception {
 				try {
@@ -1593,5 +1593,39 @@ public class PrintDaoImpl implements PrintDao {
 			
 			
 			return (List<Object[]>)query.getResultList();
+		}
+
+		// Naveen R 06-03-2026
+		private static final String MILESTONEBRIEFINGLIST = "SELECT milestoneActivityBriefingId,briefingPointId,points,scheduleId FROM milestone_activity_briefing WHERE scheduleId = :scheduleId AND isActive = 1;";
+		@Override
+		public List<Object[]> getMilestoneBriefingList(String scheduleId) throws Exception {
+			try{
+				Query query = manager.createNativeQuery(MILESTONEBRIEFINGLIST);
+				query.setParameter("scheduleId", scheduleId);			
+				return (List<Object[]>)query.getResultList();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return List.of();
+			}
+		}
+		
+		private static final String LASTMEETINGCREATED = """
+				SELECT cs.scheduleid, cs.meetingid,cs.scheduledate,cs.schedulestarttime,cs.scheduleflag, cs.MeetingVenue  
+				FROM committee_schedule cs, committee_meeting_status  cms WHERE cs.isactive=1 AND cms.meetingstatus=cs.scheduleflag 
+				AND cs.committeeid=:committeeId AND CASE WHEN cs.ProjectId=0 THEN cs.ProgrammeId IN (SELECT pp.programmeid 
+				FROM pfms_programme_projects pp WHERE pp.projectid =:projectId AND pp.IsActive=1) ELSE cs.ProjectId =:projectId END 
+				ORDER BY cs.scheduledate DESC LIMIT 1
+				""";
+		@Override
+		public Object[] getLastMeetingCreated(String projectId,String committeeId) throws Exception {
+			try {
+				Query query = manager.createNativeQuery(LASTMEETINGCREATED);
+				query.setParameter("projectId", projectId);			
+				query.setParameter("committeeId", committeeId);			
+				return (Object[])query.getSingleResult();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
 		}
 	}

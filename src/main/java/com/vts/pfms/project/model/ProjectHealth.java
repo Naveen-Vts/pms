@@ -76,4 +76,6 @@ public class ProjectHealth {
 	private Long PMBTotalToBeHeld;
 	private Long ABTotalToBeHeld;
 
+	//DLRL
+	private Long MilToBeDone;
 }

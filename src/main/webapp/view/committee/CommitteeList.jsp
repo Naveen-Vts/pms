@@ -164,7 +164,7 @@ String LoginType = (String) session.getAttribute("LoginType");
 															
 												
 																<%if(projectappliacble.equalsIgnoreCase("N") && !Arrays.asList("CCM","CARS").contains(obj[1].toString()) ){
-																	if(LabCode.equalsIgnoreCase("LRDE") && (LoginType.equalsIgnoreCase("A") || LoginType.equalsIgnoreCase("P"))){%>												
+																	if( !LabCode.equalsIgnoreCase("LRDE") &&  (LoginType.equalsIgnoreCase("A") || LoginType.equalsIgnoreCase("P"))){ %>												
 																	<form action="CommitteeMainMembers.htm" method="post" name="myfrm"	class="d-inline">
 																		<button class="editable-click" name="sub" value="Details" 	>
 																			<div class="cc-rockmenu">

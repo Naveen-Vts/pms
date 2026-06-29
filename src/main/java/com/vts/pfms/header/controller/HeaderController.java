@@ -55,6 +55,9 @@ public class HeaderController {
 	@Autowired
 	LoginRepository loginRepo;
 	
+	@Value("${ApplicationFilesDrive}")
+	String uploadpath;
+	
 	private static final Logger logger=LogManager.getLogger(HeaderController.class);
 	
 	private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -244,9 +247,9 @@ public class HeaderController {
 		String UserId = (String) ses.getAttribute("Username");
 		logger.info(new Date() +"Inside UserManualDoc.htm "+UserId);		
 		try {
-
-			String path = req.getServletContext().getRealPath("/UserManual/" + "User Manual-PFMS.pdf");
-	
+			Path filePath = Paths.get(uploadpath,"UserManual","PMS.pdf");
+			String path = filePath.toString();
+			
 			res.setContentType("application/pdf");
 			res.setHeader("Content-Disposition", String.format("inline; filename=User Manual-PFMS.pdf"));
 	
@@ -276,28 +279,29 @@ public class HeaderController {
 		logger.info(new Date() +"Inside WorkFlow.htm "+UserId);		
 		try {
 
-		String path = req.getServletContext().getRealPath("/UserManual/" + "PFMS Work Flow.pdf");
+		//String path = req.getServletContext().getRealPath("/UserManual/" + "PFMS Work Flow.pdf");
+			Path filePath = Paths.get(uploadpath,"WorkFlow","PMS.pdf");
+			String path = filePath.toString();
+			res.setContentType("application/pdf");
+			res.setHeader("Content-Disposition", String.format("inline; filename=PFMS Work Flow.pdf"));
 
-		res.setContentType("application/pdf");
-		res.setHeader("Content-Disposition", String.format("inline; filename=PFMS Work Flow.pdf"));
-
-		File my_file = new File(path);
-
-		OutputStream out = res.getOutputStream();
-		FileInputStream in = new FileInputStream(my_file);
-		byte[] buffer = new byte[4096];
-		int length;
-		while ((length = in.read(buffer)) > 0) {
-			out.write(buffer, 0, length);
-		}
-		in.close();
-		out.flush();
-		out.close();
-		}
-		catch (Exception e) {
-				e.printStackTrace();
-				logger.error(new Date() +" Inside WorkFlow.htm "+UserId, e);
-		}
+			File my_file = new File(path);
+	
+			OutputStream out = res.getOutputStream();
+			FileInputStream in = new FileInputStream(my_file);
+			byte[] buffer = new byte[4096];
+			int length;
+			while ((length = in.read(buffer)) > 0) {
+				out.write(buffer, 0, length);
+			}
+			in.close();
+			out.flush();
+			out.close();
+			}
+			catch (Exception e) {
+					e.printStackTrace();
+					logger.error(new Date() +" Inside WorkFlow.htm "+UserId, e);
+			}
 	}
 	
 	
@@ -948,11 +952,15 @@ public class HeaderController {
 			String oldpass = req.getParameter("oldpass");
 			boolean result = false;
 			
+			System.out.println("LoginId"+LoginId);
+			System.out.println("oldpass"+oldpass);
 			Optional<Login> optionalLogin = loginRepo.findById(LoginId);
 			
 			if (optionalLogin.isPresent()) {
+			
 			    Login login = optionalLogin.get();
 			    String ExistingPassword = login.getPassword();
+				System.out.println("oldpass"+ExistingPassword);
 			    result = encoder.matches(oldpass, ExistingPassword);
 			} 
 			if(result) {

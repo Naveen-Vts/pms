@@ -30,6 +30,7 @@ public class HttpMethodFilter implements Filter {
 
             String path = req.getRequestURI().toLowerCase();
 
+            
             // Skip filter for static files
             boolean isStatic = STATIC_EXTENSIONS.stream().anyMatch(path::endsWith);
 

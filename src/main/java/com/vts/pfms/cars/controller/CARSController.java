@@ -96,18 +96,19 @@ public class CARSController {
 	private final CCMService ccmservice;
 	private final PrintService printservice;
 	
-	private final PMSLogoUtil logoUtil = new PMSLogoUtil();
+	private final PMSLogoUtil logoUtil ;
 	
 	@Value("${ApplicationFilesDrive}")
 	private String labLogoPath;
 	
 	// constructor dependency injection
-	public CARSController(CARSService service, ProjectService projectservice, PrintService printservice, CCMService ccmservice, ActionService actionservice) {
+	public CARSController(CARSService service, ProjectService projectservice, PrintService printservice, CCMService ccmservice, ActionService actionservice,PMSLogoUtil logoUtil ) {
 		this.service = service;
 		this.projectservice = projectservice;
 		this.actionservice = actionservice;
 		this.ccmservice = ccmservice;
 		this.printservice = printservice;
+		this.logoUtil=logoUtil;
 		
 	}
 	
@@ -1767,30 +1768,30 @@ private boolean isValidFileType(MultipartFile file) {
 			String[] remarks = req.getParameterValues("paymentTerms");
 			
 			
-			if (containsHTMLTags(taskDescription)) {
-				redir.addAttribute("carsInitiationId", carsInitiationId);
-				redir.addAttribute("attributes", attributes);
-				redir.addAttribute("TabId",tab!=null?tab:"2");
-			    return redirectWithError(redir, "CARSInitiationDetails.htm", "'Task Description' should not contain HTML Tags.!");
-			}
-			if (containsHTMLTags(remarks)) {
-				redir.addAttribute("carsInitiationId", carsInitiationId);
-				redir.addAttribute("attributes", attributes);
-				redir.addAttribute("TabId",tab!=null?tab:"2");
-				return redirectWithError(redir, "CARSInitiationDetails.htm", "'Remarks' should not contain HTML Tags.!");
-			}
-			if (containsHTMLTags(deliverables)) {
-				redir.addAttribute("carsInitiationId", carsInitiationId);
-				redir.addAttribute("attributes", attributes);
-				redir.addAttribute("TabId",tab!=null?tab:"2");
-			    return redirectWithError(redir, "CARSInitiationDetails.htm", "'Deliverables' should not contain HTML Tags.!");
-			}
-			if (containsHTMLTags(Months)) {
-				redir.addAttribute("carsInitiationId", carsInitiationId);
-				redir.addAttribute("attributes", attributes);
-				redir.addAttribute("TabId",tab!=null?tab:"2");
-			    return redirectWithError(redir, "CARSInitiationDetails.htm", "'Months' should not contain HTML Tags.!");
-			}
+//			if (containsHTMLTags(taskDescription)) {
+//				redir.addAttribute("carsInitiationId", carsInitiationId);
+//				redir.addAttribute("attributes", attributes);
+//				redir.addAttribute("TabId",tab!=null?tab:"2");
+//			    return redirectWithError(redir, "CARSInitiationDetails.htm", "'Task Description' should not contain HTML Tags.!");
+//			}
+//			if (containsHTMLTags(remarks)) {
+//				redir.addAttribute("carsInitiationId", carsInitiationId);
+//				redir.addAttribute("attributes", attributes);
+//				redir.addAttribute("TabId",tab!=null?tab:"2");
+//				return redirectWithError(redir, "CARSInitiationDetails.htm", "'Remarks' should not contain HTML Tags.!");
+//			}
+//			if (containsHTMLTags(deliverables)) {
+//				redir.addAttribute("carsInitiationId", carsInitiationId);
+//				redir.addAttribute("attributes", attributes);
+//				redir.addAttribute("TabId",tab!=null?tab:"2");
+//			    return redirectWithError(redir, "CARSInitiationDetails.htm", "'Deliverables' should not contain HTML Tags.!");
+//			}
+//			if (containsHTMLTags(Months)) {
+//				redir.addAttribute("carsInitiationId", carsInitiationId);
+//				redir.addAttribute("attributes", attributes);
+//				redir.addAttribute("TabId",tab!=null?tab:"2");
+//			    return redirectWithError(redir, "CARSInitiationDetails.htm", "'Months' should not contain HTML Tags.!");
+//			}
 			
 
 			CARSRSQRDetailsDTO dto = new CARSRSQRDetailsDTO();

@@ -139,4 +139,7 @@ public interface PrintService {
 	public List<Object[]> getProjectMeetings(String string) throws Exception;
 	public List<Object[]> getProjectClosureReport() throws Exception;
 	public List<Object[]> getprojectListProjectDirectorWise() throws Exception;
+	// Naveen R 06-03-2026
+		public List<Object[]> getMilestoneBriefingList(String scheduleId) throws Exception;
+		public Object[] getLastcreatedSchedule(String projectId, String committeId) throws Exception;
 }

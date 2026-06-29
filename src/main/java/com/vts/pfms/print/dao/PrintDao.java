@@ -141,5 +141,9 @@ public interface PrintDao {
 	public List<Object[]> getProjectMeetings(String committeeName) throws Exception;
 	public List<Object[]> getprojectListProjectDirectorWise() throws Exception;
 	public List<Object[]> getProjectClosureReport() throws Exception;
+	
+	// Naveen R 06-03-2026
+	public List<Object[]> getMilestoneBriefingList(String scheduleId) throws Exception;
+	public Object[] getLastMeetingCreated(String projectId, String committeeId) throws Exception;
 
 }

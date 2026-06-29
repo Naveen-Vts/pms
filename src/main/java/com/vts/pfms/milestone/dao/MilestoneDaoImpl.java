@@ -24,6 +24,7 @@ import com.vts.pfms.milestone.model.FileRepNewPreProject;
 import com.vts.pfms.milestone.model.FileRepUploadNew;
 import com.vts.pfms.milestone.model.FileRepUploadPreProject;
 import com.vts.pfms.milestone.model.MilestoneActivity;
+import com.vts.pfms.milestone.model.MilestoneActivityBriefing;
 import com.vts.pfms.milestone.model.MilestoneActivityLevel;
 import com.vts.pfms.milestone.model.MilestoneActivityLevelRemarks;
 import com.vts.pfms.milestone.model.MilestoneActivityPredecessor;
@@ -43,17 +44,23 @@ import jakarta.transaction.Transactional;
 @Repository
 public class MilestoneDaoImpl implements MilestoneDao {
 
-	private static final String MALIST="SELECT a.MilestoneActivityId, b.ProjectName, a.StartDate, a.EndDate, a.ActivityName, a.MilestoneNo,\r\n"
-			+ "CONCAT(IFNULL(CONCAT(c.Title,' '),(IFNULL(CONCAT(c.Salutation, ' '), ''))), c.EmpName, ', ', e.Designation) AS 'OicEmpId1Name', \r\n"
-			+ "CONCAT(IFNULL(CONCAT(d.Title,' '),(IFNULL(CONCAT(d.Salutation, ' '), ''))), d.EmpName, ', ', f.Designation) AS 'OicEmpId2Name',\r\n"
+	private static final String MALIST="SELECT a.MilestoneActivityId, b.project_name, a.StartDate, a.EndDate, a.ActivityName, a.MilestoneNo,\r\n"
+			+ "CONCAT(IFNULL(CONCAT(c.title,' '),(IFNULL(CONCAT(c.salutation, ' '), ''))), c.emp_name, ', ', e.Designation) AS 'OicEmpId1Name', \r\n"
+			+ "CONCAT(IFNULL(CONCAT(d.title,' '),(IFNULL(CONCAT(d.salutation, ' '), ''))), d.emp_name, ', ', f.Designation) AS 'OicEmpId2Name',\r\n"
 			+ "(SELECT MAX(e.revisionno) FROM milestone_activity_rev e WHERE a.milestoneactivityid=e.milestoneactivityid) AS rev,\r\n"
-			+ "a.acceptedby,a.isaccepted,a.statusremarks,a.progressstatus,a.Weightage,a.activitystatusid,b.projectid,a.dateofcompletion, a.OICEmpId, a.financialOutlay,a.oicempid1 \r\n"
+			+ "a.acceptedby,a.isaccepted,a.statusremarks,a.progressstatus,a.Weightage,a.activitystatusid,b.project_id,a.dateofcompletion, a.OICEmpId, a.financialOutlay,a.oicempid1 \r\n"
 			+ "FROM milestone_activity a,project_master b, employee c,employee d, employee_desig e, employee_desig f \r\n"
-			+ "WHERE a.projectid=b.projectid AND a.oicempid=c.empid AND a.oicempid1=d.empid AND c.DesigId = e.DesigId AND d.DesigId = f.DesigId AND a.projectid=:ProjectId ORDER BY a.MilestoneNo";
-	private static final String PROJECTMASTER="SELECT a.ProjectId, a.ProjectCode, a.ProjectName, a.ProjectShortName FROM project_master a WHERE a.IsActive='1'";
-	private static final String EMPLOYEELISTALL="select a.empid,a.empname,b.designation,a.Title,a.Salutation FROM employee a,employee_desig b WHERE a.isactive='1' AND a.DesigId=b.DesigId ORDER BY a.srno=0,a.srno";
+			+ "WHERE a.projectid=b.project_id AND a.oicempid=c.emp_id AND a.oicempid1=d.emp_id AND c.desig_id = e.desig_id AND d.desig_id = f.desig_id AND a.projectid=:ProjectId ORDER BY a.MilestoneNo";
+	private static final String PROJECTMASTER="SELECT a.project_id, a.project_code, a.project_name, a.project_short_name FROM project_master a WHERE a.is_active='1'";
+	private static final String EMPLOYEELISTALL="select a.emp_id,a.emp_name,b.designation,a.title,a.salutation FROM employee a,employee_desig b WHERE a.is_active='1' AND a.desig_id=b.desig_id ORDER BY a.sr_no=0,a.sr_no";
     private static final String MILESTONECOUNT="Select count(*) from milestone_activity where isactive='1' and projectid=:ProjectId";
-	private static final String MA="select a.milestoneactivityid,b.projectname,a.startdate,a.enddate,a.activityname,a.milestoneno,c.empname,d.empname as emp,a.oicempid,a.oicempid1,a.projectid,a.progressstatus,a.revisionno,a.acceptedby,a.accepteddate,a.activitytype,a.Weightage,e.activitytype as type, c.LabCode AS 'LabCode1', d.LabCode AS 'LabCode2',(SELECT COALESCE(a.ModifiedDate, a.CreatedDate) > MAX(c.CreatedDate) FROM `milestone_activity_rev` c WHERE c.MilestoneActivityId=:id)AS 'IsChange' from milestone_activity a,project_master b, employee c,employee d, milestone_activity_type e where a.activitytype=e.activitytypeid and a.projectid=b.projectid and a.oicempid=c.empid and a.oicempid1=d.empid and a.milestoneactivityid=:id";
+
+	private static final String MA="SELECT a.milestoneactivityid,b.project_name,a.startdate,a.enddate,a.activityname,a.milestoneno,\r\n"
+			+ "c.emp_name,d.emp_name AS emp,a.oicempid,a.oicempid1,a.projectid,a.progressstatus,a.revisionno,a.acceptedby,\r\n"
+			+ "a.accepteddate,a.activitytype,a.Weightage,e.activitytype AS TYPE, c.lab_code AS 'LabCode1', d.lab_code AS 'LabCode2', (SELECT COALESCE(a.ModifiedDate, a.CreatedDate) > MAX(c.CreatedDate) FROM `milestone_activity_rev` c WHERE c.MilestoneActivityId=:id)AS 'IsChange' \r\n"
+			+ "FROM milestone_activity a,project_master b, employee c,employee d, milestone_activity_type e WHERE a.activitytype=e.activitytypeid AND\r\n"
+			+ "a.projectid=b.project_id AND a.oicempid=c.emp_id AND a.oicempid1=d.emp_id AND a.milestoneactivityid=:id";
+
 	private static final String MILEACTIVITYLEVEL="CALL Pfms_Milestone_Level_List(:id,:levelid)";
     private static final String MAREVISION="SELECT MAX(revisionno) FROM milestone_activity_rev WHERE milestoneactivityid=:id ";
 	private static final String MADETAILS="FROM MilestoneActivity WHERE MilestoneActivityId=:Id";
@@ -65,26 +72,26 @@ public class MilestoneDaoImpl implements MilestoneDao {
 	private static final String ACTIVITYLEVELFULLEDIT="UPDATE milestone_activity_level SET activityname=:name,Weightage=:Weightage,activitytype=:type,oicempid=:empid,oicempid1=:empid1,startdate=:from,enddate=:to,orgstartdate=:orgfrom,orgenddate=:orgto,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE activityid=:id";
 	private static final String MILEACTIVITYUPDATE="UPDATE milestone_activity  SET activityname=:name, startdate=:from,enddate=:to,Weightage=:Weightage,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE milestoneactivityid=:id";
     private static final String MILELEVELCOMPARE="CALL Pfms_Milestone_Level_Compare(:id,:rev,:rev1,:levelid)";
-	private static final String MILECOMPAREMAIN="SELECT a.milestoneactivityid,b.projectname,e.startdate,e.enddate,e.activityname,e.progressstatus as ps,c.empname,d.empname AS emp,e.revisionno,e.progressstatus as ps1,e.progressstatus as ps2,a.progressstatus as ps3,DATEDIFF(e.enddate,e.startdate) AS actual,(SELECT DATEDIFF(f.enddate,f.startdate) FROM milestone_activity_rev f WHERE  f.milestoneactivityid=:id  AND f.revisionno=:rev1) AS diff,a.dateofcompletion,g.activitystatus  FROM milestone_activity a,project_master b, employee c,employee d,milestone_activity_rev e,milestone_activity_status g WHERE a.activitystatusid=g.activitystatusid and a.projectid=b.projectid AND a.oicempid=c.empid AND a.oicempid1=d.empid AND a.milestoneactivityid=e.milestoneactivityid   AND a.milestoneactivityid=:id AND e.revisionno=:rev";
-	private static final String MAEMPLIST="select a.milestoneactivityid,b.projectname,a.startdate,a.enddate,a.activityname,a.milestoneno,c.empname,d.empname as emp,(SELECT MAX(e.revisionno) FROM milestone_activity_rev e WHERE a.milestoneactivityid=e.milestoneactivityid) AS rev from milestone_activity a,project_master b, employee c,employee d,milestone_activity_rev e where  a.revisionno=e.revisionno  AND a.milestoneactivityid=e.milestoneactivityid and a.projectid=b.projectid and a.oicempid=c.empid and a.oicempid1=d.empid and (a.oicempid1=:EmpId or a.oicempid=:EmpId)";
+	private static final String MILECOMPAREMAIN="SELECT a.milestoneactivityid,b.project_name,e.startdate,e.enddate,e.activityname,e.progressstatus as ps,c.emp_name,d.emp_name AS emp,e.revisionno,e.progressstatus as ps1,e.progressstatus as ps2,a.progressstatus as ps3,DATEDIFF(e.enddate,e.startdate) AS actual,(SELECT DATEDIFF(f.enddate,f.startdate) FROM milestone_activity_rev f WHERE  f.milestoneactivityid=:id  AND f.revisionno=:rev1) AS diff,a.dateofcompletion,g.activitystatus  FROM milestone_activity a,project_master b, employee c,employee d,milestone_activity_rev e,milestone_activity_status g WHERE a.activitystatusid=g.activitystatusid and a.projectid=b.project_id AND a.oicempid=c.emp_id AND a.oicempid1=d.emp_id AND a.milestoneactivityid=e.milestoneactivityid   AND a.milestoneactivityid=:id AND e.revisionno=:rev";
+	private static final String MAEMPLIST="select a.milestoneactivityid,b.project_name,a.startdate,a.enddate,a.activityname,a.milestoneno,c.emp_name,d.emp_name as emp,(SELECT MAX(e.revisionno) FROM milestone_activity_rev e WHERE a.milestoneactivityid=e.milestoneactivityid) AS rev from milestone_activity a,project_master b, employee c,employee d,milestone_activity_rev e where  a.revisionno=e.revisionno  AND a.milestoneactivityid=e.milestoneactivityid and a.projectid=b.project_id and a.oicempid=c.emp_id and a.oicempid1=d.emp_id and (a.oicempid1=:EmpId or a.oicempid=:EmpId)";
 	private static final String STATUSLIST="select a.activitystatusid,a.activitystatus FROM milestone_activity_status a ";
 	private static final String PROACTIVITYUPDATE="UPDATE milestone_activity SET dateofcompletion=:doc,activitystatusid=:status,progressstatus=:progress,statusremarks=:remarks,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE milestoneactivityid=:id";
 	private static final String PROACTIVITYLEVELUPDATE="UPDATE milestone_activity_level SET dateofcompletion=:doc,activitystatusid=:status,progressstatus=:progress,statusremarks=:remarks,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE activityid=:id";
-	private static final String REPORTSLIST="SELECT a.milestoneactivityid,c.projectname,a.milestoneno,d.activitytype,a.activityname,b.startdate,b.enddate,a.progressstatus,a.projectid FROM milestone_activity a,milestone_activity_rev b,project_master c,milestone_activity_type d  WHERE a.projectid=c.projectid AND a.activitytype=d.activitytypeid AND a.revisionno=b.revisionno  AND a.milestoneactivityid=b.milestoneactivityid AND (a.oicempid=:empid OR a.oicempid1=:empid) ";
+	private static final String REPORTSLIST="SELECT a.milestoneactivityid,c.project_name,a.milestoneno,d.activitytype,a.activityname,b.startdate,b.enddate,a.progressstatus,a.projectid FROM milestone_activity a,milestone_activity_rev b,project_master c,milestone_activity_type d  WHERE a.projectid=c.project_id AND a.activitytype=d.activitytypeid AND a.revisionno=b.revisionno  AND a.milestoneactivityid=b.milestoneactivityid AND (a.oicempid=:empid OR a.oicempid1=:empid) ";
     private static final String SUBLIST="SELECT a.activitysubid,a.progress,a.progressdate,a.remarks,a.attachname,\r\n"
-    		+ "	(SELECT CONCAT(IFNULL(CONCAT(e.title,' '),IFNULL(CONCAT(e.salutation,' '),'')), e.empname) AS 'empname' FROM employee e WHERE e.empid =\r\n"
+    		+ "	(SELECT CONCAT(IFNULL(CONCAT(e.title,' '),IFNULL(CONCAT(e.salutation,' '),'')), e.emp_name) AS 'empname' FROM employee e WHERE e.emp_id =\r\n"
     		+ "	(SELECT l.empid FROM login l WHERE l.username = a.createdby)) AS 'EmpName'\r\n"
     		+ "	 FROM milestone_activity_sub a WHERE a.activityid=:id";
     private static final String SUBDATA="FROM MilestoneActivitySub WHERE ActivitySubId=:id"; 
-	private static final String PROJECTDETAILS="SELECT a.projectid,a.projectcode,a.projectname,a.ProjectShortName FROM project_master a WHERE a.projectid=:projectid";
+	private static final String PROJECTDETAILS="SELECT a.project_id,a.project_code,a.project_name,a.project_short_name FROM project_master a WHERE a.project_id=:projectid";
 	private static final String MAASSIGNEELIST="CALL Pfms_Milestone_Oic_List(:ProjectId,:empid)";
-	private static final String PROJECTEMPLIST="SELECT a.empid, CONCAT(IFNULL(CONCAT(a.Title,' '),(IFNULL(CONCAT(a.Salutation, ' '), ''))), a.EmpName) AS 'EmpName',b.designation FROM employee a,employee_desig b,project_employee pe  WHERE a.isactive='1' AND pe.isactive='1' AND a.DesigId=b.DesigId  AND pe.empid=a.empid AND pe.projectid=:projectid AND a.labcode=:labcode ORDER BY a.srno=0,a.srno";
+	private static final String PROJECTEMPLIST="SELECT a.emp_id, CONCAT(IFNULL(CONCAT(a.title,' '),(IFNULL(CONCAT(a.salutation, ' '), ''))), a.emp_name) AS 'EmpName',b.designation FROM employee a,employee_desig b,project_employee pe  WHERE a.is_active='1' AND pe.isactive='1' AND a.desig_id=b.desig_id  AND pe.empid=a.emp_id AND pe.projectid=:projectid AND a.lab_code=:labcode ORDER BY a.sr_no=0,a.sr_no";
 	private static final String PROJECTEMPLISTEDIT="SELECT a.empid, CONCAT(IFNULL(CONCAT(a.Title,' '),(IFNULL(CONCAT(a.Salutation, ' '), ''))), a.EmpName) AS 'EmpName',b.designation,a.srno as srno FROM employee a,employee_desig b,project_employee pe  WHERE a.isactive='1' AND a.DesigId=b.DesigId  AND pe.empid=a.empid AND pe.projectid=:projectid  union SELECT a.empid, CONCAT(IFNULL(CONCAT(a.Title,' '),(IFNULL(CONCAT(a.Salutation, ' '), ''))), a.EmpName) AS 'EmpName',b.designation,a.srno as srno FROM employee a,employee_desig b WHERE a.isactive='1' AND a.DesigId=b.DesigId  AND a.empid=:id ORDER BY srno=0, srno";
 	private static final String PROJECTASSINEE="SELECT DISTINCT(a.projectid),a.projectcode,a.projectname FROM project_master a,milestone_activity b WHERE a.projectid=b.projectid and (b.oicempid=:empid or b.oicempid1=:empid) and   a.isactive='1'";
 	private static final String ASSIGNUPDATE="UPDATE milestone_activity SET isaccepted='A',ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE milestoneactivityid=:id";
 	private static final String ACCEPTUPDATE="UPDATE milestone_activity SET isaccepted='Y',acceptedby=:acceptedby,accepteddate=:accepteddate,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE milestoneactivityid=:id";
 	private static final String SENDBACKUPDATE="UPDATE milestone_activity SET isaccepted='B',statusremarks=:statusremarks,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE milestoneactivityid=:id";
-    private static final String ACTIONLIST="SELECT a.actionmainid,ab.empname,dc.designation,a.actiondate,aas.enddate,a.actionitem,aas.actionstatus,aas.actionstatus as 'status',a.createdby,a.createddate,(SELECT MAX(b.actionsubid) FROM action_sub b WHERE b.actionassignid = aas.actionassignid) AS subid,(SELECT c.progress FROM action_sub c  WHERE c.actionassignid = aas.actionassignid AND c.actionsubid = (SELECT MAX(b.actionsubid) FROM action_sub b WHERE b.actionassignid = aas.actionassignid) )  AS progress, (SELECT c.remarks FROM action_sub c  WHERE c.actionassignid = aas.actionassignid AND c.actionsubid = (SELECT MAX(b.actionsubid) FROM action_sub b WHERE b.actionassignid = aas.actionassignid) )  AS remarks,aas.revision FROM action_main a,  employee ab ,employee_desig dc , action_assign aas WHERE aas.actionmainid=a.actionmainid AND aas.assignee=ab.empid AND ab.isactive='1' AND dc.desigid=ab.desigid AND a.actiontype=:actiontype AND a.activityid=:activityid  ";//AND aas.actionflag<>'Y'
+    private static final String ACTIONLIST="SELECT a.actionmainid,ab.emp_name,dc.designation,a.actiondate,aas.enddate,a.actionitem,aas.actionstatus,aas.actionstatus as 'status',a.createdby,a.createddate,(SELECT MAX(b.actionsubid) FROM action_sub b WHERE b.actionassignid = aas.actionassignid) AS subid,(SELECT c.progress FROM action_sub c  WHERE c.actionassignid = aas.actionassignid AND c.actionsubid = (SELECT MAX(b.actionsubid) FROM action_sub b WHERE b.actionassignid = aas.actionassignid) )  AS progress, (SELECT c.remarks FROM action_sub c  WHERE c.actionassignid = aas.actionassignid AND c.actionsubid = (SELECT MAX(b.actionsubid) FROM action_sub b WHERE b.actionassignid = aas.actionassignid) )  AS remarks,aas.revision FROM action_main a,  employee ab ,employee_desig dc , action_assign aas WHERE aas.actionmainid=a.actionmainid AND aas.assignee=ab.emp_id AND ab.is_active='1' AND dc.desig_id=ab.desig_id AND a.actiontype=:actiontype AND a.activityid=:activityid  ";//AND aas.actionflag<>'Y'
     private static final String MILESUM="SELECT IFNULL(SUM(weightage), 0) AS 'TotalWeightage' FROM milestone_activity WHERE milestoneactivityid<>:id AND projectid=:projectid";
     private static final String ACTIVITYLEVELSUM="SELECT SUM(weightage) FROM milestone_activity_level WHERE parentactivityid=:id AND activityid<>:activityid and activitylevelid=:levelid";
     private static final String BASELINEMAIN="SELECT a.milestoneactivityid AS obid,e.enddate,a.progressstatus,e.Weightage,b.activitystatus,a.activitystatusid,e.DateOfCompletion FROM milestone_activity_rev a,milestone_activity_status b,milestone_activity e  WHERE a.activitystatusid=b.activitystatusid  AND a.milestoneactivityid=e.milestoneactivityid AND a.revisionno=e.revisionno AND  a.milestoneactivityid=:inActivityId";
@@ -97,7 +104,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
    
     private static final String FILEREPREV="UPDATE file_rep_new SET ReleaseDoc=:release,VersionDoc=:version where filerepid=:id";
     private static final String FILEDETAILS="SELECT * FROM(SELECT a.filerepid,b.filerepuploadid,b.filepath,b.filenameui,b.filename,b.filepass,b.ReleaseDoc,b.VersionDoc FROM file_rep_new a,file_rep_upload b WHERE a.filerepid=b.filerepid AND b.filerepuploadid=:fileid)AS a JOIN (SELECT MAX(DocAmendmentId) AS 'AmendmentDocId' FROM file_doc_amendment WHERE FileRepUploadId=:fileid ) AS b  ";
-    private static final String ALLEMPNAMEDESIGLIST="SELECT e.empid , CONCAT(IFNULL(CONCAT(e.Title,' '),(IFNULL(CONCAT(e.Salutation, ' '), ''))), e.EmpName) AS 'EmpName', ed.designation FROM employee e, employee_desig ed WHERE e.IsActive=1 AND e.desigid=ed.desigid and e.labcode=:labcode ";
+    private static final String ALLEMPNAMEDESIGLIST="SELECT e.emp_id , CONCAT(IFNULL(CONCAT(e.title,' '),(IFNULL(CONCAT(e.salutation, ' '), ''))), e.emp_name) AS 'EmpName', ed.designation FROM employee e, employee_desig ed WHERE e.is_active=1 AND e.desig_id=ed.desig_id and e.lab_code=:labcode ";
 	
     private static final String MILESTONESCHEDULELIST="SELECT milestonescheduleid,projectid,activityname,milestoneno,orgstartdate,orgenddate,startdate,enddate,statusremarks FROM milestone_schedule WHERE isactive=1 AND projectid=:projectid";
     private static final String MILESTONESCHEDULECOUNT="SELECT COUNT(*) FROM milestone_schedule WHERE isactive='1' AND projectid=:projectid";
@@ -112,7 +119,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 	private static final String VERSIONCHECKLIST="SELECT b.filerepuploadid,b.filerepid,b.filenameui,b.ReleaseDoc,b.versionDoc FROM file_rep_new a,file_rep_upload b WHERE a.projectid=:projectId AND a.DocumentName=:docName AND a.filerepid=b.filerepid AND a.IsActive=1 AND b.IsActive=1 ORDER BY b.filerepuploadid DESC LIMIT 1"; 
 	private static final String DOCUMENTSTAGELIST="SELECT a.fileuploadmasterid,a.parentlevelid,a.levelid,a.levelname FROM file_doc_master a WHERE a.isactive=1 AND a.levelid=:levelid AND a.parentlevelid=:documenttype";
 	private static final String FILEHISTORYLIST="SELECT fru.filerepuploadid,frn.filerepid,fdm.docid,fdm.levelname,fru.versiondoc,fru.releasedoc,CAST(DATE_FORMAT(fru.createddate,'%d-%m-%Y') AS CHAR) AS 'createddate' FROM  file_rep_new frn,file_rep_upload fru,file_doc_master fdm WHERE frn.filerepid=fru.filerepid AND frn.documentid=fdm.fileuploadmasterid AND frn.filerepid=:filerepid ORDER BY fru.versiondoc DESC,fru.releasedoc DESC ";
-	private static final String FILEREPMASTERLISTALL ="SELECT a.filerepmasterid,a.parentlevelid,a.levelid,a.levelname,COALESCE(b.ProjectCode, 'General') AS ProjectCode FROM file_rep_master a LEFT JOIN project_master b ON a.projectid = b.projectid WHERE a.filerepmasterid > 0 AND a.projectid =:projectid AND a.LabCode =:LabCode";
+	private static final String FILEREPMASTERLISTALL ="SELECT a.filerepmasterid,a.parentlevelid,a.levelid,a.levelname,COALESCE(b.project_code, 'General') AS ProjectCode FROM file_rep_master a LEFT JOIN project_master b ON a.projectid = b.project_id WHERE a.filerepmasterid > 0 AND a.projectid =:projectid AND a.LabCode =:LabCode";
 	private static final String FILEDOCMASTERLISTALL ="SELECT fileuploadmasterid,parentlevelid,levelid,levelname,docid,docshortname FROM file_doc_master WHERE isactive=1  AND labcode=:LabCode AND fileuploadmasterid IN (SELECT parentlevelid FROM file_doc_master WHERE isactive=1 AND fileuploadmasterid IN (SELECT parentlevelid FROM file_project_doc   WHERE projectid=:projectid AND labcode=:LabCode ) )  UNION  SELECT fileuploadmasterid,parentlevelid,levelid,levelname,docid,docshortname FROM file_doc_master WHERE isactive=1 AND labcode=:LabCode AND fileuploadmasterid IN (SELECT parentlevelid FROM file_project_doc   WHERE projectid=:projectid AND labcode=:LabCode) ";
 	private static final String PROJECTDOCUMETSADD ="SELECT DocAmendmentId,FileRepUploadId,FileName,Description,AmendVersion,FilePath,FilePass,Amendmentname FROM file_doc_amendment WHERE FileRepUploadId=:FileRepUploadId ORDER BY AmendVersion DESC";
 	private static final String DOCUMENTAMENDMENTDATA ="SELECT DocAmendmentId,FileRepUploadId,FileName,Description,AmendVersion,FilePath,FilePass,Amendmentname FROM file_doc_amendment WHERE DocAmendmentId=:docammendmentid ORDER BY AmendVersion DESC";
@@ -257,8 +264,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 	}
 
 	@Override
-	public long MilestoneActivitySubRev(MilestoneActivitySubRev Milestone)
-			throws Exception {
+	public long MilestoneActivitySubRev(MilestoneActivitySubRev Milestone)throws Exception {
 		manager.persist(Milestone);
 		manager.flush();
 		return Milestone.getActivityRevId();
@@ -1043,7 +1049,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 		}
 	}
 	
-	private static final String MILESTONEACTIVITYLISTNEW = "SELECT a.milestoneactivityid AS obid,0 AS 'parentactivityid',a.startdate,a.enddate,a.activityname,a.progressstatus,a.Weightage,a.dateofcompletion, b.activitystatus,a.activitystatusid,a.revisionno AS 'rev' ,d.activitytypeid, d.activitytype ,a.oicempid,e.empname,a.oicempid1,0 AS 'activitylevelid' FROM milestone_activity a,milestone_activity_status b, milestone_activity_type d ,employee e WHERE a.activitystatusid=b.activitystatusid AND a.activitytype=d.activitytypeid AND a.oicempid=e.empid AND a.projectid=:projectid";
+	private static final String MILESTONEACTIVITYLISTNEW = "SELECT a.milestoneactivityid AS obid,0 AS 'parentactivityid',a.startdate,a.enddate,a.activityname,a.progressstatus,a.Weightage,a.dateofcompletion, b.activitystatus,a.activitystatusid,a.revisionno AS 'rev' ,d.activitytypeid, d.activitytype ,a.oicempid,e.emp_name,a.oicempid1,0 AS 'activitylevelid' FROM milestone_activity a,milestone_activity_status b, milestone_activity_type d ,employee e WHERE a.activitystatusid=b.activitystatusid AND a.activitytype=d.activitytypeid AND a.oicempid=e.emp_id AND a.projectid=:projectid";
 	@Override
 	public List<Object[]> MilestoneActivityListNew(String ProjectId) throws Exception 
 	{
@@ -1055,7 +1061,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 	}
 	
 	
-	private static final String MILESTONEACTIVITYLEVELEXCEL = "SELECT a.activityid AS obid,a.parentactivityid,a.startdate,a.enddate,a.activityname,a.progressstatus,a.Weightage,a.dateofcompletion, b.activitystatus,a.activitystatusid,a.revision AS rev,d.activitytypeid, d.activitytype,a.oicempid,e.empname,a.oicempid1 ,a.activitylevelid FROM milestone_activity_level a,milestone_activity_status b, milestone_activity_type d ,employee e WHERE a.activitystatusid=b.activitystatusid AND a.activitytype=d.activitytypeid AND a.oicempid=e.empid AND   a.parentactivityid=:MilestoneActivityId AND a.activitylevelid=:levelid ";
+	private static final String MILESTONEACTIVITYLEVELEXCEL = "SELECT a.activityid AS obid,a.parentactivityid,a.startdate,a.enddate,a.activityname,a.progressstatus,a.Weightage,a.dateofcompletion, b.activitystatus,a.activitystatusid,a.revision AS rev,d.activitytypeid, d.activitytype,a.oicempid,e.emp_name,a.oicempid1 ,a.activitylevelid FROM milestone_activity_level a,milestone_activity_status b, milestone_activity_type d ,employee e WHERE a.activitystatusid=b.activitystatusid AND a.activitytype=d.activitytypeid AND a.oicempid=e.emp_id AND   a.parentactivityid=:MilestoneActivityId AND a.activitylevelid=:levelid ";
 	@Override
 	public List<Object[]> MilestoneActivityLevelExcel(String MilestoneActivityId,String LevelId) throws Exception {
 		Query query=manager.createNativeQuery(MILESTONEACTIVITYLEVELEXCEL);
@@ -1277,7 +1283,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 			}
 		}
 		
-		private static final String ALLMILESTONEACTIVITYLIST = "SELECT a.MilestoneActivityId, a.ProjectId, a.MilestoneNo, a.Activityname, a.OrgStartDate, a.orgEndDate, a.StartDate, a.EndDate, a.ProgressStatus, a.RevisionNo, a.OicEmpId, a.OicEmpId1, a.ActivityStatusId, a.Weightage, b.ProjectCode, b.ProjectShortName, b.ProjectName, a.Loading, a.StatusRemarks, a.DateOfCompletion FROM milestone_activity a LEFT JOIN project_master b ON a.ProjectId=b.ProjectId WHERE a.IsActive=1 ORDER BY a.ProjectId, a.MilestoneActivityId";
+		private static final String ALLMILESTONEACTIVITYLIST = "SELECT a.MilestoneActivityId, a.ProjectId, a.MilestoneNo, a.Activityname, a.OrgStartDate, a.orgEndDate, a.StartDate, a.EndDate, a.ProgressStatus, a.RevisionNo, a.OicEmpId, a.OicEmpId1, a.ActivityStatusId, a.Weightage, b.project_code, b.project_short_name, b.project_name, a.Loading, a.StatusRemarks, a.DateOfCompletion FROM milestone_activity a LEFT JOIN project_master b ON a.ProjectId=b.project_id WHERE a.IsActive=1 ORDER BY a.ProjectId, a.MilestoneActivityId";
 		@Override
 		public List<Object[]> getAllMilestoneActivityList() throws Exception {
 			try {
@@ -1509,7 +1515,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 		}
 	}
 		
-	private static final String ACTIONASSIGNEELIST="SELECT a.ActionAssignId, a.ActionMainId, a.ActionNo, b.ActionItem, a.Assignee, b.ActionDate, a.EndDate, b.ProjectId, a.Loading, c.ProjectCode, c.ProjectShortName, a.Progress FROM action_assign a JOIN action_main b ON a.ActionMainId=b.ActionMainId LEFT JOIN project_master c ON b.ProjectId=c.ProjectId WHERE a.IsActive=1 AND a.Assignee=:EmpId";
+	private static final String ACTIONASSIGNEELIST="SELECT a.ActionAssignId, a.ActionMainId, a.ActionNo, b.ActionItem, a.Assignee, b.ActionDate, a.EndDate, b.ProjectId, a.Loading, c.project_code, c.project_short_name, a.Progress FROM action_assign a JOIN action_main b ON a.ActionMainId=b.ActionMainId LEFT JOIN project_master c ON b.ProjectId=c.project_id WHERE a.IsActive=1 AND a.Assignee=:EmpId";
 	@Override
 	public List<Object[]> actionAssigneeList(String empId) throws Exception {
 		try {
@@ -1536,7 +1542,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 }
 	
 	
-	private static final String MILESTONEACTIVITYPROGRESSLIST="SELECT a.ActivitySubId, a.ActivityId, a.Progress, a.ProgressDate, a.AttachName, a.AttachFile, a.Remarks, c.EmpId, CONCAT(IFNULL(CONCAT(c.Title,' '),(IFNULL(CONCAT(c.Salutation, ' '), ''))), c.EmpName) AS 'EmpName', d.Designation FROM milestone_activity_sub a LEFT JOIN login b ON a.CreatedBy=b.UserName LEFT JOIN employee c ON b.EmpId=c.EmpId LEFT JOIN employee_desig d ON c.DesigId=d.DesigId WHERE a.IsActive=1 ORDER BY a.ProgressDate DESC";
+	private static final String MILESTONEACTIVITYPROGRESSLIST="SELECT a.ActivitySubId, a.ActivityId, a.Progress, a.ProgressDate, a.AttachName, a.AttachFile, a.Remarks, c.emp_id, CONCAT(IFNULL(CONCAT(c.title,' '),(IFNULL(CONCAT(c.salutation, ' '), ''))), c.emp_name) AS 'EmpName', d.Designation FROM milestone_activity_sub a LEFT JOIN login b ON a.CreatedBy=b.UserName LEFT JOIN employee c ON b.EmpId=c.emp_id LEFT JOIN employee_desig d ON c.desig_id=d.desig_id WHERE a.IsActive=1 ORDER BY a.ProgressDate DESC";
 	@Override
 	public List<Object[]> getMilestoneActivityProgressList() throws Exception {
 		try {
@@ -1820,8 +1826,8 @@ public class MilestoneDaoImpl implements MilestoneDao {
 	}
 	
 	
-	private static final String MILEREMARKS ="SELECT CONCAT(IFNULL(CONCAT(b.title,' '),IFNULL(CONCAT(b.salutation,' '),'')), b.empname) AS 'empname',c.designation , \r\n"
-			+ "a.remarks , a.createdDate,a.empid, a.activityId  FROM employee b ,milestone_activity_level_remarks a, employee_desig c WHERE a.empid=b.empid AND b.desigid=c.desigid\r\n"
+	private static final String MILEREMARKS ="SELECT CONCAT(IFNULL(CONCAT(b.title,' '),IFNULL(CONCAT(b.salutation,' '),'')), b.emp_name) AS 'empname',c.designation , \r\n"
+			+ "a.remarks , a.createdDate,a.empid, a.activityId  FROM employee b ,milestone_activity_level_remarks a, employee_desig c WHERE a.empid=b.emp_id AND b.desig_id=c.desig_id\r\n"
 			+ "AND a.activityId=:activityId  AND a.isactive=1";
 	
 	@Override
@@ -1892,6 +1898,49 @@ public class MilestoneDaoImpl implements MilestoneDao {
 		List<Object[]> list =  (List<Object[]>) query.getResultList();
 		if(list.size()>0) {
 			return list.get(0);
+		}
+		return null;
+	}
+	
+	
+	// Naveen 05-03-2026
+	@Override
+	public long saveMilestoneActivityBriefing(MilestoneActivityBriefing entity) throws Exception {
+		try {
+			manager.persist(entity);
+			manager.flush();
+			return entity.getMilestoneActivityBriefingId();
+		}catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	@Override
+	public MilestoneActivityBriefing getMilestoneActivityBriefing(String mileStoneActivityBriefingId) throws Exception  {
+		try {
+			if(mileStoneActivityBriefingId==null || mileStoneActivityBriefingId.isBlank()) return null;
+			Long id = Long.parseLong(mileStoneActivityBriefingId);
+			return manager.find(MilestoneActivityBriefing.class, id);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private static final String MILESTONEBRIEFINGBYID = "SELECT milestoneActivityBriefingId,briefingPointId,points,scheduleId FROM milestone_activity_briefing WHERE milestoneActivityBriefingId = :milestoneActivityBriefingId AND isActive = 1";
+	@Override
+	public Object[] getMilestoneActivityBriefingById(String mileStoneActivityBriefingId) throws Exception {
+		try {
+			if(mileStoneActivityBriefingId==null || mileStoneActivityBriefingId.isBlank()) return null;
+			Query query = manager.createNativeQuery(MILESTONEBRIEFINGBYID);
+			query.setParameter("milestoneActivityBriefingId", Long.parseLong(mileStoneActivityBriefingId));
+			List<Object[]> list =  (List<Object[]>) query.getResultList();
+			if(list.size()>0) {
+				return list.get(0);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}

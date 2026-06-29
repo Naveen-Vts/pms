@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -41,6 +42,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -4030,7 +4035,8 @@ public class ProjectController
 			req.setAttribute("ProjectMainList", service.ProjectMainList());
 			req.setAttribute("Onboarding", onboard);
 		}catch (Exception e) {
-			e.printStackTrace(); logger.error(new Date() +" Inside ProjectMain.htm "+Username, e);
+			e.printStackTrace(); 
+			logger.error(new Date() +" Inside ProjectMain.htm "+Username, e);
 		}
 		return "project/ProjectMainList";
 
@@ -4084,19 +4090,19 @@ public class ProjectController
 				String projectshortname = req.getParameter("projectshortname"); 
 				String platformName=req.getParameter("platformName"); //srikant
 								
-				if (Stream.of(pcode, pname, desc, unicode, projectshortname, sano, NodalName)
-				        .anyMatch(field -> !InputValidator.isContainCapitalsSmallsNumericSymbolsSpace(field))) {
-				    return redirectWithError(redir, "ProjectMain.htm", "Only letters, digits, spaces, and '-', '/', '\\' are allowed.");
-				}
-				
-				if(Stream.of(tsancost,sancostre,sancostfe)
-						.anyMatch(field-> !InputValidator.isDecimalFormat(field))){
-				    return redirectWithError(redir, "ProjectMain.htm", "Only numbers are allowed. You may enter up to 2 digits after the decimal.");				
-				}
-				if(Stream.of(application,scope,Deliverable,Objective)
-						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
-					return redirectWithError(redir, "ProjectMain.htm", "HTML tags are not permitted.");				
-				}
+//				if (Stream.of(pcode, pname, desc, unicode, projectshortname, sano, NodalName)
+//				        .anyMatch(field -> !InputValidator.isContainCapitalsSmallsNumericSymbolsSpace(field))) {
+//				    return redirectWithError(redir, "ProjectMain.htm", "Only letters, digits, spaces, and '-', '/', '\\' are allowed.");
+//				}
+//				
+//				if(Stream.of(tsancost,sancostre,sancostfe)
+//						.anyMatch(field-> !InputValidator.isDecimalFormat(field))){
+//				    return redirectWithError(redir, "ProjectMain.htm", "Only numbers are allowed. You may enter up to 2 digits after the decimal.");				
+//				}
+//				if(Stream.of(application,scope,Deliverable,Objective)
+//						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
+//					return redirectWithError(redir, "ProjectMain.htm", "HTML tags are not permitted.");				
+//				}
 
 
 				ProjectMain protype=new ProjectMain();
@@ -4203,19 +4209,19 @@ public class ProjectController
 				String projectshortname = req.getParameter("projectshortname");
 				String PlatformName=req.getParameter("platformName");  //srikant
 				
-				if (Stream.of(pcode, pname, desc, unicode, projectshortname, sano, NodalLab)
-				        .anyMatch(field -> !InputValidator.isContainCapitalsSmallsNumericSymbolsSpace(field))) {
-				    return redirectWithError(redir, "ProjectMain.htm", "Only letters, digits, spaces, and '-', '/', '\\' are allowed.");
-				}
-				
-				if(Stream.of(tsancost,sancostre,sancostfe)
-						.anyMatch(field-> !InputValidator.isDecimalFormat(field))){
-				    return redirectWithError(redir, "ProjectMain.htm", "Only numbers are allowed. You may enter up to 2 digits after the decimal.");				
-				}
-				if(Stream.of(application,scope,Deliverable,Objective)
-						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
-					return redirectWithError(redir, "ProjectMain.htm", "HTML tags are not permitted.");				
-				}
+//				if (Stream.of(pcode, pname, desc, unicode, projectshortname, sano, NodalLab)
+//				        .anyMatch(field -> !InputValidator.isContainCapitalsSmallsNumericSymbolsSpace(field))) {
+//				    return redirectWithError(redir, "ProjectMain.htm", "Only letters, digits, spaces, and '-', '/', '\\' are allowed.");
+//				}
+//				
+//				if(Stream.of(tsancost,sancostre,sancostfe)
+//						.anyMatch(field-> !InputValidator.isDecimalFormat(field))){
+//				    return redirectWithError(redir, "ProjectMain.htm", "Only numbers are allowed. You may enter up to 2 digits after the decimal.");				
+//				}
+//				if(Stream.of(application,scope,Deliverable,Objective)
+//						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
+//					return redirectWithError(redir, "ProjectMain.htm", "HTML tags are not permitted.");				
+//				}
 
 				ProjectMain protype=new ProjectMain();
 				protype.setIsMainWC(Integer.parseInt(isMainWC));
@@ -4375,18 +4381,18 @@ public class ProjectController
 				String scope = req.getParameter("scope");
 				String application = req.getParameter("application");
 				
-				if (Stream.of(pcode, pname, desc, unicode, projectshortname, sano, nodallab)
-				        .anyMatch(field -> !InputValidator.isContainCapitalsSmallsNumericSymbolsSpace(field))) {
-				    return redirectWithError(redir, "ProjectList.htm", "Only letters, digits, spaces, and '-', '/', '\\' are allowed.");
-				}				
-				if(Stream.of(tsancost,sancostre,sancostfe)
-						.anyMatch(field-> !InputValidator.isDecimalFormat(field))){
-				    return redirectWithError(redir, "ProjectList.htm", "Only numbers are allowed. You may enter up to 2 digits after the decimal.");				
-				}
-				if(Stream.of(application,scope,Deliverable,Objective)
-						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
-					return redirectWithError(redir, "ProjectList.htm", "HTML tags are not permitted.");				
-				}
+//				if (Stream.of(pcode, pname, desc, unicode, projectshortname, sano, nodallab)
+//				        .anyMatch(field -> !InputValidator.isContainCapitalsSmallsNumericSymbolsSpace(field))) {
+//				    return redirectWithError(redir, "ProjectList.htm", "Only letters, digits, spaces, and '-', '/', '\\' are allowed.");
+//				}				
+//				if(Stream.of(tsancost,sancostre,sancostfe)
+//						.anyMatch(field-> !InputValidator.isDecimalFormat(field))){
+//				    return redirectWithError(redir, "ProjectList.htm", "Only numbers are allowed. You may enter up to 2 digits after the decimal.");				
+//				}
+//				if(Stream.of(application,scope,Deliverable,Objective)
+//						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
+//					return redirectWithError(redir, "ProjectList.htm", "HTML tags are not permitted.");				
+//				}
 				
 				ProjectMaster protype=new ProjectMaster();
 				//     		 protype.setIsMainWC(Integer.parseInt(isMainWC));
@@ -4406,6 +4412,7 @@ public class ProjectController
 				protype.setProjectDirector(Long.parseLong(projectdirector));
 				protype.setProjectCategory(Long.parseLong(req.getParameter("projectcategory")));
 				protype.setProjectType(Long.parseLong(projectTypeID));
+				protype.setProjectTypeId(Long.parseLong(projectTypeID));;
 				protype.setProjSancAuthority(ProjectsancAuthority);
 				protype.setSanctionDate(new java.sql.Date(sdf2.parse(sadate).getTime()));
 				protype.setTotalSanctionCost(Double.parseDouble(tsancost.trim()));
@@ -4489,19 +4496,19 @@ public class ProjectController
 				String nodallab = req.getParameter("Nodal");
 				String platformName=req.getParameter("platformName"); //srikant  
 				
-				if (Stream.of(pcode, pname, desc, unicode, projectshortname, sano, nodallab)
-				        .anyMatch(field -> !InputValidator.isContainCapitalsSmallsNumericSymbolsSpace(field))) {
-				    return redirectWithError(redir, "ProjectList.htm", "Only letters, digits, spaces, and '-', '/', '\\' are allowed.");
-				}				
-				if(Stream.of(tsancost,sancostre,sancostfe)
-						.anyMatch(field-> !InputValidator.isDecimalFormat(field))){
-				    return redirectWithError(redir, "ProjectList.htm", "Only numbers are allowed. You may enter up to 2 digits after the decimal.");				
-				}
-				if(Stream.of(application,scope,Deliverable,Objective)
-						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
-					return redirectWithError(redir, "ProjectList.htm", "HTML tags are not permitted.");				
-				}
-	
+//				if (Stream.of(pcode, pname, desc, unicode, projectshortname, sano, nodallab)
+//				        .anyMatch(field -> !InputValidator.isContainCapitalsSmallsNumericSymbolsSpace(field))) {
+//				    return redirectWithError(redir, "ProjectList.htm", "Only letters, digits, spaces, and '-', '/', '\\' are allowed.");
+//				}				
+//				if(Stream.of(tsancost,sancostre,sancostfe)
+//						.anyMatch(field-> !InputValidator.isDecimalFormat(field))){
+//				    return redirectWithError(redir, "ProjectList.htm", "Only numbers are allowed. You may enter up to 2 digits after the decimal.");				
+//				}
+//				if(Stream.of(application,scope,Deliverable,Objective)
+//						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
+//					return redirectWithError(redir, "ProjectList.htm", "HTML tags are not permitted.");				
+//				}
+//	
 				ProjectMaster protype=new ProjectMaster();
 				//     		 protype.setIsMainWC(Integer.parseInt(isMainWC));
 				//			 protype.setWorkCenter(WCname);
@@ -4517,6 +4524,7 @@ public class ProjectController
 				protype.setProjectDirector(Long.parseLong(projectdirector));
 				protype.setProjectCategory(Long.parseLong(req.getParameter("projectcategory")));
 				protype.setProjectType(Long.parseLong(projectTypeID));
+				protype.setProjectTypeId(Long.parseLong(projectTypeID));
 				protype.setProjSancAuthority(ProjectsancAuthority);
 				protype.setSanctionDate(new java.sql.Date(sdf2.parse(sadate).getTime()));
 				protype.setTotalSanctionCost(Double.parseDouble(tsancost.trim()));
@@ -5021,7 +5029,7 @@ public class ProjectController
 		}
 	}
 	@RequestMapping(value = "ProjectDataAjax.htm", method = {RequestMethod.GET , RequestMethod.POST})
-	public @ResponseBody String ProjectDataAjax(HttpServletRequest req, HttpServletResponse res, HttpSession ses) throws Exception 
+	public ResponseEntity<byte[]> ProjectDataAjax(HttpServletRequest req, HttpServletResponse res, HttpSession ses) throws Exception 
 	{
 
 		logger.info(new Date() +"Inside ProjectDataAjax.htm "+req.getUserPrincipal().getName());
@@ -5053,19 +5061,38 @@ public class ProjectController
 			//my_file = new File(uploadpath+projectdatafiledata[2]+File.separator+projectdatafiledata[index]); 
 			Path pdataPath = Paths.get(uploadpath, LabCode,"ProjectData",projectdatafiledata[index].toString());
 			my_file=pdataPath.toFile();
-			res.setHeader("Content-disposition","attachment; filename="+projectdatafiledata[index].toString()); 
-			iframe.add(FilenameUtils.getExtension(projectdatafiledata[index]+""));
-			String pdf=Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(my_file));
-			iframe.add(pdf);
+			byte[] fileContent = FileUtils.readFileToByteArray(my_file);
+		    String mimeType = Files.probeContentType(my_file.toPath());
+
+		    HttpHeaders headers = new HttpHeaders();
+		    headers.setContentType(MediaType.parseMediaType(mimeType));
+		    // Provide the extension in a custom header so JS knows if it's a PDF or Image
+		    headers.add("File-Extension", FilenameUtils.getExtension(my_file.getName()));
+
+		    return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(new Date() +" Inside ProjectDataAjax.htm "+req.getUserPrincipal().getName(), e);
 		}
 		Gson json = new Gson();
-		return json.toJson(iframe);
+		return null;
 	}
 
-
+	@RequestMapping(value = "displayFile.htm")
+	public void displayFile(@RequestParam("path") String path, HttpServletResponse res) throws Exception {
+	    // Note: You should ideally pass an ID and look up the path for security
+	    File file = new File(uploadpath + path); 
+	    if (file.exists()) {
+	        String mimeType = Files.probeContentType(file.toPath());
+	        res.setContentType(mimeType != null ? mimeType : "application/octet-stream");
+	        res.setContentLength((int) file.length());
+	        
+	        try (FileInputStream fis = new FileInputStream(file);
+	             OutputStream os = res.getOutputStream()) {
+	            IOUtils.copy(fis, os); // From Apache Commons IO
+	        }
+	    }
+	}
 
 	@RequestMapping(value = "ProjectDataEditSubmit.htm", method = RequestMethod.POST)
 	public String ProjectDataEditSubmit(HttpServletRequest req, HttpSession ses, RedirectAttributes redir,

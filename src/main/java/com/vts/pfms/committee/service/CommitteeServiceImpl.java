@@ -4214,4 +4214,16 @@ public Long UpdateMomAttach(Long scheduleId) throws Exception {
 		return dao.PrgmAgendaList(scheduleid);
 	}
 	
+	@Override
+	public void CommitteeOnlineAttendanceToggle(String invitationid, String isOnlineAttendenc) {
+		dao.CommitteeOnlineAttendanceToggle(invitationid,isOnlineAttendenc);
+		
+	}
+	
+	// Naveen R 05-03-2026 
+		@Override
+		public List<Object[]> getMeetingCountList(String committeeId) {
+			return dao.getMeetingCountList(committeeId);
+		}
+	
 }

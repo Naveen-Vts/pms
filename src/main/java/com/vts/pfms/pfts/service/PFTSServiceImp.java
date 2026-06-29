@@ -197,6 +197,9 @@ public class PFTSServiceImp implements PFTSService{
 	@Override
 	public long updateCostOnDemand(List<DemandOrderDetails> dd ,String fileId,String userid)throws Exception{
 		logger.info(new Date() +" Inside SERVICE updateCostOnDemand ");
+		
+		System.out.println(dd.toString());
+		
 		if(dd.size()>0) {
 		String isPresent = dd.get(0).getIsPresent();
 		if(isPresent!=null) {
@@ -227,7 +230,9 @@ public class PFTSServiceImp implements PFTSService{
         	 result=dao.addDemandfileOrder(pfo);
         	 }catch (Exception e) {
         		 
-			}        
+        		 e.printStackTrace();
+        		 
+        	 }        
         }
 	     return result;
 	}

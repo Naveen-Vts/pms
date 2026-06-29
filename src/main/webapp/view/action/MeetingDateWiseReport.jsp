@@ -156,7 +156,7 @@ String toDate = today.toString();
 													
 														<% 	}}else{%>
 														<tr>
-															<td colspan="6" class="text-center"> no data found</td></tr>
+															<td colspan="7" class="text-center"> no data found</td></tr>
 																<%}%>										   					
 														
 													</tbody>

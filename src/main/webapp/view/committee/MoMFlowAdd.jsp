@@ -329,7 +329,7 @@ String ses=(String)request.getParameter("result");
 
 								<td class="trup rec1Bg">&nbsp;<%if(Arrays.asList("RC1","RC2","RC3","APR").contains(CommitteMainEnoteList[15].toString())) {%>
 									<img src="view/images/check.png"> <br><%} %>
-									Recommended Officer 1 <br> <%=NewApprovalList[1]!=null?StringEscapeUtils.escapeHtml4(NewApprovalList[0].toString()): " - "  %>
+									Recommended Officer 1 <br> <%=NewApprovalList[1]!=null?StringEscapeUtils.escapeHtml4(NewApprovalList[1].toString()): " - "  %>
 								</td>
 
 								<%} %>
@@ -338,7 +338,7 @@ String ses=(String)request.getParameter("result");
 
 								<td class="trup rec2Bg">&nbsp;<%if(Arrays.asList("RC2","RC3","APR").contains(CommitteMainEnoteList[15].toString())) {%>
 									<img src="view/images/check.png"><br> <%} %> 
-									Recommended Officer 2 <br> <%=NewApprovalList[3]!=null?StringEscapeUtils.escapeHtml4(NewApprovalList[0].toString()): " - "  %>
+									Recommended Officer 2 <br> <%=NewApprovalList[3]!=null?StringEscapeUtils.escapeHtml4(NewApprovalList[3].toString()): " - "  %>
 								</td>
 								<%} %>
 								<%if(NewApprovalList!=null && NewApprovalList[6]!=null){ %>
@@ -346,14 +346,14 @@ String ses=(String)request.getParameter("result");
 
 								<td class="trup rec3Bg">&nbsp;<%if(Arrays.asList("RC3","APR").contains(CommitteMainEnoteList[15].toString())) {%>
 									<img src="view/images/check.png"> <br> <%} %>
-									Recommended Officer 3 <br> <%=NewApprovalList[5]!=null?StringEscapeUtils.escapeHtml4(NewApprovalList[0].toString()): " - "  %>
+									Recommended Officer 3 <br> <%=NewApprovalList[5]!=null?StringEscapeUtils.escapeHtml4(NewApprovalList[5].toString()): " - "  %>
 								</td>
 								<% } %>
 								<%if(NewApprovalList!=null && NewApprovalList[8]!=null){ %>
 								<td rowspan="2"><b>----------&gt;</b></td>
 								<td class="trup aprBg">&nbsp;<%if(Arrays.asList("APR").contains(CommitteMainEnoteList[15].toString())) {%>
 									<img src="view/images/check.png"> <br><%} %> 
-									Approving Officer <br> <%=NewApprovalList[7]!=null?StringEscapeUtils.escapeHtml4(NewApprovalList[0].toString()): " - "  %>
+									Approving Officer <br> <%=NewApprovalList[7]!=null?StringEscapeUtils.escapeHtml4(NewApprovalList[7].toString()): " - "  %>
 								</td>
 								<%} %>
 							</tr>

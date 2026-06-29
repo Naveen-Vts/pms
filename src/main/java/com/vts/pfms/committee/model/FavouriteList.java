@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-@Table(name="Pfms_Favourite_List")
+@Table(name="pfms_Favourite_List")
 public class FavouriteList {
 
 	@Id

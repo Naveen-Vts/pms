@@ -121,7 +121,7 @@ Map<Integer,String> treeMapLevOne =(Map<Integer,String>)request.getAttribute("tr
 Map<Integer,String> treeMapLevTwo =(Map<Integer,String>)request.getAttribute("treeMapLevTwo");
 
 List<Object[]> envisagedDemandlist = (List<Object[]>)request.getAttribute("envisagedDemandlist");
-SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy", Locale.ENGLISH);
 SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 Map<Integer,String> committeeWiseMap=(Map<Integer,String>)request.getAttribute("committeeWiseMap");
 //Map<Integer,String> mapEB=(Map<Integer,String>)request.getAttribute("mapEB");
@@ -166,7 +166,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 										
 										<select class="form-control items width200" name="projectid"  required="required"  data-live-search="true" data-container="body" onchange="submitForm('projectchange');">
 											<%for(Object[] obj : projectslist){ 
-												String projectshortName=(obj[17]!=null)?" ( "+obj[17].toString()+" ) ":"";
+												String projectshortName=(obj[17]!=null)?" ("+obj[17].toString().trim()+") ":"";
 											%>
 												<option value=<%=obj[0]%> <%if(projectid!=null && projectid.equals(obj[0].toString())) { %>selected <%} %> ><%=obj[4] +projectshortName%></option>
 											<%} %>
@@ -415,9 +415,10 @@ String isCCS = (String)request.getAttribute("isCCS");
 													<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 												</form>	
 												
-												
+												<%=projectdatadetails.get(z)[3].toString() %>
 												<%
 												Path systemPath = Paths.get(filePath,projectLabCode,"ProjectData",projectdatadetails.get(z)[3].toString());
+												
 												File systemfile = systemPath.toFile();
 												if(systemfile.exists()){
 												if(FilenameUtils.getExtension(projectdatadetails.get(z)[3].toString()).equalsIgnoreCase("pdf")){ %>
@@ -612,7 +613,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 							</td>
 							
 							
-							<td class="text-justify "><%=  StringEscapeUtils.escapeHtml4(obj[2].toString()) %></td>
+							<td class="text-justify "><%=  (obj[2].toString()) %></td>
 
 							<td class="text-center">
 								<%if(obj[8]!= null && !LocalDate.parse(obj[8].toString()).equals(LocalDate.parse(obj[7].toString())) ){ %><span class="pencil-icon font-weight-bold"><%=sdf.format(sdf1.parse(obj[8].toString()))%></span><br><%} %>	
@@ -657,7 +658,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 									<span class="notassign">NA</span>
 								<%} %>
 							</td>
-							<td ><%if(obj[19]!=null){%><%= StringEscapeUtils.escapeHtml4(obj[19].toString()) %><%} %></td>
+							<td ><%if(obj[19]!=null){%><%= (obj[19].toString()) %><%} %></td>
 						</tr>		
 					<%i++;}
 						}%>
@@ -791,7 +792,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 										
 						
 									</td>	
-									<td class="text-justify"><%if(obj[16]!=null){%><%= StringEscapeUtils.escapeHtml4(obj[16].toString()) %><%} %></td>			
+									<td class="text-justify"><%if(obj[16]!=null){%><%= (obj[16].toString()) %><%} %></td>			
 								</tr>			
 							<%i++;
 							}}} %>
@@ -962,17 +963,17 @@ String isCCS = (String)request.getAttribute("isCCS");
 	
 												<td class="<%if(obj[21].toString().equals("0")) {%>font-weight-bold<%}%>">
 													<%if(obj[21].toString().equals("0")) {%>
-														<%=StringEscapeUtils.escapeHtml4(obj[10].toString()) %>
+														<%=(obj[10].toString()) %>
 													<%}else if(obj[21].toString().equals("1")) { %>
-														&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[11].toString()) %>
+														&nbsp;&nbsp;<%=(obj[11].toString()) %>
 													<%}else if(obj[21].toString().equals("2")) { %>
-														&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[12].toString()) %>
+														&nbsp;&nbsp;<%=(obj[12].toString()) %>
 													<%}else if(obj[21].toString().equals("3")) { %>
-														&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[13].toString()) %>
+														&nbsp;&nbsp;<%=(obj[13].toString()) %>
 													<%}else if(obj[21].toString().equals("4")) { %>
-														&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[14].toString()) %>
+														&nbsp;&nbsp;<%=(obj[14].toString()) %>
 													<%}else if(obj[21].toString().equals("5")) { %>
-														&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[15].toString()) %>
+														&nbsp;&nbsp;<%=(obj[15].toString()) %>
 													<%} %>
 												</td>
 												<% 
@@ -1040,7 +1041,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 														<%} %>
 													
 												</td>
-												<td class="overflowWrap"><%if(obj[23]!=null){%><%=StringEscapeUtils.escapeHtml4(obj[23].toString()) %>><%} %></td>
+												<td class="overflowWrap"><%if(obj[23]!=null){%><%=(obj[23].toString()) %><%} %></td>
 	                                            <td >
 													<a  data-toggle="modal" data-target="#exampleModal1" data-id="milestonemodal<%=obj[0] %>" class="milestonemodal m-modal" data-whatever="@mdo" >
 														<i class="fa fa-info-circle circle-font"  aria-hidden="true"></i> 
@@ -1183,17 +1184,17 @@ String isCCS = (String)request.getAttribute("isCCS");
 											</td>
 											<td class="<%if(obj[21].toString().equals("0")) {%>font-weight-bold<%}%>">
 													<%if(obj[21].toString().equals("0")) {%>
-														<%=StringEscapeUtils.escapeHtml4(obj[10].toString()) %>
+														<%=(obj[10].toString()) %>
 													<%}else if(obj[21].toString().equals("1")) { %>
-														&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[11].toString()) %>
+														&nbsp;&nbsp;<%=(obj[11].toString()) %>
 													<%}else if(obj[21].toString().equals("2")) { %>
-														&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[12].toString()) %>
+														&nbsp;&nbsp;<%=(obj[12].toString()) %>
 													<%}else if(obj[21].toString().equals("3")) { %>
-														&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[13].toString()) %>
+														&nbsp;&nbsp;<%=(obj[13].toString()) %>
 													<%}else if(obj[21].toString().equals("4")) { %>
-														&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[14].toString()) %>
+														&nbsp;&nbsp;<%=(obj[14].toString()) %>
 													<%}else if(obj[21].toString().equals("5")) { %>
-														&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[15].toString()) %>
+														&nbsp;&nbsp;<%=(obj[15].toString()) %>
 													<%} %>
 												</td>
 												<td class="text-center" ><%= obj[7]!=null? sdf.format(sdf1.parse(obj[7].toString())) : " - " %></td>
@@ -1233,7 +1234,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 												<%} %>
 												
 											</td>
-											<td class="overflowWrap"><%if(obj[23]!=null){%><%=StringEscapeUtils.escapeHtml4(obj[23].toString()) %><%} %></td>
+											<td class="overflowWrap"><%if(obj[23]!=null){%><%=(obj[23].toString()) %><%} %></td>
 										</tr>
 									<%count1++;serial++;}} %>
 								<%} else{ %>
@@ -1389,14 +1390,14 @@ String isCCS = (String)request.getAttribute("isCCS");
 																
 																			
 															</td>
-															<td class="text-justify" rowspan="1"><%if(obj[19]!=null){ %> <%= StringEscapeUtils.escapeHtml4(obj[19].toString()) %><%} %></td>
+															<td class="text-justify" rowspan="1"><%if(obj[19]!=null){ %> <%= (obj[19].toString()) %><%} %></td>
 																
 														</tr>	
 														
 																		
 														<tr>
-															<td class="text-center" ><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):"" %></td>
-															<td class="text-center" > <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):"" %></td>
+															<td class="text-center" ><%=obj[1]!=null?(obj[1].toString()):"" %></td>
+															<td class="text-center" > <%=obj[2]!=null?(obj[2].toString()):"" %></td>
 															<td class="text-center">
 																<%=obj[22]%>
 																<% int RPN =Integer.parseInt(obj[22].toString());
@@ -1406,8 +1407,8 @@ String isCCS = (String)request.getAttribute("isCCS");
 																		<%}else if(RPN>=76){ %>(Very High)
 																		<%} %>
 															</td>
-															<td class="text-justify" colspan="3" ><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()):"" %></td>
-															<td class="text-justify" colspan="2" ><%=obj[21]!=null?StringEscapeUtils.escapeHtml4(obj[21].toString()):"" %></td>
+															<td class="text-justify" colspan="3" ><%=obj[3]!=null?(obj[3].toString()):"" %></td>
+															<td class="text-justify" colspan="2" ><%=obj[21]!=null?(obj[21].toString()):"" %></td>
 														</tr>
 																	
 														<%if(riskmatirxdata.get(z).size() > i){ %>
@@ -1475,11 +1476,11 @@ String isCCS = (String)request.getAttribute("isCCS");
 										    	k++; %>
 											<tr>
 												<td class="std border1px"  ><%=k%></td>
-												<td class="std border1px" ><%= StringEscapeUtils.escapeHtml4(obj[1].toString()) %><br><%=sdf.format(sdf1.parse(obj[3].toString()))%></td>
+												<td class="std border1px" ><%= (obj[1].toString()) %><br><%=sdf.format(sdf1.parse(obj[3].toString()))%></td>
 												<td class="std" colspan="4" ><%=obj[8]%></td>
 												<td class="std text-right" > <%=format.format(new BigDecimal(obj[5].toString())).substring(1)%></td>
 												<td class="std border1px" > <%=obj[10]%> </td>
-												<td class="std border1px" colspan="3" ><%=obj[11]!=null?StringEscapeUtils.escapeHtml4(obj[11].toString()):"" %> </td>		
+												<td class="std border1px" colspan="3" ><%=obj[11]!=null?(obj[11].toString()):"" %> </td>		
 											</tr>		
 											<%
 											estcost += Double.parseDouble(obj[5].toString());
@@ -1520,7 +1521,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 												<td class="std border1px" colspan="4" ><%=obj[3]%></td>
 												<td class="std border1px text-right" > <%=format.format(new BigDecimal(obj[2].toString())).substring(1)%></td>
 												<td class="std border1px"  > <%=obj[6]%> </td>
-												<td class="std border1px" colspan="4" ><%= obj[4]!=null?StringEscapeUtils.escapeHtml4(obj[4].toString()):"-" %> </td>		
+												<td class="std border1px" colspan="4" ><%= obj[4]!=null?(obj[4].toString()):"-" %> </td>		
 											</tr>		
 											<%
 												estcost += Double.parseDouble(obj[2].toString());
@@ -1580,7 +1581,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 					<%} %>
 					</td>
 					<td <%if(!obj[1].toString().equalsIgnoreCase(demand)){ %> class="border-bottom-none"<%} else{ %> class="border-bottomtop-none"<%} %>>
-					<%if(!obj[1].toString().equalsIgnoreCase(demand)){ %><%if(obj[1]!=null) {%> <%=StringEscapeUtils.escapeHtml4(obj[1].toString())%><% }else{ %>-<%} %><br>
+					<%if(!obj[1].toString().equalsIgnoreCase(demand)){ %><%if(obj[1]!=null) {%> <%=(obj[1].toString())%><% }else{ %>-<%} %><br>
 					<%=sdf.format(sdf1.parse(obj[3].toString()))%>
 					<%} %>
 					</td>
@@ -1605,7 +1606,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 					</td>					
 					<td <%if(!obj[1].toString().equalsIgnoreCase(demand)){ %> class="border-bottom-none"<%} else{ %> class="border-bottomtop-none"<%} %>>
 						<%if(!obj[1].toString().equalsIgnoreCase(demand)){ %>
-					<%=StringEscapeUtils.escapeHtml4(obj[11].toString())%>
+					<%=(obj[11].toString())%>
 					<%} %>
 					
 					</td>
@@ -2188,17 +2189,17 @@ String isCCS = (String)request.getAttribute("isCCS");
 											
 											<td class="<%if(obj[26].toString().equals("0")) {%>font-weight-bold<%}%> text-justify ">
 												<%if(obj[26].toString().equals("0")) {%>
-													<%= StringEscapeUtils.escapeHtml4(obj[9].toString()) %>
+													<%= (obj[9].toString()) %>
 												<%}else if(obj[26].toString().equals("1")) { %>
-													&nbsp;&nbsp;<%= StringEscapeUtils.escapeHtml4(obj[10].toString()) %>
+													&nbsp;&nbsp;<%= (obj[10].toString()) %>
 												<%}else if(obj[26].toString().equals("2")) { %>
-													&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[11].toString()) %>
+													&nbsp;&nbsp;<%=(obj[11].toString()) %>
 												<%}else if(obj[26].toString().equals("3")) { %>
-													&nbsp;&nbsp;<%= StringEscapeUtils.escapeHtml4(obj[12].toString()) %>
+													&nbsp;&nbsp;<%= (obj[12].toString()) %>
 												<%}else if(obj[26].toString().equals("4")) { %>
-													&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[13].toString()) %>
+													&nbsp;&nbsp;<%=(obj[13].toString()) %>
 												<%}else if(obj[26].toString().equals("5")) { %>
-													&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[14].toString()) %>
+													&nbsp;&nbsp;<%=(obj[14].toString()) %>
 												<%} %>
 											</td>
 											<td class="text-center" ><%= obj[7]!=null? sdf.format(sdf1.parse(obj[7].toString())) : " - " %></td>
@@ -2247,7 +2248,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 
 											<td >
 												<%if(obj[28]!=null){ %>
-												<%=StringEscapeUtils.escapeHtml4(obj[28].toString()) %>
+												<%=(obj[28].toString()) %>
 												<%} %>
 											</td>
 										</tr>
@@ -2395,7 +2396,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 										</span>
 									<%}%>
 								</td>
-												<td  class="text-justify"><%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):"" %></td>
+												<td  class="text-justify"><%=obj[2]!=null?(obj[2].toString()):"" %></td>
 												<td  class="text-center" >
 													<span >		<%	String actionstatus = obj[9].toString();
 															int progress = obj[16]!=null ? Integer.parseInt(obj[16].toString()) : 0;
@@ -2454,7 +2455,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 														-
 													<%} %>
 												</td>	
-												<td > <%if(obj[17]!=null){ %> <%=StringEscapeUtils.escapeHtml4(obj[17].toString()) %> <%} %> </td>			
+												<td > <%if(obj[17]!=null){ %> <%=(obj[17].toString()) %> <%} %> </td>			
 											</tr>			
 										<%i++;
 										}}} %>
@@ -2466,97 +2467,9 @@ String isCCS = (String)request.getAttribute("isCCS");
 						   
 					</details>
 
-<!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
- 
-					<details>
-   						<summary role="button" tabindex="0"><b>12. Decision/Recommendations sought from <%=committee.getCommitteeShortName().trim().toUpperCase() %></b>     </summary>
-   						
-						  <div class="content">
-						  
-						  <%if(nextMeetVenue!=null && nextMeetVenue[0]!=null){%>
-						  
-						  	<form action="RecDecDetailsAdd.htm" method="post" id="recdecdetails">
-								<div class="row margin-top10" >
-									<div class="col-md-4"> 
-										<table class="table table-bordered table-hover table-striped table-condensed ">
-											<thead>
-												<tr><th class="width-5">SN</th><th class="width-80">Type</th><th class="width-5">Action</th></tr>
-											</thead>
-											<tbody>
-											<%int i=0; if(RecDecDetails!=null && RecDecDetails.size()>0){ 
-												for(Object[] obj :RecDecDetails){
-												String pointdata= "";
-												if(obj[3].toString().length()>30){
-													pointdata=StringEscapeUtils.escapeHtml4(obj[3].toString());
-												}else{
-													pointdata=StringEscapeUtils.escapeHtml4(obj[3].toString());
-												}
-												%>
-												<tr>
-													<td class="width-5 text-center"> <%=++i%></td>
-													<td class="width-80 text-break">
-													<b class="color145374"><%=obj[2]%> :-</b>
-													  <%if(pointdata.length()>30){%> <%=pointdata.substring(0,30)%>  <span onclick="RecDecmodal('<%=obj[0]%>')" class="color1176ab"><b> ...View More </b></span> <%}else{%> <%=pointdata%><%}%>
-													  </td>
-													<td class="text-center width-5"> 
-													<button class="btn btn-warning btn-sm" type="button" onclick="RecDecEdit('<%=obj[0]%>' )" value="EDIT"  > <i class="fa fa-pencil-square-o color100f0e"  aria-hidden="true"></i></button>
-												
-													<button class="btn btn-sm btn-danger" type="button" onclick="RecDecremove('<%=obj[0].toString() %>')" ><i class="fa fa-trash text-white" aria-hidden="true" ></i></button>
-																									
-													</td>
-												</tr>
-												<%}}else{%><td colspan="3" class="text-center"> No Data Available!</td><%}%>
-											</tbody>
-										</table>
-										<div align="center">
-											<button type="button" class="btn btn-info btn-sm add" onclick="RecDecEdit('0')"> ADD</button>
-										</div>
-									</div>
-									<div class="col-md-8"> 
-									<div class="card" >
-										<div class="card-header height40" >
-											<div align="center" id="drcdiv"  >
-			  									<div class="form-check form-check-inline">
-												  <input class="form-check-input" type="radio" name="darc" id="decision" value="D" required="required">
-												  <label class="form-check-label" for="decision"><b> Decision </b></label>
-												</div>
-												<div class="form-check form-check-inline">
-												  <input class="form-check-input" type="radio" name="darc" id="recommendation" value="R" required="required">
-												  <label class="form-check-label" for="recommendation"> <b>Recommendation </b></label>
-												</div>
-			  								</div>
-										</div>
-										 <div class="card-body">
-										    <textarea class="form-control" name="RecDecPoints" id="ckeditor1" rows="5" cols="20" maxlength="5"  required="required"></textarea>
-											<div align="center">
-												<input type="hidden" name="RedDecID" id="recdecid">
-												<input type="hidden" name="schedulid" value="<%=nextMeetVenue[0]%>">
-												<button type="button"  class="btn btn-primary btn-sm add margin-top10"  onclick="return checkData('recdecdetails')">Submit </button>
-												<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-												<input type="hidden" name="projectid" value="<%=projectid%>"/>
-												<input type="hidden" name="committeeid" value="<%=committeeid%>"/>	
-											</div>
-										</div>
-								    </div>
-									</div>
-								</div>	
-								</form>
-								<%}else{%>
-										 <h5>Meeting is Not Scheduled!</h5>
-								<%}%>
-						  	<br><br><br><br><br>
-						  </div>	
-						   
-					</details>						
-			 					<form action="DecesionRemove.htm" id="remvfrm" class="display-none">
-				<input type="hidden" name="recdecId" id="recdecId">
-				<input type="hidden" name="committeeid" value="<%=committeeid%>">
-						<input type="hidden" name="ProjectId"  value="<%=projectidlist.get(0)%>"> 
-					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-				</form>
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->						
 					<details>
-   						<summary role="button" tabindex="0"><b> 13. Other Relevant Points (if any) 
+   						<summary role="button" tabindex="0"><b> 12. Other Relevant Points (if any) 
    							<%if(committee.getCommitteeShortName().trim().equalsIgnoreCase("EB")){ %>
    								and Technical Work Carried Out For Last Six Months
 							<%}else { %>
@@ -2675,6 +2588,97 @@ String isCCS = (String)request.getAttribute("isCCS");
 					
 					
 					</details>
+
+
+<!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
+ 
+					<details>
+   						<summary role="button" tabindex="0"><b>13. Decision/Recommendations sought from <%=committee.getCommitteeShortName().trim().toUpperCase() %></b>     </summary>
+   						
+						  <div class="content">
+						  
+						  <%if(nextMeetVenue!=null && nextMeetVenue[0]!=null){%>
+						  
+						  	<form action="RecDecDetailsAdd.htm" method="post" id="recdecdetails">
+								<div class="row margin-top10" >
+									<div class="col-md-4"> 
+										<table class="table table-bordered table-hover table-striped table-condensed ">
+											<thead>
+												<tr><th class="width-5">SN</th><th class="width-80">Type</th><th class="width-5">Action</th></tr>
+											</thead>
+											<tbody>
+											<%int i=0; if(RecDecDetails!=null && RecDecDetails.size()>0){ 
+												for(Object[] obj :RecDecDetails){
+												String pointdata= "";
+												if(obj[3].toString().length()>30){
+													pointdata=obj[3].toString();
+												}else{
+													pointdata=obj[3].toString();
+												}
+												%>
+												<tr>
+													<td class="width-5 text-center"> <%=++i%></td>
+													<td class="width-80 text-break">
+													<b class="color145374"><%=obj[2]%> :-</b>
+													  <%if(pointdata.length()>30){%> <%=pointdata.substring(0,30)%>  <span onclick="RecDecmodal('<%=obj[0]%>')" class="color1176ab"><b> ...View More </b></span> <%}else{%> <%=pointdata%><%}%>
+													  </td>
+													<td class="text-center width-5"> 
+													<button class="btn btn-warning btn-sm" type="button" onclick="RecDecEdit('<%=obj[0]%>' )" value="EDIT"  > <i class="fa fa-pencil-square-o color100f0e"  aria-hidden="true"></i></button>
+												
+													<button class="btn btn-sm btn-danger" type="button" onclick="RecDecremove('<%=obj[0].toString() %>')" ><i class="fa fa-trash text-white" aria-hidden="true" ></i></button>
+																									
+													</td>
+												</tr>
+												<%}}else{%><td colspan="3" class="text-center"> No Data Available!</td><%}%>
+											</tbody>
+										</table>
+										<div align="center">
+											<button type="button" class="btn btn-info btn-sm add" onclick="RecDecEdit('0')"> ADD</button>
+										</div>
+									</div>
+									<div class="col-md-8"> 
+									<div class="card" >
+										<div class="card-header height40" >
+											<div align="center" id="drcdiv"  >
+			  									<div class="form-check form-check-inline">
+												  <input class="form-check-input" type="radio" name="darc" id="decision" value="D" required="required">
+												  <label class="form-check-label" for="decision"><b> Decision </b></label>
+												</div>
+												<div class="form-check form-check-inline">
+												  <input class="form-check-input" type="radio" name="darc" id="recommendation" value="R" required="required">
+												  <label class="form-check-label" for="recommendation"> <b>Recommendation </b></label>
+												</div>
+			  								</div>
+										</div>
+										 <div class="card-body">
+										    <textarea class="form-control" name="RecDecPoints" id="ckeditor1" rows="5" cols="20" maxlength="5"  required="required"></textarea>
+											<div align="center">
+												<input type="hidden" name="RedDecID" id="recdecid">
+												<input type="hidden" name="schedulid" value="<%=nextMeetVenue[0]%>">
+												<button type="button"  class="btn btn-primary btn-sm add margin-top10"  onclick="return checkData('recdecdetails')">Submit </button>
+												<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+												<input type="hidden" name="projectid" value="<%=projectid%>"/>
+												<input type="hidden" name="committeeid" value="<%=committeeid%>"/>	
+											</div>
+										</div>
+								    </div>
+									</div>
+								</div>	
+								</form>
+								<%}else{%>
+										 <h5>Meeting is Not Scheduled!</h5>
+								<%}%>
+						  	<br><br><br><br><br>
+						  </div>	
+						   
+					</details>						
+			 					<form action="DecesionRemove.htm" id="remvfrm" class="display-none">
+				<input type="hidden" name="recdecId" id="recdecId">
+				<input type="hidden" name="committeeid" value="<%=committeeid%>">
+						<input type="hidden" name="ProjectId"  value="<%=projectidlist.get(0)%>"> 
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</form>	
+
 <!--   --------------------------------------------------------------------------------------------------------------------------------------------- --> 
 					<details>
    						<summary role="button" tabindex="0"><b>Note</b></summary>
@@ -2767,7 +2771,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 																</span>
 															</td>
 															<td class="text-left width-7"> Mil-<%=obj[5]%></td>
-															<td class="td-wrap"><%=StringEscapeUtils.escapeHtml4(obj[4].toString()) %></td>
+															<td class="td-wrap"><%=(obj[4].toString()) %></td>
 															
 															<td  class="width8"><%=sdf.format(obj[2])%></td>
 															<td  class="width8"><%=sdf.format(obj[3])%></td>
@@ -2820,7 +2824,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 														<tr class="collapse row<%=count %>">
 															<td  class="center width2"> </td>
 															<td class="text-left width-5"> A-<%=countA%></td>
-															<td class="td-wrap"><%=StringEscapeUtils.escapeHtml4(objA[4].toString()) %></td>
+															<td class="td-wrap"><%=(objA[4].toString()) %></td>
 															
 															<td class="width-30px"><%=sdf.format(objA[2])%></td>
 															<td class="width8"><%=sdf.format(objA[3])%></td>
@@ -2867,7 +2871,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 														<tr class="collapse row<%=count %>">
 															<td  class="center width2"> </td>
 															<td class="text-left width-5"> &nbsp;&nbsp;&nbsp;B-<%=countB%></td>
-															<td class="td-wrap"><%=StringEscapeUtils.escapeHtml4(objB[4].toString()) %></td>
+															<td class="td-wrap"><%=(objB[4].toString()) %></td>
 															
 															<td class="width-30px"><%=sdf.format(objB[2])%></td>
 															<td class="width8 "><%=sdf.format(objB[3])%></td>
@@ -2913,7 +2917,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 														<tr class="collapse row<%=count %>">
 															<td  class="center width2"> </td>
 															<td class="text-left width-5"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C-<%=countC%></td>
-															<td class="td-wrap"><%=StringEscapeUtils.escapeHtml4(objC[4].toString()) %></td>
+															<td class="td-wrap"><%=(objC[4].toString()) %></td>
 															
 															<td class="width-30px"><%=sdf.format(objC[2])%></td>
 															<td class="width8"><%=sdf.format(objC[3])%></td>
@@ -2960,7 +2964,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 														<tr class="collapse row<%=count %>">
 															<td  class="center width2"> </td>
 															<td class="text-left width-5"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D-<%=countD%></td>
-															<td class="td-wrap"><%=StringEscapeUtils.escapeHtml4(objD[4].toString()) %></td>
+															<td class="td-wrap"><%=(objD[4].toString()) %></td>
 															
 															<td class="width-30px"><%=sdf.format(objB[2])%></td>
 															<td class="width8"><%=sdf.format(objB[3])%></td>
@@ -3004,7 +3008,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 														<tr class="collapse row<%=count %>">
 															<td  class="center width2"> </td>
 															<td class="text-left width-5"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;E-<%=countE%></td>
-															<td class="td-wrap"><%=StringEscapeUtils.escapeHtml4(objE[4].toString()) %></td>
+															<td class="td-wrap"><%=(objE[4].toString()) %></td>
 															
 															<td class="width-30px"><%=sdf.format(objE[2])%></td>
 															<td class="width8"><%=sdf.format(objE[3])%></td>
@@ -3188,7 +3192,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 												<tr>
 													<td class="text-center"><%=++riskcount %></td>
 													<td class="text-center"><b>I<%=risktype[2] %></b></td>
-													<td>Internal <%=StringEscapeUtils.escapeHtml4(risktype[1].toString()) %></td>
+													<td>Internal <%=(risktype[1].toString()) %></td>
 												</tr>
 												<%} %>
 												<%for(Object[] risktype : RiskTypes ){ %>
@@ -3628,7 +3632,7 @@ function FileDownload1(fileid1)
  											<%for(Object[] obj : ganttchartlist.get(z)){%>
 								    		  {
 								    		    id: "<%=obj[3]%>",
-								    		    name: "<%=StringEscapeUtils.escapeHtml4(obj[2].toString()) %>",
+								    		    name: "<%=(obj[2].toString()) %>",
 								    		    <%if(!obj[9].toString().equalsIgnoreCase("0") && !obj[9].toString().equalsIgnoreCase("1")){ %>
 								    		    baselineStart: "<%=obj[6]%>",
 								    		    baselineEnd: "<%=obj[7]%>",

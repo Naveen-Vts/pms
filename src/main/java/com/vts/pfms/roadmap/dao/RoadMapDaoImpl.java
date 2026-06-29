@@ -50,7 +50,7 @@ public class RoadMapDaoImpl implements RoadMapDao{
 
 	}
 	
-	private static final String DIVISIONLIST = "SELECT DivisionId,DivisionCode,DivisionName FROM division_master WHERE IsActive=1 AND LabCode=:LabCode";
+	private static final String DIVISIONLIST = "SELECT division_id,division_code,division_name FROM division_master WHERE is_active=1 AND lab_code=:LabCode";
 	@Override
 	public List<Object[]> divisionList(String labCode) throws Exception {
 		try {
@@ -65,7 +65,7 @@ public class RoadMapDaoImpl implements RoadMapDao{
 		
 	}
 	
-	private static final String PROJECTLIST = "SELECT ProjectId,ProjectCode,ProjectShortName,ProjectName,Objective,TIMESTAMPDIFF(MONTH,SanctionDate,PDC) AS Duration FROM project_master WHERE IsActive=1 AND LabCode=:LabCode";
+	private static final String PROJECTLIST = "SELECT project_id,project_code,project_short_name,project_name,objective,TIMESTAMPDIFF(MONTH,sanction_date,pdc) AS Duration FROM project_master WHERE is_active=1 AND lab_code=:LabCode";
 	@Override
 	public List<Object[]> getProjectList(String labCode) throws Exception {
 		try {
@@ -201,12 +201,12 @@ public class RoadMapDaoImpl implements RoadMapDao{
 //	}
 	
 	private static final String ROADMAPAPPROVALDATA = "SELECT a.RoadMapTransId,\r\n"
-			+ "	(SELECT empno FROM pfms_road_map_trans t , employee e  WHERE e.EmpId = t.ActionBy AND t.RoadMapStatusCode =  b.RoadMapStatusCode AND t.RoadMapId=d.RoadMapId ORDER BY t.RoadMapTransId DESC LIMIT 1) AS 'empno',\r\n"
-			+ "	(SELECT empname FROM pfms_road_map_trans t , employee e  WHERE e.EmpId = t.ActionBy AND t.RoadMapStatusCode =  b.RoadMapStatusCode AND t.RoadMapId=d.RoadMapId ORDER BY t.RoadMapTransId DESC LIMIT 1) AS 'empname',\r\n"
-			+ "	(SELECT designation FROM pfms_road_map_trans t , employee e,employee_desig des WHERE e.EmpId = t.ActionBy AND e.desigid=des.desigid AND t.RoadMapStatusCode =  b.RoadMapStatusCode AND t.RoadMapId=d.RoadMapId ORDER BY t.RoadMapTransId DESC LIMIT 1) AS 'Designation',\r\n"
+			+ "	(SELECT emp_no FROM pfms_road_map_trans t , employee e  WHERE e.emp_id = t.ActionBy AND t.RoadMapStatusCode =  b.RoadMapStatusCode AND t.RoadMapId=d.RoadMapId ORDER BY t.RoadMapTransId DESC LIMIT 1) AS 'empno',\r\n"
+			+ "	(SELECT emp_name FROM pfms_road_map_trans t , employee e  WHERE e.emp_id = t.ActionBy AND t.RoadMapStatusCode =  b.RoadMapStatusCode AND t.RoadMapId=d.RoadMapId ORDER BY t.RoadMapTransId DESC LIMIT 1) AS 'empname',\r\n"
+			+ "	(SELECT des.designation FROM pfms_road_map_trans t , employee e,employee_desig des WHERE e.emp_id = t.ActionBy AND e.desig_id=des.desig_id AND t.RoadMapStatusCode =  b.RoadMapStatusCode AND t.RoadMapId=d.RoadMapId ORDER BY t.RoadMapTransId DESC LIMIT 1) AS 'Designation',\r\n"
 			+ "	MAX(a.ActionDate) AS ActionDate,a.Remarks,b.RoadMapStatus,b.RoadMapStatusColor,b.RoadMapStatusCode \r\n"
 			+ "	FROM pfms_road_map_trans a,pfms_road_map_status b,employee c,pfms_road_map d\r\n"
-			+ "	WHERE d.RoadMapId=a.RoadMapId AND a.RoadMapStatusCode =b.RoadMapStatusCode AND a.Actionby=c.EmpId AND d.RoadMapId=:RoadMapId GROUP BY b.RoadMapStatusCode,b.RoadMapStatus,b.RoadMapStatusColor,a.RoadMapTransId,a.Remarks ORDER BY a.RoadMapTransId ASC";
+			+ "	WHERE d.RoadMapId=a.RoadMapId AND a.RoadMapStatusCode =b.RoadMapStatusCode AND a.Actionby=c.emp_id AND d.RoadMapId=:RoadMapId GROUP BY b.RoadMapStatusCode,b.RoadMapStatus,b.RoadMapStatusColor,a.RoadMapTransId,a.Remarks ORDER BY a.RoadMapTransId ASC";
 	@Override
 	public List<Object[]> roadMapTransApprovalData(String roadMapId) {
 
@@ -238,7 +238,7 @@ public class RoadMapDaoImpl implements RoadMapDao{
 
 	}
 	
-	private static final String ROADMAPREMARKSHISTORY = "SELECT a.RoadMapId,a.Remarks,b.RoadMapStatusCode,e.EmpName,d.Designation FROM pfms_road_map_trans a,pfms_road_map_status b,pfms_road_map c,employee_desig d,employee e WHERE a.ActionBy = e.EmpId AND e.DesigId = d.DesigId AND b.RoadMapStatusCode = a.RoadMapStatusCode AND c.RoadMapId = a.RoadMapId AND TRIM(a.Remarks)<>'' AND c.RoadMapId=:RoadMapId ORDER BY a.ActionDate ASC";
+	private static final String ROADMAPREMARKSHISTORY = "SELECT a.RoadMapId,a.Remarks,b.RoadMapStatusCode,e.emp_name,d.Designation FROM pfms_road_map_trans a,pfms_road_map_status b,pfms_road_map c,employee_desig d,employee e WHERE a.ActionBy = e.emp_id AND e.desig_id = d.desig_id AND b.RoadMapStatusCode = a.RoadMapStatusCode AND c.RoadMapId = a.RoadMapId AND TRIM(a.Remarks)<>'' AND c.RoadMapId=:RoadMapId ORDER BY a.ActionDate ASC";
 	@Override
 	public List<Object[]> roadMapRemarksHistory(String roadMapId) throws Exception
 	{
@@ -302,7 +302,7 @@ public class RoadMapDaoImpl implements RoadMapDao{
 		}
 	}
 	
-	private static final String ROADMAPASPLIST = "SELECT a.RoadMapId,a.InitiationDate,a.RoadMapType,a.ProjectId,a.InitiationId,a.DivisionId,a.ProjectTitle,a.AimObjectives,a.StartDate,a.EndDate,a.Duration,a.Reference,a.Scope,b.DivisionName,a.MovedToASP,c.RoadMapStatus,c.RoadMapStatusColor,c.RoadMapStatusCode FROM pfms_road_map a,division_master b,pfms_road_map_status c WHERE a.IsActive=1 AND a.DivisionId=b.DivisionId AND a.RoadMapStatusCode=c.RoadMapStatusCode AND a.MovedToASP='Y' ORDER BY a.RoadMapId DESC";
+	private static final String ROADMAPASPLIST = "SELECT a.RoadMapId,a.InitiationDate,a.RoadMapType,a.ProjectId,a.InitiationId,a.DivisionId,a.ProjectTitle,a.AimObjectives,a.StartDate,a.EndDate,a.Duration,a.Reference,a.Scope,b.division_name,a.MovedToASP,c.RoadMapStatus,c.RoadMapStatusColor,c.RoadMapStatusCode FROM pfms_road_map a,division_master b,pfms_road_map_status c WHERE a.IsActive=1 AND a.DivisionId=b.division_id AND a.RoadMapStatusCode=c.RoadMapStatusCode AND a.MovedToASP='Y' ORDER BY a.RoadMapId DESC";
 	@Override
 	public List<Object[]> roadMapASPList() throws Exception {
 		try {
@@ -352,7 +352,7 @@ public class RoadMapDaoImpl implements RoadMapDao{
 		}
 	}
 	
-	private static final String PROJECTMILESTONEACTIVITYLIST = "SELECT a.ProjectId,b.ActivityName,b.StartDate,b.EndDate FROM project_master a,milestone_activity b WHERE a.ProjectId=b.ProjectId AND a.IsActive=1 AND b.IsActive=1 AND a.LabCode=:LabCode ORDER BY b.StartDate";
+	private static final String PROJECTMILESTONEACTIVITYLIST = "SELECT a.project_id,b.ActivityName,b.StartDate,b.EndDate FROM project_master a,milestone_activity b WHERE a.project_id=b.ProjectId AND a.is_active=1 AND b.IsActive=1 AND a.lab_code=:LabCode ORDER BY b.StartDate";
 	@Override
 	public List<Object[]> getProjectMilestoneActivityList(String labCode) throws Exception {
 		try {

@@ -11,25 +11,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
   <spring:url value="/resources/css/milestone/milestoneFilterList.css" var="milestoneFilterList" />     
 <link href="${milestoneFilterList}" rel="stylesheet" />
- <style type="text/css">
- 
- 
-</style>
-
-
-<!-- --------------  tree   ------------------- -->
-<style>
-
-</style>
-
-<!-- ---------------- tree ----------------- -->
-<!-- -------------- model  tree   ------------------- -->
-<style>
-
-</style>
-
-
-
 </head>
 <body>
 <%
@@ -262,7 +243,7 @@ String MilestoneActivity = (String)request.getAttribute("MilestoneActivity");
 															<%-- <td class="width-30px"><%=obj[1]%></td> --%>
 															<td class="tdDetails"><%=objC[4] %></td>
 															
-															<td class="width-30px">objC[2]!=null?<%=sdf.format(objC[2])%>:" - "</td>
+															<td class="width-30px"><%=objC[2]!=null?sdf.format(objC[2]):" - "%></td>
 															<td class="width-8"><%=objC[3]!=null?sdf.format(objC[3]):" - "%></td>
 															
 															<td class="width-30px"><%if(objC[9].toString().equalsIgnoreCase("3")||objC[9].toString().equalsIgnoreCase("5")){ %>

@@ -26,7 +26,6 @@ public class AuditFailedStamping {
     private LocalDateTime LoginDateTime;
 
     private String IpAddress;
-    
     private Integer isactive;
     
 }

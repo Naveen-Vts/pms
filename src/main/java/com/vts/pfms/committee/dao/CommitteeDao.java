@@ -378,5 +378,7 @@ public interface CommitteeDao {
 	public List<Object[]> committeeScheduleMinutesforActionForMomADE(String committeescheduleid);
 	public Object[] CommitteeScheduleEditDataforMom(String committeescheduleid);
 	public List<Object[]> PrgmAgendaList(String CommitteeScheduleId);
+	public void CommitteeOnlineAttendanceToggle(String invitationid, String isOnlineAttendenc);
+	public List<Object[]> getMeetingCountList(String committeeId);
 
 }

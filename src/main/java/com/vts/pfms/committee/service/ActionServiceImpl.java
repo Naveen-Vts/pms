@@ -428,7 +428,7 @@ public class ActionServiceImpl implements ActionService {
 	{
 		try {
 			logger.info(new Date() +"Inside SERVICE ActionMainInsert ");
-			System.out.println("Action Type -->"+main.getActionType());
+			
 			long unsuccess=0;
 			Object[] lab=null;
 			int count=0;
@@ -576,7 +576,7 @@ public class ActionServiceImpl implements ActionService {
 			result=	dao.ActionMainInsert(actionmain);
 			}
 			
-			System.out.println("hii"+ result);
+			
 			//changed on 06-11
 			if(assign.getMultipleAssigneeList().size()>0) {
 				for(int i=0;i<assign.getMultipleAssigneeList().size();i++) {
@@ -608,7 +608,7 @@ public class ActionServiceImpl implements ActionService {
 					actionassign.setIsActive(1);
 					actionassign.setProgress(0);
 					long assignid=  dao.ActionAssignInsert(actionassign);
-					System.out.println("assignid---"+assignid);
+					
 					if(result>0) {
 						List<Object[]> datas=dao.ActionNotification(String.valueOf(result) ,String.valueOf(assignid));
 						if(datas.size()>0) {

@@ -358,6 +358,8 @@ public interface CommitteeService {
 	public List<Object[]> committeeScheduleMinutesforActionForMomADE(String committeescheduleid);
 	public Object[] CommitteeScheduleEditDataforMom(String committeescheduleid);
 	public List<Object[]> PrgmAgendaList(String scheduleid);
+	public void CommitteeOnlineAttendanceToggle(String invitationid, String isOnlineAttendenc);
+	public List<Object[]> getMeetingCountList(String committeeId);
 	
 
 }
