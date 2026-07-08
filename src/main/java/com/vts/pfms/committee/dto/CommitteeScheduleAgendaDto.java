@@ -1,8 +1,10 @@
 package com.vts.pfms.committee.dto;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Data
+@ToString
 public class CommitteeScheduleAgendaDto {
 
 	private String ScheduleAgendaId;

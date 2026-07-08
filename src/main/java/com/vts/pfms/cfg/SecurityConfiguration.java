@@ -92,20 +92,21 @@ public class SecurityConfiguration{
         		        response.setHeader("Pragma", "no-cache");
         		        response.setDateHeader("Expires", 0);
         		    })
-         		   .contentSecurityPolicy(csp -> 
-                  csp.policyDirectives(
-       				    "default-src 'self'; " +
-       				    "script-src 'self' 'unsafe-inline' blob:; " +
-       				    "style-src 'self' ; " +
-       				    "img-src 'self' data: blob:; " +
-       				    "font-src 'self'; " +
-       				    "connect-src 'self'; " +
-       				    "object-src 'self' data: blob:; " +  
-       				    "frame-src 'self' data: blob:; " +   
-       				    "frame-ancestors 'self'; " +
-       				    "base-uri 'self'; " +
-       				    "form-action 'self';"
-       				))
+//         		   .contentSecurityPolicy(csp -> 
+//                  csp.policyDirectives(
+//       				    "default-src 'self'; " +
+//       				    "script-src 'self' 'unsafe-inline' blob:; " +
+//       				    "style-src 'self' ; " +
+//       				    "img-src 'self' data: blob:; " +
+//       				    "font-src 'self'; " +
+//       				    "connect-src 'self'; " +
+//       				    "object-src 'self' data: blob:; " +  
+//       				    "frame-src 'self' data: blob:; " +   
+//       				    "frame-ancestors 'self'; " +
+//       				    "base-uri 'self'; " +
+//       				    "form-action 'self';"
+//       				))
+        		  
         		)
         	.addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class)
         	.addFilterBefore(passwordDecryptFilter, UsernamePasswordAuthenticationFilter.class);

@@ -186,7 +186,7 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 																	${captcha} </span>
 															</div>
 														</div> --%>
-																<div class="form-group w150" >
+																<%-- <div class="form-group w150" >
 																    <label for="captchaInput">Enter Captcha:</label>
 																    <div class="g2s">
 																        <input type="text" name="captchaInput" id="captchaInput"
@@ -196,7 +196,7 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 																             alt="Captcha" >
 																        <button type="button" id="refreshCaptcha" class="btn btn-secondary">&#x21bb;</button>
 																    </div>
-																</div>
+																</div> --%>
 
 														<div class="form-submit">
 													<div class="row align-items-center mb-5">
@@ -258,7 +258,7 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 
 </div>	
 
-   <div id="footer">
+   <div id="footer" class="fixed-bottom">
 	<footer class="footer"  >
 	
 		<section id="fontSize" class="clearfix f1s" >
