@@ -26,6 +26,7 @@ List<Object[]> DivisionList=(List<Object[]>)request.getAttribute("OfficerDivisio
 List<Object[]> LabList=(List<Object[]>)request.getAttribute("LabList");
 List<Object[]> OfficerList = (List<Object[]>)request.getAttribute("OfficerList");
 String seslabid=(String)session.getAttribute("labid");
+String labCode = (String) session.getAttribute("labcode");
 
 
 %>
@@ -77,7 +78,13 @@ String seslabid=(String)session.getAttribute("labid");
 								<option value="Prof." <%if(OfficerEditData[10]!=null && OfficerEditData[10].toString().equalsIgnoreCase("Prof.")){%> selected="selected" <%}%>>  Prof.</option>
 								<option value="Lt."  <%if(OfficerEditData[10]!=null && OfficerEditData[10].toString().equalsIgnoreCase("Lt.")){%>  selected="selected" <%}%>>  Lt.</option>
 								<option value="Dr."   <%if(OfficerEditData[10]!=null && OfficerEditData[10].toString().equalsIgnoreCase("Dr.")){%>   selected="selected" <%}%>>  Dr.</option>
-
+								<%if("PGAD".equalsIgnoreCase(labCode)){ %>
+									<option value="Air Cmd"  <%if(OfficerEditData[10]!=null && OfficerEditData[10].toString().equalsIgnoreCase("Air Cmd")){%>   selected="selected" <%}%>>Air Cmd</option>
+									<option value="Gp Capt"  <%if(OfficerEditData[10]!=null && OfficerEditData[10].toString().equalsIgnoreCase("Gp Capt")){%>   selected="selected" <%}%>>Gp Capt</option>
+									<option value="Wg Cdr"  <%if(OfficerEditData[10]!=null && OfficerEditData[10].toString().equalsIgnoreCase("Wg Cdr")){%>   selected="selected" <%}%>>Wg Cdr</option>
+									<option value="Fqn Ldr"  <%if(OfficerEditData[10]!=null && OfficerEditData[10].toString().equalsIgnoreCase("Fqn Ldr")){%>   selected="selected" <%}%>>Fqn Ldr</option>
+								<%} %>
+								
 							</select>
 					</div>
 </div>

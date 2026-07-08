@@ -636,7 +636,7 @@ List<BriefingFinance> briefingFinanceDetials = (List<BriefingFinance>)request.ge
 							</td>
 							
 							
-							<td class="text-justify "><%=  StringEscapeUtils.escapeHtml4(obj[2].toString()) %></td>
+							<td class="text-justify "><%= obj[2].toString() %></td>
 
 							<td class="text-center">
 								<%if(obj[8]!= null && !LocalDate.parse(obj[8].toString()).equals(LocalDate.parse(obj[7].toString())) ){ %><span class="pencil-icon font-weight-bold"><%=sdf.format(sdf1.parse(obj[8].toString()))%></span><br><%} %>	

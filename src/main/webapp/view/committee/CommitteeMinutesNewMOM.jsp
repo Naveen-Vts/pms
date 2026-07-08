@@ -352,7 +352,7 @@ table{
 
 
 <%if(invitedlist.size()>0){ %>
-<% ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","CW","CO","CH","I","W","P"));
+<% ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","CW","CO","CH","I","W","P","E"));
 
 int memPresent=0,memAbscent=0,ParPresent=0,parAbscent=0;
 int j=0;
@@ -2135,7 +2135,7 @@ for( Object[]obj:specialMembers){ %>
 				<table style="margin-top:0px; margin-left: 10px; width: 650px; font-size: 16px; border-collapse: collapse;">
 					<tbody>
 						<tr>
-							<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=indexNew++ %>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%></th>
+							<th colspan="8" style="text-align: left; font-weight: 700;">&nbsp;&nbsp;&nbsp;<%=indexNew++ %>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%></th>
 						</tr>
 				
 						<%

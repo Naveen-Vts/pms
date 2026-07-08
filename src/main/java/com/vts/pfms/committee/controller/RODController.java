@@ -858,8 +858,9 @@ public class RODController {
 			String html = customResponse.getOutput();
 			
 			HtmlConverter.convertToPdf(html,new FileOutputStream(path+File.separator+filename+".pdf"));
-	        
+
 			req.setAttribute("tableactionlist",  actionsdata);
+			req.setAttribute("committeescheduleeditdata",  scheduleeditdata);
 	        CharArrayWriterResponse customResponse1 = new CharArrayWriterResponse(res);
 			req.getRequestDispatcher("/view/committee/ActionDetailsTable.jsp").forward(req, customResponse1);
 			String html1 = customResponse1.getOutput();        

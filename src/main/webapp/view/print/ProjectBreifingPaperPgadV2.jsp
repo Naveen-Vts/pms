@@ -87,7 +87,7 @@
 .tab-pane.active {
     display: block;
 }
-<style>
+
 .tab-header {
     display: flex;
     align-items: center;

@@ -191,7 +191,7 @@ public class RODDaoImpl implements RODDao{
 	}
 	
 	private static final String NONPROJECTACTIONS="SELECT d.ActionAssignId,d.ActionNo,CONCAT(IFNULL(CONCAT(e.title,' '),IFNULL(CONCAT(e.salutation,' '),'')), e.empname) AS 'empname',\r\n"
-			+ "d.ActionStatus,c.ActionMainId,c.ActionItem,b.ScheduleMinutesId,a.ScheduleId,a.MeetingId,a.ScheduleDate,d.PDCOrg,d.PDC1,d.PDC2,d.Progress,d.ProgressDate,d.endate,(select max(progressdate) from action_sub where actionassignId=d.actionassignId)as'lastdate'\r\n"
+			+ "d.ActionStatus,c.ActionMainId,c.ActionItem,b.ScheduleMinutesId,a.ScheduleId,a.MeetingId,a.ScheduleDate,d.PDCOrg,d.PDC1,d.PDC2,d.Progress,d.ProgressDate,d.enddate,(select max(progressdate) from action_sub where actionassignId=d.actionassignId)as'lastdate'\r\n"
 			+ "FROM committee_schedule a, committee_schedules_minutes_details b , action_main c,action_assign d, employee e\r\n"
 			+ "WHERE a.RODNameId = :RODNameId AND a.isactive = 1 AND a.ScheduleId=b.ScheduleId\r\n"
 			+ "AND c.ScheduleMinutesId=b.ScheduleMinutesId AND c.ActionMainId=d.ActionMainId AND d.Assignee=e.empid ORDER BY ScheduleDate";
