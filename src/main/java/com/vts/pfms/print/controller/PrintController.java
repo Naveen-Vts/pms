@@ -103,6 +103,7 @@ import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
 import com.itextpdf.kernel.utils.PdfMerger;
 import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
@@ -617,9 +618,342 @@ public class PrintController {
 
 		}
 	}
-
+	
 	@RequestMapping(value = "ProjectBriefingDownload.htm")
 	public void ProjectBriefingDownload(HttpServletRequest req, HttpSession ses, HttpServletResponse res)
+	        throws Exception {
+	    String UserId = (String) ses.getAttribute("Username");
+	    String LabCode = (String) ses.getAttribute("labcode");
+
+	    logger.info(new Date() + "Inside ProjectBriefingDownload.htm " + UserId);
+	    try {
+	        String projectid = req.getParameter("projectid");
+	        String committeeid = req.getParameter("committeeid");
+
+	        Committee committee = service.getCommitteeData(committeeid);
+
+	        String projectLabCode = service.ProjectDetails(projectid).get(0)[5].toString();
+	        String CommitteeCode = committee.getCommitteeShortName().trim();
+
+	        if (LabCode.equalsIgnoreCase("ADE")) {
+	            req.setAttribute("otherMeetingList", service.otherMeetingList(projectid));
+	        }
+	        List<Object[]> SpecialCommitteesList = service.SpecialCommitteesList(LabCode);
+	        Map<String, List<Object[]>> reviewMeetingListMap = new HashMap<String, List<Object[]>>();
+	        for (Object[] obj : SpecialCommitteesList) {
+	            reviewMeetingListMap.put(obj[1] + "", service.ReviewMeetingList(projectid, obj[1] + ""));
+	        }
+	        req.setAttribute("reviewMeetingListMap", reviewMeetingListMap);
+
+	        req.setAttribute("text", req.getParameter("text"));
+	        req.setAttribute("IsIbasConnected", IsIbasConnected);
+	        req.setAttribute("committeeData", committee);
+	        req.setAttribute("projectid", projectid);
+	        req.setAttribute("committeeid", committeeid);
+	        req.setAttribute("ProjectCost", ProjectCost);
+	        req.setAttribute("isprint", "0");
+	        req.setAttribute("AppFilesPath", ApplicationFilesDrive);
+	        req.setAttribute("projectLabCode", projectLabCode);
+	        req.setAttribute("labInfo", service.LabDetailes(projectLabCode));
+	        req.setAttribute("lablogo", LogoUtil.getLabLogoAsBase64String(projectLabCode));
+	        req.setAttribute("thankYouImg", LogoUtil.getThankYouImageAsBase64String());
+	        req.setAttribute("filePath", env.getProperty("ApplicationFilesDrive"));
+	        req.setAttribute("ApplicationFilesDrive", env.getProperty("ApplicationFilesDrive"));
+	        req.setAttribute("committeeMetingsCount",
+	                service.ProjectCommitteeMeetingsCount(projectid, "0", "0", "0", "0", CommitteeCode));
+	        Object[] nextmeetVenue = (Object[]) service.BriefingMeetingVenue(projectid, committeeid);
+	        req.setAttribute("nextMeetVenue", nextmeetVenue);
+	        Object[] lastmeetingVenue = service.getLastcreatedSchedule(projectid, committeeid);
+	        req.setAttribute("lastmeetingVenue", lastmeetingVenue);
+	        if (nextmeetVenue != null && nextmeetVenue[0] != null) {
+	            req.setAttribute("recdecDetails", service.GetRecDecDetails(nextmeetVenue[0].toString()));
+	        }
+	        if (lastmeetingVenue != null && lastmeetingVenue[0] != null && LabCode.equalsIgnoreCase("PGAD")) {
+	            List<Object[]> list = service.getMilestoneBriefingList(lastmeetingVenue[0].toString());
+	            Map<String, List<Object[]>> milestoneBriefingMap = list != null
+	                    ? list.stream().collect(Collectors.groupingBy(obj -> obj[1] != null ? obj[1].toString() : "UNKNOWN",
+	                            LinkedHashMap::new, Collectors.toList()))
+	                    : new LinkedHashMap<String, List<Object[]>>();
+	            req.setAttribute("milestoneBriefingMap", milestoneBriefingMap);
+	            req.setAttribute("recdecDetails", service.GetRecDecDetails(lastmeetingVenue[0].toString()));
+	            req.setAttribute("briefingFinanceDetials", service.getBriefingFinanceDetails(lastmeetingVenue[0].toString()));
+	        }
+	        req.setAttribute("RiskTypes", service.RiskTypes());
+
+	        Object[] mileStoneLevelId = service.MileStoneLevelId(projectid, committeeid);
+	        req.setAttribute("levelid", mileStoneLevelId != null ? mileStoneLevelId[0].toString() : "2");
+
+	        // Project Data
+	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected);
+
+	        List<Object[]> projectdatadetails = (List<Object[]>) req.getAttribute("projectdatadetails");
+	        List<List<Object[]>> ebandpmrccount = (List<List<Object[]>>) req.getAttribute("ebandpmrccount");
+	        List<Object[]> TechWorkDataList = (List<Object[]>) req.getAttribute("TechWorkDataList");
+
+	        // Milestone Data for Committee
+	        milestoneLevelDataMap(req, reviewMeetingListMap, projectid, committee.getCommitteeShortName().trim());
+
+	        String filename = "BriefingPaper";
+
+	        String path = req.getServletContext().getRealPath("/view/temp");
+	        req.setAttribute("path", path);
+	        CharArrayWriterResponse customResponse = new CharArrayWriterResponse(res);
+
+	        req.getRequestDispatcher("/view/print/BriefingPaperNew1.jsp").forward(req, customResponse);
+
+	        String html = customResponse.getOutput();
+	        byte[] data = html.getBytes();
+	        InputStream fis1 = new ByteArrayInputStream(data);
+	        PdfDocument pdfDoc = new PdfDocument(new PdfWriter(path + "/" + filename + ".pdf"));
+	        Document document = new Document(pdfDoc, PageSize.A4);
+	        document.setMargins(50, 50, 50, 50);
+	        ConverterProperties converterProperties = new ConverterProperties();
+	        FontProvider dfp = new DefaultFontProvider(true, true, true);
+	        converterProperties.setFontProvider(dfp);
+	        HtmlConverter.convertToPdf(fis1, pdfDoc, converterProperties);
+	        Path leftLogoPath = Paths.get(env.getProperty("ApplicationFilesDrive"), "images", "lablogos", "drdo.png");
+	        req.setAttribute("thankYouImg", LogoUtil.getThankYouImageAsBase64String());
+	        Path rightLogoPath = Paths.get(env.getProperty("ApplicationFilesDrive"), "images", "lablogos",
+	                projectLabCode.toLowerCase() + ".png");
+	        byte[] imageBytes = Files.readAllBytes(leftLogoPath);
+	        byte[] imageBytes1 = Files.readAllBytes(rightLogoPath);
+	        ImageData leftLogo = ImageDataFactory.create(imageBytes);
+	        ImageData rightLogo = ImageDataFactory.create(imageBytes1);
+	        PdfWriter pdfw = new PdfWriter(path + File.separator + "mergedb.pdf");
+	        PdfDocument pdfDocs = new PdfDocument(pdfw);
+	        pdfw.setCompressionLevel(CompressionConstants.BEST_COMPRESSION);
+	        PdfDocument pdfDocMain = new PdfDocument(new PdfReader(path + File.separator + filename + ".pdf"),
+	                new PdfWriter(path + File.separator + filename + "Maintemp.pdf"));
+	        Document docMain = new Document(pdfDocMain, PageSize.A4);
+	        docMain.setMargins(50, 50, 50, 50);
+
+	        Rectangle pageSizeMain;
+
+	        int main = pdfDocMain.getNumberOfPages();
+	        for (int i = 1; i <= main; i++) {
+	            PdfPage pageMain = pdfDocMain.getPage(i);
+	            pageSizeMain = pageMain.getPageSize();
+
+	            Image leftImage = new Image(leftLogo);
+	            leftImage.setFixedPosition(i, 54, pageSizeMain.getHeight() - 34);
+	            leftImage.scaleToFit(34, 33);
+
+	            Image rightImage = new Image(rightLogo);
+	            rightImage.setFixedPosition(i, pageSizeMain.getWidth() - 64, pageSizeMain.getHeight() - 34);
+	            rightImage.scaleToFit(34, 33);
+
+	            docMain.add(leftImage);
+	            docMain.add(rightImage);
+	        }
+	        docMain.close();
+	        pdfDocMain.close();
+
+	        Path pathOfFileMain = Paths.get(path + File.separator + filename + ".pdf");
+	        Files.delete(pathOfFileMain);
+
+	        // ---- destDoc: the live document we will insert attachments INTO at the right spot ----
+	        PdfReader pdf1 = new PdfReader(path + File.separator + filename + "Maintemp.pdf");
+	        PdfDocument destDoc = new PdfDocument(pdf1, pdfw);
+
+	        int z = 0;
+	        for (Object[] objData : projectdatadetails) {
+	            if (objData != null) {
+	                try {
+	                    String No2 = null;
+	                    if (CommitteeCode.equalsIgnoreCase("PMRC")) {
+	                        No2 = "P" + (Long.parseLong(ebandpmrccount.get(0).get(0)[1].toString()) + 1);
+	                    } else if (CommitteeCode.equalsIgnoreCase("EB")) {
+	                        No2 = "E" + (Long.parseLong(ebandpmrccount.get(0).get(1)[1].toString()) + 1);
+	                    }
+	                    String ganttFileName = String.format("grantt_%s_%s.pdf", objData[1].toString(), No2);
+	                    Path ganttPath = Paths.get(env.getProperty("ApplicationFilesDrive"), projectLabCode, "gantt",
+	                            ganttFileName);
+
+	                    if (Files.exists(ganttPath)) {
+	                        String anchor = objData[12] + " :-  Grantt Chart ";
+	                        insertPdfAtAnchor(destDoc, anchor, ganttPath.toString(), path, filename,
+	                                leftLogo, rightLogo, objData[12] + " :-  Grantt Chart ");
+	                    }
+	                } catch (Exception e) {
+	                    logger.error(new Date() + " Inside ProjectBriefingDownload " + UserId, e);
+	                    e.printStackTrace();
+	                }
+	            }
+
+	            if (objData != null && objData[3] != null) {
+	                Path sysPath = Paths.get(env.getProperty("ApplicationFilesDrive"), projectLabCode, "ProjectData",
+	                        objData[3].toString());
+	                if (FilenameUtils.getExtension(objData[3].toString()).equalsIgnoreCase("pdf") && Files.exists(sysPath)) {
+	                    String anchor = "System Configuration Annexure";
+	                    insertPdfAtAnchor(destDoc, anchor, sysPath.toString(), path, filename,
+	                            leftLogo, rightLogo, objData[12] + " :-  System Configuration Annexure: ");
+	                }
+	            }
+
+	            if (objData != null && objData[4] != null) {
+	                Path specPath = Paths.get(env.getProperty("ApplicationFilesDrive"), projectLabCode, "ProjectData",
+	                        objData[4].toString());
+	                if (FilenameUtils.getExtension(objData[4].toString()).equalsIgnoreCase("pdf") && Files.exists(specPath)) {
+	                    String anchor = "System Specification Annexure";
+	                    insertPdfAtAnchor(destDoc, anchor, specPath.toString(), path, filename,
+	                            leftLogo, rightLogo, objData[12] + " :-  System Specification Annexure: ");
+	                }
+	            }
+
+	            if (objData != null && objData[5] != null) {
+	                Path treePath = Paths.get(env.getProperty("ApplicationFilesDrive"), projectLabCode, "ProjectData",
+	                        objData[5].toString());
+	                if (FilenameUtils.getExtension(objData[5].toString()).equalsIgnoreCase("pdf") && Files.exists(treePath)) {
+	                    String anchor = "Overall Product tree/WBS Annexure";
+	                    insertPdfAtAnchor(destDoc, anchor, treePath.toString(), path, filename,
+	                            leftLogo, rightLogo, objData[12] + " :-  Overall Product tree/WBS Annexure: ");
+	                }
+	            }
+
+	            if (objData != null && objData[6] != null) {
+	                Path pearlPath = Paths.get(env.getProperty("ApplicationFilesDrive"), projectLabCode, "ProjectData",
+	                        objData[6].toString());
+	                if (FilenameUtils.getExtension(objData[6].toString()).equalsIgnoreCase("pdf") && Files.exists(pearlPath)) {
+	                    String anchor = "TRL table with TRL at sanction stage Annexure";
+	                    insertPdfAtAnchor(destDoc, anchor, pearlPath.toString(), path, filename,
+	                            leftLogo, rightLogo, objData[12] + " :-  TRL table with TRL at sanction stage Annexure ");
+	                }
+	            }
+
+	            // Point 13 - Technical Details (zip)
+	            try {
+	                if (TechWorkDataList.get(z) != null
+	                        && FilenameUtils.getExtension(TechWorkDataList.get(z)[8].toString()).equalsIgnoreCase("pdf")) {
+	                    Zipper zip = new Zipper();
+	                    String tecdata = TechWorkDataList.get(z)[6].toString().replaceAll("[/\\\\]", ",");
+	                    String[] fileParts = tecdata.split(",");
+	                    String zipName = String
+	                            .format(TechWorkDataList.get(z)[7].toString() + TechWorkDataList.get(z)[11].toString()
+	                                    + "-" + TechWorkDataList.get(z)[10].toString() + ".zip");
+	                    Path techPath = null;
+	                    if (fileParts.length == 4) {
+	                        techPath = Paths.get(env.getProperty("ApplicationFilesDrive"), fileParts[0], fileParts[1],
+	                                fileParts[2], fileParts[3], zipName);
+	                    } else {
+	                        techPath = Paths.get(env.getProperty("ApplicationFilesDrive"), fileParts[0], fileParts[1],
+	                                fileParts[2], fileParts[3], fileParts[4], zipName);
+	                    }
+	                    zip.unpack(techPath.toString(), path, TechWorkDataList.get(z)[9].toString());
+
+	                    String anchor = "Technical Images";
+	                    insertPdfAtAnchor(destDoc, anchor,
+	                            path + File.separator + TechWorkDataList.get(z)[8].toString(), path, filename,
+	                            leftLogo, rightLogo, objData[12] + " :- Technical Work Carried");
+
+	                    Path unpackedFile = Paths.get(path + File.separator + TechWorkDataList.get(z)[8].toString());
+	                    Files.delete(unpackedFile);
+	                }
+	            } catch (Exception e) {
+	                logger.error(new Date() + " Inside ProjectBriefingDownload " + UserId, e);
+	                e.printStackTrace();
+	            }
+
+	            z++;
+	        }
+
+	        destDoc.close();
+	        pdf1.close();
+	        pdfw.close();
+
+	        res.setContentType("application/pdf");
+	        res.setHeader("Content-disposition", "inline;filename=" + filename + ".pdf");
+	        File f = new File(path + File.separator + "mergedb.pdf");
+	        FileInputStream fis = new FileInputStream(f);
+	        DataOutputStream os = new DataOutputStream(res.getOutputStream());
+	        res.setHeader("Content-Length", String.valueOf(f.length()));
+	        byte[] buffer = new byte[1024];
+	        int len = 0;
+	        while ((len = fis.read(buffer)) >= 0) {
+	            os.write(buffer, 0, len);
+	        }
+	        os.close();
+	        fis.close();
+
+	        Path pathOfFile2 = Paths.get(path + File.separator + "mergedb.pdf");
+	        Files.delete(pathOfFile2);
+	        pathOfFile2 = Paths.get(path + File.separator + filename + "Maintemp.pdf");
+	        Files.delete(pathOfFile2);
+	        document.close();
+	    } catch (Exception e) {
+	        logger.error(new Date() + " Inside ProjectBriefingDownload.htm " + UserId, e);
+	        e.printStackTrace();
+	    }
+	}
+
+	/**
+	 * Finds the page in destDoc containing anchorText, stamps logos + a label onto the
+	 * source attachment PDF's pages, and inserts those pages right after the anchor page.
+	 * Re-searches destDoc fresh each call, so insertion order across points doesn't matter.
+	 */
+	private void insertPdfAtAnchor(PdfDocument destDoc, String anchorText, String sourcePdfPath,
+	        String tempDirPath, String filename, ImageData leftLogo, ImageData rightLogo, String stampLabel)
+	        throws Exception {
+
+	    int targetPage = -1;
+	    int totalPages = destDoc.getNumberOfPages();
+	    for (int p = 1; p <= totalPages; p++) {
+	        String pageText = PdfTextExtractor.getTextFromPage(destDoc.getPage(p));
+	        if (pageText.contains(anchorText)) {
+	            targetPage = p;
+	            break;
+	        }
+	    }
+
+	    if (targetPage == -1) {
+	        // Anchor not found - fall back to appending at the end so nothing is silently dropped
+	        logger.error("Anchor not found, appending at end instead: " + anchorText);
+	        targetPage = destDoc.getNumberOfPages();
+	    }
+
+	    // Stamp logos + label onto a temp copy of the source attachment first
+	    String tempStampedPath = tempDirPath + File.separator + filename + "temp.pdf";
+	    PdfDocument stampedDoc = new PdfDocument(new PdfReader(sourcePdfPath), new PdfWriter(tempStampedPath));
+	    Document stampedDocWrapper = new Document(stampedDoc, PageSize.A4);
+	    stampedDocWrapper.setMargins(50, 50, 50, 50);
+
+	    int n = stampedDoc.getNumberOfPages();
+	    for (int i = 1; i <= n; i++) {
+	        PdfPage page = stampedDoc.getPage(i);
+	        Rectangle pageSize = page.getPageSize();
+	        PdfCanvas canvas = new PdfCanvas(page);
+
+	        Image leftImage = new Image(leftLogo);
+	        leftImage.setFixedPosition(i, 10, pageSize.getHeight() - 50);
+	        leftImage.scaleToFit(40, 40);
+
+	        Image rightImage = new Image(rightLogo);
+	        rightImage.setFixedPosition(i, pageSize.getWidth() - 50, pageSize.getHeight() - 50);
+	        rightImage.scaleToFit(40, 40);
+
+	        stampedDocWrapper.add(leftImage);
+	        stampedDocWrapper.add(rightImage);
+
+	        canvas.beginText()
+	                .setFontAndSize(PdfFontFactory.createFont(StandardFonts.HELVETICA), 11)
+	                .moveText(pageSize.getWidth() / 2 - 124, pageSize.getHeight() - 25)
+	                .showText(stampLabel).endText();
+	    }
+	    stampedDocWrapper.close();
+	    stampedDoc.close();
+
+	    // Now insert the stamped pages into destDoc right after targetPage
+	    PdfReader stampedReader = new PdfReader(tempStampedPath);
+	    PdfDocument stampedForInsert = new PdfDocument(stampedReader);
+	    stampedForInsert.copyPagesTo(1, stampedForInsert.getNumberOfPages(), destDoc, targetPage + 1);
+	    stampedForInsert.close();
+	    stampedReader.close();
+
+	    Path tempFile = Paths.get(tempStampedPath);
+	    Files.delete(tempFile);
+	}
+
+	@RequestMapping(value = "ProjectBriefingDownload123.htm")
+	public void ProjectBriefingDownload123(HttpServletRequest req, HttpSession ses, HttpServletResponse res)
 			throws Exception {
 		String UserId = (String) ses.getAttribute("Username");
 		String LabCode = (String) ses.getAttribute("labcode");

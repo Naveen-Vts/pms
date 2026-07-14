@@ -2495,6 +2495,8 @@ public class CommitteeController {
 			req.setAttribute("ccmFlag", ccmFlag);
 			req.setAttribute("committeeMainId", req.getParameter("committeeMainId"));
 			req.setAttribute("committeeId", req.getParameter("committeeId"));
+			
+			req.setAttribute("redirect", req.getParameter("redirect"));
 
 			String dmcFlag = req.getParameter("dmcFlag");
 			if(dmcFlag!=null && dmcFlag.equalsIgnoreCase("Y")) {

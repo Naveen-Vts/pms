@@ -246,6 +246,8 @@ public class MasterController {
 			String dEmail = req.getParameter("DronaEmail");
 			String iEmail = req.getParameter("InternetEmail");
 			String mobileNumber = req.getParameter("mobilenumber");
+			String title = req.getParameter("title");
+			String salutation = req.getParameter("salutation");
 			
 			if(!InputValidator.isValidCodeWithCapitalsAndNumeric(empNo) || !InputValidator.isValidCodeWithCapitalsAndNumeric(extNo)){
 				return redirectWithError(redir,"Officer.htm","Number must contain only uppercase letters and numbers.");
@@ -266,8 +268,8 @@ public class MasterController {
 			OfficerMasterAdd officermasteradd= new OfficerMasterAdd();
 			officermasteradd.setLabId(req.getParameter("labId"));
 			officermasteradd.setEmpNo(empNo.toUpperCase());
-			officermasteradd.setTitle(req.getParameter("title"));
-			officermasteradd.setSalutation(req.getParameter("salutation"));
+			officermasteradd.setTitle( title != null && !title.isBlank() ? title : null);
+			officermasteradd.setSalutation( salutation != null && !salutation.isBlank() ? salutation : null);
 			String name=empName;
 			String words[]=name.split("\\s");  
 			String capitalizeWord="";  
@@ -328,6 +330,8 @@ public class MasterController {
 			String dEmail = req.getParameter("DronaEmail");
 			String iEmail = req.getParameter("InternetEmail");
 			String mobileNumber = req.getParameter("mobilenumber");
+			String title = req.getParameter("title");
+			String salutation = req.getParameter("salutation");
 			
 			if(!InputValidator.isValidCodeWithCapitalsAndNumeric(empNo) || !InputValidator.isValidCodeWithCapitalsAndNumeric(extNo)){
 				return redirectWithError(redir,"Officer.htm","Number must contain only uppercase letters and numbers.");
@@ -346,8 +350,8 @@ public class MasterController {
 			}
 
 			OfficerMasterAdd officermasteradd= new OfficerMasterAdd();
-			officermasteradd.setTitle(req.getParameter("title"));
-			officermasteradd.setSalutation(req.getParameter("salutation"));
+			officermasteradd.setTitle( title != null && !title.isBlank() ? title : null);
+			officermasteradd.setSalutation( salutation != null && !salutation.isBlank() ? salutation : null);
 			officermasteradd.setLabId(req.getParameter("labId"));
 			officermasteradd.setEmpNo(empNo);
 			officermasteradd.setEmpName(empName);
@@ -461,6 +465,8 @@ public class MasterController {
 			String dEmail = req.getParameter("DronaEmail");
 			String iEmail = req.getParameter("InternetEmail");
 			String mobileNumber = req.getParameter("mobilenumber");
+			String title = req.getParameter("title");
+			String salutation = req.getParameter("salutation");
 			
 			if(!InputValidator.isValidCodeWithCapitalsAndNumeric(empNo) || !InputValidator.isValidCodeWithCapitalsAndNumeric(extNo)){
 				return redirectWithError(redir,"OfficerExtList.htm","Number must contain only uppercase letters and numbers.");
@@ -490,8 +496,8 @@ public class MasterController {
 				capitalizeWord+=first.toUpperCase()+afterfirst+" ";  
 			}	
 			name = name.substring(0,1).toUpperCase() + name.substring(1);
-			officermasteradd.setTitle(req.getParameter("title"));
-			officermasteradd.setSalutation(req.getParameter("salutation"));
+			officermasteradd.setTitle( title != null && !title.isBlank() ? title : null);
+			officermasteradd.setSalutation( salutation != null && !salutation.isBlank() ? salutation : null);
 			officermasteradd.setEmpName(capitalizeWord);
 			officermasteradd.setDesignation(req.getParameter("Designation"));
 			officermasteradd.setExtNo(extNo);
@@ -575,6 +581,8 @@ public class MasterController {
 			String dEmail = req.getParameter("DronaEmail");
 			String iEmail = req.getParameter("InternetEmail");
 			String mobileNumber = req.getParameter("mobilenumber");
+			String title = req.getParameter("title");
+			String salutation = req.getParameter("salutation");
 			
 			if(!InputValidator.isValidCodeWithCapitalsAndNumeric(empNo) || !InputValidator.isValidCodeWithCapitalsAndNumeric(extNo)){
 				return redirectWithError(redir,"OfficerExtList.htm","Number must contain only uppercase letters and numbers.");
@@ -604,8 +612,8 @@ public class MasterController {
 			officermasteradd.setEmpId(req.getParameter("OfficerId"));
 			officermasteradd.setDronaEmail(dEmail);
 			officermasteradd.setInternalEmail(iEmail);	
-			officermasteradd.setTitle(req.getParameter("title"));
-			officermasteradd.setSalutation(req.getParameter("salutation"));
+			officermasteradd.setTitle( title != null && !title.isBlank() ? title : null);
+			officermasteradd.setSalutation( salutation != null && !salutation.isBlank() ? salutation : null);
 			int count= service.OfficerExtUpdate(officermasteradd, UserId);							
 			if(count>0) {
 				redir.addAttribute("result", "External Officer Edited Successfully ");

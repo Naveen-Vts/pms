@@ -1872,7 +1872,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->						
 				 	
 						<details>
-   						<summary role="button" tabindex="0"><b>8. Overall Financial Status  <i class="text-underline">(&#8377; Crore)</i> </b> </summary>
+   						<summary role="button" tabindex="0"><b>8. Overall Financial Status  <i class="text-underline">(&#8377; Lakhs)</i> </b> </summary>
    						
 											  	<div class="content">
 						  	<%for(int z=0;z<projectidlist.size();z++){ 

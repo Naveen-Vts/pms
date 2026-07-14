@@ -140,7 +140,28 @@ SimpleDateFormat sdfInput = new SimpleDateFormat("HH:mm:ss");
 											            <%-- <input type="hidden" name="isFrozen" id=<%="frozen"+obj[0] %> value="<%=obj[6]%>">
 														<input type="hidden" name="scheduleid" id=<%="scheduleid"+obj[0]%> value="<%=obj[0]%>">
 														<input type="hidden" name="membertype" value="<%="CC"%>"> --%>
-											            
+											            <%if(obj[6] != null && !"MMA".equalsIgnoreCase(obj[6].toString())){ %>
+											            <button class="btn btn-sm edit" formaction="CommitteeScheduleMinutes.htm" >
+											            	EDIT
+											            </button>
+											            <input type="hidden" name="committeescheduleid" value="<%=obj[0]%>">
+											            <input type="hidden" name="redirect" value="MOM">
+											            <%}else{ %>
+											            	<span style="
+																  display: inline-block;
+																  background-color: transparent;
+																  color: #2E7D32;
+																  border: 1.5px solid #2E7D32;
+																  font-size: 12px;
+																  font-weight: 700;
+																  text-transform: uppercase;
+																  letter-spacing: 0.5px;
+																  padding: 3px 10px;
+																  border-radius: 4px;
+																">
+															  	Minutes Approved
+															</span>
+											            <%} %>
 														</td>
 													  </tr>
  												<%}} %>

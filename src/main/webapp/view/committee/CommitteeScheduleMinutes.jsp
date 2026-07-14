@@ -98,6 +98,7 @@ scheduleId=committeescheduleeditdata[6].toString();
 String ccmFlag = (String) request.getAttribute("ccmFlag");
 String committeeMainId = (String) request.getAttribute("committeeMainId");
 String committeeId = (String) request.getAttribute("committeeId");
+String redirect = (String) request.getAttribute("redirect");
 
 List<Object[]> agendaList = (List<Object[]>)request.getAttribute("agendaList");
 
@@ -198,6 +199,7 @@ List<CommitteeSchedule> dmcScheduleList = (List<CommitteeSchedule>) request.getA
 		<input type="hidden" name="membertype" value="<%=membertype%>">
 		<input type="hidden" name="committeescheduleid" value="<%=committeescheduleeditdata[6]%>">
 		<input type="hidden" name="scheduleid" value="<%=committeescheduleeditdata[6]%>">
+		
 		<%if(ccmFlag!=null && ccmFlag.equalsIgnoreCase("Y")) {%>
 
 			<input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
@@ -218,7 +220,9 @@ List<CommitteeSchedule> dmcScheduleList = (List<CommitteeSchedule>) request.getA
 		<%if(ccmFlag==null && dmcFlag==null) {%>
 			<input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
 			<input type="hidden" name="scheduleid" value="<%=committeescheduleeditdata[6] %>">
-			<button  class="btn  btn-sm back fs-12px" formaction="CommitteeScheduleView.htm">BACK</button>
+			<input type="hidden" name="committeeid" value="<%=committeeid %>">
+			<input type="hidden" name="projectid" value="<%=projectid %>">
+			<button  class="btn  btn-sm back fs-12px" formaction="<%if("MOM".equalsIgnoreCase(redirect)){ %> MomReportList.htm <%}else{ %> CommitteeScheduleView.htm <% } %>">BACK</button>
 
 		<%} %>	
 	</form>

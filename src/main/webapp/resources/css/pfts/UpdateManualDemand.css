@@ -111,3 +111,11 @@ font-weight: bold;
 .style17{
 	border: 1px solid #055C9D; display: flex; justify-content: space-around;
 }
+.large-order-modal {
+    max-width: 90%;
+}
+
+.large-order-modal .modal-body {
+    max-height: 80vh;
+    overflow-y: auto;
+}

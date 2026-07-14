@@ -915,8 +915,7 @@ public class LoginController {
 
 				// code for pfms service call to get data for project pie chart
 
-				final String localUri = uri + "/pfms_serv/pfms-chart-service?inType=" + LoginType + "&employeeNo="
-						+ empNo;
+				final String localUri = uri + "/pfms_serv/pfms-chart-service?inType=" + LoginType + "&employeeNo=" + empNo;
 
 				HttpHeaders headers = new HttpHeaders();
 				headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
@@ -927,7 +926,7 @@ public class LoginController {
 				try {
 
 					HttpEntity<String> entity = new HttpEntity<String>(headers);
-					ResponseEntity<String> response = restTemplate.exchange(localUri, HttpMethod.POST, entity,
+					ResponseEntity<String> response = restTemplate.exchange(localUri, HttpMethod.GET, entity,
 							String.class);
 					jsonResult = response.getBody();
 
@@ -1239,7 +1238,7 @@ public class LoginController {
     	
     }
     
-    @Scheduled(cron ="0 1 9-19/3 * * ?")
+    @Scheduled(cron = "0 1 9,12,15,18 * * ?")
     public String ProjectHealthUpdateAuto()throws Exception{
     	
     	logger.info(new Date() +"ProjectHealthUpdateAuto.htm ");
@@ -1280,14 +1279,14 @@ public class LoginController {
 		 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		 		headers.set("labcode", LabCode);
 	    		HttpEntity<String> entity = new HttpEntity<String>(headers);
-				ResponseEntity<String> response1=restTemplate.exchange(localUri1, HttpMethod.POST, entity, String.class);
+				ResponseEntity<String> response1=restTemplate.exchange(localUri1, HttpMethod.GET, entity, String.class);
 				HoaJsonData=response1.getBody();
 	
-				ResponseEntity<String> monthlyresponse=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
-				ResponseEntity<String> weeklyresponse=restTemplate.exchange(localUri3, HttpMethod.POST, entity, String.class);
-				ResponseEntity<String> todayresponse=restTemplate.exchange(localUri4, HttpMethod.POST, entity, String.class);
-				ResponseEntity<String> labdata=restTemplate.exchange(localUri5, HttpMethod.POST, entity, String.class);
-	//			ResponseEntity<List<CCMView>> CCMData=restTemplate.exchange(CCMDataURI, HttpMethod.POST,entity, new ParameterizedTypeReference<List<CCMView>>() {});
+				ResponseEntity<String> monthlyresponse=restTemplate.exchange(localUri2, HttpMethod.GET, entity, String.class);
+				ResponseEntity<String> weeklyresponse=restTemplate.exchange(localUri3, HttpMethod.GET, entity, String.class);
+				ResponseEntity<String> todayresponse=restTemplate.exchange(localUri4, HttpMethod.GET, entity, String.class);
+				ResponseEntity<String> labdata=restTemplate.exchange(localUri5, HttpMethod.GET, entity, String.class);
+	//			ResponseEntity<List<CCMView>> CCMData=restTemplate.exchange(CCMDataURI, HttpMethod.GET,entity, new ParameterizedTypeReference<List<CCMView>>() {});
 	//			List<CCMView> CCMData =PFMSServ.getCCMViewData();
 				
 				MonthlyData=monthlyresponse.getBody();
@@ -1391,13 +1390,13 @@ public class LoginController {
 	 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 	 		//headers.set("labcode", LabCode);
     		HttpEntity<String> entity = new HttpEntity<String>(headers);
-			ResponseEntity<String> response1=restTemplate.exchange(localUri1, HttpMethod.POST, entity, String.class);
+			ResponseEntity<String> response1=restTemplate.exchange(localUri1, HttpMethod.GET, entity, String.class);
 			HoaJsonData=response1.getBody();
 			
-			ResponseEntity<String> monthlyresponse=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
-			ResponseEntity<String> weeklyresponse=restTemplate.exchange(localUri3, HttpMethod.POST, entity, String.class);
-			ResponseEntity<String> todayresponse=restTemplate.exchange(localUri4, HttpMethod.POST, entity, String.class);
-			ResponseEntity<String> labdata=restTemplate.exchange(localUri5, HttpMethod.POST, entity, String.class);
+			ResponseEntity<String> monthlyresponse=restTemplate.exchange(localUri2, HttpMethod.GET, entity, String.class);
+			ResponseEntity<String> weeklyresponse=restTemplate.exchange(localUri3, HttpMethod.GET, entity, String.class);
+			ResponseEntity<String> todayresponse=restTemplate.exchange(localUri4, HttpMethod.GET, entity, String.class);
+			ResponseEntity<String> labdata=restTemplate.exchange(localUri5, HttpMethod.GET, entity, String.class);
 			MonthlyData=monthlyresponse.getBody();
 			WeeklyData=weeklyresponse.getBody();
 			TodayData=todayresponse.getBody();
@@ -1522,7 +1521,7 @@ public class LoginController {
 	 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 	 		headers.set("labcode", LabCode);
     		HttpEntity<String> entity = new HttpEntity<String>(headers);
-			ResponseEntity<String> response1=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
+			ResponseEntity<String> response1=restTemplate.exchange(localUri, HttpMethod.GET, entity, String.class);
 			FinanceChanges=response1.getBody();
     	}
     	catch(HttpClientErrorException  | ResourceAccessException e) {

@@ -762,6 +762,7 @@ public class PFTSController {
 				
 	             String fileId=req.getParameter("fileId");
 	             req.setAttribute("fileViewList",service.getpftsFileViewList(fileId));
+	             req.setAttribute("OrderLists", service.getOrderDetailsAjax(fileId));
 	 		     req.setAttribute("pftsStageList", service.getpftsStageList());
 				return  "pfts/UpdateManualDemand";
 			}

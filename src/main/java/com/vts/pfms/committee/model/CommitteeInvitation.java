@@ -30,4 +30,6 @@ public class CommitteeInvitation
 	private String ModifiedDate;
 	private String EmpMeetingRole;
 
+	//DLRL changes 
+	private String isOnlineAttendence;
 }
