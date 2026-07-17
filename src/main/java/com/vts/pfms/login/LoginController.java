@@ -1290,7 +1290,7 @@ public class LoginController {
     	
     }
     
-    @Scheduled(cron ="0 1 9-19/3 * * ? ")
+    @Scheduled(cron ="0 1 9,12,15,18 * * ? ")
     public String ProjectHealthUpdateAuto()throws Exception{
     	
     	logger.info(new Date() +"ProjectHealthUpdateAuto.htm ");
