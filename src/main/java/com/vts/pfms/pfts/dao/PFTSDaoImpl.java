@@ -470,4 +470,17 @@ public  class PFTSDaoImpl implements PFTSDao{
 		
 		return Project;
 	}
+
+	@Override
+	public long upadteDemandFileRemarks(String fileId, String remarks) throws Exception {
+		String UpdateDemand="UPDATE pfts_file SET Remarks=:remarks WHERE PftsFileId=:fileid";
+		int result = 0;
+		
+		Query query=manager.createNativeQuery(UpdateDemand);
+		query.setParameter("fileid", Long.parseLong(fileId));
+		query.setParameter("remarks", remarks);
+		result = query.executeUpdate();
+	
+		return result;
+	}
 }

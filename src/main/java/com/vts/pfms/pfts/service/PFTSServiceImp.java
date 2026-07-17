@@ -369,4 +369,9 @@ public class PFTSServiceImp implements PFTSService{
 	public Object[] ProjectDataByPrjCode(String projectCode) throws Exception {
 		return dao.ProjectDataByPrjCode(projectCode);
 	}
+
+	@Override
+	public long upadteDemandFileRemarks(String fileId, String remarks) throws Exception {
+		return dao.upadteDemandFileRemarks(fileId,remarks);
+	}
 }

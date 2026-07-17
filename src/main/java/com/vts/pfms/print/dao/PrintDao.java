@@ -160,5 +160,6 @@ public interface PrintDao {
 	public List<Object[]> getAllHeadingDetails(String projectid,String scheduleid) throws Exception;
 	public List<BriefingHeadingDetails> getDetailsByHeadingAndSCheduleId(String headingid, String scheduleid) throws Exception;
 	public long saveAllDetails(List<BriefingHeadingDetails> list) throws Exception;
+	public int updateRemarks(long activityId, String remarks, String userId) throws Exception;
 
 }

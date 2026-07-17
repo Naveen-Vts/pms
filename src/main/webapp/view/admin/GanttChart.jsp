@@ -1,4 +1,3 @@
-
 <%@page import="java.time.LocalDate"%>
 <%@page import="java.util.stream.Collectors"%>
 <%@page import="org.apache.commons.text.StringEscapeUtils"%>

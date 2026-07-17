@@ -47,4 +47,5 @@ public interface PFTSDao {
 	public List<Object[]> getpftsFileOrder(String fileId)throws Exception;
 	public List<Object[]> getprocurementMilestoneDetails(String pftsid)throws Exception;
 	public Object[] ProjectDataByPrjCode(String projectCode) throws Exception;
+	public long upadteDemandFileRemarks(String fileId, String remarks) throws Exception;
 }

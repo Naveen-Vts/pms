@@ -158,4 +158,5 @@ public interface PrintService {
 	public long addDetails(BriefingHeadingDetails dto) throws Exception;
 	public List<Object[]> getAllHeadingDetails(String projectid,String scheduleid) throws Exception;
 	public long previouseHeadingAdd(String scheduleidto, String scheduleidfrom, String[] headingIds, String userId) throws Exception;
+	public int updateRemarks(long long1, String remarks, String userId) throws Exception;
 }

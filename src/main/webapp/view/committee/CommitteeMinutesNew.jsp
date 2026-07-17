@@ -768,9 +768,16 @@ for( Object[]obj:specialMembers){ %>
 							} %>
 							<tr>
 								<td class="std" style="text-align :center !important;border:1px solid black;vertical-align: top;"  ><p  style="text-align :center !important; "> <%=countcm%> </p></td>
+								<%if("LRDE".equalsIgnoreCase(labcode)){ %>
 								<td class="std" style="text-align :center !important;border:1px solid black; padding: 5px 5px 5px 5px ; vertical-align: top;" >							
-								<p  style="text-align :center !important; ">	<%=speclists.get(i)[7]!=null?speclists.get(i)[7].toString(): " - "%> 
-								</p> 				
+									<p style="text-align :center !important; ">	<%=speclists.get(i)[5]!=null ? ("7".equalsIgnoreCase(speclists.get(i)[5].toString()) ? "R" : ("8".equalsIgnoreCase(speclists.get(i)[5].toString()) ? "D" : speclists.get(i)[7].toString() )) : " - "%> 
+									</p> 				
+								</td>
+								<%}else{ %>
+									<td class="std" style="text-align :center !important;border:1px solid black; padding: 5px 5px 5px 5px ; vertical-align: top;" >							
+									<p style="text-align :center !important; ">	<%=speclists.get(i)[7]!=null?speclists.get(i)[7].toString(): " - "%> 
+									</p> 	
+								<%} %>			
 								</td>
 								<td  class="std" style="border:1px solid black;padding:  5px 5px 5px 5px ;width: 600px;text-align: justify;"><%=speclists.get(i)[1]!=null?speclists.get(i)[1].toString(): " - "%></td>
 								<%-- <td class="std" style="text-align :center;border:1px solid black;padding:  5px 5px 5px 5px;"  > <%if( speclists.get(i)[8]!=null && !speclists.get(i)[8].toString().equalsIgnoreCase("nil")){ %> <%= speclists.get(i)[8]%> <%}else{ %> - <%} %></td> --%>
@@ -924,6 +931,7 @@ for( Object[]obj:specialMembers){ %>
 				
 						<%
 						int count = 0;
+						int num = 1;
 						
 						for (Object[] speclist : speclists)
 						{ %>						
@@ -940,12 +948,12 @@ for( Object[]obj:specialMembers){ %>
 								{ 
 									 %>
 									<%if(speclist[7].toString().equalsIgnoreCase("R")){ count++; %>
-									<tr>
+									<%-- <tr>
 										<th  style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%=committeemin[0]!=null?committeemin[0].toString(): " - "+"."+count%>.&nbsp;&nbsp;&nbsp;<%=speclist[9]!=null?speclist[9].toString(): " - "%></th>
-									</tr>
+									</tr> --%>
 									<tr>
-										<td style="text-align: justify;padding-left: 30px">
-											<%=speclist[1]!=null?speclist[1].toString(): " - "%> 
+										<td style="text-align: justify;padding:8px 0 8px 30px;">
+											<%=num++ %>. <%=speclist[1]!=null?speclist[1].toString(): " - "%> 
 										</td>
 									</tr>
 									

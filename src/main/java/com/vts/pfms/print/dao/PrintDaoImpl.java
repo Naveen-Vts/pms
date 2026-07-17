@@ -1844,4 +1844,19 @@ public class PrintDaoImpl implements PrintDao {
 		    }
 		}
 
+		@Override
+		public int updateRemarks(long activityId, String remarks, String userId) throws Exception {
+			try {
+				Query query = manager.createNativeQuery("UPDATE milestone_activity_level SET StatusRemarks = :remarks WHERE ActivityId = :activityId");
+
+				query.setParameter("remarks", remarks);
+				query.setParameter("activityId", activityId);
+
+				return query.executeUpdate();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return 0;	
+			}
+		}
+
 	}

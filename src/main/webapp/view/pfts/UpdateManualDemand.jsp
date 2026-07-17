@@ -107,9 +107,12 @@
 						    <div class="col-md-1" >
 								<label> Remarks : </label> 
 								</div>
-								<div class="col-md-3">
+								<div class="col-md-3 d-flex justify-content-between">
 								<input type="text" class="form-control style5" value="<%=fileView[9]!=null?StringEscapeUtils.escapeHtml4(fileView[9].toString()):"" %>"
 									name="procRemarks" id="procRemarks" required="required">
+									<div class="form-group" align="center" id="RemarksEditbtn">
+										<button formaction="updateManualDemandRemarksEdit.htm" class="btn btn-primary btn-sm edit"  value="SUBMIT" onclick ="return confirm('Are you sure to submit?')"><i class="fa fa-edit" ></i> </button>
+									</div>
 							</div>
 					 </div>
 					 <br>
@@ -473,6 +476,7 @@ function modalOpen() {
 		$('#btnplus').show();
 		$('#btnSubmit2').show();
 		$('#btnSubmit1').hide();
+		$('#RemarksEditbtn').show();
 		$('#fileStatusId').val(status);
 		$('#fileEventDate').val(eventdate);
 		$('#fileRemarks').val(remarks);
@@ -481,6 +485,7 @@ function modalOpen() {
 		$('#divHidden').hide();
 		$('#btnSubmit2').hide();
 		$('#btnplus').hide();
+		$('#RemarksEditbtn').hide();
 	}
 	
 }

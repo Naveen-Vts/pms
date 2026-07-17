@@ -739,17 +739,18 @@ public class PFTSController {
 						redir.addAttribute("resultfail","Something went worng");
 					}
 					
-					redir.addAttribute("projectslist",projectlist);
+//					redir.addAttribute("projectslist",projectlist);
 					redir.addAttribute("projectid",ProjectId);
-					redir.addAttribute("fileStatusList",service.getFileStatusList(ProjectId));
-					redir.addAttribute("pftsStageList", service.getpftsStageList());
-					return  "redirect:/ProcurementStatus.htm";
+//					redir.addAttribute("fileStatusList",service.getFileStatusList(ProjectId));
+//					redir.addAttribute("pftsStageList", service.getpftsStageList());
+//					return  "redirect:/ProcurementStatus.htm";
 				
 			} catch (Exception e) {
 				e.printStackTrace(); 
-				logger.error(new Date() +" Inside AddManualDemandSubmit.htm "+UserId, e); 
+				logger.error(new Date() +" Inside AddManualDemandSubmit.htm "+UserId, e);
 				return "static/Error";	
 			}
+			return "redirect:/ProcurementStatus.htm";
 		}
 		
 		@RequestMapping(value = "updateManualDemand.htm", method = {RequestMethod.GET,RequestMethod.POST})
@@ -1729,5 +1730,48 @@ public class PFTSController {
 		    redir.addAttribute("resultfail", message);
 		    return "redirect:/"+redirURL;
 		}
+		
+		
+		@RequestMapping(value = "updateManualDemandRemarksEdit.htm", method = RequestMethod.POST)
+		public String updateManualDemandRemarksEdit(HttpServletRequest req, HttpSession ses, RedirectAttributes redir) throws Exception
+		{
+			String EmpId = ((Long) ses.getAttribute("EmpId")).toString();
+			String Logintype= (String)ses.getAttribute("LoginType");
+			String UserId = (String) ses.getAttribute("Username");
+			String LabCode = (String)ses.getAttribute("labcode");
+			
+			logger.info(new Date() +"Inside updateManualDemandSubmit.htm "+UserId);
+			
+			try {
+
+	             String fileId=req.getParameter("fileId");
+	             String remarks=req.getParameter("procRemarks");
+	             
+	             if(InputValidator.isContainsHTMLTags(remarks)) {
+	            	 
+	            	 redir.addAttribute("fileId", fileId);
+	 				return redirectWithError(redir, "updateManualDemand.htm", "'Remarks' should not contain HTML tags");
+	 			}
+	        
+	             long result=0l;
+	             result =service.upadteDemandFileRemarks(fileId,remarks);
+	             	             
+	             if(result>0) {
+	     				redir.addAttribute("result","Remarks Updated Successfully");
+	     			}else {
+	     				redir.addAttribute("resultfail","Something went worng");
+	     			}
+	             
+				 redir.addAttribute("fileId",fileId);
+				 
+				 return  "redirect:/updateManualDemand.htm";
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				logger.info(new Date() +"Inside updateManualDemandSubmit.htm "+UserId);
+				return "static/Error";
+			}
+		}
+		
 }
 

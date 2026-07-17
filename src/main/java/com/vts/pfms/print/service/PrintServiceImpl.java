@@ -1337,4 +1337,10 @@ public long previouseHeadingAdd(String scheduleidto, String scheduleidfrom, Stri
 	
 	return count;
 }
+
+
+	@Override
+	public int updateRemarks(long activityId, String remarks, String userId) throws Exception {
+		return dao.updateRemarks(activityId,remarks,userId);
+	}
 }

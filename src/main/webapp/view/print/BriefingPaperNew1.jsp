@@ -809,9 +809,9 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 						<th  style="width: 15px !important;text-align: center;">SN</th>
 						<th  style="width: 100px !important;"> ID</th>
 						<th  style="width: 415px !important;">Recommendation Point</th>
-						<th  style="width: 100px !important;"> PDC</th>
+						<th  style="width: 150px !important;">ADC <br> PDC</th>
 						<th  style="width: 250px !important;"> Responsibility</th>
-				<!-- 		<th  style="width: 80px !important;">Status</th> -->
+				 		<th  style="width: 80px !important;">Status</th>
 						<th  style="width: 250px !important; ">Remarks</th>
 					</tr>
 				</thead>
@@ -858,6 +858,39 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								<%if(obj[4]!= null){ %>  
 									<%=obj[12]!=null?(obj[12].toString()): " - " %><%-- , <%=obj[13] %> --%>
 								<%}else { %> <!-- <span class="notassign">NA</span>  --> <span class="">Not Assigned</span> <%} %> 
+							</td>
+							<td  class="text-center">
+								<%if(obj[4]!= null){ %> 
+									<%	String actionstatus = obj[10].toString();
+										int progress = obj[18]!=null ? Integer.parseInt(obj[18].toString()) : 0;
+										LocalDate pdcorg = LocalDate.parse(obj[6].toString());
+										LocalDate lastdate = obj[14]!=null ? LocalDate.parse(obj[14].toString()): null;
+										LocalDate today = LocalDate.now();
+									%> 
+									<% if(lastdate!=null && actionstatus.equalsIgnoreCase("C") ){%>
+											<%if(actionstatus.equals("C") && (pdcorg.isAfter(lastdate) || pdcorg.equals(lastdate))){%>
+												<span class="completed">CO</span>
+											<%}else if(actionstatus.equals("C") && pdcorg.isBefore(lastdate)){ %>	
+												<span class="completeddelay">CD (<%= ChronoUnit.DAYS.between(pdcorg, lastdate) %>) </span>
+											<%} %>	
+										<%}else{ %>
+											<%if(actionstatus.equals("F")  && (pdcorg.isAfter(lastdate) || pdcorg.isEqual(lastdate) )){ %>
+												<span class="ongoing">RC</span>												
+											<%}else if(actionstatus.equals("F")  && pdcorg.isBefore(lastdate)) { %>
+												<span class="delay">FD</span>
+											<%}else if(actionstatus.equals("A") && progress==0){  %>
+												<span class="assigned">
+													AA <%if(pdcorg.isBefore(today)){ %> (<%= ChronoUnit.DAYS.between(pdcorg, today)  %>) <%} %>
+												</span>
+											<%} else if(pdcorg.isAfter(today) || pdcorg.isEqual(today)){  %>
+												<span class="ongoing">OG</span>
+											<%}else if(pdcorg.isBefore(today)){  %>
+												<span class="delay">DO (<%= ChronoUnit.DAYS.between(pdcorg, today)  %>)  </span>
+											<%} %>										
+									<%} %>
+								<%}else { %>
+									<span class="notassign">NA</span>
+								<%} %>
 							</td>
 						
 				<td ><%if(obj[19]!=null){%><%=(obj[19].toString()) %><%} %></td>
@@ -2219,7 +2252,9 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("ADE")) {%>
 									<th style="width: 210px;">Responsibility </th>
 									<% } %>
+								<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("DLRL")) {%>
 									<th style="width: 50px;">Progress </th>
+									<% } %>
 <!-- 					                <th style="width: 50px;padding-right: 5px !important ">Status</th>
  -->					                <th style="width: 230px;">Remarks</th>
 								</tr>
@@ -2324,7 +2359,9 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 											<td ><%=obj[24]!=null?(obj[24].toString()): " - " %><%-- (<%=obj[25] %>) --%></td>
 											
 											<%} %>
-											<td style="text-align: center"><%=obj[16]!=null?(obj[16].toString()): " - " %>%</td>		
+											<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("DLRL")) {%>
+											<td style="text-align: center"><%=obj[16]!=null?(obj[16].toString()): " - " %>%</td>
+											<%} %>		
 											<% 
 												LocalDate StartDate = LocalDate.parse(obj[7].toString());
 												LocalDate EndDate = LocalDate.parse(obj[8].toString());

@@ -757,7 +757,11 @@ public class PrintController {
 
 	        int z = 0;
 	        for (Object[] objData : projectdatadetails) {
+	        	
 	            if (objData != null) {
+	            	for(Object obj : objData) {
+	        		System.out.println(obj+"==================");
+	        	}
 	                try {
 	                    String No2 = null;
 	                    if (CommitteeCode.equalsIgnoreCase("PMRC")) {
@@ -779,24 +783,13 @@ public class PrintController {
 	                    e.printStackTrace();
 	                }
 	            }
-
-	            if (objData != null && objData[3] != null) {
-	                Path sysPath = Paths.get(env.getProperty("ApplicationFilesDrive"), projectLabCode, "ProjectData",
-	                        objData[3].toString());
-	                if (FilenameUtils.getExtension(objData[3].toString()).equalsIgnoreCase("pdf") && Files.exists(sysPath)) {
-	                    String anchor = "System Configuration Annexure";
-	                    insertPdfAtAnchor(destDoc, anchor, sysPath.toString(), path, filename,
-	                            leftLogo, rightLogo, objData[12] + " :-  System Configuration Annexure: ");
-	                }
-	            }
-
-	            if (objData != null && objData[4] != null) {
-	                Path specPath = Paths.get(env.getProperty("ApplicationFilesDrive"), projectLabCode, "ProjectData",
-	                        objData[4].toString());
-	                if (FilenameUtils.getExtension(objData[4].toString()).equalsIgnoreCase("pdf") && Files.exists(specPath)) {
-	                    String anchor = "System Specification Annexure";
-	                    insertPdfAtAnchor(destDoc, anchor, specPath.toString(), path, filename,
-	                            leftLogo, rightLogo, objData[12] + " :-  System Specification Annexure: ");
+	            if (objData != null && objData[6] != null) {
+	                Path pearlPath = Paths.get(env.getProperty("ApplicationFilesDrive"), projectLabCode, "ProjectData",
+	                        objData[6].toString());
+	                if (FilenameUtils.getExtension(objData[6].toString()).equalsIgnoreCase("pdf") && Files.exists(pearlPath)) {
+	                    String anchor = "TRL table with TRL at sanction stage Annexure";
+	                    insertPdfAtAnchor(destDoc, anchor, pearlPath.toString(), path, filename,
+	                            leftLogo, rightLogo, objData[12] + " :-  TRL table with TRL at sanction stage Annexure ");
 	                }
 	            }
 
@@ -810,15 +803,26 @@ public class PrintController {
 	                }
 	            }
 
-	            if (objData != null && objData[6] != null) {
-	                Path pearlPath = Paths.get(env.getProperty("ApplicationFilesDrive"), projectLabCode, "ProjectData",
-	                        objData[6].toString());
-	                if (FilenameUtils.getExtension(objData[6].toString()).equalsIgnoreCase("pdf") && Files.exists(pearlPath)) {
-	                    String anchor = "TRL table with TRL at sanction stage Annexure";
-	                    insertPdfAtAnchor(destDoc, anchor, pearlPath.toString(), path, filename,
-	                            leftLogo, rightLogo, objData[12] + " :-  TRL table with TRL at sanction stage Annexure ");
+	            if (objData != null && objData[4] != null) {
+	                Path specPath = Paths.get(env.getProperty("ApplicationFilesDrive"), projectLabCode, "ProjectData",
+	                        objData[4].toString());
+	                if (FilenameUtils.getExtension(objData[4].toString()).equalsIgnoreCase("pdf") && Files.exists(specPath)) {
+	                    String anchor = "System Specification Annexure";
+	                    insertPdfAtAnchor(destDoc, anchor, specPath.toString(), path, filename,
+	                            leftLogo, rightLogo, objData[12] + " :-  System Specification Annexure: ");
 	                }
 	            }
+
+	            if (objData != null && objData[3] != null) {
+	                Path sysPath = Paths.get(env.getProperty("ApplicationFilesDrive"), projectLabCode, "ProjectData",
+	                        objData[3].toString());
+	                if (FilenameUtils.getExtension(objData[3].toString()).equalsIgnoreCase("pdf") && Files.exists(sysPath)) {
+	                    String anchor = "System Configuration Annexure";
+	                    insertPdfAtAnchor(destDoc, anchor, sysPath.toString(), path, filename,
+	                            leftLogo, rightLogo, objData[12] + " :-  System Configuration Annexure: ");
+	                }
+	            }
+
 
 	            // Point 13 - Technical Details (zip)
 	            try {
@@ -8900,6 +8904,43 @@ public class PrintController {
 			logger.error(new Date() +" Inside CopyHeadingsList.htm "+UserId, e);
 		}
 		return "redirect:/BriefingPaperV2.htm";
+	}
+	
+	@RequestMapping(value = "UpdateRemarksFromBriefingPaper.htm", method = RequestMethod.POST)
+	@ResponseBody
+	public String updateRemarks(HttpServletRequest req, HttpSession ses) {
+
+	    String userId = (String) ses.getAttribute("Username");
+
+	    try {
+
+	        String id = req.getParameter("id");
+	        String remarks = req.getParameter("remarks");
+	        if(id == null || id.isBlank()) {
+	        	id = "0";
+	        }
+
+	        // Validation
+//	        if (InputValidator.isContainsHTMLTags(remarks)) {
+//	            return "Invalid Remarks";
+//	        }
+
+	        // Call service
+	        int count = service.updateRemarks(Long.parseLong(id), remarks, userId);
+	        
+	        System.out.println(count+"======================================================================");
+
+	        if (count > 0) {
+	            return "Update success";
+	        } else {
+	            return "Update failed";
+	        }
+
+	    } catch (Exception e) {
+	        logger.error(new Date() + " Inside UpdateRemarks.htm " + userId, e);
+	        e.printStackTrace();
+	        return "error";
+	    }
 	}
 
 	
