@@ -2263,7 +2263,7 @@ String labcode = (String) session.getAttribute("labcode");
 											        value="<%= obj[28] != null ? StringEscapeUtils.escapeHtml4(obj[28].toString()) : "" %>"
 											        style="display:none; width:200px;"> --%>
 											
-											   <%--  <% if("LRDE".equalsIgnoreCase(labcode) && obj[34] != null && !"0".equalsIgnoreCase(obj[34].toString())){ %>
+											   <%--  <% if("DLRL".equalsIgnoreCase(labcode) && obj[34] != null && !"0".equalsIgnoreCase(obj[34].toString())){ %>
 											        <button
 											            type="button"
 											            class="btn btn-sm edit"

@@ -759,9 +759,6 @@ public class PrintController {
 	        for (Object[] objData : projectdatadetails) {
 	        	
 	            if (objData != null) {
-	            	for(Object obj : objData) {
-	        		System.out.println(obj+"==================");
-	        	}
 	                try {
 	                    String No2 = null;
 	                    if (CommitteeCode.equalsIgnoreCase("PMRC")) {

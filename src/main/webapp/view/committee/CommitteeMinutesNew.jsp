@@ -768,7 +768,7 @@ for( Object[]obj:specialMembers){ %>
 							} %>
 							<tr>
 								<td class="std" style="text-align :center !important;border:1px solid black;vertical-align: top;"  ><p  style="text-align :center !important; "> <%=countcm%> </p></td>
-								<%if("LRDE".equalsIgnoreCase(labcode)){ %>
+								<%if("DLRL".equalsIgnoreCase(labcode)){ %>
 								<td class="std" style="text-align :center !important;border:1px solid black; padding: 5px 5px 5px 5px ; vertical-align: top;" >							
 									<p style="text-align :center !important; ">	<%=speclists.get(i)[5]!=null ? ("7".equalsIgnoreCase(speclists.get(i)[5].toString()) ? "R" : ("8".equalsIgnoreCase(speclists.get(i)[5].toString()) ? "D" : speclists.get(i)[7].toString() )) : " - "%> 
 									</p> 				
