@@ -866,6 +866,11 @@ public class MasterServiceImpl implements MasterService {
 			return dao.getRoleCodeDuplicateCount(roleCode);
 		}
 
+		@Override
+		public List<LabMaster> getAllLabMaster() throws Exception {
+			return dao.getAllLabMaster();
+		}
+
 		
 
 		

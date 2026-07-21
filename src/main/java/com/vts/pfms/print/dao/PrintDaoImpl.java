@@ -1,9 +1,12 @@
 package com.vts.pfms.print.dao;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityManager;
@@ -28,6 +31,9 @@ import com.vts.pfms.committee.model.Committee;
 import com.vts.pfms.committee.model.CommitteeSchedule;
 import com.vts.pfms.committee.model.PfmsNotification;
 import com.vts.pfms.milestone.model.MilestoneActivityLevelConfiguration;
+import com.vts.pfms.model.BriefingFinance;
+import com.vts.pfms.model.BriefingHeading;
+import com.vts.pfms.model.BriefingHeadingDetails;
 import com.vts.pfms.model.LabMaster;
 import com.vts.pfms.print.model.CommitteeProjectBriefingFrozen;
 import com.vts.pfms.print.model.FavouriteSlidesModel;
@@ -1596,36 +1602,251 @@ public class PrintDaoImpl implements PrintDao {
 		}
 
 		// Naveen R 06-03-2026
-		private static final String MILESTONEBRIEFINGLIST = "SELECT milestoneActivityBriefingId,briefingPointId,points,scheduleId FROM milestone_activity_briefing WHERE scheduleId = :scheduleId AND isActive = 1;";
-		@Override
-		public List<Object[]> getMilestoneBriefingList(String scheduleId) throws Exception {
-			try{
-				Query query = manager.createNativeQuery(MILESTONEBRIEFINGLIST);
-				query.setParameter("scheduleId", scheduleId);			
-				return (List<Object[]>)query.getResultList();
-			}catch (Exception e) {
-				e.printStackTrace();
-				return List.of();
+			private static final String MILESTONEBRIEFINGLIST = "SELECT milestoneActivityBriefingId,briefingPointId,points,scheduleId FROM milestone_activity_briefing WHERE scheduleId = :scheduleId AND isActive = 1;";
+			@Override
+			public List<Object[]> getMilestoneBriefingList(String scheduleId) throws Exception {
+				try{
+					Query query = manager.createNativeQuery(MILESTONEBRIEFINGLIST);
+					query.setParameter("scheduleId", scheduleId);			
+					return (List<Object[]>)query.getResultList();
+				}catch (Exception e) {
+					e.printStackTrace();
+					return List.of();
+				}
 			}
-		}
-		
-		private static final String LASTMEETINGCREATED = """
-				SELECT cs.scheduleid, cs.meetingid,cs.scheduledate,cs.schedulestarttime,cs.scheduleflag, cs.MeetingVenue  
-				FROM committee_schedule cs, committee_meeting_status  cms WHERE cs.isactive=1 AND cms.meetingstatus=cs.scheduleflag 
-				AND cs.committeeid=:committeeId AND CASE WHEN cs.ProjectId=0 THEN cs.ProgrammeId IN (SELECT pp.programmeid 
-				FROM pfms_programme_projects pp WHERE pp.projectid =:projectId AND pp.IsActive=1) ELSE cs.ProjectId =:projectId END 
-				ORDER BY cs.scheduledate DESC LIMIT 1
-				""";
-		@Override
-		public Object[] getLastMeetingCreated(String projectId,String committeeId) throws Exception {
-			try {
-				Query query = manager.createNativeQuery(LASTMEETINGCREATED);
-				query.setParameter("projectId", projectId);			
-				query.setParameter("committeeId", committeeId);			
-				return (Object[])query.getSingleResult();
-			}catch (Exception e) {
-				e.printStackTrace();
-				return null;
+			
+			private static final String LASTMEETINGCREATED = """
+					SELECT cs.scheduleid, cs.meetingid,cs.scheduledate,cs.schedulestarttime,cs.scheduleflag, cs.MeetingVenue  
+					FROM committee_schedule cs, committee_meeting_status  cms WHERE cs.isactive=1 AND cms.meetingstatus=cs.scheduleflag 
+					AND cs.committeeid=:committeeId AND CASE WHEN cs.ProjectId=0 THEN cs.ProgrammeId IN (SELECT pp.programmeid 
+					FROM pfms_programme_projects pp WHERE pp.projectid =:projectId AND pp.IsActive=1) ELSE cs.ProjectId =:projectId END 
+					ORDER BY cs.scheduledate DESC , cs.schedulestarttime DESC LIMIT 1
+					""";
+			@Override
+			public Object[] getLastMeetingCreated(String projectId,String committeeId) throws Exception {
+				try {
+					Query query = manager.createNativeQuery(LASTMEETINGCREATED);
+					query.setParameter("projectId", projectId);			
+					query.setParameter("committeeId", committeeId);			
+					return (Object[])query.getSingleResult();
+				}catch (Exception e) {
+					e.printStackTrace();
+					return null;
+				}
 			}
-		}
+
+			// Naveen R 08-04-2026
+			@Override
+			public List<BriefingFinance> getBriefingFinanceDetails(String scheduleId) throws Exception {
+				try {
+					Query query = manager.createQuery("SELECT e FROM BriefingFinance e WHERE e.ScheduleId = :scheduleId AND e.IsActive = 1",BriefingFinance.class);
+					query.setParameter("scheduleId", scheduleId);
+					
+					return (List<BriefingFinance>)query.getResultList();
+				}catch (Exception e) {
+					e.printStackTrace();
+					return List.of();
+				}
+			}
+
+			@Override
+			public long addOverallFinaceForPgad(List<BriefingFinance> list,String scheduleId) throws Exception {
+				try {
+					String sql ="UPDATE briefing_finance SET IsActive=0 WHERE ScheduleId=:scheduleId";
+					Query query = manager.createNativeQuery(sql);
+					query.setParameter("scheduleId", Long.parseLong(scheduleId));
+					query.executeUpdate();
+					
+					for(BriefingFinance pf:list) {
+						manager.persist(pf);
+						manager.flush();
+					}				
+					
+					return 1;
+				}catch (Exception e) {
+					e.printStackTrace();
+					return 0;
+				}
+			}
+
+			@Override
+			public long addHeadings(List<BriefingHeading> list, String projectid) throws Exception {
+				try {
+//						String sql ="UPDATE briefing_heading SET IsActive=0,ModifiedBy =:ModifiedBy , ModifiedDate=:ModifiedDate WHERE ProjectId=:projectid";
+//						Query query = manager.createNativeQuery(sql);
+//						query.setParameter("projectid", Long.parseLong(projectid));
+//						query.setParameter("ModifiedBy", list.get(0).getCreatedBy());
+//						query.setParameter("ModifiedDate", LocalDate.now().toString());
+//						query.executeUpdate();
+					
+					String sql = "SELECT HeadingId FROM briefing_heading WHERE projectId = :projectId AND IsActive = 1";
+
+					Query query = manager.createNativeQuery(sql);
+					query.setParameter("projectId", Long.parseLong(projectid));
+
+					List<Long> idList = query.getResultList();
+					Set<Long> receivedIds = new HashSet<>();
+					
+					String username = null;
+
+					for (BriefingHeading h : list) {
+						username = h.getModifiedBy();
+					    if (h.getHeadingId() != null) {
+					        receivedIds.add(h.getHeadingId());
+					    }
+					}
+					for (BriefingHeading h : list) {					
+					    manager.merge(h); // handles both insert + update
+					}
+					
+					for (Long dbId : idList) {
+					    if (!receivedIds.contains(dbId)) {
+
+					        BriefingHeading old = manager.find(BriefingHeading.class, dbId);
+
+					        if (old != null) {
+					            old.setIsActive(0);
+					            old.setModifiedDate(LocalDateTime.now());
+					            old.setModifiedBy(username);
+
+					            manager.merge(old);
+					        }
+					    }
+					}
+					return list.size();
+				}catch (Exception e) {
+					e.printStackTrace();
+					return 0;
+				}
+			}
+
+			@Override
+			public List<BriefingHeading> getBriefingHeading(String projectid) throws Exception {
+				try {
+					Query query = manager.createQuery("SELECT e FROM BriefingHeading e WHERE e.ProjectId = :projectid AND e.IsActive = 1 ORDER BY e.Seniority ASC",BriefingHeading.class);
+					query.setParameter("projectid", projectid);
+					
+					return (List<BriefingHeading>)query.getResultList();
+				}catch (Exception e) {
+					e.printStackTrace();
+					return List.of();
+				}
+			}
+
+			private static final String HEADERDETAILS = """
+					SELECT a.DetailsId,a.Details, b.HeadingId, b.ProjectId, b.Heading
+					FROM briefing_heading_details a LEFT JOIN briefing_heading b
+					ON a.HeadingId = b.HeadingId 
+					WHERE a.HeadingId = :headingId AND a.ScheduleId = :scheduleId AND a.IsActive = 1
+					""";
+			@Override
+			public List<Object[]> getHeadingDetails(String headingid, String projectid, String scheduleid) throws Exception {
+				try {
+					Query query = manager.createNativeQuery(HEADERDETAILS);
+					query.setParameter("headingId", headingid);
+					//query.setParameter("projectid", projectid);
+					query.setParameter("scheduleId", scheduleid);
+					
+					return (List<Object[]>)query.getResultList();
+				}catch (Exception e) {
+					e.printStackTrace();
+					return new ArrayList<Object[]>();
+				}
+			}
+
+			@Override
+			public BriefingHeadingDetails getDetailsById(String detailid) throws Exception {
+				try {
+					Query query = manager.createQuery("SELECT e FROM BriefingHeadingDetails e WHERE e.DetailsId = :detailid AND e.IsActive = 1",BriefingHeadingDetails.class);
+					query.setParameter("detailid", detailid);
+					
+					List<BriefingHeadingDetails> detail = (List<BriefingHeadingDetails>)query.getResultList();
+
+					if(detail!=null && !detail.isEmpty()) return detail.get(0);
+					return null;
+				}catch (Exception e) {
+					e.printStackTrace();
+					return null;
+				}
+			}
+
+			@Override
+			public long addDetails(BriefingHeadingDetails dto) throws Exception {
+				try{
+					manager.persist(dto);
+					manager.flush();
+					return dto.getDetailsId();
+				}catch (Exception e) {
+					e.printStackTrace();
+					return 0;
+				}
+				
+			}
+			private static final String HEADERDETAILSALL = """
+					SELECT a.DetailsId,a.Details, b.HeadingId, b.ProjectId, b.Heading, a.ScheduleId
+					FROM briefing_heading_details a LEFT JOIN briefing_heading b
+					ON a.HeadingId = b.HeadingId 
+					WHERE a.IsActive = 1 AND b.ProjectId = :projectid AND a.scheduleid = :scheduleid AND b.isActive = 1
+					ORDER BY b.Seniority;
+					""";
+			@Override
+			public List<Object[]> getAllHeadingDetails(String projectid,String scheduleid) throws Exception {
+				try {
+					Query query = manager.createNativeQuery(HEADERDETAILSALL);
+					query.setParameter("projectid", projectid);
+					query.setParameter("scheduleid", scheduleid);
+					
+					return (List<Object[]>)query.getResultList();
+				}catch (Exception e) {
+					e.printStackTrace();
+					return new ArrayList<Object[]>();
+				}
+			}
+			
+			@Override
+			public List<BriefingHeadingDetails> getDetailsByHeadingAndSCheduleId(String headingid,String scheduleid) throws Exception {
+				try {
+					Query query = manager.createQuery("SELECT e FROM BriefingHeadingDetails e WHERE e.HeadingId = :headingid AND e.ScheduleId = :scheduleid AND e.IsActive = 1",BriefingHeadingDetails.class);
+
+			        query.setParameter("headingid", Long.parseLong(headingid));
+			        query.setParameter("scheduleid", Long.parseLong(scheduleid));
+					
+					List<BriefingHeadingDetails> detail = (List<BriefingHeadingDetails>)query.getResultList();
+
+					if(detail!=null && !detail.isEmpty()) return detail;
+					return List.of();
+				}catch (Exception e) {
+					e.printStackTrace();
+					return List.of();	
+				}
+			}
+
+			@Override
+			public long saveAllDetails(List<BriefingHeadingDetails> list) throws Exception {
+				try {
+			        for (int i = 0; i < list.size(); i++) {
+			            manager.persist(list.get(i));
+
+			        }
+			        return list.size();
+			    } catch (Exception e) {
+			        e.printStackTrace();
+			        return 0;
+			    }
+			}
+
+			@Override
+			public int updateRemarks(long activityId, String remarks, String userId) throws Exception {
+				try {
+					Query query = manager.createNativeQuery("UPDATE milestone_activity_level SET StatusRemarks = :remarks WHERE ActivityId = :activityId");
+
+					query.setParameter("remarks", remarks);
+					query.setParameter("activityId", activityId);
+
+					return query.executeUpdate();
+				}catch (Exception e) {
+					e.printStackTrace();
+					return 0;	
+				}
+			}
 	}

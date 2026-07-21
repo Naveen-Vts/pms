@@ -231,7 +231,7 @@
 	            <input type="hidden" name="fileType" id="fileType" value="">
 	        </div>
 			 <div align="center">
-					<input type="button" class="btn btn-primary btn-sm submit mb-3"  id="submitversion" onclick="submitUpload()"/>
+				<input type="button" class="btn btn-primary btn-sm submit mb-3"  id="submitversion" onclick="submitUpload()"/>
 			</div>
 		  </div>
 	  </div>

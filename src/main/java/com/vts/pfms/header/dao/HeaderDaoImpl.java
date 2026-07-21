@@ -36,10 +36,11 @@ public class HeaderDaoImpl implements HeaderDao {
 	private static final String LOGINTYPENAME="SELECT logindesc FROM login_type WHERE logintype=:logintype";
 	private static final String PROJECTLIST="SELECT projectid,projectcode,projectname,projectmainid,projecttype FROM project_master WHERE isactive=1";
 	private static final String GANTTCHARTLIST="SELECT milestoneactivityid,projectid,activityname,milestoneno,orgstartdate,orgenddate,startdate,enddate,progressstatus,revisionno FROM milestone_activity WHERE isactive=1 AND projectid=:projectid ORDER BY MilestoneNo";
+
 	private static final String PROJECTMASTER="SELECT a.project_id,a.project_code,a.project_name, a.project_short_name FROM project_master a WHERE  a.is_active='1' AND a.project_flag <> 'C'";
 	private static final String PROJECTDETAILS="SELECT a.project_id,a.project_code,a.project_name FROM project_master a WHERE a.project_id=:projectid and  a.is_active='1'";
 	private static final String LABDETAILS ="SELECT lab_id,cluster_id,lab_city FROM lab_master WHERE lab_code=:labcode"; 
-	
+
 	private static final String HEADERSCHEDULELIST ="SELECT a.formname,a.formurl FROM pfms_form_detail a , pfms_form_role_access b WHERE a.formdetailid=b.formdetailid AND a.formmoduleid=:formmoduleid AND b.logintype=:logintype AND b.isactive=1 AND CASE WHEN 'Y'= (SELECT is_cluster FROM lab_master WHERE lab_code=:labcode) THEN labhq IN ('H','B') ELSE labhq IN ('L','B') END AND a.isactive=1 ORDER BY a.formserialno";
 	private static final String FROMMODULELIST = "SELECT DISTINCT a.formmoduleid, a.formmodulename, a.moduleurl, a.isnav  FROM pfms_form_module a, pfms_form_detail b, pfms_form_role_access c WHERE a.isactive='1' AND a.formmoduleid=b.formmoduleid AND b.formdetailid=c.formdetailid AND c.logintype=:logintype AND c.isactive=1 AND CASE WHEN 'Y'= (SELECT is_cluster FROM lab_master WHERE lab_code=:labcode) THEN labhq IN ('H','B') ELSE labhq IN ('L','B') END ORDER BY FIELD(a.FormModuleName, 'Road Map','Admin','Master','Approvals','Closure') , FIELD(a.formmoduleid, '18', a.formmoduleid), a.formmoduleid";
 	private static final String PROJECTINTILIST="SELECT a.initiationid,a.projectprogramme,b.project_type_short,c.classification,a.projectshortname,a.projecttitle,a.projectcost,a.projectduration,a.ismain FROM pfms_initiation a,project_type b, pfms_security_classification c WHERE a.empid=:empid AND a.classificationid=c.classification_id  AND a.projecttypeid=b.project_type_id AND a.isactive='1' ";

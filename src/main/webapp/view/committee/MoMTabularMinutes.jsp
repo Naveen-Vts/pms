@@ -211,7 +211,7 @@
 	  <!----------------------------------------------------------------- ATTENDANCE -------------------------------------------------->
 	  
 	 	<%if(invitedlist.size()>0){ %>
-		<% ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","CW","CO","CH"));
+		<% ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","CW","CO","CH","I","W","P"));
 		   ArrayList<String> members = new ArrayList<String>();
 		   String memberSec ="";
 		   /* invitedlist.sort((obj,obj1) -> {
@@ -287,7 +287,7 @@
 			 		}
 			 		else{
 			 			if(!labcode.equalsIgnoreCase(invitedlist.get(i)[11].toString()) && invitedlist.get(i)[16]!=null){
-			 				name = name.concat(" ("+invitedlist.get(i)[16].toString()+")");
+			 				name = name.concat(" ("+invitedlist.get(i)[16].toString()+" Through VC )");
 			 			}
 			 			//System.out.println("==========="+labcode+"======"+invitedlist.get(i)[11].toString()+"==========="+name);
 			 			 members.add(name);	
@@ -380,6 +380,7 @@
 	  		<tbody class="fs-12">
 	  		<% int count=0,index=0, indexcount=1;
 				Long agenda=0L;
+				boolean isOtherOutcome = true;
 				
 				Map<String, List<Object[]>> actionslist = speclists!=null && speclists.size()>0?speclists.stream()
 						  .collect(Collectors.groupingBy(array -> array[0].toString() , LinkedHashMap::new, Collectors.toList())) : new HashMap<>();
@@ -415,23 +416,12 @@
 					            int rowSpan = divisionNames!=null && divisionNames.size() > 0 ? 1 + employeeNames.size() : values.size() ;
 						        if(((obj[3] != null && Integer.parseInt(obj[3].toString()) == 3) || ( obj[3] != null && Integer.parseInt(obj[3].toString()) == 5 )) && (obj[7].toString().equalsIgnoreCase("A") || obj[7].toString().equalsIgnoreCase("C") || obj[7].toString().equalsIgnoreCase("D"))){
 						            if(obj[5]!=null && obj[5].toString().equalsIgnoreCase("9") && obj[7]!=null && obj[7].toString().equalsIgnoreCase("C")) continue;
-						            if(obj[18] != null && Long.parseLong(obj[18].toString())!=agenda ) {
+						            
+						            if(obj[18] != null && Long.parseLong(obj[18].toString())!=agenda && Integer.parseInt(obj[3].toString())==3 ) {
 						                indexcount = 1;
 						                count++;
 						                /* if(obj[3] != null && Integer.parseInt(obj[3].toString()) == 3 && count==1){ */
 						                	%>
-						<%-- <tr> 		
-						    <td style="border: 1px solid black; padding:5px; font-weight:bold; text-align: center;" colspan="4">
-						        AGENDA ACTIONS
-						    </td>
-						</tr>
-						<%}else if(obj[3] != null && Integer.parseInt(obj[3].toString()) == 5){%>
-						<tr>  		
-						    <td style="border: 1px solid black; padding:5px; font-weight:bold;" colspan="4">
-						        Other Outcomes/Action points
-						    </td>
-						</tr>	
-	               		<%}	%> --%>
 						<tr>
 						    <td class="fs-12" style="border: 1px solid black; font-weight:bold; padding:5px;"><%= ++index %></td>	  			
 						    <td class="fs-12" style="border: 1px solid black; padding:5px; font-weight:bold; text-align: left;" colspan="4">
@@ -451,13 +441,25 @@
 						    		   groupname=obj[19].toString();
 						    	   }
 						    	   %>
-						    	   <%= obj[10] != null ?"Presentation by/Discussion by : "+ (obj[16]!=null?obj[16].toString().trim():"-")+" / "+ project+ (groupname.length()>0 ? " ("+ groupname +")" : "") : "-" %>
-						       <%} else if(Integer.parseInt(obj[3].toString())==5){ %>Other outcome/Action Points       <%} %>
+						    	   <%= obj[10] != null ?"Presentation by/Discussion by : "+ (obj[16]!=null?obj[16].toString().trim()+" / ":" ")+ project+ (groupname.length()>0 ? " ("+ groupname +")" : "") : "-" %>
+						       <%}%>
 						    </td>
 						</tr> 
 						<%
 			                agenda = Long.parseLong(obj[18].toString()); 
-			            }
+			            }else if(obj[18] != null && Long.parseLong(obj[18].toString())==0L &&  Integer.parseInt(obj[3].toString())==5 && isOtherOutcome ) {
+			            	isOtherOutcome = false;
+			                indexcount = 1;
+			                count++;
+			                	%>
+							<tr>
+							    <td class="fs-12" style="border: 1px solid black; font-weight:bold; padding:5px;"><%= ++index %></td>	  			
+							    <td class="fs-12" style="border: 1px solid black; padding:5px; font-weight:bold; text-align: left;" colspan="4">
+							       <% if(Integer.parseInt(obj[3].toString())==5){ %>Other outcome/Action Points       <%} %>
+							    </td>
+							</tr> 
+							<%
+				           }
 						%>
 						<tr>
 						<%
@@ -536,13 +538,14 @@
 						        }
 						        if(divisionNames!=null && divisionNames.size()>0 && employeeNames!=null && (employeeNames.size()<=employeeCount || employeeNames.size()==0)) break;
 						    }
-					}
+					}%>
+				<%-- <%
 				 if(count==0){%>
 					<tr>
 						<td class="std" style="text-align :center;border:1px solid black;padding:7px;"  colspan="5">No Minutes details Added</td>
 					</tr>
-				<%}}
-				else {
+				<%}%> --%>
+				 <% }else{
 				%>
 					<tr>
 						<td class="std" style="text-align :center;border:1px solid black;padding:7px;"  colspan="5">No Minutes details Added</td>

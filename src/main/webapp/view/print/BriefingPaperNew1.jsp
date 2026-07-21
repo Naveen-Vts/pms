@@ -57,7 +57,7 @@ String lablogo=(String)request.getAttribute("lablogo");
 LabMaster labInfo=(LabMaster)request.getAttribute("labInfo");
 String filePath=(String)request.getAttribute("filePath");
 String projectLabCode=(String)request.getAttribute("projectLabCode");
-SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy", Locale.ENGLISH);
+SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy",Locale.ENGLISH);
 SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");	
 Object[] committeeMetingsCount =  (Object[]) request.getAttribute("committeeMetingsCount");
 String CommitteeCode = committee.getCommitteeShortName().trim();
@@ -809,9 +809,9 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 						<th  style="width: 15px !important;text-align: center;">SN</th>
 						<th  style="width: 100px !important;"> ID</th>
 						<th  style="width: 415px !important;">Recommendation Point</th>
-						<th  style="width: 100px !important;"> PDC</th>
+						<th  style="width: 150px !important;">ADC <br> PDC</th>
 						<th  style="width: 250px !important;"> Responsibility</th>
-				<!-- 		<th  style="width: 80px !important;">Status</th> -->
+				 		<th  style="width: 80px !important;">Status</th>
 						<th  style="width: 250px !important; ">Remarks</th>
 					</tr>
 				</thead>
@@ -840,7 +840,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								
 								<%=committee.getCommitteeShortName()!=null?(committee.getCommitteeShortName()).trim().toUpperCase():" - "+"-"+key2!=null?(key2):" - "+"/"+obj[5]!=null?(obj[5].toString()).split("/")[4]:" - " %>
 								
-								
+			
 								</span>	
 									
 									
@@ -849,8 +849,9 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 							
 							
 							</td>
-							<td  style="text-align: justify; "><%=obj[2]!=null?(obj[2].toString()): " - " %></td>
-						
+
+							<td  style="text-align: justify; "><%=obj[2]!=null?obj[2].toString(): " - " %></td>
+					
 							<td style="text-align: center;">
 								<%if(obj[8]!= null && !LocalDate.parse(obj[8].toString()).equals(LocalDate.parse(obj[7].toString())) ){ %><span style="color:black;font-weight: bold;"><%=sdf.format(sdf1.parse(obj[8].toString()))%></span><br><%} %>	
 								<%if(obj[7]!= null && !LocalDate.parse(obj[7].toString()).equals(LocalDate.parse(obj[6].toString())) ){ %><span style="color:black;font-weight: bold;"><%=sdf.format(sdf1.parse(obj[7].toString()))%></span><br><%} %>
@@ -860,6 +861,39 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								<%if(obj[4]!= null){ %>  
 									<%=obj[12]!=null?(obj[12].toString()): " - " %><%-- , <%=obj[13] %> --%>
 								<%}else { %> <!-- <span class="notassign">NA</span>  --> <span class="">Not Assigned</span> <%} %> 
+							</td>
+							<td  class="text-center">
+								<%if(obj[4]!= null){ %> 
+									<%	String actionstatus = obj[10].toString();
+										int progress = obj[18]!=null ? Integer.parseInt(obj[18].toString()) : 0;
+										LocalDate pdcorg = LocalDate.parse(obj[6].toString());
+										LocalDate lastdate = obj[14]!=null ? LocalDate.parse(obj[14].toString()): null;
+										LocalDate today = LocalDate.now();
+									%> 
+									<% if(lastdate!=null && actionstatus.equalsIgnoreCase("C") ){%>
+											<%if(actionstatus.equals("C") && (pdcorg.isAfter(lastdate) || pdcorg.equals(lastdate))){%>
+												<span class="completed">CO</span>
+											<%}else if(actionstatus.equals("C") && pdcorg.isBefore(lastdate)){ %>	
+												<span class="completeddelay">CD (<%= ChronoUnit.DAYS.between(pdcorg, lastdate) %>) </span>
+											<%} %>	
+										<%}else{ %>
+											<%if(actionstatus.equals("F")  && (pdcorg.isAfter(lastdate) || pdcorg.isEqual(lastdate) )){ %>
+												<span class="ongoing">RC</span>												
+											<%}else if(actionstatus.equals("F")  && pdcorg.isBefore(lastdate)) { %>
+												<span class="delay">FD</span>
+											<%}else if(actionstatus.equals("A") && progress==0){  %>
+												<span class="assigned">
+													AA <%if(pdcorg.isBefore(today)){ %> (<%= ChronoUnit.DAYS.between(pdcorg, today)  %>) <%} %>
+												</span>
+											<%} else if(pdcorg.isAfter(today) || pdcorg.isEqual(today)){  %>
+												<span class="ongoing">OG</span>
+											<%}else if(pdcorg.isBefore(today)){  %>
+												<span class="delay">DO (<%= ChronoUnit.DAYS.between(pdcorg, today)  %>)  </span>
+											<%} %>										
+									<%} %>
+								<%}else { %>
+									<span class="notassign">NA</span>
+								<%} %>
 							</td>
 						
 				<td ><%if(obj[19]!=null){%><%=(obj[19].toString()) %><%} %></td>
@@ -924,6 +958,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										 key=entry.getKey().toString();
 									 } } %>
 								<%=committee.getCommitteeShortName()!=null?(committee.getCommitteeShortName()).trim().toUpperCase():" - "+"-"+key!=null?(key):" - "+"/"+obj[1]!=null?(obj[1].toString()).split("/")[4]:" - " %>
+
 								<%}%> </span>
 								</td>
 									<%if(j++==1){ %><td rowspan="<%=rowSpan%>" class="text-justify"> <%=obj[2].toString()%> </td> <%} %>
@@ -2220,7 +2255,9 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("ADE")) {%>
 									<th style="width: 210px;">Responsibility </th>
 									<% } %>
+								<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("DLRL")) {%>
 									<th style="width: 50px;">Progress </th>
+									<% } %>
 <!-- 					                <th style="width: 50px;padding-right: 5px !important ">Status</th>
  -->					                <th style="width: 230px;">Remarks</th>
 								</tr>
@@ -2325,7 +2362,11 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 											<td ><%=obj[24]!=null?(obj[24].toString()): " - " %><%-- (<%=obj[25] %>) --%></td>
 											
 											<%} %>
-											<td style="text-align: center"><%=obj[16]!=null?(obj[16].toString()): " - " %>%</td>		
+
+											<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("DLRL")) {%>
+											<td style="text-align: center"><%=obj[16]!=null?(obj[16].toString()): " - " %>%</td>
+											<%} %>		
+
 											<% 
 												LocalDate StartDate = LocalDate.parse(obj[7].toString());
 												LocalDate EndDate = LocalDate.parse(obj[8].toString());
@@ -2395,6 +2436,87 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 			<div>
 	<%} %>
 	
+		<% for(int z=0 ; z<1;z++) {   %>
+			<h1 class="break"></h1>
+			<div align="left" style="margin-left: 10px;"><b class="sub-title">11. Issues:</b></div>
+			
+			<table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;   border-collapse:collapse;" >
+						<thead>
+							<tr>
+								<td colspan="7" style="border: 0">
+								
+								</td>									
+							</tr>
+							<tr>
+								<th  style="width: 20px !important;text-align: center;">SN</th>
+								<th  style="width: 20px !important;text-align: center;">ID</th>
+								<th  style="width: 370px;">Issue Point</th>
+								<th  style="width: 100px; "> ADC<br>PDC</th>
+<!-- 								<th  style="width: 80px; "> ADC</th> -->
+								<th  style="width: 210px; ">Responsibility</th>
+<!-- 								<th  style="width: 50px; ">Status</th>	
+ -->								<th  style="width: 270px; ">Remarks</th>		
+							</tr>
+						</thead>
+						<tbody>				
+										<%if(oldpmrcissueslist.get(z).size()==0){ %>
+										<tr><td colspan="7" style="text-align: center;" > Nil</td></tr>
+										<%}
+										else if(oldpmrcissueslist.get(z).size()>0)
+										  {int i=1;
+										for(Object[] obj:oldpmrcissueslist.get(z)){ 
+											if(!obj[9].toString().equals("C")  || (obj[9].toString().equals("C") && obj[13]!=null &&  before6months.isBefore(LocalDate.parse(obj[13].toString())) )){
+										%>
+											<tr>
+												<td  style="text-align: center;"><%=i %></td>
+							<td style="text-align: center;" >
+									<%if(obj[18]!=null && Long.parseLong(obj[18].toString())>0){
+										String []temp=obj[1].toString().split("/");
+										String tempString=temp[temp.length-1];
+										%>
+									<span style="font-weight: bold">
+										<%=tempString!=null?(tempString): " - "%>
+										</span>
+									<%}%>
+								</td>
+												<td  style="text-align: justify;"><%=obj[2]!=null?(obj[2].toString()): " - " %></td>
+												<td   style="text-align: center;" >
+												<%	String actionstatus = obj[9].toString();
+															int progress = obj[16]!=null ? Integer.parseInt(obj[16].toString()) : 0;
+															LocalDate pdcorg = LocalDate.parse(obj[3].toString());
+															LocalDate endDate = LocalDate.parse(obj[4].toString());
+															
+															LocalDate lastdate = obj[13]!=null ? LocalDate.parse(obj[13].toString()): null;
+															LocalDate today = LocalDate.now();
+													%> 
+													<% if(lastdate!=null && actionstatus.equalsIgnoreCase("C") ){%>
+														<%if(actionstatus.equals("C") && (pdcorg.isAfter(lastdate) || pdcorg.equals(lastdate))){%>
+														<span class="completed"><%= sdf.format(sdf1.parse(obj[13].toString()))%> </span>
+														<%}else if(actionstatus.equals("C") && pdcorg.isBefore(lastdate)){ %>	
+														<span class="completeddelay"><%= sdf.format(sdf1.parse(obj[13].toString()))%> </span>
+														<%} %>	
+													<%}else{ %>
+															-									
+													<%} %>
+													<br>
+													<%-- <% if (obj[6] != null && !LocalDate.parse(obj[6].toString()).equals(LocalDate.parse(obj[5].toString())) ) { %> <%=sdf.format(sdf1.parse(obj[6].toString()))%><br> <% } %> 
+													<% if (obj[5] != null && !LocalDate.parse(obj[5].toString()).equals(LocalDate.parse(obj[3].toString())) ) { %> <%=sdf.format(sdf1.parse(obj[5].toString()))%><br> <% } %> --%>
+													<%if(!pdcorg.equals(endDate)) {%>
+													<%=sdf.format(sdf1.parse(obj[4].toString()))%><br>
+													<%} %>
+													<%=sdf.format(sdf1.parse(obj[3].toString()))%>
+												</td>
+											
+												<td > <%=obj[11]!=null?(obj[11].toString()): " - " %></td>
+				
+												<td > <%if(obj[17]!=null){ %> <%=(obj[17].toString())%> <%} %> </td>			
+											</tr>			
+										<%i++;
+										}} }%>
+								</tbody>			
+							</table>
+			<%} %>
+				
 			<% for(int z=0 ; z<1;z++) {   %>
 			<h1 class="break"></h1>	
 			<div align="left" style="margin-left: 10px;"><b class="sub-title"> 

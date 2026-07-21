@@ -1291,7 +1291,7 @@ private boolean isValidFileType(MultipartFile file) {
 			redir.addAttribute("ScheduleId", req.getParameter("ScheduleId"));
 			redir.addAttribute("specname", req.getParameter("specname"));
 			redir.addAttribute("minutesback", req.getParameter("minutesback"));
-			redir.addAttribute("committeescheduledata",service.CommitteeActionList(req.getParameter("ScheduleId")));
+//			redir.addAttribute("committeescheduledata",service.CommitteeActionList(req.getParameter("ScheduleId")));
 			redir.addAttribute("nonproject",nonproject);
 			redir.addAttribute("programmeId",programmeId);
 			}

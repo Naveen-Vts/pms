@@ -1183,7 +1183,21 @@ public class MasterDaoImpl implements MasterDao {
 			}
 		}
 
-		
 		// 22/8/2025  Naveen R RoleName and RoleCode Duplicate Check End
+		
+		@Override
+		public List<LabMaster> getAllLabMaster() throws Exception {
+			try {
+				String jpql = "FROM LabMaster";
+
+			    return manager
+			            .createQuery(jpql, LabMaster.class)
+			            .getResultList();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return List.of();
+			}
+		}
+
 		
 }

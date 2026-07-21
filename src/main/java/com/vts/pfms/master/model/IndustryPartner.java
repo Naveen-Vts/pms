@@ -32,25 +32,25 @@ public class IndustryPartner implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="IndustryPartnerId")
+	@Column(name="industry_partner_id")
 	private Long IndustryPartnerId;
-	@Column(name="IndustryName")
+	@Column(name="industry_name")
 	private String IndustryName;
-	@Column(name="IndustryAddress")
+	@Column(name="industry_address")
 	private String IndustryAddress;
-	@Column(name="IndustryCity")
+	@Column(name="industry_city")
 	private String IndustryCity;
-	@Column(name="IndustryPinCode")
+	@Column(name="industry_pin_code")
 	private String IndustryPinCode;
-	@Column(name="CreatedBy")
+	@Column(name="created_by")
 	private String CreatedBy;
-	@Column(name="CreatedDate")
+	@Column(name="created_date")
 	private String CreatedDate;
-	@Column(name="ModifiedBy")
+	@Column(name="modified_by")
 	private String ModifiedBy;
-	@Column(name="ModifiedDate")
+	@Column(name="modified_date")
 	private String ModifiedDate;
-	@Column(name="IsActive")
+	@Column(name="is_active")
 	private int IsActive;
 	
 	@JsonIgnore

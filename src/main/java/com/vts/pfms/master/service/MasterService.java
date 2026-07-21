@@ -20,6 +20,7 @@ import com.vts.pfms.master.model.PfmsFeedback;
 import com.vts.pfms.master.model.PfmsFeedbackAttach;
 import com.vts.pfms.master.model.PfmsFeedbackTrans;
 import com.vts.pfms.master.model.RoleMaster;
+import com.vts.pfms.model.LabMaster;
 
 public interface MasterService {
 	
@@ -119,4 +120,6 @@ public interface MasterService {
 	public Long getRoleNameDuplicateCount(String roleName) throws Exception;
 	public Long getRoleCodeDuplicateCount(String roleCode) throws Exception;
 	// 22/8/2025  Naveen R RoleName and RoleCode Duplicate Check End
+	
+	public List<LabMaster> getAllLabMaster() throws Exception;
 }

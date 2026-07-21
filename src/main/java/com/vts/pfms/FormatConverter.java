@@ -14,13 +14,13 @@ import java.util.Locale;
 public class FormatConverter 
 {
 	
-	private SimpleDateFormat regularDateFormat=new SimpleDateFormat("dd-MM-yyyy");
-	private SimpleDateFormat sqlDateFormat=new SimpleDateFormat("yyyy-MM-dd");
-	private SimpleDateFormat sqlDateAndTime=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");	
-	private SimpleDateFormat dateMonthShortName=new SimpleDateFormat("dd-MMM-yyyy");
-	private SimpleDateFormat dateMonthFullName=new SimpleDateFormat("dd-MMMM-yyyy");
-	private SimpleDateFormat MonthNameAndYear=new SimpleDateFormat("MMM-yyyy");
-	private SimpleDateFormat regularDateFormatshort=new SimpleDateFormat("dd-MM-yy");
+	private SimpleDateFormat regularDateFormat=new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+	private SimpleDateFormat sqlDateFormat=new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+	private SimpleDateFormat sqlDateAndTime=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);	
+	private SimpleDateFormat dateMonthShortName=new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+	private SimpleDateFormat dateMonthFullName=new SimpleDateFormat("dd-MMMM-yyyy", Locale.ENGLISH);
+	private SimpleDateFormat MonthNameAndYear=new SimpleDateFormat("MMM-yyyy", Locale.ENGLISH);
+	private SimpleDateFormat regularDateFormatshort=new SimpleDateFormat("dd-MM-yy", Locale.ENGLISH);
 	
 	
 	

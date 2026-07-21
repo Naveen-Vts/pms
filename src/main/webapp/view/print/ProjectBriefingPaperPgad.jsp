@@ -1,3 +1,4 @@
+<%@page import="com.vts.pfms.model.BriefingFinance"%>
 <%@page import="org.apache.commons.text.StringEscapeUtils"%>
 <%@page import="java.nio.file.Paths"%>
 <%@page import="java.nio.file.Path"%>
@@ -130,7 +131,7 @@ Map<Integer,String> treeMapLevOne =(Map<Integer,String>)request.getAttribute("tr
 Map<Integer,String> treeMapLevTwo =(Map<Integer,String>)request.getAttribute("treeMapLevTwo");
 
 List<Object[]> envisagedDemandlist = (List<Object[]>)request.getAttribute("envisagedDemandlist");
-SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy", Locale.ENGLISH);
 SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 Map<Integer,String> committeeWiseMap=(Map<Integer,String>)request.getAttribute("committeeWiseMap");
 //Map<Integer,String> mapEB=(Map<Integer,String>)request.getAttribute("mapEB");
@@ -140,6 +141,9 @@ List<List<Object[]>> overallfinance = (List<List<Object[]>>)request.getAttribute
 String thankYouImg = (String)request.getAttribute("thankYouImg");
 String IsIbasConnected=(String)request.getAttribute("IsIbasConnected");
 String isCCS = (String)request.getAttribute("isCCS");
+
+List<BriefingFinance> briefingFinanceDetials = (List<BriefingFinance>)request.getAttribute("briefingFinanceDetials");
+
 %>
 	<% String ses = (String) request.getParameter("result"); 
        String ses1 = (String) request.getParameter("resultfail");
@@ -163,7 +167,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 			<div class="col-md-12">
 				<div class="card shadow-nohover">
 					<div class="row card-header" >
-			   			<div class="col-md-4 marging-top8"  >
+			   			<div class="col-md-4 marging-top8" >
 							<h3>Project Briefing Paper</h3>
 						</div>							
 						<div class="col-md-8 justify-content-end margin-top-17 float-right" >
@@ -217,6 +221,8 @@ String isCCS = (String)request.getAttribute("isCCS");
 										</button>
 									</td>
 									<td class="border-0 "><button  type="button" class="btn btn-sm back btn-black"  data-toggle="modal" data-target="#LevelModal"  >Mil Level (<%=levelid %>)</button></td>
+									<td class="border-0"><button type="submit" class="btn btn-sm add mt-1" formmethod="post" formaction="BriefingPaperV2.htm" 
+									data-toggle="tooltip" data-placement="top" title="Version 2"  > Version 2</button></td>
 								</tr>
 							</table>
 								<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
@@ -257,36 +263,46 @@ String isCCS = (String)request.getAttribute("isCCS");
 										</tr>
 										<tr>
 											 <td  class="td-cp">(b)</td>
+											 <td class="cst-td1"><b>Project No</b></td>
+											 <td colspan="4" class="cst-td2"> <%=projectattributes[2]%> </td>
+										</tr>
+										<tr>
+											 <td  class="td-cp">(c)</td>
+											 <td class="cst-td1"><b>Project Unit Code</b></td>
+											 <td colspan="4" class="cst-td2"> <%=projectattributes[18]%></td>
+										</tr>
+										<tr>
+											 <td  class="td-cp">(d)</td>
 											 <td class="cst-td1"><b>Project Code</b></td>
 											 <td colspan="4" class="cst-td2"> <%=projectattributes[0]%> </td>
 										</tr>
 										<tr>
-											 <td  class=" td-cp">(c)</td>
+											 <td  class=" td-cp">(e)</td>
 											 <td  class="cst-td1"><b>Category</b></td>
 											 <td colspan="4" class="cst-td2"><%=projectattributes[14]%></td>
 										</tr>
 										<tr>
-											 <td  class="td-cp">(d)</td>
+											 <td  class="td-cp">(f)</td>
 											 <td  class="cst-td1"><b>Date of Sanction</b></td>
 											 <td colspan="4" class="cst-td2"><%=sdf.format(sdf1.parse(projectattributes[3].toString()))%></td>
 										</tr>
 										<tr>
-											 <td  class="width20-padding5">(e)</td>
+											 <td  class="width20-padding5">(g)</td>
 											 <td  class="width150-padding5"><b>Nodal and Participating Labs</b></td>
 											 <td colspan="4" class="cst-td2"><%if(projectattributes[15]!=null){ %><%=projectattributes[15]%><%} %></td>
 										</tr>
 										<tr>
-											 <td  class="td-cp">(f)</td>
+											 <td  class="td-cp">(h)</td>
 											 <td  class="width150-padding5"><b>Objective</b></td>
 											 <td colspan="4" class="cst-td2 text-justify"> <%=projectattributes[4]%></td>
 										</tr>
 										<tr>
-											 <td  class="td-cp">(g)</td>
+											 <td  class="td-cp">(i)</td>
 											 <td  class="width150-padding5"><b>Deliverables</b></td>
 											 <td colspan="4" class=" cst-td2"> <%=projectattributes[5]%></td>
 										</tr>
 										<tr>
-											 <td rowspan="2" class="td-cp">(h)</td>
+											 <td rowspan="2" class="td-cp">(j)</td>
 											 <td rowspan="2" class="width150-padding5"><b>PDC</b></td>
 											 
 											<td colspan="2" class="textaligncenter">Original &nbsp;</td>					
@@ -315,7 +331,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 								 		</tr>
 											 	
 										<tr>
-											<td rowspan="3" class="td-i">(i)</td>
+											<td rowspan="3" class="td-i">(k)</td>
 											<td rowspan="3" class="padding-left10"><b>Cost Breakup( &#8377; <span class="currency">Lakhs</span>)</b></td>
 											
 											<%if( ProjectRevList.get(z).size()>0 ){ %>
@@ -359,7 +375,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 												
 																			 	
 										<tr>
-											<td  class="td-j">(j)</td>
+											<td  class="td-j">(l)</td>
 											<td class="width150-padding5"><b>No. of Meetings held</b> </td>
 											<td colspan="4">
 												<% if(ebandpmrccount!=null && ebandpmrccount.size()>0){
@@ -371,7 +387,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 											</td>
 										</tr>
 										<tr>
-											<td  class="td-j">(k)</td>
+											<td  class="td-j">(m)</td>
 											<td  class="td-k"><b>Current Stage of Project</b></td>
 										  	<%
 											   String colorCode = projectdatadetails.get(z)!=null ? (String) projectdatadetails.get(z)[11] : "#77D970";
@@ -620,7 +636,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 							</td>
 							
 							
-							<td class="text-justify "><%=  StringEscapeUtils.escapeHtml4(obj[2].toString()) %></td>
+							<td class="text-justify "><%= obj[2].toString() %></td>
 
 							<td class="text-center">
 								<%if(obj[8]!= null && !LocalDate.parse(obj[8].toString()).equals(LocalDate.parse(obj[7].toString())) ){ %><span class="pencil-icon font-weight-bold"><%=sdf.format(sdf1.parse(obj[8].toString()))%></span><br><%} %>	
@@ -1822,9 +1838,11 @@ String isCCS = (String)request.getAttribute("isCCS");
 								
 								<table class="subtables tbl-sub-copy"  >
 										<thead>
+										<%if(procurementOnDemand.get(z)!=null &&  procurementOnDemand.get(z).size()>0){ %>
 										<tr>
 											<th colspan="11" class="text-right"> <span class="currency" >(In &#8377; Lakhs)</span></th>
 										</tr>
+										
 										 <tr>
 										 	<th colspan="11" class="std">Demand Details ( > &#8377; <% if (projectdatadetails.get(0) != null && projectdatadetails.get(0)[13] != null) { %>
 													<%=projectdatadetails.get(0)[13].toString().replaceAll("\\.\\d+$", "")%> ) <% } else { %> - )<% } %>
@@ -1870,10 +1888,12 @@ String isCCS = (String)request.getAttribute("isCCS");
 										    
 										    <% }else{%>											
 												<tr><td colspan="11" class="std border1px text-center" >Nil </td></tr>
-											<%} %>
+											<%}} %>
 											<!-- ********************************Future Demand Start *********************************** -->
+											
+											<%--
 											<tr>
-											<th class="std border1px" colspan="11" ><span class="mainsubtitle">Future Demand</span></th>
+												 <th class="std border1px" colspan="11" ><span class="mainsubtitle">Future Demand</span></th>
 											</tr>
 											<tr>
 												 <th class="std border1px width15 text-center">SN</th>
@@ -1908,10 +1928,10 @@ String isCCS = (String)request.getAttribute("isCCS");
 										    
 										    <% }else{%>											
 												<tr><td colspan="11"  class="std border1px text-center" >Nil </td></tr>
-											<%} %>
+											<%} %> --%>
 											
 									<!-- ********************************Future Demand End *********************************** -->
-											
+											<%if(procurementOnSanction.get(z)!=null && procurementOnSanction.get(z).size()>0){ %>
 											 <tr >
 											 
 												<th  class="std"  colspan="11">Orders Placed ( > &#8377; <% if (projectdatadetails.get(0) != null && projectdatadetails.get(0)[13] != null) { %>
@@ -2006,7 +2026,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 										 <% }else{%>
 											
 												<tr><td colspan="8" class="std border1px text-center" >Nil </td></tr>
-											<%} %>
+											<%}} %>
 									</table> 
 								<div align="right" class="width980"> <span class="currency font-weight-bold" >(In &#8377; Lakhs)</span></div>
 								<table class="subtables tb-sub"  >
@@ -2247,7 +2267,87 @@ String isCCS = (String)request.getAttribute("isCCS");
 						<details>
    						<summary role="button" tabindex="0"><b>8. Overall Financial Status  <i class="text-underline">(&#8377; Crore)</i> </b> </summary>
    						
-											  	<div class="content">
+   						<%if(lastmeetingVenue!=null && lastmeetingVenue[0]!=null){%>
+   							
+   							<div class="content">
+   								<%for(int z=0;z<projectidlist.size();z++){ 
+		                		BigDecimal allotment = BigDecimal.ZERO, sanction = BigDecimal.ZERO,
+		                				balance = BigDecimal.ZERO, oustanding = BigDecimal.ZERO, exp = BigDecimal.ZERO, inr = BigDecimal.ZERO, fe = BigDecimal.ZERO ;
+				                int sn = 1;
+						  	%>
+						  	<%if(ProjectDetail.size()>1){ %>
+								<div>
+									<b>Project : <%=ProjectDetail.get(z)[1] %> 	<%if(z!=0){ %>(SUB)<%} %>	</b>
+								</div>	
+							<%} %>
+							<br>				 
+							  	<table  class="subtables width1100" style="margin-bottom:20px!important; ">
+							  		<thead>
+								  		<tr>
+								  			<th>Category No</th>
+								  			<th>Category Name</th>
+								  			<th>Allotment</th>
+								  			<th>Sanction</th>
+								  			<th>Balance</th>
+								  			<th>SO Value</th>
+								  			<th>Expenditure</th>
+								  			<th>INR </th>
+								  			<th>FE </th>
+								  			<th colspan="1" class="text-center border-0">
+					                          	<button data-toggle="tooltip" onclick ="showModal(<%=projectid %>,'<%=ProjectDetail.get(z)[0] %>','<%=ProjectDetail.get(z)[1] %>')" class="btn btn-sm cursor-pointer"   type="button"  data-toggle="tooltip" data-placement="right"  title="Upload Overall Finance"  ><i class="fa fa-file-excel-o bg-success" aria-hidden="true" ></i>&nbsp;Excel Upload</button>
+						                       	<jsp:include page="../print/OverallExcelUploadPgad.jsp"></jsp:include> 
+				                          	</th>
+								  		</tr>
+							  		</thead>
+							  		<tbody>
+							  			<%if(briefingFinanceDetials!=null && !briefingFinanceDetials.isEmpty()){
+							  				for(BriefingFinance finance : briefingFinanceDetials){
+							  					allotment = allotment.add(finance.getAllotment());
+							  					sanction = sanction.add(finance.getSanction());
+							  					balance = balance.add(finance.getBalance());
+							  					oustanding = oustanding.add(finance.getOutStanding());
+							  					exp = exp.add(finance.getExpenditure());
+							  					inr = inr.add(finance.getInr());
+							  					fe = fe.add(finance.getFe());
+							  					
+							  				%>
+							  				<tr>
+							  					<td class="text-center" ><%=sn++ %></td>
+							  					<td class="text-start" ><%=finance.getCategoryName() %></td>
+							  					<td style="text-align:right!important;"><%=df.format(finance.getAllotment()) %></td>
+							  					<td style="text-align:right!important;"><%=df.format(finance.getSanction()) %></td>
+							  					<td style="text-align:right!important;"><%=df.format(finance.getBalance()) %></td>
+							  					<td style="text-align:right!important;"><%=df.format(finance.getOutStanding()) %></td>
+							  					<td style="text-align:right!important;"><%=df.format(finance.getExpenditure()) %></td>
+							  					<td style="text-align:right!important;" ><%=df.format(finance.getInr()) %></td>
+							  					<td style="text-align:right!important;" ><%=df.format(finance.getFe()) %></td>
+							  				</tr>
+							  			<%}}else{ %>
+							  				<tr>
+							  					<td colspan="9" class="text-center">No Data Availabe</td>
+							  				</tr>
+							  			<%} %>
+							  			
+							  			<tr>
+							  				<td colspan="2" class="text-center" >Total:</td>
+							  				<td style="text-align:right!important;"><%= df.format(allotment)%></td>
+							  				<td style="text-align:right!important;"><%=df.format(sanction) %></td>
+							  				<td style="text-align:right!important;"><%=df.format(balance) %></td>
+							  				<td style="text-align:right!important;"><%=df.format(oustanding) %></td>
+							  				<td style="text-align:right!important;"><%=df.format(exp) %></td>
+							  				<td style="text-align:right!important;"><%=df.format(inr) %></td>
+							  				<td style="text-align:right!important;"><%=df.format(fe) %></td>
+							  			</tr>
+							  		</tbody>
+							  	</table>
+   						
+								
+								<%}}else{ %>
+										<h5>Meeting is Not Scheduled!</h5>
+								<br><br><br><br><br>
+								<%} %>
+   						
+										<%-- 	  	<div class="content">
 						  	<%for(int z=0;z<projectidlist.size();z++){ 
 		                		double totSanctionCost=0,totReSanctionCost=0,totFESanctionCost=0;
 			                	double totExpenditure=0,totREExpenditure=0,totFEExpenditure=0;
@@ -2443,8 +2543,8 @@ String isCCS = (String)request.getAttribute("isCCS");
 							<%} %>
 							
 							</div> 	
-						
-						</details>
+					 --%>	
+						 </details>
 	
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
 						
@@ -3069,7 +3169,11 @@ String isCCS = (String)request.getAttribute("isCCS");
 												<tr><th class="width-5">SN</th><th class="width-80">Type</th><th class="width-5">Action</th></tr>
 											</thead>
 											<tbody>
-											<%int i=0; if(RecDecDetails!=null && RecDecDetails.size()>0){ 
+											<%
+											if(RecDecDetails!=null){
+												Collections.reverse(RecDecDetails);
+											}
+											int i=0; if(RecDecDetails!=null && RecDecDetails.size()>0){ 
 												for(Object[] obj :RecDecDetails){
 												String pointdata= "";
 												if(obj[3].toString().length()>30){

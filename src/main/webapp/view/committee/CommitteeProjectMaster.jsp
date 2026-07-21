@@ -252,7 +252,7 @@ String initiationid=(String)request.getAttribute("initiationid");
 															<%} else{ %>
 																<input type="checkbox" disabled >
 															<%} %>
-															
+
 														</td>
 														<td class="text-left"><%=obj[0]!=null?StringEscapeUtils.escapeHtml4(obj[0].toString()): " - "%> (<%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - "%>)</td>
 														<td class="text-left"><%if(obj[4].toString().equalsIgnoreCase("P")){ %><%=obj[5]!=null?StringEscapeUtils.escapeHtml4(obj[5].toString()): " - " %> days<%} else{%>Non-Periodic<%} %> </td>
@@ -271,7 +271,7 @@ String initiationid=(String)request.getAttribute("initiationid");
 														><img src="view/images/preview3.png"/>
 														</button>
 														<%}else{ %><%} %>
-														</td>															
+														</td>
 													</tr>
 													<%
 														}}else{

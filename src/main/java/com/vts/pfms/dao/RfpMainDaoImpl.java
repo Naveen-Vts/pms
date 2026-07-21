@@ -420,10 +420,10 @@ public class RfpMainDaoImpl implements RfpMainDao {
 	@Override
 	public long ProjectHoaUpdate(ProjectHoa hoa)throws Exception{
 		
-		manager.merge(hoa);
+		ProjectHoa managedHoa = manager.merge(hoa);
 		manager.flush();
-		
-		return hoa.getProjectHoaId();
+
+		return managedHoa.getProjectHoaId();
 	}
 	
 	@Override

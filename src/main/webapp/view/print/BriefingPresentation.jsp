@@ -47,7 +47,7 @@
 	FormatConverter fc = new FormatConverter();
 	SimpleDateFormat sdf = fc.getRegularDateFormat();
 	SimpleDateFormat sdf1 = fc.getSqlDateFormat();
-    SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+    SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy",Locale.ENGLISH);
     SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");	
 	String todayDate=outputFormat.format(new Date()).toString();
 	int addcount = 0;
@@ -692,7 +692,8 @@ String baseUrl = scheme + "://" + serverName
 									</button>
 								<%}%>
 							</td>
-								<td class="text-justify"> <%=obj[2]!=null?(obj[2].toString()):"" %> </td>
+
+								<td class="text-justify"> <%=obj[2]!=null?obj[2].toString():"" %> </td>
 								<td class="text-center">
 								<%if(obj[8]!= null && !LocalDate.parse(obj[8].toString()).equals(LocalDate.parse(obj[7].toString())) ){ %><span class="text-dark font-weight-bold"><%=sdf.format(sdf1.parse(obj[8].toString()))%></span><br><%} %>	
 								<%if(obj[7]!= null && !LocalDate.parse(obj[7].toString()).equals(LocalDate.parse(obj[6].toString())) ){ %><span class="text-dark font-weight-bold"><%=sdf.format(sdf1.parse(obj[7].toString()))%></span><br><%} %>
@@ -2721,7 +2722,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 
 			</div>
 
-				<!-- ---------------------------------------- P-12a  Other Relevant Points Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-12a  Other Relevant Points Div ----------------------------------------------------- -->
 
 			<div class="carousel-item ">
 				   <div class="content-header row ">
@@ -2914,9 +2915,8 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 				</div>
 			</div>
 			<!-- ---------------------------------------- Decision/Recommendations sought Div ----------------------------------------------------- -->
-	
-	
-			<!-- ---------------------------------------- P-14  Thank you Div ----------------------------------------------------- -->
+
+		<!-- ---------------------------------------- P-14  Thank you Div ----------------------------------------------------- -->
 
 			<div class="carousel-item ">
 				<div class="content bp-81">

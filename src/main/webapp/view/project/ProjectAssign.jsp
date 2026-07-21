@@ -354,7 +354,7 @@
 			$('#employeeEdit').val(employee);
 			$('#empIdEdit').val(empId);
 			$('#projectEmployeeIdEdit').val(rowId);
-			$('#roleMasterIdEdit').val(roleMasterId).trigger('change');
+			$('#roleMasterIdEdit').val(roleMasterId);
 			$('#projectTeamEditModal').modal('show');
 		}else{
 			if(confirm("Are You Sure To Revoke!")){
@@ -366,12 +366,19 @@
 		}
 	}
 
-	$('#roleMasterId,#roleMasterIdEdit').on('change', function(){
-		var selectedValue = $(this).val();
-		if(selectedValue=='-1') {
-			$('.field').val('');
-			$('#addNewRoleModal').modal('show');
-		}
+	$('#roleMasterId,#roleMasterIdEdit').on('change', function () {
+
+	    // only open modal when user manually selects Add New Role
+	    if ($(this).val() == '-1') {
+
+	        // prevent opening from edit modal initialization
+	        if ($('#projectTeamEditModal').hasClass('show')) {
+	            return;
+	        }
+
+	        $('.field').val('');
+	        $('#addNewRoleModal').modal('show');
+	    }
 	});
 	
 	function addNewRoleDetails() {
@@ -399,7 +406,7 @@
 						var values = JSON.parse(result);
 						var x="<option value="+values[0]+" selected='selected'>"+ values[1] + " (" + values[2] + ")" + "</option>";     
 						//$('#fieldGroupId option[value="-1"]').prop('selected', false);
-						$('.roleMasterId').append(x).val(values[0]).trigger('change');
+						$('.roleMasterId').append(x).val(values[0]);
 						$('.close.roleclose').click();
 					}
 				});

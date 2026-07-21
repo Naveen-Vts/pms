@@ -50,7 +50,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 			+ "(SELECT MAX(e.revisionno) FROM milestone_activity_rev e WHERE a.milestoneactivityid=e.milestoneactivityid) AS rev,\r\n"
 			+ "a.acceptedby,a.isaccepted,a.statusremarks,a.progressstatus,a.Weightage,a.activitystatusid,b.project_id,a.dateofcompletion, a.OICEmpId, a.financialOutlay,a.oicempid1 \r\n"
 			+ "FROM milestone_activity a,project_master b, employee c,employee d, employee_desig e, employee_desig f \r\n"
-			+ "WHERE a.projectid=b.project_id AND a.oicempid=c.emp_id AND a.oicempid1=d.emp_id AND c.desig_id = e.desig_id AND d.desig_id = f.desig_id AND a.projectid=:ProjectId ORDER BY a.MilestoneNo";
+			+ "WHERE a.projectid=b.project_id AND a.isactive = 1  AND a.oicempid=c.emp_id AND a.oicempid1=d.emp_id AND c.desig_id = e.desig_id AND d.desig_id = f.desig_id AND a.projectid=:ProjectId ORDER BY a.MilestoneNo";
 	private static final String PROJECTMASTER="SELECT a.project_id, a.project_code, a.project_name, a.project_short_name FROM project_master a WHERE a.is_active='1'";
 	private static final String EMPLOYEELISTALL="select a.emp_id,a.emp_name,b.designation,a.title,a.salutation FROM employee a,employee_desig b WHERE a.is_active='1' AND a.desig_id=b.desig_id ORDER BY a.sr_no=0,a.sr_no";
     private static final String MILESTONECOUNT="Select count(*) from milestone_activity where isactive='1' and projectid=:ProjectId";

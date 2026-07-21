@@ -245,7 +245,8 @@
 
 									<th class="pl-40">
 										<%if(useraccess>=1){ %> <input type="hidden" name="scheduleid"
-										value="<%=committeescheduleeditdata[6]%>"> <%					   		
+										value="<%=committeescheduleeditdata[6]%>"> <%					
+										System.out.println(userview);
 						   							if(Integer.parseInt(committeescheduleeditdata[10].toString())<6 && (userview==null || userview.equalsIgnoreCase("CS") || userview.equalsIgnoreCase("CC") )) { %>
 										<input type="submit" id="update" class="btn  btn-sm submit"
 										value="SUBMIT" onclick="Add(myfrm)"> <%}else{ %> <script
@@ -420,7 +421,7 @@
 						<%} %>
 
 						<div class="form-group mt-25px" align="center">
-							<%	if(Integer.parseInt(committeescheduleeditdata[10].toString())<6 && (userview==null || userview.equalsIgnoreCase("CS") || userview.equalsIgnoreCase("CC") )) { %>
+							<%	if((("PGAD".equalsIgnoreCase(labcode) && !"0".equals(projectid)) || Integer.parseInt(committeescheduleeditdata[10].toString())<6) && (userview==null || userview.equalsIgnoreCase("CS") || userview.equalsIgnoreCase("CC") )) { %>
 							<%if(!committeeagendalist.isEmpty()){%>
 							<%if(useraccess>1){ %>
 							<form <%if(programmeId.equals("0")) {%>

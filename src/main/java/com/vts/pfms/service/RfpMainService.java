@@ -40,7 +40,7 @@ public interface RfpMainService {
 	public List<Object[]> ProjectHealthData(String LabCode) throws Exception;
 	public Object[] ProjectHealthTotalData(String ProjectId,String EmpId,String LoginType,String LabCode,String IsAll) throws Exception;
 	public long ProjectHealthUpdate(String EmpId,String UserName)throws Exception;
-	public long ProjectHoaUpdate(List<ProjectHoa> hoa, String Username, List<IbasLabMaster> LabDetails) throws Exception;
+	public long ProjectHoaUpdate(List<ProjectHoa> hoa, String Username, List<LabMaster> LabDetails) throws Exception;
 	public Object[] ChangesTotalCountData(String ProjectId) throws Exception;
 	public List<Object[]> MeetingChanges(String ProjectId,String Interval,String LabCode) throws Exception;
 	public List<Object[]> MilestoneChanges(String ProjectId,String Interval,String LabCode) throws Exception;

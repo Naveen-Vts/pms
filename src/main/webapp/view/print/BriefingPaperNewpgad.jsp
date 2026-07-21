@@ -1,3 +1,5 @@
+<%@page import="java.util.regex.Matcher"%>
+<%@page import="java.util.regex.Pattern"%>
 <%@page import="org.apache.commons.text.StringEscapeUtils"%>
 <%@page import="java.nio.file.Paths"%>
 <%@page import="java.nio.file.Path"%>
@@ -58,7 +60,7 @@ String lablogo=(String)request.getAttribute("lablogo");
 LabMaster labInfo=(LabMaster)request.getAttribute("labInfo");
 String filePath=(String)request.getAttribute("filePath");
 String projectLabCode=(String)request.getAttribute("projectLabCode");
-SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy", Locale.ENGLISH);
 SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");	
 Object[] committeeMetingsCount =  (Object[]) request.getAttribute("committeeMetingsCount");
 String CommitteeCode = committee.getCommitteeShortName().trim();
@@ -78,6 +80,9 @@ String thankYouImg = (String)request.getAttribute("thankYouImg");
 p{
   text-align: justify;
   text-justify: inter-word;
+}
+table{
+	border-collapse: collapse;
 }
 
  th
@@ -406,6 +411,7 @@ List<List<Object[]>> MilestoneDetails6 = (List<List<Object[]>>)request.getAttrib
 
 String AppFilesPath= (String) request.getAttribute("AppFilesPath");
 Object[] nextMeetVenue =  (Object[]) request.getAttribute("nextMeetVenue");
+Object[] lastmeetingVenue =  (Object[]) request.getAttribute("lastmeetingVenue");
 
 String text=(String)request.getAttribute("text");
 List<Object[]> RecDecDetails = (List<Object[]>)request.getAttribute("recdecDetails");
@@ -427,16 +433,11 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 
 	<div class="firstpage" id="firstpage" align="center"> 
 	
-		<%if(text!=null && text.equalsIgnoreCase("p")) {%>
-		<div align="center" ><h1 style="color: #145374 !important;font-family: 'Muli'!important">Presentation <br> for </h1></div>
-		<%}else{ %>
-		<div align="center" ><h1 style="color: #145374 !important;font-family: 'Muli'!important">Briefing Paper </h1></div>
-		<%} %>
 		<!-- <div align="center" ><h2 style="color: #145374 !important">for</h2></div> -->
 
 			<div align="center" ><h2 <%if(text!=null && text.equalsIgnoreCase("p")) {%>style="color: #4C9100 !important;"<%}else{ %> style="color: #145374 !important" <%} %>><%=CommitteeCode!=null?(CommitteeCode): " - " %> #<%=Long.parseLong(committeeMetingsCount[1].toString()) %> Meeting </h2></div>
 			
-			<div align="center" ><h2 <%if(text!=null && text.equalsIgnoreCase("p")) {%>style="color: #4C9100 !important;"<%}else{ %> style="color: #145374 !important" <%} %>><%= projectattributes.get(0)[1]!=null?(projectattributes.get(0)[1].toString()): " - " %> (<%= projectattributes.get(0)[0]!=null?(projectattributes.get(0)[0].toString()): " - " %>)
+			<div align="center" ><h2 <%if(text!=null && text.equalsIgnoreCase("p")) {%>style="color: #4C9100 !important;"<%}else{ %> style="color: #145374 !important" <%} %>>Project : <%= projectattributes.get(0)[0]!=null?projectattributes.get(0)[0].toString(): " - " %>
 			
 			<%if(projectattributes.size()>1) {
 						for(int item=1;item<projectattributes.size();item++){
@@ -445,6 +446,11 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 						<span style="font-size: 1rem;"><%= projectattributes.get(item)[1]!=null?(projectattributes.get(item)[1].toString()): " - " %> (<%= projectattributes.get(item)[0]!=null?(projectattributes.get(item)[0].toString()): " - " %>) (SUB)</span>
 						 <%}} %>
 			</h2></div>
+			<%if(text!=null && text.equalsIgnoreCase("p")) {%>
+		<div align="center" ><h1 style="color: #145374 !important;font-family: 'Muli'!important">Presentation <br> for </h1></div>
+		<%}else{ %>
+		<div align="center" ><h1 style="color: #145374 !important;font-family: 'Muli'!important">Briefing Paper </h1></div>
+		<%} %>
 		
 		<br>
 			<table class="executive" style="align: center;margin-left: auto;margin-right:auto;  font-size: 16px;"  >
@@ -455,12 +461,12 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 				</tr>
 			</table>
 		<br><br>
-						<% if(nextMeetVenue!=null){ %>
+						<% if(lastmeetingVenue!=null){ %>
 							<div class="executive" align="center">
 							<table style="margin-left: auto;margin-right:auto;width:650px;" >
 								<tr >
 									 <th  style="text-align: center; font-size: 20px;padding: 0px; "> <u>Meeting Id </u> </th></tr><tr>
-									 <th  style="text-align: center;  font-size: 20px;padding: 0px;  "> <%=nextMeetVenue[1]!=null?(nextMeetVenue[1].toString()): " - " %> </th>				
+									 <th  style="text-align: center;  font-size: 20px;padding: 0px;  "> <%=lastmeetingVenue[1]!=null?(lastmeetingVenue[1].toString()): " - " %> </th>				
 								 </tr>
 							</table>
 							<br><br>
@@ -471,15 +477,15 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								 </tr>
 								 <tr>
 								 	<%-- <%LocalTime starttime = LocalTime.parse(LocalTime.parse(nextMeetVenue[3].toString(),DateTimeFormatter.ofPattern("HH:mm:ss")).format( DateTimeFormatter.ofPattern("HH:mm") ));   %> --%>
-									 <td  style="text-align: center;  width: 50%;font-size: 20px ;padding: 0px;border:0px !important;"> <b><%=sdf.format(sdf1.parse(nextMeetVenue[2].toString()))%></b></td>
-									 <td  style="text-align: center;  width: 50%;font-size: 20px ;padding: 0px;border:0px !important;"> <b><%=nextMeetVenue[3]!=null?(nextMeetVenue[3].toString()): " - "/* starttime.format( DateTimeFormatter.ofPattern("hh:mm a") ) */ %></b></td>
+									 <td  style="text-align: center;  width: 50%;font-size: 20px ;padding: 0px;border:0px !important;"> <b><%=sdf.format(sdf1.parse(lastmeetingVenue[2].toString()))%></b></td>
+									 <td  style="text-align: center;  width: 50%;font-size: 20px ;padding: 0px;border:0px !important;"> <b><%=lastmeetingVenue[3]!=null?(lastmeetingVenue[3].toString()): " - "/* starttime.format( DateTimeFormatter.ofPattern("hh:mm a") ) */ %></b></td>
 								 </tr>
 							 </table>
 							 <br><br>
 							 <table style=" margin-left: auto;margin-right:auto;width:650px; " >
 								<tr >
 									 <th  style="text-align: center; font-size: 20px;padding: 0px "> <u>Meeting Venue</u> </th></tr><tr>
-									 <th  style="text-align: center;  font-size: 20px;padding: 0px  "> <% if(nextMeetVenue[5]!=null){ %><%=(nextMeetVenue[5].toString()) %> <%}else{ %> - <%} %></th>				
+									 <th  style="text-align: center;  font-size: 20px;padding: 0px  "> <% if(lastmeetingVenue[5]!=null){ %><%=(lastmeetingVenue[5].toString()) %> <%}else{ %> - <%} %></th>				
 								 </tr>
 							</table>
 							</div>
@@ -489,14 +495,14 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 						
 						<br><br>
 		<table class="executive" style="align: center;margin-bottom:0px; margin-left: auto;margin-right:auto;  font-size: 16px;margin-top:0px;"  >
-		<% if(labInfo!=null){ %>
+		
 			<tr>
-				<th colspan="8" style="text-align: center; font-weight: 700;font-size: 22px;padding-bottom: 0px;"><%if(labInfo.getLabName()!=null){ %><%=(labInfo.getLabName())  %><%}else{ %>LAB NAME<%} %></th>
+				<th colspan="8" style="text-align: center; font-weight: 700;font-size: 22px;padding-bottom: 0px;">PGAD/RCI</th>
 			</tr>
-		<% } %>
-		<tr>
+		
+		<!-- <tr>
 			<th colspan="8" style="text-align: center; font-weight: 700;font-size:15px;padding-bottom: 0px;">Government of India, Ministry of Defence</th>
-		</tr>
+		</tr> -->
 		<tr>
 			<th colspan="8" style="text-align: center; font-weight: 700;font-size:15px;padding-bottom: 0px;">Defence Research & Development Organization</th>
 		</tr>
@@ -534,36 +540,46 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										</tr>
 										<tr>
 											 <td  style="padding: 5px; padding-left: 10px">(b)</td>
+											 <th style="width: 150px;padding: 5px; padding-left: 10px"><b>Project No </b></th>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"> <%=projectattributes.get(z)[2]!=null?(projectattributes.get(z)[2].toString()): " - "%></td>
+										</tr>
+										<tr>
+											 <td  style="padding: 5px; padding-left: 10px">(c)</td>
+											 <th style="width: 150px;padding: 5px; padding-left: 10px"><b>Project Unit Code </b></th>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"> <%=projectattributes.get(z)[18]!=null?(projectattributes.get(z)[18].toString()): " - "%> </td>
+										</tr>
+										<tr>
+											 <td  style="padding: 5px; padding-left: 10px">(d)</td>
 											 <th style="width: 150px;padding: 5px; padding-left: 10px"><b>Project Code </b></th>
 											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"> <%=projectattributes.get(z)[0]!=null?(projectattributes.get(z)[0].toString()): " - "%> </td>
 										</tr>
 										<tr>
-											 <td  style=" padding: 5px; padding-left: 10px">(c)</td>
+											 <td  style=" padding: 5px; padding-left: 10px">(e)</td>
 											 <th  style="width: 150px;padding: 5px; padding-left: 10px"><b>Category</b></th>
 											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"><%=projectattributes.get(z)[14]!=null?(projectattributes.get(z)[14].toString()): " - "%></td>
 										</tr>
 										<tr>
-											 <td  style="padding: 5px; padding-left: 10px">(d)</td>
+											 <td  style="padding: 5px; padding-left: 10px">(f)</td>
 											 <th  style="width: 150px;padding: 5px; padding-left: 10px"><b>Date of Sanction</b></th>
 											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"><%=sdf.format(sdf1.parse(projectattributes.get(z)[3].toString()))%></td>
 										</tr>
 										<tr>
-											 <td  style="width: 20px; padding: 5px; padding-left: 10px">(e)</td>
+											 <td  style="width: 20px; padding: 5px; padding-left: 10px">(g)</td>
 											 <th  style="width: 150px;padding: 5px; padding-left: 10px"><b>Nodal and Participating Labs</b></th>
 											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"><%if(projectattributes.get(z)[15]!=null){ %><%=(projectattributes.get(z)[15].toString())%><%} %></td>
 										</tr>
 										<tr>
-											 <td  style=" padding: 5px; padding-left: 10px">(f)</td>
+											 <td  style=" padding: 5px; padding-left: 10px">(h)</td>
 											 <th  style="width: 150px;padding: 5px; padding-left: 10px"><b>Objective</b></th>
 											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px;text-align: justify"> <%=projectattributes.get(z)[4]!=null?(projectattributes.get(z)[4].toString()): " - "%></td>
 										</tr>
 										<tr>
-											 <td  style="padding: 5px; padding-left: 10px">(g)</td>
+											 <td  style="padding: 5px; padding-left: 10px">(i)</td>
 											 <th  style="width: 150px;padding: 5px; padding-left: 10px"><b>Deliverables</b></th>
 											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px"> <%=projectattributes.get(z)[5]!=null?(projectattributes.get(z)[5].toString()): " - "%></td>
 										</tr>
 										<tr>
-											 <td rowspan="2" style="padding: 5px; padding-left: 10px">(h)</td>
+											 <td rowspan="2" style="padding: 5px; padding-left: 10px">(j)</td>
 											 <th rowspan="2" style="width: 150px;padding: 5px; padding-left: 10px"><b>PDC</b></th>
 											 
 											<th colspan="2" style="text-align: center !important"> Original &nbsp;</th>					
@@ -592,7 +608,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								 		</tr>
 											 	
 										<tr>
-											<td rowspan="3" style="width: 30px; padding: 5px; padding-left: 10px">(i)</td>
+											<td rowspan="3" style="width: 30px; padding: 5px; padding-left: 10px">(k)</td>
 											<th rowspan="3" style="padding-left: 10px"><b>Cost Breakup( &#8377; <span class="currency">Lakhs</span>)</b></th>
 											
 											<%if( ProjectRevList.get(z).size()>0 ){ %>
@@ -636,7 +652,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 												
 																			 	
 										<tr>
-											<td  style="width: 20px; padding: 5px; padding-left: 10px">(j)</td>
+											<td  style="width: 20px; padding: 5px; padding-left: 10px">(l)</td>
 											<th style="width: 150px;padding: 5px; padding-left: 10px"><b>No. of Meetings held</b> </th>
 								 			<td colspan="4">
 												<% if(ebandpmrccount!=null && ebandpmrccount.size()>0){
@@ -648,7 +664,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 											</td>
 										</tr>
 										<tr>
-											<td  style="width: 20px; padding: 5px; padding-left: 10px">(k)</td>
+											<td  style="width: 20px; padding: 5px; padding-left: 10px">(m)</td>
 											<th  style="width: 210px;padding: 5px; padding-left: 10px"><b>Current Stage of Project</b></th>
 											<td colspan="4" style=" width: 200px;color:blue; padding: 5px; padding-left: 10px ; <%if(projectdatadetails.get(z)!=null){ %> background-color: <%=projectdatadetails.get(z)[11] !=null?(projectdatadetails.get(z)[11].toString()): " - "%> ;   <%} %>" >
 													 <span> <%if(projectdatadetails.get(z)!=null){ %><b><%=(projectdatadetails.get(z)[10].toString()) %> </b>  <%}else{ %>Data Not Found<%} %></span>
@@ -1234,7 +1250,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 				
 				 --%>
 				 
-					<table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
+					<%-- <table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
 						<thead>
 							<tr>
 								<th style="width:5%!important;">SN</th>
@@ -1259,7 +1275,56 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 							<%} %>
 						</tbody>
 					</table>
-				<%}} %>
+			 --%>
+			 
+			 <ul style="list-style-type:none; width:680px; margin-top:5px; font-size:16px; padding-left:0;">
+						<%
+						if(list != null && !list.isEmpty()){
+						    for(Object[] obj : list){
+						%>
+						    <li style="margin-bottom:10px;text-align:left;">
+						        <%
+						        String editorContent = obj[2] != null ? obj[2].toString() : " - ";
+						
+						        // Convert inner <ol> to numbered format
+						        Pattern pattern = Pattern.compile("(?i)<ol[^>]*>(.*?)</ol>", Pattern.DOTALL);
+						        Matcher matcher = pattern.matcher(editorContent);
+						
+						        while (matcher.find()) {
+						            String olContent = matcher.group(1);
+						
+						            Pattern liPattern = Pattern.compile("(?i)<li[^>]*>(.*?)</li>");
+						            Matcher liMatcher = liPattern.matcher(olContent);
+						
+						            StringBuilder numberedList = new StringBuilder();
+						            int znum = 1;
+						
+						            while (liMatcher.find()) {
+						                numberedList.append(znum++)
+						                              .append(". ")
+						                              .append(liMatcher.group(1).trim())
+						                              .append("<br/>");
+						            }
+						
+						            editorContent = editorContent.replace(matcher.group(0), numberedList.toString());
+						        }
+						
+						        // Remove unwanted tags
+						        editorContent = editorContent.replaceAll("(?i)</?(p|div|)[^>]*>", "");
+						        %>
+						
+						        <%= editorContent %>
+						    </li>
+						<%
+						    }
+						} else {
+						%>
+						    <li>No Data Available</li>
+						<%
+						}
+						%>
+						</ul>
+			 	<%}} %>
 				
 	<% for(int z=0 ; z<1;z++) {  
 
@@ -1607,7 +1672,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 		 	
 		 		<div align="left" class="margin-left15">(a) Work carried out, Achievements, test result etc.</div>
 		 		
-					<table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
+					<%-- <table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
 						<thead>
 							<tr>
 								<th style="width:5%!important;">SN</th>
@@ -1631,7 +1696,55 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								</tr>
 							<%} %>
 						</tbody>
-					</table>
+					</table> --%>
+					 
+			 <ul style="list-style-type:none; width:680px; margin-top:5px; font-size:16px; padding-left:0;">
+						<%
+						if(list != null && !list.isEmpty()){
+						    for(Object[] obj : list){
+						%>
+						    <li style="margin-bottom:10px;text-align:left;">
+						        <%
+						        String editorContent = obj[2] != null ? obj[2].toString() : " - ";
+						
+						        // Convert inner <ol> to numbered format
+						        Pattern pattern = Pattern.compile("(?i)<ol[^>]*>(.*?)</ol>", Pattern.DOTALL);
+						        Matcher matcher = pattern.matcher(editorContent);
+						
+						        while (matcher.find()) {
+						            String olContent = matcher.group(1);
+						
+						            Pattern liPattern = Pattern.compile("(?i)<li[^>]*>(.*?)</li>");
+						            Matcher liMatcher = liPattern.matcher(olContent);
+						
+						            StringBuilder numberedList = new StringBuilder();
+						            int znum = 1;
+						
+						            while (liMatcher.find()) {
+						                numberedList.append(znum++)
+						                              .append(". ")
+						                              .append(liMatcher.group(1).trim())
+						                              .append("<br/>");
+						            }
+						
+						            editorContent = editorContent.replace(matcher.group(0), numberedList.toString());
+						        }
+						
+						        // Remove unwanted tags
+						        editorContent = editorContent.replaceAll("(?i)</?(p|div|)[^>]*>", "");
+						        %>
+						
+						        <%= editorContent %>
+						    </li>
+						<%
+						    }
+						} else {
+						%>
+						    <li>No Data Available</li>
+						<%
+						}
+						%>
+						</ul>
 		<%}%>
 		<% if(projectdatadetails.get(z)!=null && projectdatadetails.get(z)[6]!=null){ %>
 		 	<div align="left" style="margin-left:15px;">(b) TRL table with TRL at sanction stage and current stage indicating overall PRI.</div>
@@ -1815,18 +1928,18 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 		
 		<%int chapter=1;int chapter2=1;
 		for(int z=0 ; z<projectidlist.size();z++) {  %>
-			<%if(procurementOnSanction.get(z)!=null && !procurementOnSanction.get(z).isEmpty()){ %>
+			<%if(procurementOnSanction.get(z)!=null ){ %>
 		 					
 		<!-- ----------------------------------------------7a. Procurement Status------------------------------------------------- -->
 						
 						<div align="left" style="margin-left: 10px;margin-bottom: 15px;margin-top:20px;"><b class="sub-title"><% if(chapter==1){ %> <%= ++index %><%}else{ %><%= index %><%} %>. Details of Procurement</b></div>
 						
-						<%if(procurementOnSanction.get(z)!=null && !procurementOnSanction.get(z).isEmpty()){ %>
-							<div align="left" style="margin-left: 15px;margin-bottom: 15px;margin-top:20px;"><b class="mainsubtitle">(a<%if(projectidlist.size()>1) {%><%="."+chapter++%><%} %>)Details of Procurement plan (Major Items) 			 </b>  <%if(projectidlist.size()>1) {%> (<b><%=ProjectDetail.get(z)[1]%><% if (z > 0) { %>(SUB)<% } %>  <%} %></b>)</div>
+							<div align="left" style="margin-left: 15px;margin-bottom: 15px;margin-top:20px;"><b class="mainsubtitle">(a<%if(projectidlist.size()>1) {%><%="."+chapter++%><%} %>)Details of Procurement plan (Major Items) 			 </b>  <%if(projectidlist.size()>1) {%> (<b><%=ProjectDetail.get(z)[1]%><% if (z > 0) { %>(SUB)<% } %> </b>)<%} %></div>
 							<!-- <div align="right"> <span class="currency" style="font-weight: bold;width: 970px !important;" >(In &#8377; Lakhs)</span></div> -->
 							
 							<table class="subtables" style=" margin-left: 8px;margin-top:5px;font-size: 16px; border-collapse: collapse;border: 1px solid black" >
 										<thead>
+										<%if(procurementOnDemand.get(z)!=null &&  procurementOnDemand.get(z).size()>0){ %>
 										<tr>
 											<th colspan="11" style="text-align: right;"> <span class="currency" >(In &#8377; Lakhs)</span></th>
 										</tr>
@@ -1867,19 +1980,19 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										    }%>
 										    
 										    <tr>
-										    	<td class="std" colspan="8" style="text-align: right;"><b>Total</b></td>
+										    	<td class="std" colspan="6" style="text-align: right;"><b>Total</b></td>
 										    	<td class="std" style="text-align: right;"><b><%=df.format(estcost)%></b></td>
 										    	
-										    	<td class="std" colspan="2" style="text-align: right;"></td>
+										    	<td class="std" colspan="4" style="text-align: right;"></td>
 
 										    </tr>
 										    
 										    
 										    <% }else{%>											
 												<tr><td colspan="11" style="border: 1px solid black;text-align: center;" class="std" >Nil </td></tr>
-											<%} %>
+											<%}} %>
 											<!-- ********************************Future Demand Start *********************************** -->
-											<tr>
+											<%-- <tr>
 											<th class="std" colspan="11" style="border: 1px solid black"><span class="mainsubtitle">Future Demand</span></th>
 											</tr>
 											<tr>
@@ -1915,10 +2028,10 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										    
 										    <% }else{%>											
 												<tr><td colspan="11" style="border: 1px solid black;text-align: center;" class="std" >Nil </td></tr>
-											<%} %>
+											<%} %> --%>
 											
 									<!-- ********************************Future Demand End *********************************** -->
-											
+										<%if(procurementOnSanction.get(z)!=null && procurementOnSanction.get(z).size()>0){ %>	
 											 <tr >
 											 
 												<th  class="std"  colspan="11">Orders Placed ( > &#8377; <% if (projectdatadetails.get(0) != null && projectdatadetails.get(0)[13] != null) { %>
@@ -2016,7 +2129,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										 <% }else{%>
 											
 												<tr><td colspan="8" style="border: 1px solid black;" class="std"  style="text-align: center;">Nil </td></tr>
-											<%} %>
+											<%}} %>
 									</table> 
 							
 									 
@@ -2062,8 +2175,8 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								
 <!-- ----------------------------------------------7b. Procurement Status------------------------------------------------- -->								
 					  
-						<%if(procurementOnSanction.get(z)!=null && !procurementOnSanction.get(z).isEmpty()){ %>
-								<div align="left" style="margin-left: 15px;margin-bottom: 15px;margin-top:20px;"><b class="mainsubtitle">(b<%if(projectidlist.size()>1) {%><%="."+chapter2++%><%} %>) Procurement Status</b> 			<%if(projectidlist.size()>1) {%> (<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  <%} %></b></div>
+						<%if(procurementOnSanction.get(z)!=null){ %>
+								<div align="left" style="margin-left: 15px;margin-bottom: 15px;margin-top:20px;"><b class="mainsubtitle">(b<%if(projectidlist.size()>1) {%><%="."+chapter2++%><%} %>) Procurement Status</b> 			<%if(projectidlist.size()>1) {%> (<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  <%} %></b>)</div>
 								<div align="right" style="width:980px !important;"> <span class="currency" style="font-weight: bold;" >(In &#8377; Lakhs)</span></div>
 								
 								<table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 0px; margin-left: 25px;width:980px !important;  border-collapse:collapse;" >
@@ -2270,7 +2383,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 									  
                
 					
-		<%}}} %>	
+		<%}} %>	
 			 <%-- <% char fch='a'; for(int z=0 ; z<projectidlist.size();z++) {   			
 			%> --%>
 					<!-- ----------------------------------------------8. Overall financial Status------------------------------------------------- -->
@@ -2625,7 +2738,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 							</table>
  --%>
  		
-					<table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
+					<%-- <table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
 						<thead>
 							<tr>
 								<th style="width:5%!important;">SN</th>
@@ -2649,7 +2762,56 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								</tr>
 							<%} %>
 						</tbody>
-					</table>
+					</table> --%>
+					
+					 
+			 <ul style="list-style-type:none; width:680px; margin-top:5px; font-size:16px; padding-left:0;">
+						<%
+						if(list != null && !list.isEmpty()){
+						    for(Object[] obj : list){
+						%>
+						    <li style="margin-bottom:10px;text-align:left;">
+						        <%
+						        String editorContent = obj[2] != null ? obj[2].toString() : " - ";
+						
+						        // Convert inner <ol> to numbered format
+						        Pattern pattern = Pattern.compile("(?i)<ol[^>]*>(.*?)</ol>", Pattern.DOTALL);
+						        Matcher matcher = pattern.matcher(editorContent);
+						
+						        while (matcher.find()) {
+						            String olContent = matcher.group(1);
+						
+						            Pattern liPattern = Pattern.compile("(?i)<li[^>]*>(.*?)</li>");
+						            Matcher liMatcher = liPattern.matcher(olContent);
+						
+						            StringBuilder numberedList = new StringBuilder();
+						            int znum = 1;
+						
+						            while (liMatcher.find()) {
+						                numberedList.append(znum++)
+						                              .append(". ")
+						                              .append(liMatcher.group(1).trim())
+						                              .append("<br/>");
+						            }
+						
+						            editorContent = editorContent.replace(matcher.group(0), numberedList.toString());
+						        }
+						
+						        // Remove unwanted tags
+						        editorContent = editorContent.replaceAll("(?i)</?(p|div|)[^>]*>", "");
+						        %>
+						
+						        <%= editorContent %>
+						    </li>
+						<%
+						    }
+						} else {
+						%>
+						    <li>No Data Available</li>
+						<%
+						}
+						%>
+						</ul>
 
 <% }} %>
 
