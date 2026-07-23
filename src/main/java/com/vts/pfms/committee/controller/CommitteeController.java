@@ -7446,7 +7446,9 @@ private boolean isValidFileType(MultipartFile file) {
 		String UserId=(String)ses.getAttribute("Username");
 		String EmpNo=(String)ses.getAttribute("EmpNo");
 		String EmpName=(String)ses.getAttribute("EmpName");
-		String LabCode =(String) ses.getAttribute("labcode");
+		String LabCode =(String) ses.getAttribute("labcode");	  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 		logger.info(new Date() +"Inside CommitteeMinutesNewDownload.htm "+UserId);
 		try
 		{		
@@ -7562,7 +7564,7 @@ private boolean isValidFileType(MultipartFile file) {
 
 				
 				try {
-				req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(projectdetails!=null?projectdetails[4].toString():"", "10000000"));
+				req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(auToken,projectdetails!=null?projectdetails[4].toString():"", "10000000"));
 				}catch (Exception e) {
 				e.printStackTrace();
 				req.setAttribute("financialDetails",new ArrayList<>());
@@ -7592,7 +7594,7 @@ private boolean isValidFileType(MultipartFile file) {
 //				}
 				
 				try {
-				req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand());
+				req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand(auToken));
 				}
 				catch (Exception e) {
 					e.printStackTrace();
@@ -7859,7 +7861,9 @@ private boolean isValidFileType(MultipartFile file) {
 		String UserId=(String)ses.getAttribute("Username");
 		String EmpNo=(String)ses.getAttribute("EmpNo");
 		String EmpName=(String)ses.getAttribute("EmpName");
-		String LabCode =(String) ses.getAttribute("labcode");
+		String LabCode =(String) ses.getAttribute("labcode");	  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 		logger.info(new Date() +"Inside CommitteeMinutesNewProtected.htm "+UserId);
 		try
 		{		
@@ -7954,7 +7958,7 @@ private boolean isValidFileType(MultipartFile file) {
 //				}
 
 				try {
-					req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(projectdetails!=null?projectdetails[4].toString():"", "10000000"));
+					req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(auToken,projectdetails!=null?projectdetails[4].toString():"", "10000000"));
 					}catch (Exception e) {
 					e.printStackTrace();
 					req.setAttribute("financialDetails",new ArrayList<>());
@@ -7982,7 +7986,7 @@ private boolean isValidFileType(MultipartFile file) {
 //					}
 //				}
 				try {
-					req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand());
+					req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand(auToken));
 					}
 					catch (Exception e) {
 						e.printStackTrace();
@@ -8554,7 +8558,9 @@ private boolean isValidFileType(MultipartFile file) {
 	{	
 		String UserId = (String) ses.getAttribute("Username");
 		long EmpId = (Long) ses.getAttribute("EmpId");
-		String LabCode =(String) ses.getAttribute("labcode");
+		String LabCode =(String) ses.getAttribute("labcode");	  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 		logger.info(new Date() +"Inside getMinutesFrozen.htm "+UserId);		
 		try { 
 
@@ -8649,7 +8655,7 @@ private boolean isValidFileType(MultipartFile file) {
 //			}
 
 			try {
-				req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(projectdetails!=null?projectdetails[4].toString():"", "10000000"));
+				req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(auToken,projectdetails!=null?projectdetails[4].toString():"", "10000000"));
 				}catch (Exception e) {
 				e.printStackTrace();
 				req.setAttribute("financialDetails",new ArrayList<>());
@@ -8678,7 +8684,7 @@ private boolean isValidFileType(MultipartFile file) {
 //			}
 			
 			try {
-				req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand());
+				req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand(auToken));
 				}
 				catch (Exception e) {
 					e.printStackTrace();
@@ -9196,7 +9202,9 @@ private boolean isValidFileType(MultipartFile file) {
 	public void CommitteeMinutesNewDfm(HttpServletRequest req,HttpServletResponse res, HttpSession ses, RedirectAttributes redir) throws Exception
 	{
 		String UserId=(String)ses.getAttribute("Username");
-		String LabCode =(String) ses.getAttribute("labcode");
+		String LabCode =(String) ses.getAttribute("labcode");	  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 		logger.info(new Date() +"Inside CommitteeMinutesNewDfm.htm"+UserId);
 		try
 		{		
@@ -9298,7 +9306,7 @@ private boolean isValidFileType(MultipartFile file) {
 //					}
 //				}
 				try {
-					req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(projectdetails!=null?projectdetails[4].toString():"", "10000000"));
+					req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(auToken,projectdetails!=null?projectdetails[4].toString():"", "10000000"));
 					}catch (Exception e) {
 					e.printStackTrace();
 					req.setAttribute("financialDetails",new ArrayList<>());
@@ -9329,7 +9337,7 @@ private boolean isValidFileType(MultipartFile file) {
 
 				
 				try {
-					req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand());
+					req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand(auToken));
 					}
 					catch (Exception e) {
 						e.printStackTrace();
@@ -9721,7 +9729,9 @@ private boolean isValidFileType(MultipartFile file) {
 			RedirectAttributes redir) throws Exception {
 		long startTime = System.currentTimeMillis();
 		String UserId = (String) ses.getAttribute("Username");
-		String LabCode = (String) ses.getAttribute("labcode");
+		String LabCode = (String) ses.getAttribute("labcode");	  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 		logger.info(new Date() + "Inside CommitteeMinutesNewWordDownload.htm " + UserId);
 
 
@@ -9804,7 +9814,7 @@ private boolean isValidFileType(MultipartFile file) {
 //				}
 //			}
 			try {
-				req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(projectdetails!=null?projectdetails[4].toString():"", "10000000"));
+				req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(auToken,projectdetails!=null?projectdetails[4].toString():"", "10000000"));
 				}catch (Exception e) {
 				e.printStackTrace();
 				req.setAttribute("financialDetails",new ArrayList<>());
@@ -9833,7 +9843,7 @@ private boolean isValidFileType(MultipartFile file) {
 //			}
 			
 			try {
-				req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand());
+				req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand(auToken));
 				}
 				catch (Exception e) {
 					e.printStackTrace();
@@ -9962,7 +9972,9 @@ private boolean isValidFileType(MultipartFile file) {
 		String UserId=(String)ses.getAttribute("Username");
 		String EmpNo=(String)ses.getAttribute("EmpNo");
 		String EmpName=(String)ses.getAttribute("EmpName");
-		String LabCode =(String) ses.getAttribute("labcode");
+		String LabCode =(String) ses.getAttribute("labcode");	  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 		logger.info(new Date() +"Inside SendMinutes.htm "+UserId);
 		int mailcount=0;
 
@@ -10057,7 +10069,7 @@ private boolean isValidFileType(MultipartFile file) {
 //				}
 				
 				try {
-					req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(projectdetails!=null?projectdetails[4].toString():"", "10000000"));
+					req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(auToken,projectdetails!=null?projectdetails[4].toString():"", "10000000"));
 					}catch (Exception e) {
 					e.printStackTrace();
 					req.setAttribute("financialDetails",new ArrayList<>());
@@ -10087,7 +10099,7 @@ private boolean isValidFileType(MultipartFile file) {
 //				}
 
 				try {
-					req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand());
+					req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand(auToken));
 					}
 					catch (Exception e) {
 						e.printStackTrace();
@@ -11897,7 +11909,9 @@ private boolean isValidFileType(MultipartFile file) {
 		String UserId=(String)ses.getAttribute("Username");
 		String EmpNo=(String)ses.getAttribute("EmpNo");
 		String EmpName=(String)ses.getAttribute("EmpName");
-		String LabCode =(String) ses.getAttribute("labcode");
+		String LabCode =(String) ses.getAttribute("labcode");	  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 		logger.info(new Date() +"Inside CommitteeMinutesNewMOMDownload.htm "+UserId);
 		try
 		{		
@@ -12017,7 +12031,7 @@ private boolean isValidFileType(MultipartFile file) {
 				
 
 				try {
-				req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(projectdetails!=null?projectdetails[4].toString():"", "10000000"));
+				req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(auToken,projectdetails!=null?projectdetails[4].toString():"", "10000000"));
 				}catch (Exception e) {
 				e.printStackTrace();
 				req.setAttribute("financialDetails",new ArrayList<>());
@@ -12048,7 +12062,7 @@ private boolean isValidFileType(MultipartFile file) {
 				
 
 				try {
-				req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand());
+				req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand(auToken));
 				}
 				catch (Exception e) {
 					e.printStackTrace();
@@ -12401,7 +12415,9 @@ private boolean isValidFileType(MultipartFile file) {
 		String UserId=(String)ses.getAttribute("Username");
 		String EmpNo=(String)ses.getAttribute("EmpNo");
 		String EmpName=(String)ses.getAttribute("EmpName");
-		String LabCode =(String) ses.getAttribute("labcode");
+		String LabCode =(String) ses.getAttribute("labcode");	  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 		logger.info(new Date() +"Inside CommitteeMinutesNewMOMDownload.htm "+UserId);
 		try
 		{		
@@ -12521,7 +12537,7 @@ private boolean isValidFileType(MultipartFile file) {
 				
 
 				try {
-				req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(projectdetails!=null?projectdetails[4].toString():"", "10000000"));
+				req.setAttribute("financialDetails",pfmsServ.financialStatusBriefing(auToken ,projectdetails!=null?projectdetails[4].toString():"", "10000000"));
 				}catch (Exception e) {
 				e.printStackTrace();
 				req.setAttribute("financialDetails",new ArrayList<>());
@@ -12552,7 +12568,7 @@ private boolean isValidFileType(MultipartFile file) {
 				
 
 				try {
-				req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand());
+				req.setAttribute("TotalProcurementDetails",pfmsServ.getTotalDemand(auToken));
 				}
 				catch (Exception e) {
 					e.printStackTrace();

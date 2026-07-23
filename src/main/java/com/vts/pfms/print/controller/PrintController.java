@@ -716,7 +716,7 @@ public class PrintController {
 	        req.setAttribute("levelid", mileStoneLevelId != null ? mileStoneLevelId[0].toString() : "2");
 
 	        // Project Data
-	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected);
+	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
 
 	        List<Object[]> projectdatadetails = (List<Object[]>) req.getAttribute("projectdatadetails");
 	        List<List<Object[]>> ebandpmrccount = (List<List<Object[]>>) req.getAttribute("ebandpmrccount");
@@ -1044,7 +1044,7 @@ public class PrintController {
 			req.setAttribute("levelid", mileStoneLevelId!=null?mileStoneLevelId[0].toString():"2");
 			
 			// Project Data
-			processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected);
+			processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
 			
 			List<Object[]> projectdatadetails = (List<Object[]>)req.getAttribute("projectdatadetails");
 			List<List<Object[]>> ebandpmrccount = (List<List<Object[]>>)req.getAttribute("ebandpmrccount");
@@ -1499,7 +1499,9 @@ public class PrintController {
 	{
 
 		String UserId = (String) ses.getAttribute("Username");
-		String LabCode = (String)ses.getAttribute("labcode");
+		String LabCode = (String)ses.getAttribute("labcode");	  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 		logger.info(new Date() +"Inside ProjectBriefingDownload.htm "+UserId);		
 	    try {
 	    	String projectid=req.getParameter("projectid");
@@ -1638,7 +1640,7 @@ public class PrintController {
 //						HttpEntity<String> entity = new HttpEntity<String>(headers);
 //						ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
 //						jsonResult=response.getBody();
-						projectDetails = PFMSserv.financialStatusBriefing(projectattribute[0] != null ? projectattribute[0].toString() : "", "10000000");
+						projectDetails = PFMSserv.financialStatusBriefing(auToken, projectattribute[0] != null ? projectattribute[0].toString() : "", "10000000");
 					}catch(Exception e) {
 						req.setAttribute("errorMsg", "errorMsg");
 						req.setAttribute("financialDetails",List.of());
@@ -1669,7 +1671,7 @@ public class PrintController {
 //						HttpEntity<String> entity = new HttpEntity<String>(headers);
 //						ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
 //						jsonResult2=response.getBody();		
-						totaldemand = PFMSserv.getTotalDemand();
+						totaldemand = PFMSserv.getTotalDemand(auToken);
 					}catch(Exception e) {
 						req.setAttribute("errorMsg", "errorMsg");
 						req.setAttribute("TotalProcurementDetails",List.of());
@@ -2365,7 +2367,9 @@ public class PrintController {
 	public String ProjectBriefing(HttpServletRequest req, HttpSession ses, RedirectAttributes redir,HttpServletResponse res)	throws Exception 
 	{
 		String UserId = (String) ses.getAttribute("Username");
-		String LabCode = (String)ses.getAttribute("labcode");
+		String LabCode = (String)ses.getAttribute("labcode");	  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 		logger.info(new Date() +"Inside ProjectBriefing.htm "+UserId);		
 	    try {    	
 	    	
@@ -2455,7 +2459,7 @@ public class PrintController {
 //					HttpEntity<String> entity = new HttpEntity<String>(headers);
 //					ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
 //					jsonResult=response.getBody();						
-						projectDetails = PFMSserv.financialStatusBriefing(projectattribute[0] != null ? projectattribute[0].toString() : "", "10000000");
+						projectDetails = PFMSserv.financialStatusBriefing(auToken,projectattribute[0] != null ? projectattribute[0].toString() : "", "10000000");
 					}catch(Exception e) {
 						req.setAttribute("errorMsg", "errorMsg");
 						req.setAttribute("financialDetails",List.of());
@@ -3181,7 +3185,7 @@ public class PrintController {
 	    	req.setAttribute("committeeData", committee);
 			req.setAttribute("committeeMetingsCount", service.ProjectCommitteeMeetingsCount(projectid, "0", "0", "0", "0", committee.getCommitteeShortName().trim()) );
 			
-			processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected);
+			processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
 	    	
 			Map<String, List<Object[]>> reviewMeetingListMap = new HashMap<String, List<Object[]>>();
 			for(Object[] obj : SpecialCommitteesList) {
@@ -3231,7 +3235,13 @@ public class PrintController {
 		}
 	}
 	
-	public int processProjectData(HttpServletRequest req, String projectid, String committeeid, String uri, String LabCode, String UserId, String IsIbasConnected) throws Exception{
+	
+	// add token from the session
+	public int processProjectData(HttpServletRequest req, String projectid, String committeeid, String uri, String LabCode, String UserId, String IsIbasConnected,HttpSession ses) throws Exception{	  
+		  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
+    	
 	    List<Object[]> projectattributes = new ArrayList<>();
 	    List<List<Object[]>> ebandpmrccount = new ArrayList<>();
 	    List<List<Object[]>> milestonesubsystemsnew = new ArrayList<>();
@@ -3297,7 +3307,7 @@ public class PrintController {
 	    		
 //	    		financialDetails.add(projectDetails);
 	    		try {
-	    		financialDetails.add(pfmsServ.financialStatusBriefing(projectattribute[0]!=null?projectattribute[0].toString():"0", "10000000"));
+	    		financialDetails.add(pfmsServ.financialStatusBriefing(auToken,projectattribute[0]!=null?projectattribute[0].toString():"0", "10000000"));
 	    		}catch(Exception e) {
 	    			e.printStackTrace();
 	    		}
@@ -3311,7 +3321,7 @@ public class PrintController {
 //	    				new TypeReference<List<TotalDemand>>() {}
 //	    				);
 	    		try {
-	    		req.setAttribute("TotalProcurementDetails", pfmsServ.getTotalDemand());
+	    		req.setAttribute("TotalProcurementDetails", pfmsServ.getTotalDemand(auToken));
 	    		}catch (Exception e) {
 	    			req.setAttribute("TotalProcurementDetails", new ArrayList<>());
 				}
@@ -3857,7 +3867,9 @@ public class PrintController {
 	
 	public void freezeBriefingPaperAfterKickoff(HttpServletRequest req, HttpServletResponse res, HttpSession ses,RedirectAttributes redir)throws Exception{
 		String UserId = (String) ses.getAttribute("Username");
-		String LabCode = (String)ses.getAttribute("labcode");
+		String LabCode = (String)ses.getAttribute("labcode");	  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 		logger.info(new Date() +"Inside freezeBriefingPaperAfterKickoff "+UserId);		
 	    try {
 	    	String projectid=req.getParameter("projectid");
@@ -3935,7 +3947,7 @@ public class PrintController {
 //	    						HttpEntity<String> entity = new HttpEntity<String>(headers);
 //	    						ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
 //	    						jsonResult=response.getBody();		
-	    						projectDetails = PFMSserv.financialStatusBriefing(projectattribute[0] != null ? projectattribute[0].toString() : "", "10000000");
+	    						projectDetails = PFMSserv.financialStatusBriefing(auToken ,projectattribute[0] != null ? projectattribute[0].toString() : "", "10000000");
 	    					}catch(Exception e) {
 	    						req.setAttribute("errorMsg", "errorMsg");
     							req.setAttribute("financialDetails",List.of());
@@ -3966,7 +3978,7 @@ public class PrintController {
 //	    						HttpEntity<String> entity = new HttpEntity<String>(headers);
 //	    						ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
 //	    						jsonResult2=response.getBody();			
-	    						totaldemand = PFMSserv.getTotalDemand();
+	    						totaldemand = PFMSserv.getTotalDemand(auToken);
 	    					}catch(Exception e) {
 	    						req.setAttribute("errorMsg", "errorMsg");
     							req.setAttribute("TotalProcurementDetails",List.of());
@@ -7477,7 +7489,7 @@ public class PrintController {
 	        Object[] mileStoneLevelId = service.MileStoneLevelId(projectid, committeeid);
 	        req.setAttribute("levelid", mileStoneLevelId != null ? mileStoneLevelId[0].toString() : "2");
 
-	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected);
+	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
 
 	        List<Object[]> projectdatadetails = (List<Object[]>) req.getAttribute("projectdatadetails");
 	        List<List<Object[]>> ebandpmrccount = (List<List<Object[]>>) req.getAttribute("ebandpmrccount");
@@ -8576,7 +8588,7 @@ public class PrintController {
 	        Object[] mileStoneLevelId = service.MileStoneLevelId(projectid, committeeid);
 	        req.setAttribute("levelid", mileStoneLevelId != null ? mileStoneLevelId[0].toString() : "2");
 
-	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected);
+	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
 
 	        List<Object[]> projectdatadetails = (List<Object[]>) req.getAttribute("projectdatadetails");
 	        List<List<Object[]>> ebandpmrccount = (List<List<Object[]>>) req.getAttribute("ebandpmrccount");

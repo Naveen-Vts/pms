@@ -828,7 +828,9 @@ public class LoginController {
 		String empNo = (String) ses.getAttribute("empNo");
 		String LabCode = (String) ses.getAttribute("labcode");
 		String ClusterId = (String) ses.getAttribute("clusterid");
-		String statsUrl   = env.getProperty("stats_url");
+		String statsUrl   = env.getProperty("stats_url");		  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 
 		//check if it is project director or qioc
 		if (LoginType.equals("Q") || LoginType.equals("P")) {
@@ -1021,7 +1023,7 @@ public class LoginController {
 //							String.class);
 //					jsonResult = response.getBody();
 					
-					req.setAttribute("budgetlist", PFMSServ.getDetailsOfSupplyOrder(LoginType, empNo));
+					req.setAttribute("budgetlist", PFMSServ.getDetailsOfSupplyOrder(auToken,LoginType, empNo));
 
 				} catch (HttpClientErrorException | ResourceAccessException e) {
 					logger.error(new Date() + " Inside MainDashboard.htm " + UserId, e);
@@ -1073,7 +1075,7 @@ public class LoginController {
 				}
 				long start = System.currentTimeMillis();
 				try {
-					req.setAttribute("budgetlist", PFMSServ.getDetailsOfSupplyOrder(LoginType, empNo));
+					req.setAttribute("budgetlist", PFMSServ.getDetailsOfSupplyOrder(auToken,LoginType, empNo));
 					System.out.println("Feign Call Success after " + (System.currentTimeMillis() - start) + "ms");
 					}catch (Exception e) {
 						System.out.println("Feign Call Failed after " + (System.currentTimeMillis() - start) + "ms");
@@ -1359,7 +1361,10 @@ public class LoginController {
     	String Empid= ses.getAttribute("EmpId").toString();
     	String UserId = (String) ses.getAttribute("Username");
     	String LabCode=(String)ses.getAttribute("labcode");
-    	String ClusterId =(String)ses.getAttribute("clusterid");
+    	String ClusterId =(String)ses.getAttribute("clusterid");			  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
+
     	logger.info(new Date() +"ProjectHoaUpdate.htm "+Empid);
     	List<CCMView> CCMViewData=new ArrayList<CCMView>();
     	long count= 0L;
@@ -1381,7 +1386,7 @@ public class LoginController {
     
     	try {
 
-			CCMViewData= PFMSServ.getCCMViewData(LabCode);
+			CCMViewData= PFMSServ.getCCMViewData(auToken,LabCode);
     	}
     	catch(HttpClientErrorException  | ResourceAccessException e) 
     	{
@@ -1404,7 +1409,7 @@ public class LoginController {
 
 			try {
 
-				projectDetails1 = PFMSServ.ProjectHoaData(LabCode);
+				projectDetails1 = PFMSServ.ProjectHoaData(auToken,LabCode);
 				LabDetails = masterService.getAllLabMaster();
 				count = rfpmainservice.ProjectHoaUpdate(projectDetails1,UserId,LabDetails);
 			}catch (Exception e) {
@@ -1461,8 +1466,11 @@ public class LoginController {
 
     
    // @Scheduled(cron ="0 1 9-19/3 * * ? ")
-    public String ProjectHoaUpdateAuto()throws Exception{
-    	    	
+    public String ProjectHoaUpdateAuto(HttpSession ses)throws Exception{
+		  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
+    	
     	logger.info(new Date() +"ProjectHoaUpdateAuto.htm ");
     	// Calling pms_serv to update hoa data from ibas to pms
 //    	final String localUri1=uri+"/pfms-serv/tblprojectdata";
@@ -1501,10 +1509,10 @@ public class LoginController {
 //			TodayData=todayresponse.getBody();
 //			LabData=labdata.getBody();
     		
-    		projectDetails1 = PFMSServ.ProjectHoaData(null);
-    		FinanceDetailsMonthly = PFMSServ.PfmsFinanceChanges("A","M");
-    		FinanceDetailsWeekly = PFMSServ.PfmsFinanceChanges("A","W");
-    		FinanceDetailsToday = PFMSServ.PfmsFinanceChanges("A","T");
+    		projectDetails1 = PFMSServ.ProjectHoaData(auToken,null);
+    		FinanceDetailsMonthly = PFMSServ.PfmsFinanceChanges(auToken,"A","M");
+    		FinanceDetailsWeekly = PFMSServ.PfmsFinanceChanges(auToken,"A","W");
+    		FinanceDetailsToday = PFMSServ.PfmsFinanceChanges(auToken,"A","T");
 
     	}catch(Exception e)
 		{
@@ -1558,7 +1566,9 @@ public class LoginController {
     	String ProjectId = "A";
     	String Interval = "T";
     	String ActiveTab = "all-tab_alltab";
-    	String ClusterId = (String)ses.getAttribute("clusterid");
+    	String ClusterId = (String)ses.getAttribute("clusterid");		  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
     	
     	 String DGName = headerservice.LabMasterList(ClusterId).stream().filter(e-> "Y".equalsIgnoreCase(e[2].toString())).collect(Collectors.toList()).get(0)[1].toString();
 	     String IsDG = "No";
@@ -1623,7 +1633,7 @@ public class LoginController {
 //			ResponseEntity<String> response1=restTemplate.exchange(localUri, HttpMethod.GET, entity, String.class);
 //			FinanceChanges=response1.getBody();
     		
-    		FinanceDetails = PFMSServ.PfmsFinanceChanges(projectCode, Interval);
+    		FinanceDetails = PFMSServ.PfmsFinanceChanges(auToken,projectCode, Interval);
     		
     	}
     	catch(HttpClientErrorException  | ResourceAccessException e) {

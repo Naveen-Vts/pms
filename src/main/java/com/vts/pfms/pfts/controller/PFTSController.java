@@ -134,7 +134,9 @@ public class PFTSController {
 	{
 		
 		String UserId = (String) ses.getAttribute("Username");
-		String LabCode = (String)ses.getAttribute("labcode");
+		String LabCode = (String)ses.getAttribute("labcode");	  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 		logger.info(new Date() +"Inside AddNewDemandFile.htm "+UserId);		
 		try {
 			String projectId =req.getParameter("projectId");
@@ -144,7 +146,7 @@ public class PFTSController {
 			//final String localUri=uri+"/pfms_serv/newDemandsDetails?projectcode="+projectcode;
 			List<DemandDetails> demandList=null;
 			try {
-				demandList = serv.DemandsDetails(projectcode);	
+				demandList = serv.DemandsDetails(auToken,projectcode);	
 			}catch (Exception e) {
 				e.printStackTrace();
 				// TODO: handle exception
@@ -265,7 +267,9 @@ public class PFTSController {
              String eventDate=req.getParameter("eventDate");
              String fileId=req.getParameter("fileId");
              String remarks=req.getParameter("remarks");
-             String demandNo=req.getParameter("demandNo");
+             String demandNo=req.getParameter("demandNo");	  
+         	String token=(String)ses.getAttribute("token");
+        	String auToken = "Bearer "+token;
              
              redir.addFlashAttribute("projectid",projectId);
              
@@ -303,7 +307,7 @@ public class PFTSController {
 //    				}
     				
     				try {
-    					demandOrderList = serv.DemandsOrderDetails(demandNo);
+    					demandOrderList = serv.DemandsOrderDetails(auToken,demandNo);
     				}catch(Exception e) {
     					redir.addAttribute("resultfail","Order not placed in IBAS");
 						return  "redirect:/ProcurementStatus.htm";
@@ -407,7 +411,9 @@ public class PFTSController {
 			
              String projectId=req.getParameter("projectId");
              String fileId=req.getParameter("fileId");
-             String demandNo=req.getParameter("demandNo");
+             String demandNo=req.getParameter("demandNo");	  
+         	String token=(String)ses.getAttribute("token");
+        	String auToken = "Bearer "+token;
              redir.addFlashAttribute("projectid",projectId);
             	   	//final String localUri=uri+"/pfms_serv/newDemandsOrderDetails?demandNo="+demandNo;
     				List<DemandOrderDetails> demandOrderList=null;
@@ -438,7 +444,7 @@ public class PFTSController {
 //    				}
     				
     				try {
-    				demandOrderList = serv.DemandsOrderDetails(demandNo);
+    				demandOrderList = serv.DemandsOrderDetails(auToken,demandNo);
     				}catch (Exception e) {
     					e.printStackTrace();
     					redir.addAttribute("resultfail","Order not placed in IBAS");
