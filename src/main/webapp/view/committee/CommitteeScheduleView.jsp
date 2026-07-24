@@ -39,10 +39,10 @@
 	int committeecons = (Integer) request.getAttribute("committeecons");
 	List<Object[]> AgendaDocList = (List<Object[]>) request.getAttribute("AgendaDocList");
 
-	String projectid = committeescheduleeditdata[9].toString();
-	String divisionid = committeescheduleeditdata[16].toString();
-	String initiationid = committeescheduleeditdata[17].toString();
-	String carsInitiationId = committeescheduleeditdata[25].toString();
+	String projectid =  committeescheduleeditdata[9] != null ? committeescheduleeditdata[9].toString() : "0";
+	String divisionid =  committeescheduleeditdata[16] != null ? committeescheduleeditdata[16].toString() : "0";
+	String initiationid =  committeescheduleeditdata[17] != null ? committeescheduleeditdata[17].toString() : "0";
+	String carsInitiationId = committeescheduleeditdata[25] != null ? committeescheduleeditdata[25].toString() : "0";
 	String programmeId = committeescheduleeditdata[26] != null ? committeescheduleeditdata[26].toString() : "0";
 	Object[] projectdetails = (Object[]) request.getAttribute("projectdetails");
 	Object[] divisiondetails = (Object[]) request.getAttribute("divisiondetails");
