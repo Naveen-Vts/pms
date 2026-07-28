@@ -135,6 +135,7 @@
 																<td>
 																	<select form="inlineeditform_<%=count%>" class="form-control items presenterid presenterIdStyle" name="presenterid" id="presenterid_<%=count %>"  required="required" data-live-search="true" data-container="body" onchange="getEmployee(this)">
 														        		<option disabled="disabled" selected value="">Choose...</option>
+														        		<option value="-1">None</option>
 																        <% for(Object[] emp : labEmpList){ %>
 																        	<option value="<%=emp[0] %>" <%if(obj[9].toString().equalsIgnoreCase(emp[0].toString())) {%>selected<%} %> ><%=emp[1]!=null?StringEscapeUtils.escapeHtml4(emp[1].toString()): " - " %>(<%=emp[3]!=null?StringEscapeUtils.escapeHtml4(emp[3].toString()): " - " %>)</option>
 																        <%} %>
@@ -266,6 +267,7 @@
 												<td>
 													<select class="form-control items presenterid presenterIdFontStyle" name="presenterid" id="presenterid_<%=count %>"  required="required" data-live-search="true" data-container="body" onchange="getEmployee(this)">
 										        		<option disabled="disabled" selected value="">Choose...</option>
+														<option value="-1">None</option>
 												        <% for(Object[] emp : empList){ %>
 												        	<option value="<%=emp[0] %>" <%if(obj[4].toString().equalsIgnoreCase(emp[0].toString())) {%>selected<%} %> ><%=emp[1]!=null?StringEscapeUtils.escapeHtml4(emp[1].toString()): " - " %>(<%=emp[3]!=null?StringEscapeUtils.escapeHtml4(emp[3].toString()): " - " %>)</option>
 												        <%} %>
@@ -335,6 +337,7 @@
 												<td>
 													<select class="form-control items presenterid presenterIdFontStyle" name="presenterid" id="presenterid_DH_0"  required="required" data-live-search="true" data-container="body" onchange="getEmployeeForDH(this)">
 										        		<option disabled="disabled" selected value="">Choose...</option>
+														<option value="-1">None</option>
 												        <% for(Object[] emp : empLists){ %>
 												        	<option value="<%=emp[0] %>" ><%=emp[1]!=null?StringEscapeUtils.escapeHtml4(emp[1].toString()): " - " %>(<%=emp[3]!=null?StringEscapeUtils.escapeHtml4(emp[3].toString()): " - " %>)</option>
 												        <%} %>

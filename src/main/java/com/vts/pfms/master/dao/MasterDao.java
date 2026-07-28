@@ -124,4 +124,5 @@ public interface MasterDao  {
 	public Long getRoleNameDulicateCount(String roleName) throws Exception;
 	public Long getRoleCodeDuplicateCount(String roleCode) throws Exception;
 	// 22/8/2025  Naveen R RoleName and RoleCode Duplicate Check end
+	public List<LabMaster> getAllLabMaster() throws Exception;
 }

@@ -37,7 +37,7 @@ String committeemainid=(String)request.getAttribute("committeemainid");
 FormatConverter fc = new FormatConverter();
 SimpleDateFormat sdf = fc.getRegularDateFormat();
 SimpleDateFormat sdf1 = fc.getSqlDateFormat();
-SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy",Locale.ENGLISH);
 SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 String EmpId = (Long)session.getAttribute("EmpId")+"";
 List<Object[]>employeelist = (List<Object[]>)request.getAttribute("employeelist");
@@ -275,7 +275,8 @@ String ses=(String)request.getParameter("result");
 					<input type="hidden" name="committeemainid" value="<%=committeemainid%>"> 
 					<input type="hidden" name="flag" id="flag" value="UpdateForward">
 					<input type="hidden" name="flow" value="A" id="flow">
-				<%if(CommitteMainEnoteList!=null && CommitteMainEnoteList[15].toString().equalsIgnoreCase("FWD") && EmpId.equalsIgnoreCase(CommitteMainEnoteList[17].toString())) {%>	<button type="submit" name="flow" value="Rev" class="btn btn-sm btn-danger delete" onclick="return Revoke('enotefrm')" >REVOKE</button> <%} %>
+				<%if(CommitteMainEnoteList!=null && CommitteMainEnoteList[15].toString().equalsIgnoreCase("FWD") && EmpId.equalsIgnoreCase(CommitteMainEnoteList[17].toString())) {%>	
+					<button type="submit" name="flow" value="Rev" class="btn btn-sm btn-danger delete" onclick="return Revoke('enotefrm')" >REVOKE</button> <%} %>
 					<a class="btn btn-sm back" type="button" href="CommitteeMainMembers.htm?committeemainid=<%=committeemainid%>">BACK</a>
 					
 					</div>

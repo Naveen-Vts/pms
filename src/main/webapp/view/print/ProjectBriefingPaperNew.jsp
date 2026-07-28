@@ -131,6 +131,7 @@ List<List<Object[]>> overallfinance = (List<List<Object[]>>)request.getAttribute
 String thankYouImg = (String)request.getAttribute("thankYouImg");
 String IsIbasConnected=(String)request.getAttribute("IsIbasConnected");
 String isCCS = (String)request.getAttribute("isCCS");
+String labcode = (String) session.getAttribute("labcode");
 %>
 	<% String ses = (String) request.getParameter("result"); 
        String ses1 = (String) request.getParameter("resultfail");
@@ -572,7 +573,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 						<th  class="width15 text-center">SN</th>
 						<th  class="width100"> ID</th>
 						<th  class="width315">Recommendation Point</th>
-						<th  class="width100"> PDC</th>
+						<th  class="width100">ADC<br> PDC</th>
 						<th  class="width210"> Responsibility</th>
 						<th  class="width80">Status(DD)</th>
 						<th  class="width250">Remarks</th>
@@ -612,8 +613,9 @@ String isCCS = (String)request.getAttribute("isCCS");
 								<%}%>
 							</td>
 							
-							
-							<td class="text-justify "><%=  (obj[2].toString()) %></td>
+
+							<td class="text-justify "><%=  obj[2].toString() %></td>
+
 
 							<td class="text-center">
 								<%if(obj[8]!= null && !LocalDate.parse(obj[8].toString()).equals(LocalDate.parse(obj[7].toString())) ){ %><span class="pencil-icon font-weight-bold"><%=sdf.format(sdf1.parse(obj[8].toString()))%></span><br><%} %>	
@@ -1042,6 +1044,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 													
 												</td>
 												<td class="overflowWrap"><%if(obj[23]!=null){%><%=(obj[23].toString()) %><%} %></td>
+
 	                                            <td >
 													<a  data-toggle="modal" data-target="#exampleModal1" data-id="milestonemodal<%=obj[0] %>" class="milestonemodal m-modal" data-whatever="@mdo" >
 														<i class="fa fa-info-circle circle-font"  aria-hidden="true"></i> 
@@ -1050,7 +1053,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 											</tr>
 										<%count1++;serial++;}} %>
 									<%} else{ %>
-									<tr><td colspan="10" class="text-center" "> Nil</td></tr>
+									<tr><td colspan="10" class="text-center" > Nil</td></tr>
 									
 									
 									<%} %>
@@ -1872,7 +1875,7 @@ String isCCS = (String)request.getAttribute("isCCS");
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->						
 				 	
 						<details>
-   						<summary role="button" tabindex="0"><b>8. Overall Financial Status  <i class="text-underline">(&#8377; Crore)</i> </b> </summary>
+   						<summary role="button" tabindex="0"><b>8. Overall Financial Status  <i class="text-underline">(&#8377; Lakhs)</i> </b> </summary>
    						
 											  	<div class="content">
 						  	<%for(int z=0;z<projectidlist.size();z++){ 
@@ -2123,7 +2126,9 @@ String isCCS = (String)request.getAttribute("isCCS");
 									<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("ADE")) {%>
 									<th class="width210">Responsibility </th>
 									<%} %>
+									<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("DLRL")) {%>
 									<th class="width50">Progress </th>
+									<%} %>
 					                <th class="width50 padding-right5">Status(DD)</th>
 					                <th class="width220">Remarks</th>
 								</tr>
@@ -2212,11 +2217,12 @@ String isCCS = (String)request.getAttribute("isCCS");
 												
 											
 											</td>
-																				<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("ADE")) {%>
-											
+											<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("ADE")) {%>											
 											<td ><%=obj[24] %>, <%=obj[25] %></td>
 											<%} %>
+											<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("DLRL")) {%>
 											<td class="text-center"><%=obj[16] %>%</td>	
+											<%} %>
 											<% 
 												LocalDate StartDate = LocalDate.parse(obj[7].toString());
 												LocalDate EndDate = LocalDate.parse(obj[8].toString());
@@ -2246,10 +2252,36 @@ String isCCS = (String)request.getAttribute("isCCS");
 											
 											</td>
 
-											<td >
-												<%if(obj[28]!=null){ %>
-												<%=(obj[28].toString()) %>
-												<%} %>
+
+											<td>
+											    <%-- <span id="remarksSpan_<%=obj[34]%>"> --%>
+											        <%= obj[28] != null ? StringEscapeUtils.escapeHtml4(obj[28].toString()) : "-" %>
+											    <!-- </span> -->
+											
+<%-- 											    <input
+											        type="text"
+											        id="remarksInput_<%=obj[34]%>"
+											        class="form-control"
+											        value="<%= obj[28] != null ? StringEscapeUtils.escapeHtml4(obj[28].toString()) : "" %>"
+											        style="display:none; width:200px;"> --%>
+											
+											   <%--  <% if("DLRL".equalsIgnoreCase(labcode) && obj[34] != null && !"0".equalsIgnoreCase(obj[34].toString())){ %>
+											        <button
+											            type="button"
+											            class="btn btn-sm edit"
+											            onclick="editRemarks('<%=obj[34]%>')">
+											            <i class="fa fa-edit"></i>
+											        </button>
+											
+											        <button
+											            type="button"
+											            id="saveBtn_<%=obj[34]%>"
+											            class="btn btn-sm btn-success"
+											            style="display:none;"
+											            onclick="saveRemarks('<%=obj[34]%>')">
+											            Save
+											        </button>
+											    <% } %> --%>
 											</td>
 										</tr>
 										
@@ -4260,6 +4292,49 @@ function removeFileAttch(projectId,techDataId,techAttachId) {
 		                  console.log(xhr.responseText);
 		             }
 		        });
+        }
+    });
+}
+
+function editRemarks(id) {
+
+    var span = document.getElementById("remarksSpan_" + id);
+    var input = document.getElementById("remarksInput_" + id);
+    var saveBtn = document.getElementById("saveBtn_" + id);
+
+    if (input.style.display === "none" || input.style.display === "") {
+        // Show input
+        span.style.display = "none";
+        input.style.display = "inline-block";
+        saveBtn.style.display = "inline-block";
+    } else {
+        // Hide input
+        span.style.display = "inline-block";
+        input.style.display = "none";
+        saveBtn.style.display = "none";
+    }
+}
+
+function saveRemarks(id) {
+
+    var remarks = document.getElementById("remarksInput_" + id).value;
+    
+    if(!remarks){
+		alert("Please Fill the Remarks !");
+		return;
+    }
+
+    $.ajax({
+        url: "UpdateRemarksFromBriefingPaper.htm",
+        type: "POST",
+        data: {
+            id: id,
+            remarks: remarks,
+            "${_csrf.parameterName}": "${_csrf.token}"
+        },
+        success: function(response) {
+			console.log(response);
+            //	location.reload();
         }
     });
 }

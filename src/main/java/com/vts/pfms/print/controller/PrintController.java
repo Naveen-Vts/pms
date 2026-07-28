@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,6 +19,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -26,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +47,8 @@ import org.apache.logging.log4j.Logger;
 //import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -98,6 +103,7 @@ import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
 import com.itextpdf.kernel.utils.PdfMerger;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Image;
@@ -114,6 +120,9 @@ import com.vts.pfms.header.service.HeaderService;
 import com.vts.pfms.master.dto.ProjectFinancialDetails;
 import com.vts.pfms.milestone.dto.MilestoneActivityLevelConfigurationDto;
 import com.vts.pfms.milestone.service.MilestoneService;
+import com.vts.pfms.model.BriefingFinance;
+import com.vts.pfms.model.BriefingHeading;
+import com.vts.pfms.model.BriefingHeadingDetails;
 import com.vts.pfms.model.TotalDemand;
 import com.vts.pfms.pfmsserv.feign.PFMSServeFeignClient;
 import com.vts.pfms.print.dto.PfmsBriefingFwdDto;
@@ -150,6 +159,9 @@ public class PrintController {
 	
 	@Autowired
 	MilestoneService milservice;
+	
+	@Autowired
+	PFMSServeFeignClient PFMSserv;
 
 	@Value("${server_uri}")
     private String uri;
@@ -162,6 +174,7 @@ public class PrintController {
 	
 	@Value("${IsIbasConnected}")
 	private String IsIbasConnected;
+
 	@Autowired
 	Environment env;
 	
@@ -637,9 +650,344 @@ public class PrintController {
     	}		
 	}
 	
-	@RequestMapping(value="ProjectBriefingDownload.htm")
-	public void ProjectBriefingDownload(HttpServletRequest req, HttpSession ses, HttpServletResponse res)	throws Exception 
-	{
+
+	@RequestMapping(value = "ProjectBriefingDownload.htm")
+	public void ProjectBriefingDownload(HttpServletRequest req, HttpSession ses, HttpServletResponse res)
+	        throws Exception {
+	    String UserId = (String) ses.getAttribute("Username");
+	    String LabCode = (String) ses.getAttribute("labcode");
+
+	    logger.info(new Date() + "Inside ProjectBriefingDownload.htm " + UserId);
+	    try {
+	        String projectid = req.getParameter("projectid");
+	        String committeeid = req.getParameter("committeeid");
+
+	        Committee committee = service.getCommitteeData(committeeid);
+
+	        String projectLabCode = service.ProjectDetails(projectid).get(0)[5].toString();
+	        String CommitteeCode = committee.getCommitteeShortName().trim();
+
+	        if (LabCode.equalsIgnoreCase("ADE")) {
+	            req.setAttribute("otherMeetingList", service.otherMeetingList(projectid));
+	        }
+	        List<Object[]> SpecialCommitteesList = service.SpecialCommitteesList(LabCode);
+	        Map<String, List<Object[]>> reviewMeetingListMap = new HashMap<String, List<Object[]>>();
+	        for (Object[] obj : SpecialCommitteesList) {
+	            reviewMeetingListMap.put(obj[1] + "", service.ReviewMeetingList(projectid, obj[1] + ""));
+	        }
+	        req.setAttribute("reviewMeetingListMap", reviewMeetingListMap);
+
+	        req.setAttribute("text", req.getParameter("text"));
+	        req.setAttribute("IsIbasConnected", IsIbasConnected);
+	        req.setAttribute("committeeData", committee);
+	        req.setAttribute("projectid", projectid);
+	        req.setAttribute("committeeid", committeeid);
+	        req.setAttribute("ProjectCost", ProjectCost);
+	        req.setAttribute("isprint", "0");
+	        req.setAttribute("AppFilesPath", ApplicationFilesDrive);
+	        req.setAttribute("projectLabCode", projectLabCode);
+	        req.setAttribute("labInfo", service.LabDetailes(projectLabCode));
+	        req.setAttribute("lablogo", LogoUtil.getLabLogoAsBase64String(projectLabCode));
+	        req.setAttribute("thankYouImg", LogoUtil.getThankYouImageAsBase64String());
+	        req.setAttribute("filePath", env.getProperty("ApplicationFilesDrive"));
+	        req.setAttribute("ApplicationFilesDrive", env.getProperty("ApplicationFilesDrive"));
+	        req.setAttribute("committeeMetingsCount",
+	                service.ProjectCommitteeMeetingsCount(projectid, "0", "0", "0", "0", CommitteeCode));
+	        Object[] nextmeetVenue = (Object[]) service.BriefingMeetingVenue(projectid, committeeid);
+	        req.setAttribute("nextMeetVenue", nextmeetVenue);
+	        Object[] lastmeetingVenue = service.getLastcreatedSchedule(projectid, committeeid);
+	        req.setAttribute("lastmeetingVenue", lastmeetingVenue);
+	        if (nextmeetVenue != null && nextmeetVenue[0] != null) {
+	            req.setAttribute("recdecDetails", service.GetRecDecDetails(nextmeetVenue[0].toString()));
+	        }
+	        if (lastmeetingVenue != null && lastmeetingVenue[0] != null && LabCode.equalsIgnoreCase("PGAD")) {
+	            List<Object[]> list = service.getMilestoneBriefingList(lastmeetingVenue[0].toString());
+	            Map<String, List<Object[]>> milestoneBriefingMap = list != null
+	                    ? list.stream().collect(Collectors.groupingBy(obj -> obj[1] != null ? obj[1].toString() : "UNKNOWN",
+	                            LinkedHashMap::new, Collectors.toList()))
+	                    : new LinkedHashMap<String, List<Object[]>>();
+	            req.setAttribute("milestoneBriefingMap", milestoneBriefingMap);
+	            req.setAttribute("recdecDetails", service.GetRecDecDetails(lastmeetingVenue[0].toString()));
+	            req.setAttribute("briefingFinanceDetials", service.getBriefingFinanceDetails(lastmeetingVenue[0].toString()));
+	        }
+	        req.setAttribute("RiskTypes", service.RiskTypes());
+
+	        Object[] mileStoneLevelId = service.MileStoneLevelId(projectid, committeeid);
+	        req.setAttribute("levelid", mileStoneLevelId != null ? mileStoneLevelId[0].toString() : "2");
+
+	        // Project Data
+	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
+
+	        List<Object[]> projectdatadetails = (List<Object[]>) req.getAttribute("projectdatadetails");
+	        List<List<Object[]>> ebandpmrccount = (List<List<Object[]>>) req.getAttribute("ebandpmrccount");
+	        List<Object[]> TechWorkDataList = (List<Object[]>) req.getAttribute("TechWorkDataList");
+
+	        // Milestone Data for Committee
+	        milestoneLevelDataMap(req, reviewMeetingListMap, projectid, committee.getCommitteeShortName().trim());
+
+	        String filename = "BriefingPaper";
+
+	        String path = req.getServletContext().getRealPath("/view/temp");
+	        req.setAttribute("path", path);
+	        CharArrayWriterResponse customResponse = new CharArrayWriterResponse(res);
+
+	        req.getRequestDispatcher("/view/print/BriefingPaperNew1.jsp").forward(req, customResponse);
+
+	        String html = customResponse.getOutput();
+	        byte[] data = html.getBytes();
+	        InputStream fis1 = new ByteArrayInputStream(data);
+	        PdfDocument pdfDoc = new PdfDocument(new PdfWriter(path + "/" + filename + ".pdf"));
+	        Document document = new Document(pdfDoc, PageSize.A4);
+	        document.setMargins(50, 50, 50, 50);
+	        ConverterProperties converterProperties = new ConverterProperties();
+	        FontProvider dfp = new DefaultFontProvider(true, true, true);
+	        converterProperties.setFontProvider(dfp);
+	        HtmlConverter.convertToPdf(fis1, pdfDoc, converterProperties);
+	        Path leftLogoPath = Paths.get(env.getProperty("ApplicationFilesDrive"), "images", "lablogos", "drdo.png");
+	        req.setAttribute("thankYouImg", LogoUtil.getThankYouImageAsBase64String());
+	        Path rightLogoPath = Paths.get(env.getProperty("ApplicationFilesDrive"), "images", "lablogos",
+	                projectLabCode.toLowerCase() + ".png");
+	        byte[] imageBytes = Files.readAllBytes(leftLogoPath);
+	        byte[] imageBytes1 = Files.readAllBytes(rightLogoPath);
+	        ImageData leftLogo = ImageDataFactory.create(imageBytes);
+	        ImageData rightLogo = ImageDataFactory.create(imageBytes1);
+	        PdfWriter pdfw = new PdfWriter(path + File.separator + "mergedb.pdf");
+	        PdfDocument pdfDocs = new PdfDocument(pdfw);
+	        pdfw.setCompressionLevel(CompressionConstants.BEST_COMPRESSION);
+	        PdfDocument pdfDocMain = new PdfDocument(new PdfReader(path + File.separator + filename + ".pdf"),
+	                new PdfWriter(path + File.separator + filename + "Maintemp.pdf"));
+	        Document docMain = new Document(pdfDocMain, PageSize.A4);
+	        docMain.setMargins(50, 50, 50, 50);
+
+	        Rectangle pageSizeMain;
+
+	        int main = pdfDocMain.getNumberOfPages();
+	        for (int i = 1; i <= main; i++) {
+	            PdfPage pageMain = pdfDocMain.getPage(i);
+	            pageSizeMain = pageMain.getPageSize();
+
+	            Image leftImage = new Image(leftLogo);
+	            leftImage.setFixedPosition(i, 54, pageSizeMain.getHeight() - 34);
+	            leftImage.scaleToFit(34, 33);
+
+	            Image rightImage = new Image(rightLogo);
+	            rightImage.setFixedPosition(i, pageSizeMain.getWidth() - 64, pageSizeMain.getHeight() - 34);
+	            rightImage.scaleToFit(34, 33);
+
+	            docMain.add(leftImage);
+	            docMain.add(rightImage);
+	        }
+	        docMain.close();
+	        pdfDocMain.close();
+
+	        Path pathOfFileMain = Paths.get(path + File.separator + filename + ".pdf");
+	        Files.delete(pathOfFileMain);
+
+	        // ---- destDoc: the live document we will insert attachments INTO at the right spot ----
+	        PdfReader pdf1 = new PdfReader(path + File.separator + filename + "Maintemp.pdf");
+	        PdfDocument destDoc = new PdfDocument(pdf1, pdfw);
+
+	        int z = 0;
+	        for (Object[] objData : projectdatadetails) {
+	        	
+	            if (objData != null) {
+	                try {
+	                    String No2 = null;
+	                    if (CommitteeCode.equalsIgnoreCase("PMRC")) {
+	                        No2 = "P" + (Long.parseLong(ebandpmrccount.get(0).get(0)[1].toString()) + 1);
+	                    } else if (CommitteeCode.equalsIgnoreCase("EB")) {
+	                        No2 = "E" + (Long.parseLong(ebandpmrccount.get(0).get(1)[1].toString()) + 1);
+	                    }
+	                    String ganttFileName = String.format("grantt_%s_%s.pdf", objData[1].toString(), No2);
+	                    Path ganttPath = Paths.get(env.getProperty("ApplicationFilesDrive"), projectLabCode, "gantt",
+	                            ganttFileName);
+
+	                    if (Files.exists(ganttPath)) {
+	                        String anchor = objData[12] + " :-  Grantt Chart ";
+	                        insertPdfAtAnchor(destDoc, anchor, ganttPath.toString(), path, filename,
+	                                leftLogo, rightLogo, objData[12] + " :-  Grantt Chart ");
+	                    }
+	                } catch (Exception e) {
+	                    logger.error(new Date() + " Inside ProjectBriefingDownload " + UserId, e);
+	                    e.printStackTrace();
+	                }
+	            }
+	            if (objData != null && objData[6] != null) {
+	                Path pearlPath = Paths.get(env.getProperty("ApplicationFilesDrive"), projectLabCode, "ProjectData",
+	                        objData[6].toString());
+	                if (FilenameUtils.getExtension(objData[6].toString()).equalsIgnoreCase("pdf") && Files.exists(pearlPath)) {
+	                    String anchor = "TRL table with TRL at sanction stage Annexure";
+	                    insertPdfAtAnchor(destDoc, anchor, pearlPath.toString(), path, filename,
+	                            leftLogo, rightLogo, objData[12] + " :-  TRL table with TRL at sanction stage Annexure ");
+	                }
+	            }
+
+	            if (objData != null && objData[5] != null) {
+	                Path treePath = Paths.get(env.getProperty("ApplicationFilesDrive"), projectLabCode, "ProjectData",
+	                        objData[5].toString());
+	                if (FilenameUtils.getExtension(objData[5].toString()).equalsIgnoreCase("pdf") && Files.exists(treePath)) {
+	                    String anchor = "Overall Product tree/WBS Annexure";
+	                    insertPdfAtAnchor(destDoc, anchor, treePath.toString(), path, filename,
+	                            leftLogo, rightLogo, objData[12] + " :-  Overall Product tree/WBS Annexure: ");
+	                }
+	            }
+
+	            if (objData != null && objData[4] != null) {
+	                Path specPath = Paths.get(env.getProperty("ApplicationFilesDrive"), projectLabCode, "ProjectData",
+	                        objData[4].toString());
+	                if (FilenameUtils.getExtension(objData[4].toString()).equalsIgnoreCase("pdf") && Files.exists(specPath)) {
+	                    String anchor = "System Specification Annexure";
+	                    insertPdfAtAnchor(destDoc, anchor, specPath.toString(), path, filename,
+	                            leftLogo, rightLogo, objData[12] + " :-  System Specification Annexure: ");
+	                }
+	            }
+
+	            if (objData != null && objData[3] != null) {
+	                Path sysPath = Paths.get(env.getProperty("ApplicationFilesDrive"), projectLabCode, "ProjectData",
+	                        objData[3].toString());
+	                if (FilenameUtils.getExtension(objData[3].toString()).equalsIgnoreCase("pdf") && Files.exists(sysPath)) {
+	                    String anchor = "System Configuration Annexure";
+	                    insertPdfAtAnchor(destDoc, anchor, sysPath.toString(), path, filename,
+	                            leftLogo, rightLogo, objData[12] + " :-  System Configuration Annexure: ");
+	                }
+	            }
+
+
+	            // Point 13 - Technical Details (zip)
+	            try {
+	                if (TechWorkDataList.get(z) != null
+	                        && FilenameUtils.getExtension(TechWorkDataList.get(z)[8].toString()).equalsIgnoreCase("pdf")) {
+	                    Zipper zip = new Zipper();
+	                    String tecdata = TechWorkDataList.get(z)[6].toString().replaceAll("[/\\\\]", ",");
+	                    String[] fileParts = tecdata.split(",");
+	                    String zipName = String
+	                            .format(TechWorkDataList.get(z)[7].toString() + TechWorkDataList.get(z)[11].toString()
+	                                    + "-" + TechWorkDataList.get(z)[10].toString() + ".zip");
+	                    Path techPath = null;
+	                    if (fileParts.length == 4) {
+	                        techPath = Paths.get(env.getProperty("ApplicationFilesDrive"), fileParts[0], fileParts[1],
+	                                fileParts[2], fileParts[3], zipName);
+	                    } else {
+	                        techPath = Paths.get(env.getProperty("ApplicationFilesDrive"), fileParts[0], fileParts[1],
+	                                fileParts[2], fileParts[3], fileParts[4], zipName);
+	                    }
+	                    zip.unpack(techPath.toString(), path, TechWorkDataList.get(z)[9].toString());
+
+	                    String anchor = "Technical Images";
+	                    insertPdfAtAnchor(destDoc, anchor,
+	                            path + File.separator + TechWorkDataList.get(z)[8].toString(), path, filename,
+	                            leftLogo, rightLogo, objData[12] + " :- Technical Work Carried");
+
+	                    Path unpackedFile = Paths.get(path + File.separator + TechWorkDataList.get(z)[8].toString());
+	                    Files.delete(unpackedFile);
+	                }
+	            } catch (Exception e) {
+	                logger.error(new Date() + " Inside ProjectBriefingDownload " + UserId, e);
+	                e.printStackTrace();
+	            }
+
+	            z++;
+	        }
+
+	        destDoc.close();
+	        pdf1.close();
+	        pdfw.close();
+
+	        res.setContentType("application/pdf");
+	        res.setHeader("Content-disposition", "inline;filename=" + filename + ".pdf");
+	        File f = new File(path + File.separator + "mergedb.pdf");
+	        FileInputStream fis = new FileInputStream(f);
+	        DataOutputStream os = new DataOutputStream(res.getOutputStream());
+	        res.setHeader("Content-Length", String.valueOf(f.length()));
+	        byte[] buffer = new byte[1024];
+	        int len = 0;
+	        while ((len = fis.read(buffer)) >= 0) {
+	            os.write(buffer, 0, len);
+	        }
+	        os.close();
+	        fis.close();
+
+	        Path pathOfFile2 = Paths.get(path + File.separator + "mergedb.pdf");
+	        Files.delete(pathOfFile2);
+	        pathOfFile2 = Paths.get(path + File.separator + filename + "Maintemp.pdf");
+	        Files.delete(pathOfFile2);
+	        document.close();
+	    } catch (Exception e) {
+	        logger.error(new Date() + " Inside ProjectBriefingDownload.htm " + UserId, e);
+	        e.printStackTrace();
+	    }
+	}
+
+	/**
+	 * Finds the page in destDoc containing anchorText, stamps logos + a label onto the
+	 * source attachment PDF's pages, and inserts those pages right after the anchor page.
+	 * Re-searches destDoc fresh each call, so insertion order across points doesn't matter.
+	 */
+	private void insertPdfAtAnchor(PdfDocument destDoc, String anchorText, String sourcePdfPath,
+	        String tempDirPath, String filename, ImageData leftLogo, ImageData rightLogo, String stampLabel)
+	        throws Exception {
+
+	    int targetPage = -1;
+	    int totalPages = destDoc.getNumberOfPages();
+	    for (int p = 1; p <= totalPages; p++) {
+	        String pageText = PdfTextExtractor.getTextFromPage(destDoc.getPage(p));
+	        if (pageText.contains(anchorText)) {
+	            targetPage = p;
+	            break;
+	        }
+	    }
+
+	    if (targetPage == -1) {
+	        // Anchor not found - fall back to appending at the end so nothing is silently dropped
+	        logger.error("Anchor not found, appending at end instead: " + anchorText);
+	        targetPage = destDoc.getNumberOfPages();
+	    }
+
+	    // Stamp logos + label onto a temp copy of the source attachment first
+	    String tempStampedPath = tempDirPath + File.separator + filename + "temp.pdf";
+	    PdfDocument stampedDoc = new PdfDocument(new PdfReader(sourcePdfPath), new PdfWriter(tempStampedPath));
+	    Document stampedDocWrapper = new Document(stampedDoc, PageSize.A4);
+	    stampedDocWrapper.setMargins(50, 50, 50, 50);
+
+	    int n = stampedDoc.getNumberOfPages();
+	    for (int i = 1; i <= n; i++) {
+	        PdfPage page = stampedDoc.getPage(i);
+	        Rectangle pageSize = page.getPageSize();
+	        PdfCanvas canvas = new PdfCanvas(page);
+
+	        Image leftImage = new Image(leftLogo);
+	        leftImage.setFixedPosition(i, 10, pageSize.getHeight() - 50);
+	        leftImage.scaleToFit(40, 40);
+
+	        Image rightImage = new Image(rightLogo);
+	        rightImage.setFixedPosition(i, pageSize.getWidth() - 50, pageSize.getHeight() - 50);
+	        rightImage.scaleToFit(40, 40);
+
+	        stampedDocWrapper.add(leftImage);
+	        stampedDocWrapper.add(rightImage);
+
+	        canvas.beginText()
+	                .setFontAndSize(PdfFontFactory.createFont(StandardFonts.HELVETICA), 11)
+	                .moveText(pageSize.getWidth() / 2 - 124, pageSize.getHeight() - 25)
+	                .showText(stampLabel).endText();
+	    }
+	    stampedDocWrapper.close();
+	    stampedDoc.close();
+
+	    // Now insert the stamped pages into destDoc right after targetPage
+	    PdfReader stampedReader = new PdfReader(tempStampedPath);
+	    PdfDocument stampedForInsert = new PdfDocument(stampedReader);
+	    stampedForInsert.copyPagesTo(1, stampedForInsert.getNumberOfPages(), destDoc, targetPage + 1);
+	    stampedForInsert.close();
+	    stampedReader.close();
+
+	    Path tempFile = Paths.get(tempStampedPath);
+	    Files.delete(tempFile);
+	}
+
+	@RequestMapping(value = "ProjectBriefingDownload123.htm")
+	public void ProjectBriefingDownload123(HttpServletRequest req, HttpSession ses, HttpServletResponse res)
+			throws Exception {
 		String UserId = (String) ses.getAttribute("Username");
 		String LabCode = (String)ses.getAttribute("labcode");
 		logger.info(new Date() +"Inside ProjectBriefingDownload.htm "+UserId);		
@@ -696,7 +1044,7 @@ public class PrintController {
 			req.setAttribute("levelid", mileStoneLevelId!=null?mileStoneLevelId[0].toString():"2");
 			
 			// Project Data
-			processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected);
+			processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
 			
 			List<Object[]> projectdatadetails = (List<Object[]>)req.getAttribute("projectdatadetails");
 			List<List<Object[]>> ebandpmrccount = (List<List<Object[]>>)req.getAttribute("ebandpmrccount");
@@ -1151,7 +1499,9 @@ public class PrintController {
 	{
 
 		String UserId = (String) ses.getAttribute("Username");
-		String LabCode = (String)ses.getAttribute("labcode");
+		String LabCode = (String)ses.getAttribute("labcode");	  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 		logger.info(new Date() +"Inside ProjectBriefingDownload.htm "+UserId);		
 	    try {
 	    	String projectid=req.getParameter("projectid");
@@ -1278,62 +1628,67 @@ public class PrintController {
 						 	 req.setAttribute("treeMapLevTwo", treeMapLevTwo);
 						 	 // new code end
 		/* ----------------------------------------------------------------------------------------------------------	   */  		
-	    		 final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+projectattribute[0]+"&rupess="+10000000;
-			 		HttpHeaders headers = new HttpHeaders();
-			 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-			    	headers.set("labcode", LabCode);
+//	    		 final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+projectattribute[0]+"&rupess="+10000000;
+//			 		HttpHeaders headers = new HttpHeaders();
+//			 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+//			    	headers.set("labcode", LabCode);
 			 		
-			 		String jsonResult=null;
+//			 		String jsonResult=null;
+					List<ProjectFinancialDetails> projectDetails=null;
+
 					try {
-						HttpEntity<String> entity = new HttpEntity<String>(headers);
-						ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
-						jsonResult=response.getBody();						
+//						HttpEntity<String> entity = new HttpEntity<String>(headers);
+//						ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
+//						jsonResult=response.getBody();
+						projectDetails = PFMSserv.financialStatusBriefing(auToken, projectattribute[0] != null ? projectattribute[0].toString() : "", "10000000");
 					}catch(Exception e) {
 						req.setAttribute("errorMsg", "errorMsg");
+						req.setAttribute("financialDetails",List.of());
 					}
-					ObjectMapper mapper = new ObjectMapper();
-					mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-					mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-					List<ProjectFinancialDetails> projectDetails=null;
-					if(jsonResult!=null) {
+//					ObjectMapper mapper = new ObjectMapper();
+//					mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//					mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+					if(projectDetails!=null) {
 						try {
 							/*
 							 * projectDetails = mapper.readValue(jsonResult,
 							 * mapper.getTypeFactory().constructCollectionType(List.class,
 							 * ProjectFinancialDetails.class));
 							 */
-							projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
+//							projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
 							financialDetails.add(projectDetails);
 							req.setAttribute("financialDetails",projectDetails);
-						} catch (JsonProcessingException e) {
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
 	    	
-					final String localUri2=uri+"/pfms_serv/getTotalDemand";
+//					final String localUri2=uri+"/pfms_serv/getTotalDemand";
+					List<TotalDemand> totaldemand=null;
 
-			 		String jsonResult2=null;
+//			 		String jsonResult2=null;
 					try {
-						HttpEntity<String> entity = new HttpEntity<String>(headers);
-						ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
-						jsonResult2=response.getBody();						
+//						HttpEntity<String> entity = new HttpEntity<String>(headers);
+//						ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
+//						jsonResult2=response.getBody();		
+						totaldemand = PFMSserv.getTotalDemand(auToken);
 					}catch(Exception e) {
 						req.setAttribute("errorMsg", "errorMsg");
+						req.setAttribute("TotalProcurementDetails",List.of());
 					}
-					ObjectMapper mapper2 = new ObjectMapper();
-					mapper2.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-					mapper2.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-					List<TotalDemand> totaldemand=null;
-					if(jsonResult2!=null) {
+//					ObjectMapper mapper2 = new ObjectMapper();
+//					mapper2.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//					mapper2.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+					if(totaldemand!=null) {
 						try {
 							/*
 							 * projectDetails = mapper.readValue(jsonResult,
 							 * mapper.getTypeFactory().constructCollectionType(List.class,
 							 * ProjectFinancialDetails.class));
 							 */
-							totaldemand = mapper2.readValue(jsonResult2, new TypeReference<List<TotalDemand>>(){});
+//							totaldemand = mapper2.readValue(jsonResult2, new TypeReference<List<TotalDemand>>(){});
 							req.setAttribute("TotalProcurementDetails",totaldemand);
-						} catch (JsonProcessingException e) {
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
@@ -2012,7 +2367,9 @@ public class PrintController {
 	public String ProjectBriefing(HttpServletRequest req, HttpSession ses, RedirectAttributes redir,HttpServletResponse res)	throws Exception 
 	{
 		String UserId = (String) ses.getAttribute("Username");
-		String LabCode = (String)ses.getAttribute("labcode");
+		String LabCode = (String)ses.getAttribute("labcode");	  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 		logger.info(new Date() +"Inside ProjectBriefing.htm "+UserId);		
 	    try {    	
 	    	
@@ -2092,30 +2449,33 @@ public class PrintController {
 	    		//get all the milestones details based on projectid;
 	    		
 		/* ----------------------------------------------------------------------------------------------------------	   */  		
-	    		 	final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+projectattribute[0]+"&rupess="+10000000;
-			 		HttpHeaders headers = new HttpHeaders();
-			 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-			    	headers.set("labcode", LabCode);
-			 		String jsonResult=null;
+//	    		 	final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+projectattribute[0]+"&rupess="+10000000;
+//			 		HttpHeaders headers = new HttpHeaders();
+//			 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+//			    	headers.set("labcode", LabCode);
+//			 		String jsonResult=null;
+	    			List<ProjectFinancialDetails> projectDetails=null;
 					try{
-					HttpEntity<String> entity = new HttpEntity<String>(headers);
-					ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
-					jsonResult=response.getBody();						
+//					HttpEntity<String> entity = new HttpEntity<String>(headers);
+//					ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
+//					jsonResult=response.getBody();						
+						projectDetails = PFMSserv.financialStatusBriefing(auToken,projectattribute[0] != null ? projectattribute[0].toString() : "", "10000000");
 					}catch(Exception e) {
 						req.setAttribute("errorMsg", "errorMsg");
+						req.setAttribute("financialDetails",List.of());
 					}
-					ObjectMapper mapper = new ObjectMapper();
-					mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-					mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-					List<ProjectFinancialDetails> projectDetails=null;
-					if(jsonResult!=null) {
+//					ObjectMapper mapper = new ObjectMapper();
+//					mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//					mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+
+					if(projectDetails!=null) {
 						try {
-							projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
+//							projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
 							financialDetails.add(projectDetails);
 							req.setAttribute("financialDetails",projectDetails);
-				}catch (JsonProcessingException e) {
-					e.printStackTrace();
-					}
+						}catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 	    	List<Object[]> procurementStatusList=(List<Object[]>)service.ProcurementStatusList(proid);
 	    	List<Object[]> procurementOnDemand=null;
@@ -2825,7 +3185,7 @@ public class PrintController {
 	    	req.setAttribute("committeeData", committee);
 			req.setAttribute("committeeMetingsCount", service.ProjectCommitteeMeetingsCount(projectid, "0", "0", "0", "0", committee.getCommitteeShortName().trim()) );
 			
-			processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected);
+			processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
 	    	
 			Map<String, List<Object[]>> reviewMeetingListMap = new HashMap<String, List<Object[]>>();
 			for(Object[] obj : SpecialCommitteesList) {
@@ -2875,7 +3235,13 @@ public class PrintController {
 		}
 	}
 	
-	public int processProjectData(HttpServletRequest req, String projectid, String committeeid, String uri, String LabCode, String UserId, String IsIbasConnected) throws Exception{
+	
+	// add token from the session
+	public int processProjectData(HttpServletRequest req, String projectid, String committeeid, String uri, String LabCode, String UserId, String IsIbasConnected,HttpSession ses) throws Exception{	  
+		  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
+    	
 	    List<Object[]> projectattributes = new ArrayList<>();
 	    List<List<Object[]>> ebandpmrccount = new ArrayList<>();
 	    List<List<Object[]>> milestonesubsystemsnew = new ArrayList<>();
@@ -2941,7 +3307,7 @@ public class PrintController {
 	    		
 //	    		financialDetails.add(projectDetails);
 	    		try {
-	    		financialDetails.add(pfmsServ.financialStatusBriefing(projectattribute[0]!=null?projectattribute[0].toString():"0", "10000000"));
+	    		financialDetails.add(pfmsServ.financialStatusBriefing(auToken,projectattribute[0]!=null?projectattribute[0].toString():"0", "10000000"));
 	    		}catch(Exception e) {
 	    			e.printStackTrace();
 	    		}
@@ -2955,7 +3321,7 @@ public class PrintController {
 //	    				new TypeReference<List<TotalDemand>>() {}
 //	    				);
 	    		try {
-	    		req.setAttribute("TotalProcurementDetails", pfmsServ.getTotalDemand());
+	    		req.setAttribute("TotalProcurementDetails", pfmsServ.getTotalDemand(auToken));
 	    		}catch (Exception e) {
 	    			req.setAttribute("TotalProcurementDetails", new ArrayList<>());
 				}
@@ -3501,7 +3867,9 @@ public class PrintController {
 	
 	public void freezeBriefingPaperAfterKickoff(HttpServletRequest req, HttpServletResponse res, HttpSession ses,RedirectAttributes redir)throws Exception{
 		String UserId = (String) ses.getAttribute("Username");
-		String LabCode = (String)ses.getAttribute("labcode");
+		String LabCode = (String)ses.getAttribute("labcode");	  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 		logger.info(new Date() +"Inside freezeBriefingPaperAfterKickoff "+UserId);		
 	    try {
 	    	String projectid=req.getParameter("projectid");
@@ -3568,62 +3936,67 @@ public class PrintController {
 	    	    		ProjectRevList.add(service.ProjectRevList(proid));
 	    	    	
 	    		/* ----------------------------------------------------------------------------------------------------------	   */  		
-	    	    		 final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+projectattribute[0]+"&rupess="+10000000;
-	    			 		HttpHeaders headers = new HttpHeaders();
-	    			 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-	    			    	headers.set("labcode", LabCode);
+//	    	    		 final String localUri=uri+"/pfms_serv/financialStatusBriefing?ProjectCode="+projectattribute[0]+"&rupess="+10000000;
+//	    			 		HttpHeaders headers = new HttpHeaders();
+//	    			 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+//	    			    	headers.set("labcode", LabCode);
 	    			 		
-	    			 		String jsonResult=null;
+//	    			 		String jsonResult=null;
+	    	    			List<ProjectFinancialDetails> projectDetails=null;
 	    					try {
-	    						HttpEntity<String> entity = new HttpEntity<String>(headers);
-	    						ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
-	    						jsonResult=response.getBody();						
+//	    						HttpEntity<String> entity = new HttpEntity<String>(headers);
+//	    						ResponseEntity<String> response=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
+//	    						jsonResult=response.getBody();		
+	    						projectDetails = PFMSserv.financialStatusBriefing(auToken ,projectattribute[0] != null ? projectattribute[0].toString() : "", "10000000");
 	    					}catch(Exception e) {
 	    						req.setAttribute("errorMsg", "errorMsg");
+    							req.setAttribute("financialDetails",List.of());
 	    					}
-	    					ObjectMapper mapper = new ObjectMapper();
-	    					mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-	    					mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-	    					List<ProjectFinancialDetails> projectDetails=null;
-	    					if(jsonResult!=null) {
+//	    					ObjectMapper mapper = new ObjectMapper();
+//	    					mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//	    					mapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+	    					if(projectDetails!=null) {
 	    						try {
 	    							/*
 	    							 * projectDetails = mapper.readValue(jsonResult,
 	    							 * mapper.getTypeFactory().constructCollectionType(List.class,
 	    							 * ProjectFinancialDetails.class));
 	    							 */
-	    							projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
+//	    							projectDetails = mapper.readValue(jsonResult, new TypeReference<List<ProjectFinancialDetails>>(){});
 	    							financialDetails.add(projectDetails);
 	    							req.setAttribute("financialDetails",projectDetails);
-	    						} catch (JsonProcessingException e) {
+	    						} catch (Exception e) {
 	    							e.printStackTrace();
 	    						}
 	    					}
 	    	    	
-	    					final String localUri2=uri+"/pfms_serv/getTotalDemand";
+//	    					final String localUri2=uri+"/pfms_serv/getTotalDemand";
+	    					List<TotalDemand> totaldemand=null;
 
-	    			 		String jsonResult2=null;
+//	    			 		String jsonResult2=null;
 	    					try {
-	    						HttpEntity<String> entity = new HttpEntity<String>(headers);
-	    						ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
-	    						jsonResult2=response.getBody();						
+//	    						HttpEntity<String> entity = new HttpEntity<String>(headers);
+//	    						ResponseEntity<String> response=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
+//	    						jsonResult2=response.getBody();			
+	    						totaldemand = PFMSserv.getTotalDemand(auToken);
 	    					}catch(Exception e) {
 	    						req.setAttribute("errorMsg", "errorMsg");
+    							req.setAttribute("TotalProcurementDetails",List.of());
 	    					}
-	    					ObjectMapper mapper2 = new ObjectMapper();
-	    					mapper2.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-	    					mapper2.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
-	    					List<TotalDemand> totaldemand=null;
-	    					if(jsonResult2!=null) {
+//	    					ObjectMapper mapper2 = new ObjectMapper();
+//	    					mapper2.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//	    					mapper2.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
+	    					
+	    					if(totaldemand!=null) {
 	    						try {
 	    							/*
 	    							 * projectDetails = mapper.readValue(jsonResult,
 	    							 * mapper.getTypeFactory().constructCollectionType(List.class,
 	    							 * ProjectFinancialDetails.class));
 	    							 */
-	    							totaldemand = mapper2.readValue(jsonResult2, new TypeReference<List<TotalDemand>>(){});
+//	    							totaldemand = mapper2.readValue(jsonResult2, new TypeReference<List<TotalDemand>>(){});
 	    							req.setAttribute("TotalProcurementDetails",totaldemand);
-	    						} catch (JsonProcessingException e) {
+	    						} catch (Exception e) {
 	    							e.printStackTrace();
 	    						}
 	    					}
@@ -7116,7 +7489,7 @@ public class PrintController {
 	        Object[] mileStoneLevelId = service.MileStoneLevelId(projectid, committeeid);
 	        req.setAttribute("levelid", mileStoneLevelId != null ? mileStoneLevelId[0].toString() : "2");
 
-	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected);
+	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
 
 	        List<Object[]> projectdatadetails = (List<Object[]>) req.getAttribute("projectdatadetails");
 	        List<List<Object[]>> ebandpmrccount = (List<List<Object[]>>) req.getAttribute("ebandpmrccount");
@@ -7440,4 +7813,1158 @@ public class PrintController {
 	
 	    return new File(path + File.separator + filename + "_temp.pdf");
 	}
+	
+
+
+	@RequestMapping(value = "OverallFinanceExcelPgad.htm", method = { RequestMethod.POST, RequestMethod.GET })
+	public String OverallFinanceExcelPgad(RedirectAttributes redir, HttpServletRequest req, HttpServletResponse res,
+			HttpSession ses) throws Exception {
+		try {
+			XSSFWorkbook workbook = new XSSFWorkbook();
+	        XSSFSheet sheet = workbook.createSheet("PMS_Finance");
+
+	        // ===== Header Style =====
+	        CellStyle headerStyle = workbook.createCellStyle();
+	        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+	        headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+	        Font font = workbook.createFont();
+	        font.setBold(true);
+	        headerStyle.setFont(font);
+
+	        // ===== Header Row =====
+	        XSSFRow headerRow = sheet.createRow(0);
+
+	        String[] headers = {
+	                "Category Name",
+	                "Allotment",
+	                "Sanction",
+	                "Balance",
+	                "SO Value",
+	                "Expenditure",
+	                "INR",
+	                "FE",
+	        };
+
+	        for (int i = 0; i < headers.length; i++) {
+	            Cell cell = headerRow.createCell(i);
+	            cell.setCellValue(headers[i]);
+	            cell.setCellStyle(headerStyle);
+	        }
+
+	        // ===== Auto-size Columns =====
+	        for (int i = 0; i < headers.length; i++) {
+	            sheet.autoSizeColumn(i);
+	            int currentWidth = sheet.getColumnWidth(i);
+	            sheet.setColumnWidth(i, Math.max(currentWidth, 5000)); // minimum width
+	        }
+
+	        // ===== Response Setup =====
+	        res.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+	        res.setHeader("Content-Disposition", "attachment; filename=PMS_Finance.xlsx");
+
+	        workbook.write(res.getOutputStream());
+	        workbook.close();
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return null;
+	}
+	@RequestMapping(value = "OverAllFinaceSubmitPgad.htm", method = { RequestMethod.POST, RequestMethod.GET })
+	public String OverAllFinaceSubmitPgad(RedirectAttributes redir, HttpServletRequest req, HttpServletResponse res,
+			HttpSession ses) throws Exception {
+
+		String LabCode = (String) ses.getAttribute("labcode");
+		String UserId = (String) ses.getAttribute("Username");
+		String projectid = req.getParameter("projectid");
+		String mainprojectid = req.getParameter("mainprojectid");
+		String committeeid = req.getParameter("committeeid");
+		String scheduleId = req.getParameter("scheduleId");
+		Object[] projectDetails = service.ProjectDetails(mainprojectid).get(0);
+
+		String projectCode = projectDetails[1].toString();
+		try {
+
+			if (req.getContentType() != null && req.getContentType().startsWith("multipart/")) {
+
+				Part filePart = req.getPart("filename");
+
+				String fileName = filePart.getSubmittedFileName();
+				String contentType = filePart.getContentType();
+
+				redir.addAttribute("projectid", projectid);
+				redir.addAttribute("committeeid", committeeid);
+				if (!isValidExcelFile(fileName, contentType)) {
+					redir.addAttribute("resultfail", "Only Excel files (.xls, .xlsx) are allowed");
+					return "redirect:/ProjectBriefingPaper.htm";
+
+				}
+				List<BriefingFinance> list = new ArrayList<>();
+				InputStream fileData = filePart.getInputStream();
+
+				Workbook workbook = new XSSFWorkbook(fileData);
+				Sheet sheet = workbook.getSheetAt(0);
+				int rowCount = sheet.getLastRowNum() - sheet.getFirstRowNum();
+
+				for (int i = 2; i <= rowCount; i++) {
+					BriefingFinance pof = new BriefingFinance();
+					int cellcount = sheet.getRow(i).getLastCellNum();
+
+					Row row = sheet.getRow(i);
+					if (row == null)
+						continue;
+
+				
+					System.out.println(list.size());
+				}
+
+				for (int i = 1; i <= rowCount; i++) {   // start from 1 if row 0 = header
+
+				    Row row = sheet.getRow(i);
+				    if (row == null) continue;
+
+				    BriefingFinance pof = new BriefingFinance();
+
+				    // 0 → Category Name
+				    Cell cell0 = row.getCell(0);
+				    if (cell0 != null) {
+				        pof.setCategoryName(cell0.getStringCellValue().trim());
+				    }
+
+				    // 1 → Allotment
+				    pof.setAllotment(getCellValueAsBigDecimal(row.getCell(1)));
+
+				    // 2 → Sanction
+				    pof.setSanction(getCellValueAsBigDecimal(row.getCell(2)));
+
+				    // 3 → Balance
+				    pof.setBalance(getCellValueAsBigDecimal(row.getCell(3)));
+
+				    // 4 → SO Value
+				    pof.setOutStanding(getCellValueAsBigDecimal(row.getCell(4)));
+
+				    // 5 → Expenditure
+				    pof.setExpenditure(getCellValueAsBigDecimal(row.getCell(5)));
+
+				    // 6 → INR
+				    pof.setInr(getCellValueAsBigDecimal(row.getCell(6)));
+
+				    // 7 → FE
+				    pof.setFe(getCellValueAsBigDecimal(row.getCell(7)));
+				    
+				    pof.setScheduleId(scheduleId!=null ? Long.parseLong(scheduleId) : 0L); // or setSchedule(entity)
+				    pof.setIsActive(1);
+				    pof.setCreatedBy(UserId);
+				    pof.setCreatedDate(LocalDateTime.now());
+
+				    list.add(pof);
+				}
+				
+				long count = service.addOverallFinaceForPgad(list,scheduleId);
+
+				if (count > 0) {
+					redir.addAttribute("result", "Overall Finance Data Added Successfully");
+				} else {
+					redir.addAttribute("resultfail", "Overall Finance Data Add Unsuccessful");
+
+				}
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "redirect:/ProjectBriefingPaper.htm";
+	}
+	/*
+	 * private BigDecimal getCellValueAsBigDecimal(Cell cell) {
+	 * 
+	 * if (cell == null) return BigDecimal.ZERO;
+	 * 
+	 * switch (cell.getCellType()) {
+	 * 
+	 * case STRING: String str = cell.getStringCellValue(); if (str != null &&
+	 * !str.trim().isEmpty()) { return new BigDecimal(str.replace(",", "").trim());
+	 * } break;
+	 * 
+	 * case NUMERIC: return BigDecimal.valueOf(cell.getNumericCellValue());
+	 * 
+	 * default: return BigDecimal.ZERO; }
+	 * 
+	 * return BigDecimal.ZERO; }
+	 */
+	
+	private BigDecimal getCellValueAsBigDecimal(Cell cell) {
+
+	    if (cell == null) return BigDecimal.ZERO;
+
+	    DataFormatter formatter = new DataFormatter();
+
+	    String value = formatter.formatCellValue(cell);
+
+	    if (value != null && !value.trim().isEmpty()) {
+	        try {
+	            return new BigDecimal(value.replace(",", "").trim());
+	        } catch (NumberFormatException e) {
+	            return BigDecimal.ZERO;
+	        }
+	    }
+
+	    return BigDecimal.ZERO;
+	}
+	
+	@RequestMapping(value = "BriefingPaperV2.htm", method = {RequestMethod.GET,RequestMethod.POST})
+	public String getBriefingPaperV2(HttpServletRequest req, HttpSession ses) {
+		try {
+			
+			setBriefingPaperV2Data(req,ses);
+			
+			return "print/ProjectBreifingPaperPgadV2";
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "static/error";
+		}
+	}
+	
+	public void setBriefingPaperV2Data(HttpServletRequest req, HttpSession ses) throws Exception {
+
+		String UserId = (String) ses.getAttribute("Username");
+		String LabCode = (String) ses.getAttribute("labcode");
+		String EmpId = ((Long) ses.getAttribute("EmpId")).toString();
+		String Logintype = (String) ses.getAttribute("LoginType");
+		String projectid = req.getParameter("projectid");
+		String committeeid = req.getParameter("committeeid");
+		String headingid = req.getParameter("headingid");
+
+		List<Object[]> projectslist = service.LoginProjectDetailsList(EmpId, Logintype, LabCode);
+		List<Object[]> SpecialCommitteesList = service.SpecialCommitteesList(LabCode);
+		List<BriefingHeading> list = service.getBriefingHeading(projectid);
+
+		if (projectslist.isEmpty()) {
+			if (projectid == null) {
+				return ;
+			} else {
+				projectslist.addAll(service.ProjectDetails(projectid));
+			}
+		}
+
+		if (projectid == null && !projectslist.isEmpty()) {
+			projectid = projectslist.get(0)[0].toString();
+		}
+
+		if (committeeid == null || (committeeid != null && Long.parseLong(committeeid) == 0)) {
+			committeeid = SpecialCommitteesList != null && SpecialCommitteesList.size() > 0
+					? SpecialCommitteesList.get(0)[0].toString()
+					: "0";
+		}
+		
+
+		List<Object[]> projectattributes = new ArrayList<Object[]>();
+		List<List<Object[]>> ebandpmrccount = new ArrayList<List<Object[]>>();
+		List<List<Object[]>> ProjectRevList = new ArrayList<List<Object[]>>();
+		List<Object[]> projectdatadetails = new ArrayList<Object[]>();
+		List<Object[]> ProjectDetails = new ArrayList<Object[]>();
+		List<String> Pmainlist = service.ProjectsubProjectIdList(projectid);
+		
+		for (String proid : Pmainlist) {
+			
+			Object[] projectattribute = service.ProjectAttributes(proid);
+			
+			ProjectDetails.add(service.ProjectDetails(proid).get(0));
+			ebandpmrccount.add(service.EBAndPMRCCount(proid));
+			projectattributes.add(projectattribute);
+			ProjectRevList.add(service.ProjectRevList(proid));
+			projectdatadetails.add(service.ProjectDataDetails(proid));
+		}
+
+		String projectLabCode = service.ProjectDetails(projectid).get(0)[5].toString();
+
+		req.setAttribute("projectLabCode", projectLabCode);
+        req.setAttribute("filePath", env.getProperty("ApplicationFilesDrive"));
+		req.setAttribute("projectattributes", projectattributes);
+		req.setAttribute("ebandpmrccount", ebandpmrccount);
+		req.setAttribute("ProjectRevList", ProjectRevList);
+		req.setAttribute("projectdatadetails", projectdatadetails);
+		req.setAttribute("ProjectDetails", ProjectDetails);
+		req.setAttribute("projectidlist", Pmainlist);
+		req.setAttribute("SpecialCommitteesList", SpecialCommitteesList);
+		req.setAttribute("projectslist", projectslist);
+		req.setAttribute("projectid", projectid);
+		req.setAttribute("committeeid", committeeid);
+		req.setAttribute("headingid", headingid);
+		req.setAttribute("headingList", list);
+		Object[] lastmeetingVenue = service.getLastcreatedSchedule(projectid, committeeid);
+		if(lastmeetingVenue!=null) {
+			String scheduleid = lastmeetingVenue[0]!=null ? lastmeetingVenue[0].toString() : null; 
+			req.setAttribute("scheduleid", scheduleid); 
+			req.setAttribute("lastmeetingVenue", lastmeetingVenue); 
+		}
+		
+	}
+	
+	
+	@RequestMapping(value = "BriefingHeadingSubmit.htm", method = {RequestMethod.GET, RequestMethod.POST})
+	public String submitBriefingHeading(HttpServletRequest req, HttpSession ses, RedirectAttributes redir) {
+	    try {
+	        String UserId = (String) ses.getAttribute("Username");
+	        String LabCode = (String) ses.getAttribute("labcode");
+	        String EmpId = ((Long) ses.getAttribute("EmpId")).toString();
+	        String Logintype = (String) ses.getAttribute("LoginType");
+
+	        String projectid = req.getParameter("projectid");
+	        String committeeid = req.getParameter("committeeid");
+	        String action = req.getParameter("action");
+
+	        String[] headings = req.getParameterValues("heading");
+	        String[] headingIds = req.getParameterValues("headingId");
+
+	        // seniority array
+	        String[] seniorityArr = req.getParameterValues("seniority");
+
+	        redir.addAttribute("projectid", projectid);
+	        redir.addAttribute("committeeid", committeeid);
+
+	        List<BriefingHeading> list1 = service.getBriefingHeading(projectid);
+
+	        Map<Long, BriefingHeading> map = list1.stream()
+	                .collect(Collectors.toMap(BriefingHeading::getHeadingId, h -> h));
+
+	        Set<Long> receivedIds = new HashSet();
+	        List<BriefingHeading> listOfHeadings = new ArrayList<>();
+
+	        if (headings != null) {
+
+	            for (int i = 0; i < headings.length; i++) {
+
+	                String headingText = headings[i] != null ? headings[i].trim() : "";
+	                if (headingText.isBlank()) continue;
+
+	                //  GET SENIORITY (fallback to index)
+	                Integer seniority = (seniorityArr != null && i < seniorityArr.length
+	                        && seniorityArr[i] != null && !seniorityArr[i].isBlank())
+	                        ? Integer.parseInt(seniorityArr[i])
+	                        : (i + 1);
+
+	                if (headingIds != null && i < headingIds.length
+	                        && headingIds[i] != null && !headingIds[i].isBlank()) {
+
+	                    Long id = Long.parseLong(headingIds[i]);
+	                    receivedIds.add(id);
+
+	                    BriefingHeading existing = map.get(id);
+
+	                    if (existing != null) {
+	                        existing.setModifiedBy(UserId);
+	                        existing.setModifiedDate(LocalDateTime.now());
+	                        existing.setIsActive(1);
+	                        existing.setHeading(headingText);
+
+	                        //  SET SENIORITY
+	                        existing.setSeniority(seniority);
+
+	                        listOfHeadings.add(existing);
+	                    }
+
+	                } else {
+
+	                    BriefingHeading newHeading = new BriefingHeading();
+	                    newHeading.setProjectId(Long.parseLong(projectid));
+	                    newHeading.setHeading(headingText);
+	                    newHeading.setCreatedBy(UserId);
+	                    newHeading.setCreatedDate(LocalDateTime.now());
+	                    newHeading.setIsActive(1);
+
+	                    //  SET SENIORITY
+	                    newHeading.setSeniority(seniority);
+
+	                    listOfHeadings.add(newHeading);
+	                }
+	            }
+	        }
+
+	        //  HANDLE DELETED HEADINGS (soft delete)
+	        for (BriefingHeading old : list1) {
+	            if (!receivedIds.contains(old.getHeadingId())) {
+	                old.setIsActive(0);
+	                old.setModifiedBy(UserId);
+	                old.setModifiedDate(LocalDateTime.now());
+	                listOfHeadings.add(old);
+	            }
+	        }
+
+	        //  SORT BEFORE SAVE
+	        listOfHeadings.sort(Comparator.comparing(BriefingHeading::getSeniority));
+
+	        // Reset proper sequence (no gaps)
+		     for (int i = 0; i < listOfHeadings.size(); i++) {
+		         listOfHeadings.get(i).setSeniority(i + 1);
+		     }
+	        long count = service.addHeadings(listOfHeadings, projectid);
+
+	        if ("Add".equalsIgnoreCase(action)) {
+	            if (count > 0) {
+	                redir.addAttribute("result", "Heading Added Successfully");
+	            } else {
+	                redir.addAttribute("resultfail", "Heading Add Unsuccessful");
+	            }
+	        } else {
+	            if (count > 0) {
+	                redir.addAttribute("result", "Heading Edited Successfully");
+	            } else {
+	                redir.addAttribute("resultfail", "Heading Edit Unsuccessful");
+	            }
+	        }
+
+	        return "redirect:/BriefingPaperV2.htm";
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "static/error";
+	    }
+	}
+	
+	
+//	@RequestMapping(value = "BriefingHeadingSubmit.htm", method = {RequestMethod.GET,RequestMethod.POST})
+//	public String submitBriefingHeading(HttpServletRequest req, HttpSession ses,RedirectAttributes redir) {
+//		try {
+//			String UserId = (String) ses.getAttribute("Username");
+//			String LabCode = (String) ses.getAttribute("labcode");
+//			String EmpId = ((Long) ses.getAttribute("EmpId")).toString();
+//			String Logintype = (String) ses.getAttribute("LoginType");
+//
+//			String projectid = req.getParameter("projectid");
+//			String committeeid = req.getParameter("committeeid");
+//			String action = req.getParameter("action");
+//			String[] headings = req.getParameterValues("heading");
+//			String[] headingIds = req.getParameterValues("headingId");
+//			redir.addAttribute("projectid", projectid);
+//			redir.addAttribute("committeeid", committeeid);
+//
+//			List<BriefingHeading> list1 = service.getBriefingHeading(projectid);
+//			
+//			Map<Long,BriefingHeading> map = list1.stream().collect(Collectors.toMap(BriefingHeading::getHeadingId, h -> h));
+//			
+//			Set<Long> receivedIds = new HashSet<>();
+//			List<BriefingHeading> listOfHeadings = new ArrayList<BriefingHeading>();
+//			
+//			for(int i = 0 ; i < headings.length ; i++) {
+//				String headingText = headings[i] != null ? headings[i].trim() : "";
+//				if (headingText.isBlank()) continue;
+//				if(headingIds!=null && i < headingIds.length &&  headingIds[i]!=null && !headingIds[i].isBlank()) {
+//					Long id = Long.parseLong(headingIds[i]);
+//		            receivedIds.add(id);
+//		            
+//		            BriefingHeading existing = map.get(id);
+//		            if(existing!=null) {
+//		            	existing.setModifiedBy(UserId);
+//		            	existing.setModifiedDate(LocalDateTime.now());
+//		            	existing.setIsActive(1);
+//		            	existing.setHeading(headingText);
+//		            	listOfHeadings.add(existing);
+//		            }
+//				}else {
+//		            BriefingHeading newHeading = new BriefingHeading();
+//		            newHeading.setProjectId(Long.parseLong(projectid));
+//		            newHeading.setHeading(headingText);
+//		            newHeading.setCreatedBy(UserId);
+//		            newHeading.setCreatedDate(LocalDateTime.now());
+//		            newHeading.setIsActive(1);
+//	
+//		            listOfHeadings.add(newHeading);
+//				}
+//			}
+//			long count = service.addHeadings(listOfHeadings,projectid);
+//			
+//			if("Add".equalsIgnoreCase(action)) {
+//				if (count > 0) {
+//					redir.addAttribute("result", "Heading Added Successfully");
+//				} else {
+//					redir.addAttribute("resultfail", "Heading Add Unsuccessful");
+//				}
+//			}else {			
+//				if (count > 0) {
+//					redir.addAttribute("result", "Heading Edited Successfully");
+//				} else {
+//					redir.addAttribute("resultfail", "Heading Edit Unsuccessful");
+//				}
+//			}
+//			return "redirect:/BriefingPaperV2.htm";
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//			return "static/error";			
+//		}
+//	}
+	
+//  public void saveOrUpdateHeadings(String[] headings, String[] headingIds, String projectid, Long userId) {
+//
+//	    Long projectId = Long.parseLong(projectid);
+//
+//	    // 👉 Step 1: Get existing headings from DB
+//	    List<BriefingHeading> existingList = manager.createQuery(
+//	            "FROM BriefingHeading WHERE projectId = :pid AND isActive = 1",
+//	            BriefingHeading.class)
+//	            .setParameter("pid", projectId)
+//	            .getResultList();
+//
+//	    Map<Long, BriefingHeading> existingMap = existingList.stream()
+//	            .collect(Collectors.toMap(BriefingHeading::getHeadingId, h -> h));
+//
+//	    Set<Long> receivedIds = new HashSet<>();
+//
+//	    // 👉 Step 2: Process incoming data
+//	    for (int i = 0; i < headings.length; i++) {
+//
+//	        String headingText = headings[i] != null ? headings[i].trim() : "";
+//
+//	        if (headingText.isBlank()) continue;
+//
+//	        // ✅ UPDATE existing
+//	        if (headingIds != null && i < headingIds.length &&
+//	                headingIds[i] != null && !headingIds[i].isBlank()) {
+//
+//	            Long id = Long.parseLong(headingIds[i]);
+//	            receivedIds.add(id);
+//
+//	            BriefingHeading existing = existingMap.get(id);
+//
+//	            if (existing != null) {
+//	                existing.setHeading(headingText);
+//	                existing.setModifiedBy(userId);
+//	                existing.setModifiedDate(LocalDateTime.now());
+//	                manager.merge(existing);
+//	            }
+//
+//	        } else {
+//	            // ✅ INSERT new
+//	            BriefingHeading newHeading = new BriefingHeading();
+//	            newHeading.setProjectId(projectId);
+//	            newHeading.setHeading(headingText);
+//	            newHeading.setCreatedBy(userId);
+//	            newHeading.setCreatedDate(LocalDateTime.now());
+//	            newHeading.setIsActive(1);
+//
+//	            manager.persist(newHeading);
+//	        }
+//	    }
+//
+//	    // 👉 Step 3: Deactivate removed headings ONLY
+//	    for (BriefingHeading existing : existingList) {
+//	        if (!receivedIds.contains(existing.getHeadingId())) {
+//
+//	            existing.setIsActive(0);
+//	            existing.setModifiedBy(userId);
+//	            existing.setModifiedDate(LocalDateTime.now());
+//
+//	            manager.merge(existing);
+//	        }
+//	    }
+//	}
+	
+	@RequestMapping(value = "GetHeadingItems.htm",method = {RequestMethod.POST,RequestMethod.GET})
+	public @ResponseBody String getHeadingDetails(HttpServletRequest req) {
+		List<Object[]> getHeadingDetails = new ArrayList<Object[]>();
+		try {
+			String projectid = req.getParameter("projectid");
+			String committeeid = req.getParameter("committeeid");
+			String scheduleid = req.getParameter("scheduleid");
+			String headingid = req.getParameter("headingid");
+			getHeadingDetails = service.getHeadingDetails(headingid,projectid,scheduleid);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Gson json = new Gson();
+		return json.toJson(getHeadingDetails);
+	}
+	
+	
+	@RequestMapping(value = "DetailsAddEdit.htm", method = {RequestMethod.GET,RequestMethod.POST})
+	public String addEditDetails(HttpServletRequest req) {
+		try {
+			String projectid = req.getParameter("projectid");
+			String committeeid = req.getParameter("committeeid");
+			String scheduleid = req.getParameter("scheduleid");
+			String headingid = req.getParameter("headingid");
+			String detailid = req.getParameter("detailsid");
+						
+			String headDetails = req.getParameter("headDetails");
+			Object[] lastmeetingVenue = service.getLastcreatedSchedule(projectid, committeeid);
+			
+			
+			if(detailid!=null && !detailid.isBlank())req.setAttribute("detailData", service.getDetailsById(detailid));
+			
+			req.setAttribute("headDetails", headDetails);
+			req.setAttribute("lastmeetingVenue", lastmeetingVenue);
+			req.setAttribute("committeeid", committeeid);
+			req.setAttribute("projectid", projectid);
+			req.setAttribute("scheduleid", scheduleid);
+			req.setAttribute("headingid", headingid);
+			
+
+			return "print/ProjectBriefingHeadingdetailsAddEdit";
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "static/error";
+		}
+	}
+	
+	@RequestMapping(value = "DetailsAddEditSubmit.htm", method = {RequestMethod.GET,RequestMethod.POST})
+	public String addEditDetails(HttpServletRequest req,RedirectAttributes redir,HttpSession ses) {
+		try {
+			String projectid = req.getParameter("projectid");
+			String committeeid = req.getParameter("committeeid");
+			String scheduleid = req.getParameter("scheduleid");
+			String headingid = req.getParameter("headingid");
+			String detailid = req.getParameter("detailsid");
+			String content = req.getParameter("content");
+			
+			String UserId = (String) ses.getAttribute("Username");
+			String LabCode = (String) ses.getAttribute("labcode");
+			String EmpId = ((Long) ses.getAttribute("EmpId")).toString();
+			String Logintype = (String) ses.getAttribute("LoginType");
+			
+			redir.addAttribute("projectid",projectid);
+			redir.addAttribute("committeeid",committeeid);
+			redir.addAttribute("scheduleid",scheduleid);
+			redir.addAttribute("headingid",headingid);
+			
+
+			if(detailid==null || "null".equalsIgnoreCase(detailid) || detailid.trim().isBlank()) {
+				BriefingHeadingDetails dto = new BriefingHeadingDetails();
+				dto.setHeadingId(headingid!=null ? Long.parseLong(headingid) : null);
+				dto.setCreatedBy(UserId);
+				dto.setCreatedDate(LocalDateTime.now());
+				dto.setDetails(content);
+				dto.setIsActive(1);
+				dto.setScheduleId(scheduleid!=null ? Long.parseLong(scheduleid) : null);
+				
+				long count = service.addDetails(dto);
+				
+				if (count > 0) {
+					redir.addAttribute("result", "Detail Added Successfully");
+					redir.addAttribute("detailsid",count);
+				} else {
+					redir.addAttribute("resultfail", "Detail Edit Unsuccessful");
+				}
+				
+				return "redirect:/BriefingPaperV2.htm";		
+			}
+			
+			
+			BriefingHeadingDetails dto = service.getDetailsById(detailid);
+			dto.setModifiedBy(UserId);
+			dto.setModifiedDate(LocalDateTime.now());
+			dto.setDetails(content);
+			dto.setIsActive(1);			
+
+			long count = service.addDetails(dto);
+			redir.addAttribute("detailsid",detailid);
+			if (count > 0) {
+				redir.addAttribute("result", "Detail Edited Successfully");
+			} else {
+				redir.addAttribute("resultfail", "Detail Edit Unsuccessful");
+			}
+			return "redirect:/BriefingPaperV2.htm";			
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "static/error";
+		}
+	}
+	
+	@RequestMapping(value = "DetailsDeleteSubmit.htm", method = {RequestMethod.GET,RequestMethod.POST})
+	public String deleteDetails(HttpServletRequest req,HttpSession ses,RedirectAttributes redir) {
+		try {
+
+			String projectid = req.getParameter("projectid");
+			String committeeid = req.getParameter("committeeid");
+			String scheduleid = req.getParameter("scheduleid");
+			String headingid = req.getParameter("headingid");
+			String detailid = req.getParameter("detailsid");
+
+			String UserId = (String) ses.getAttribute("Username");
+			String LabCode = (String) ses.getAttribute("labcode");
+			String EmpId = ((Long) ses.getAttribute("EmpId")).toString();
+			String Logintype = (String) ses.getAttribute("LoginType");
+			
+			redir.addAttribute("projectid",projectid);
+			redir.addAttribute("committeeid",committeeid);
+			redir.addAttribute("scheduleid",scheduleid);
+			redir.addAttribute("headingid",headingid);
+			
+			BriefingHeadingDetails dto = service.getDetailsById(detailid);
+			dto.setModifiedBy(UserId);
+			dto.setModifiedDate(LocalDateTime.now());
+			dto.setIsActive(0);			
+			long count = service.addDetails(dto);
+			if (count > 0) {
+				redir.addAttribute("result", "Detail Deleted Successfully");
+			} else {
+				redir.addAttribute("resultfail", "Detail Delete Unsuccessful");
+			}
+			return "redirect:/BriefingPaperV2.htm";
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}		
+	}
+	
+	@RequestMapping(value = "BriefingPaperV2Download.htm", method = {RequestMethod.POST,RequestMethod.GET})
+	public void downloadNewBriefingPaperV2(HttpServletRequest req, HttpSession ses, HttpServletResponse res) {
+		try{
+
+			String UserId = (String) ses.getAttribute("Username");
+		    String LabCode = (String) ses.getAttribute("labcode");
+
+	        String projectid = req.getParameter("projectid");
+	        String committeeid = req.getParameter("committeeid");
+
+	        Committee committee = service.getCommitteeData(committeeid);
+			
+			setBriefingPaperV2Data(req,ses);
+
+
+	        String projectLabCode = service.ProjectDetails(projectid).get(0)[5].toString();
+	        String CommitteeCode = committee.getCommitteeShortName().trim();
+
+	        List<Object[]> SpecialCommitteesList = service.SpecialCommitteesList(LabCode);
+	        Map<String, List<Object[]>> reviewMeetingListMap = new HashMap<>();
+
+	        for (Object[] obj : SpecialCommitteesList) {
+	            reviewMeetingListMap.put(obj[1] + "", service.ReviewMeetingList(projectid, obj[1] + ""));
+	        }
+
+	        req.setAttribute("reviewMeetingListMap", reviewMeetingListMap);
+
+	        
+	        req.setAttribute("text", req.getParameter("text"));
+	        req.setAttribute("IsIbasConnected", IsIbasConnected);
+	        req.setAttribute("committeeData", committee);
+	        req.setAttribute("projectid", projectid);
+	        req.setAttribute("committeeid", committeeid);
+	        req.setAttribute("ProjectCost", ProjectCost);
+	        req.setAttribute("isprint", "0");
+	        req.setAttribute("AppFilesPath", ApplicationFilesDrive);
+	        req.setAttribute("projectLabCode", projectLabCode);
+	        req.setAttribute("labInfo", service.LabDetailes(projectLabCode));
+	        req.setAttribute("lablogo", LogoUtil.getLabLogoAsBase64String(projectLabCode));
+	        req.setAttribute("thankYouImg", LogoUtil.getThankYouImageAsBase64String());
+	        req.setAttribute("filePath", env.getProperty("ApplicationFilesDrive"));
+	        req.setAttribute("ApplicationFilesDrive", env.getProperty("ApplicationFilesDrive"));
+
+			Object[] lastmeetingVenue = service.getLastcreatedSchedule(projectid, committeeid);
+			req.setAttribute("lastmeetingVenue", lastmeetingVenue);
+			if(lastmeetingVenue!=null) {
+		        List<Object[]> details = service.getAllHeadingDetails(projectid,lastmeetingVenue[0].toString());
+		        if(details!=null ) {
+		        	Map<String,List<Object[]>> headMap = details
+		        			.stream()
+		        			.collect(
+		        					Collectors
+		        					.groupingBy(
+		        							row -> {
+		        								return row[2]!=null ? row[2].toString() : "-1";
+		        							},
+		        							LinkedHashMap::new,
+		        							Collectors.toList()
+		        							));
+			        req.setAttribute("headingDetails", headMap);
+		        }
+			}
+
+	        req.setAttribute("committeeMetingsCount",
+	                service.ProjectCommitteeMeetingsCount(projectid, "0", "0", "0", "0", CommitteeCode));
+
+
+
+			List<Object[]> list = service.getMilestoneBriefingList(lastmeetingVenue[0].toString());
+			Map<String,List<Object[]>> milestoneBriefingMap = list!=null ? list.stream().collect(Collectors.groupingBy(obj -> obj[1]!=null?obj[1].toString():"UNKNOWN",LinkedHashMap::new,Collectors.toList())) : new LinkedHashMap<String, List<Object[]>>();
+			req.setAttribute("milestoneBriefingMap", milestoneBriefingMap);
+			req.setAttribute("recdecDetails", service.GetRecDecDetails(lastmeetingVenue[0].toString()));
+			req.setAttribute("briefingFinanceDetials", service.getBriefingFinanceDetails(lastmeetingVenue[0].toString()));
+			
+
+	        req.setAttribute("RiskTypes", service.RiskTypes());
+
+	        Object[] mileStoneLevelId = service.MileStoneLevelId(projectid, committeeid);
+	        req.setAttribute("levelid", mileStoneLevelId != null ? mileStoneLevelId[0].toString() : "2");
+
+	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
+
+	        List<Object[]> projectdatadetails = (List<Object[]>) req.getAttribute("projectdatadetails");
+	        List<List<Object[]>> ebandpmrccount = (List<List<Object[]>>) req.getAttribute("ebandpmrccount");
+	        List<Object[]> TechWorkDataList = (List<Object[]>) req.getAttribute("TechWorkDataList");
+
+	        milestoneLevelDataMap(req, reviewMeetingListMap, projectid, committee.getCommitteeShortName().trim());
+	        
+	        String filename = "BriefingPaper";
+
+	        String path = req.getServletContext().getRealPath("/view/temp");
+	        req.setAttribute("path", path);
+
+	        CharArrayWriterResponse response1 = new CharArrayWriterResponse(res);
+	        req.getRequestDispatcher("/view/print/BriefingPaperNewpgadV2.jsp").forward(req, response1);
+
+	        String html1 = response1.getOutput();
+
+	        String pdf1Path = path + File.separator + "briefing_" + UserId + ".pdf";
+
+	        HtmlConverter.convertToPdf(html1, new FileOutputStream(pdf1Path));
+
+	        CharArrayWriterResponse response2 = new CharArrayWriterResponse(res);
+	        req.getRequestDispatcher("/view/print/ActionTablePgad.jsp").forward(req, response2);
+
+	        String html2 = response2.getOutput();
+
+	        String pdf2Path = path + File.separator + "actiontable_" + UserId + ".pdf";
+
+	        HtmlConverter.convertToPdf(html2, new FileOutputStream(pdf2Path));
+
+	        String mergedPath = path + File.separator + filename + "_" + UserId + ".pdf";
+
+	        PdfDocument mergedPdf = new PdfDocument(new PdfWriter(mergedPath));
+	        PdfMerger merger = new PdfMerger(mergedPdf);
+
+	        PdfDocument pdf1 = new PdfDocument(new PdfReader(pdf1Path));
+	        PdfDocument pdf2 = new PdfDocument(new PdfReader(pdf2Path));
+
+	        merger.merge(pdf1, 1, pdf1.getNumberOfPages());
+	        merger.merge(pdf2, 1, pdf2.getNumberOfPages());
+
+	        pdf1.close();
+	        pdf2.close();
+
+	        int z = 0;
+
+	        for (Object[] objData : projectdatadetails) {
+
+	            try {
+
+	                if (objData != null) {
+
+	                    String No2 = null;
+
+	                    if (CommitteeCode.equalsIgnoreCase("PMRC")) {
+	                        No2 = "P" + (Long.parseLong(ebandpmrccount.get(0).get(0)[1].toString()) + 1);
+	                    } 
+	                    else if (CommitteeCode.equalsIgnoreCase("EB")) {
+	                        No2 = "E" + (Long.parseLong(ebandpmrccount.get(0).get(1)[1].toString()) + 1);
+	                    }
+
+	                    String fileName = "grantt_" + objData[1].toString() + "_" + No2 + ".pdf";
+
+	                    Path ganttPath = Paths.get(
+	                            env.getProperty("ApplicationFilesDrive"),
+	                            projectLabCode,
+	                            "gantt",
+	                            fileName
+	                    );
+
+	                    if (Files.exists(ganttPath)) {
+
+	                        File headerPdf = addHeaderForPdf(
+	                                ganttPath.toFile(),
+	                                objData[12] + " :- Gantt Chart"
+	                        );
+
+	                        PdfDocument pdf = new PdfDocument(new PdfReader(headerPdf));
+	                        merger.merge(pdf, 1, pdf.getNumberOfPages());
+	                        pdf.close();
+
+	                        headerPdf.delete();
+	                    }
+	                }
+
+
+	                if (objData != null && objData[3] != null) {
+
+	                    Path sysPath = Paths.get(
+	                            env.getProperty("ApplicationFilesDrive"),
+	                            projectLabCode,
+	                            "ProjectData",
+	                            objData[3].toString()
+	                    );
+
+	                    if (FilenameUtils.getExtension(objData[3].toString()).equalsIgnoreCase("pdf")
+	                            && Files.exists(sysPath)) {
+
+	                        File headerPdf = addHeaderForPdf(
+	                                sysPath.toFile(),
+	                                objData[12] + " :- System Configuration Annexure"
+	                        );
+
+	                        PdfDocument pdf = new PdfDocument(new PdfReader(headerPdf));
+	                        merger.merge(pdf, 1, pdf.getNumberOfPages());
+	                        pdf.close();
+
+	                        headerPdf.delete();
+	                    }
+	                }
+
+
+
+	                if (objData != null && objData[4] != null) {
+
+	                    Path specPath = Paths.get(
+	                            env.getProperty("ApplicationFilesDrive"),
+	                            projectLabCode,
+	                            "ProjectData",
+	                            objData[4].toString()
+	                    );
+
+	                    if (FilenameUtils.getExtension(objData[4].toString()).equalsIgnoreCase("pdf")
+	                            && Files.exists(specPath)) {
+
+	                        File headerPdf = addHeaderForPdf(
+	                                specPath.toFile(),
+	                                objData[12] + " :- System Specification Annexure"
+	                        );
+
+	                        PdfDocument pdf = new PdfDocument(new PdfReader(headerPdf));
+	                        merger.merge(pdf, 1, pdf.getNumberOfPages());
+	                        pdf.close();
+
+	                        headerPdf.delete();
+	                    }
+	                }
+
+
+	                if (objData != null && objData[5] != null) {
+
+	                    Path treePath = Paths.get(
+	                            env.getProperty("ApplicationFilesDrive"),
+	                            projectLabCode,
+	                            "ProjectData",
+	                            objData[5].toString()
+	                    );
+
+	                    if (FilenameUtils.getExtension(objData[5].toString()).equalsIgnoreCase("pdf")
+	                            && Files.exists(treePath)) {
+
+	                        File headerPdf = addHeaderForPdf(
+	                                treePath.toFile(),
+	                                objData[12] + " :- Overall Product tree/WBS Annexure"
+	                        );
+
+	                        PdfDocument pdf = new PdfDocument(new PdfReader(headerPdf));
+	                        merger.merge(pdf, 1, pdf.getNumberOfPages());
+	                        pdf.close();
+
+	                        headerPdf.delete();
+	                    }
+	                }
+
+
+	                if (objData != null && objData[6] != null) {
+
+	                    Path trlPath = Paths.get(
+	                            env.getProperty("ApplicationFilesDrive"),
+	                            projectLabCode,
+	                            "ProjectData",
+	                            objData[6].toString()
+	                    );
+
+	                    if (FilenameUtils.getExtension(objData[6].toString()).equalsIgnoreCase("pdf")
+	                            && Files.exists(trlPath)) {
+
+	                        File headerPdf = addHeaderForPdf(
+	                                trlPath.toFile(),
+	                                objData[12] + " :- TRL table with TRL at sanction stage Annexure"
+	                        );
+
+	                        PdfDocument pdf = new PdfDocument(new PdfReader(headerPdf));
+	                        merger.merge(pdf, 1, pdf.getNumberOfPages());
+	                        pdf.close();
+
+	                        headerPdf.delete();
+	                    }
+	                }
+
+
+	                if (TechWorkDataList != null && z < TechWorkDataList.size() && TechWorkDataList.get(z) != null) {
+
+	                    if (FilenameUtils.getExtension(TechWorkDataList.get(z)[8].toString()).equalsIgnoreCase("pdf")) {
+
+	                        Zipper zip = new Zipper();
+
+	                        String tecdata = TechWorkDataList.get(z)[6].toString().replaceAll("[/\\\\]", ",");
+
+	                        String[] fileParts = tecdata.split(",");
+
+	                        String zipName = TechWorkDataList.get(z)[7].toString()
+	                                + TechWorkDataList.get(z)[11].toString()
+	                                + "-" + TechWorkDataList.get(z)[10].toString() + ".zip";
+
+	                        Path techPath;
+
+	                        if (fileParts.length == 4) {
+
+	                            techPath = Paths.get(env.getProperty("ApplicationFilesDrive"),
+	                                    fileParts[0], fileParts[1], fileParts[2], fileParts[3], zipName);
+
+	                        } else {
+
+	                            techPath = Paths.get(env.getProperty("ApplicationFilesDrive"),
+	                                    fileParts[0], fileParts[1], fileParts[2], fileParts[3], fileParts[4], zipName);
+	                        }
+
+	                        zip.unpack(techPath.toString(), path, TechWorkDataList.get(z)[9].toString());
+
+	                        Path techPdfPath = Paths.get(path, TechWorkDataList.get(z)[8].toString());
+
+	                        if (Files.exists(techPdfPath)) {
+
+	                            File headerPdf = addHeaderForPdf(
+	                                    techPdfPath.toFile(),
+	                                    objData[12] + " :- Technical Details"
+	                            );
+
+	                            PdfDocument pdf = new PdfDocument(new PdfReader(headerPdf));
+	                            merger.merge(pdf, 1, pdf.getNumberOfPages());
+	                            pdf.close();
+
+	                            headerPdf.delete();
+	                            Files.deleteIfExists(techPdfPath);
+	                        }
+	                    }
+	                }
+
+	            } catch (Exception e) {
+
+	                logger.error(new Date() + " Annexure Merge Error " + UserId, e);
+	            }
+
+	            z++;
+	        }
+	        mergedPdf.getDocumentInfo().setTitle("Project Briefing Paper");
+	        mergedPdf.close();
+
+	        res.setContentType("application/pdf");
+	        res.setHeader("Content-disposition", "inline;filename=" + filename + ".pdf");
+
+	        File f = new File(mergedPath);
+
+	        try (OutputStream out = res.getOutputStream();
+	             FileInputStream in = new FileInputStream(f)) {
+
+	            byte[] buffer = new byte[4096];
+	            int length;
+
+	            while ((length = in.read(buffer)) > 0) {
+	                out.write(buffer, 0, length);
+	            }
+
+	            out.flush();
+	        }
+
+	        Files.deleteIfExists(Paths.get(pdf1Path));
+	        Files.deleteIfExists(Paths.get(pdf2Path));
+	        Files.deleteIfExists(Paths.get(mergedPath));
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@RequestMapping(value = "CopyHeadingsFromLastMeeting.htm", method = {RequestMethod.GET,RequestMethod.POST})
+	public String copyHeadingFromLastMeeting(HttpServletRequest req,HttpSession ses) {
+		try {
+			String UserId =(String)ses.getAttribute("Username");
+			String LabCode =(String)ses.getAttribute("labcode");
+			String scheduleid = req.getParameter("scheduleid");
+			String meetingid = req.getParameter("meetingid");
+			String scheduleidfrom=req.getParameter("scheduleidfrom");
+			String projectid = req.getParameter("projectid");
+			String committeeid = req.getParameter("committeeid");
+			String search = req.getParameter("search");
+			
+			if(search!=null)
+			{
+				req.setAttribute("meetingsearch", comservice.MeetingSearchList(search,LabCode));					
+			}
+
+	
+			if(scheduleidfrom!=null)
+			{
+				req.setAttribute("committeescheduledata1",comservice.CommitteeScheduleEditData(scheduleidfrom));
+				req.setAttribute("headingList",service.getBriefingHeading(projectid));
+				req.setAttribute("meetingid",meetingid);
+				req.setAttribute("scheduleidfrom",scheduleidfrom);
+			}			
+	
+			req.setAttribute("scheduleidto",scheduleid);
+			req.setAttribute("committeescheduleeditdata",comservice.CommitteeScheduleEditData(scheduleid));
+			req.setAttribute("projectid", projectid);
+			req.setAttribute("committeeid", committeeid);
+			return "print/BriefingHeadingCopy";
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "static/error";
+		}
+	}
+	
+	@RequestMapping(value = "CopyHeadingsList.htm", method = {RequestMethod.GET,RequestMethod.POST})
+	public String CommitteePreviousAgendaAddSubmit(HttpServletRequest req,HttpServletResponse res,HttpSession ses,RedirectAttributes redir)
+	{
+		String UserId =(String)ses.getAttribute("Username");
+		logger.info(new Date() +"Inside CopyHeadingsList.htm "+UserId);		
+		try {
+			String scheduleidto=req.getParameter("scheduleidto");
+			String scheduleidfrom=req.getParameter("scheduleidfrom");
+			String[] headingIds=req.getParameterValues("headingId");
+			String projectid = req.getParameter("projectid");
+			String committeeid = req.getParameter("committeeid");
+
+
+			long count=service.previouseHeadingAdd(scheduleidto,scheduleidfrom, headingIds, UserId);
+			if (count > 0) {
+				redir.addAttribute("result", "Heading From Previous Meeting Added Successfull");
+			} else {
+				redir.addAttribute("resultfail", "Heading From Previous Meeting Add Unsuccessfull");
+			}			
+			redir.addAttribute("scheduleid",scheduleidto);		
+			redir.addAttribute("projectid", projectid);
+			redir.addAttribute("committeeid", committeeid);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error(new Date() +" Inside CopyHeadingsList.htm "+UserId, e);
+		}
+		return "redirect:/BriefingPaperV2.htm";
+	}
+	
+	@RequestMapping(value = "UpdateRemarksFromBriefingPaper.htm", method = RequestMethod.POST)
+	@ResponseBody
+	public String updateRemarks(HttpServletRequest req, HttpSession ses) {
+
+	    String userId = (String) ses.getAttribute("Username");
+
+	    try {
+
+	        String id = req.getParameter("id");
+	        String remarks = req.getParameter("remarks");
+	        if(id == null || id.isBlank()) {
+	        	id = "0";
+	        }
+
+	        // Validation
+//	        if (InputValidator.isContainsHTMLTags(remarks)) {
+//	            return "Invalid Remarks";
+//	        }
+
+	        // Call service
+	        int count = service.updateRemarks(Long.parseLong(id), remarks, userId);
+	        
+	        if (count > 0) {
+	            return "Update success";
+	        } else {
+	            return "Update failed";
+	        }
+
+	    } catch (Exception e) {
+	        logger.error(new Date() + " Inside UpdateRemarks.htm " + userId, e);
+	        e.printStackTrace();
+	        return "error";
+	    }
+	}
+
 }

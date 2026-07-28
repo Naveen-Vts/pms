@@ -29,28 +29,28 @@ public class IndustryPartnerRep  implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "IndustryPartnerRepId")
+	@Column(name = "industry_partner_rep_id")
 	private Long IndustryPartnerRepId;
-	@Column(name = "RepName")
+	@Column(name = "rep_name")
 	private String RepName;
-	@Column(name = "RepDesignation")
+	@Column(name = "rep_designation")
 	private String RepDesignation;
-	@Column(name = "RepMobileNo")
+	@Column(name = "rep_mobile_no")
 	private String RepMobileNo;
-	@Column(name = "RepEmail")
+	@Column(name = "rep_email")
 	private String RepEmail;
-	@Column(name = "CreatedBy")
+	@Column(name = "created_by")
 	private String CreatedBy;
-	@Column(name = "CreatedDate")
+	@Column(name = "created_date")
 	private String CreatedDate;
-	@Column(name = "ModifiedBy")
+	@Column(name = "modified_by")
 	private String ModifiedBy;
-	@Column(name = "ModifiedDate")
+	@Column(name = "modified_date")
 	private String ModifiedDate;
-	@Column(name = "IsActive")
+	@Column(name = "is_active")
 	private int IsActive;
 	
 	@ManyToOne
-	@JoinColumn(name = "IndustryPartnerId")
+	@JoinColumn(name = "industry_partner_id")
 	private IndustryPartner industryPartner;
 }

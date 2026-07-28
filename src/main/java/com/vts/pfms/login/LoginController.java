@@ -59,8 +59,10 @@ import com.vts.pfms.header.model.ProjectDashBoardFavourite;
 import com.vts.pfms.header.model.ProjectDashBoardFavouriteProjetcts;
 import com.vts.pfms.header.service.HeaderService;
 import com.vts.pfms.master.dto.ProjectSanctionDetailsMaster;
+import com.vts.pfms.master.service.MasterService;
 import com.vts.pfms.model.FinanceChanges;
 import com.vts.pfms.model.IbasLabMaster;
+import com.vts.pfms.model.LabMaster;
 import com.vts.pfms.model.Notice;
 import com.vts.pfms.pfmsserv.feign.PFMSServeFeignClient;
 import com.vts.pfms.service.RfpMainService;
@@ -104,6 +106,9 @@ public class LoginController {
 
 	@Autowired
 	PFMSServeFeignClient PFMSServ;
+	
+	@Autowired
+	MasterService masterService;
 	
 	
 	@Autowired
@@ -823,7 +828,9 @@ public class LoginController {
 		String empNo = (String) ses.getAttribute("empNo");
 		String LabCode = (String) ses.getAttribute("labcode");
 		String ClusterId = (String) ses.getAttribute("clusterid");
-		String statsUrl   = env.getProperty("stats_url");
+		String statsUrl   = env.getProperty("stats_url");		  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 
 		//check if it is project director or qioc
 		if (LoginType.equals("Q") || LoginType.equals("P")) {
@@ -998,7 +1005,53 @@ public class LoginController {
 
 				// code for pfms service call to get data for project pie chart
 				
+//				final String localUri = uri + "/pfms-serv/pfms-chart-service?inType=" + LoginType + "&employeeNo=" + empNo;
+//
+//				HttpHeaders headers = new HttpHeaders();
+//				headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+//				headers.add("labcode", LabCode);
 
+//				String jsonResult = null;
+
+//				List<ProjectSanctionDetailsMaster> projectDetails = null;
+				try {
+					
+					
+
+//					HttpEntity<String> entity = new HttpEntity<String>(headers);
+//					ResponseEntity<String> response = restTemplate.exchange(localUri, HttpMethod.GET, entity,
+//							String.class);
+//					jsonResult = response.getBody();
+					
+					req.setAttribute("budgetlist", PFMSServ.getDetailsOfSupplyOrder(auToken,LoginType, empNo));
+
+				} catch (HttpClientErrorException | ResourceAccessException e) {
+					logger.error(new Date() + " Inside MainDashboard.htm " + UserId, e);
+					e.printStackTrace();
+
+					req.setAttribute("budgetlist", new ArrayList<ProjectSanctionDetailsMaster>());
+					req.setAttribute("errorMsg", "IBAS Server Not Responding !!");
+
+				} catch (Exception e) {
+					logger.error(new Date() + " Inside MainDashboard.htm " + UserId, e);
+					e.printStackTrace();
+					req.setAttribute("budgetlist", new ArrayList<ProjectSanctionDetailsMaster>());
+					req.setAttribute("errorMsg", "IBAS Server Not Responding !!");
+				}
+
+//				ObjectMapper mapper = new ObjectMapper();
+//				if (jsonResult != null) {
+//					try {
+//
+//						projectDetails = mapper.readValue(jsonResult, mapper.getTypeFactory()
+//								.constructCollectionType(List.class, ProjectSanctionDetailsMaster.class));
+//						req.setAttribute("budgetlist", projectDetails);
+//
+//					} catch (JsonProcessingException e) {
+//
+//						e.printStackTrace();
+//					}
+//				}
 
 				// req.setAttribute("AllSchedulesCount",
 				// rfpmainservice.AllSchedulesCount(LoginType,LoginId));
@@ -1022,7 +1075,7 @@ public class LoginController {
 				}
 				long start = System.currentTimeMillis();
 				try {
-					req.setAttribute("budgetlist", PFMSServ.getDetailsOfSupplyOrder(LoginType, empNo));
+					req.setAttribute("budgetlist", PFMSServ.getDetailsOfSupplyOrder(auToken,LoginType, empNo));
 					System.out.println("Feign Call Success after " + (System.currentTimeMillis() - start) + "ms");
 					}catch (Exception e) {
 						System.out.println("Feign Call Failed after " + (System.currentTimeMillis() - start) + "ms");
@@ -1290,7 +1343,7 @@ public class LoginController {
     	
     }
     
-    @Scheduled(cron ="0 1 9-19/3 * * ? ")
+    @Scheduled(cron ="0 1 9,12,15,18 * * ? ")
     public String ProjectHealthUpdateAuto()throws Exception{
     	
     	logger.info(new Date() +"ProjectHealthUpdateAuto.htm ");
@@ -1308,19 +1361,22 @@ public class LoginController {
     	String Empid= ses.getAttribute("EmpId").toString();
     	String UserId = (String) ses.getAttribute("Username");
     	String LabCode=(String)ses.getAttribute("labcode");
-    	String ClusterId =(String)ses.getAttribute("clusterid");
+    	String ClusterId =(String)ses.getAttribute("clusterid");			  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
+
     	logger.info(new Date() +"ProjectHoaUpdate.htm "+Empid);
     	List<CCMView> CCMViewData=new ArrayList<CCMView>();
     	long count= 0L;
     	long ibasserveron=0L;
     	try {
     	// Calling pms_serv to update hoa data from ibas to pms
-//    	final String localUri1=uri+"/pfms_serv/tblprojectdata?labcode="+LabCode;
-//    	final String localUri2=uri+"/pfms_serv/pfms-finance-changes?projectCode=A&interval=M";
-//    	final String localUri3=uri+"/pfms_serv/pfms-finance-changes?projectCode=A&interval=W";
-//    	final String localUri4=uri+"/pfms_serv/pfms-finance-changes?projectCode=A&interval=T";
-//    	final String localUri5=uri+"/pfms_serv/labdetails";
-//    	final String CCMDataURI=uri+"/pfms_serv/getCCMViewData";
+//    	final String localUri1=uri+"/pfms-serv/tblprojectdata?labcode="+LabCode;
+//    	final String localUri2=uri+"/pfms-serv/pfms-finance-changes?projectCode=A&interval=M";
+//    	final String localUri3=uri+"/pfms-serv/pfms-finance-changes?projectCode=A&interval=W";
+//    	final String localUri4=uri+"/pfms-serv/pfms-finance-changes?projectCode=A&interval=T";
+//    	final String localUri5=uri+"/pfms-serv/labdetails";
+//    	final String CCMDataURI=uri+"/pfms-serv/getCCMViewData";
     	
 //    	String MonthlyData=null;
 //    	String WeeklyData=null;
@@ -1330,11 +1386,11 @@ public class LoginController {
     
     	try {
 
-			CCMViewData= PFMSServ.getCCMViewData(LabCode);
+			CCMViewData= PFMSServ.getCCMViewData(auToken,LabCode);
     	}
     	catch(HttpClientErrorException  | ResourceAccessException e) 
     	{
-    		logger.error(new Date() +" Inside ProjectHoaUpdate.htm pfms_serv Not Responding.htm "+UserId, e);
+    		logger.error(new Date() +" Inside ProjectHoaUpdate.htm pfms-serv Not Responding.htm "+UserId, e);
     		e.printStackTrace();
     		ibasserveron = 1;
 		}
@@ -1348,17 +1404,15 @@ public class LoginController {
 		List<FinanceChanges> FinanceDetailsMonthly=new ArrayList<>();
 		List<FinanceChanges> FinanceDetailsWeekly=new ArrayList<>();
 		List<FinanceChanges> FinanceDetailsToday=new ArrayList<>();
-		List<IbasLabMaster> LabDetails=new ArrayList<>();
+		List<LabMaster> LabDetails=new ArrayList<>();
 		
 
 			try {
 
-				projectDetails1 = PFMSServ.ProjectHoaData(LabCode);
-				LabDetails = PFMSServ.LabDetails();
+				projectDetails1 = PFMSServ.ProjectHoaData(auToken,LabCode);
+				LabDetails = masterService.getAllLabMaster();
 				count = rfpmainservice.ProjectHoaUpdate(projectDetails1,UserId,LabDetails);
-				
-			} catch (JsonProcessingException e) {
-				
+			}catch (Exception e) {
 				e.printStackTrace();
 			}
 
@@ -1412,39 +1466,53 @@ public class LoginController {
 
     
    // @Scheduled(cron ="0 1 9-19/3 * * ? ")
-    public String ProjectHoaUpdateAuto()throws Exception{
-    	    	
+    public String ProjectHoaUpdateAuto(HttpSession ses)throws Exception{
+		  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
+    	
     	logger.info(new Date() +"ProjectHoaUpdateAuto.htm ");
     	// Calling pms_serv to update hoa data from ibas to pms
-    	final String localUri1=uri+"/pfms_serv/tblprojectdata";
-    	final String localUri2=uri+"/pfms_serv/pfms-finance-changes?projectCode=A&interval=M";
-    	final String localUri3=uri+"/pfms_serv/pfms-finance-changes?projectCode=A&interval=W";
-    	final String localUri4=uri+"/pfms_serv/pfms-finance-changes?projectCode=A&interval=T";
-    	final String localUri5=uri+"/pfms_serv/labdetails";
+//    	final String localUri1=uri+"/pfms-serv/tblprojectdata";
+//    	final String localUri2=uri+"/pfms-serv/pfms-finance-changes?projectCode=A&interval=M";
+//    	final String localUri3=uri+"/pfms-serv/pfms-finance-changes?projectCode=A&interval=W";
+//    	final String localUri4=uri+"/pfms-serv/pfms-finance-changes?projectCode=A&interval=T";
+//    	final String localUri5=uri+"/pfms-serv/labdetails";
     	
-    	String HoaJsonData=null;
-    	String MonthlyData=null;
-    	String WeeklyData=null;
-    	String TodayData=null;
-    	String LabData=null;
+//    	String HoaJsonData=null;
+//    	String MonthlyData=null;
+//    	String WeeklyData=null;
+//    	String TodayData=null;
+//    	String LabData=null;
+    	
+		List<ProjectHoa> projectDetails1=null;
+		List<FinanceChanges> FinanceDetailsMonthly=null;
+		List<FinanceChanges> FinanceDetailsWeekly=null;
+		List<FinanceChanges> FinanceDetailsToday=null;
+		List<LabMaster> LabDetails=masterService.getAllLabMaster();
     
     	try {
+//    		
+//    		HttpHeaders headers = new HttpHeaders();
+//	 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+//	 		//headers.set("labcode", LabCode);
+//    		HttpEntity<String> entity = new HttpEntity<String>(headers);
+//			ResponseEntity<String> response1=restTemplate.exchange(localUri1, HttpMethod.GET, entity, String.class);
+//			HoaJsonData=response1.getBody();
+//			
+//			ResponseEntity<String> monthlyresponse=restTemplate.exchange(localUri2, HttpMethod.GET, entity, String.class);
+//			ResponseEntity<String> weeklyresponse=restTemplate.exchange(localUri3, HttpMethod.GET, entity, String.class);
+//			ResponseEntity<String> todayresponse=restTemplate.exchange(localUri4, HttpMethod.GET, entity, String.class);
+//			ResponseEntity<String> labdata=restTemplate.exchange(localUri5, HttpMethod.GET, entity, String.class);
+//			MonthlyData=monthlyresponse.getBody();
+//			WeeklyData=weeklyresponse.getBody();
+//			TodayData=todayresponse.getBody();
+//			LabData=labdata.getBody();
     		
-    		HttpHeaders headers = new HttpHeaders();
-	 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-	 		//headers.set("labcode", LabCode);
-    		HttpEntity<String> entity = new HttpEntity<String>(headers);
-			ResponseEntity<String> response1=restTemplate.exchange(localUri1, HttpMethod.POST, entity, String.class);
-			HoaJsonData=response1.getBody();
-			
-			ResponseEntity<String> monthlyresponse=restTemplate.exchange(localUri2, HttpMethod.POST, entity, String.class);
-			ResponseEntity<String> weeklyresponse=restTemplate.exchange(localUri3, HttpMethod.POST, entity, String.class);
-			ResponseEntity<String> todayresponse=restTemplate.exchange(localUri4, HttpMethod.POST, entity, String.class);
-			ResponseEntity<String> labdata=restTemplate.exchange(localUri5, HttpMethod.POST, entity, String.class);
-			MonthlyData=monthlyresponse.getBody();
-			WeeklyData=weeklyresponse.getBody();
-			TodayData=todayresponse.getBody();
-			LabData=labdata.getBody();
+    		projectDetails1 = PFMSServ.ProjectHoaData(auToken,null);
+    		FinanceDetailsMonthly = PFMSServ.PfmsFinanceChanges(auToken,"A","M");
+    		FinanceDetailsWeekly = PFMSServ.PfmsFinanceChanges(auToken,"A","W");
+    		FinanceDetailsToday = PFMSServ.PfmsFinanceChanges(auToken,"A","T");
 
     	}catch(Exception e)
 		{
@@ -1453,17 +1521,12 @@ public class LoginController {
 			
 		}
 
-		ObjectMapper mao = new ObjectMapper().configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-		List<ProjectHoa> projectDetails1=null;
-		List<FinanceChanges> FinanceDetailsMonthly=null;
-		List<FinanceChanges> FinanceDetailsWeekly=null;
-		List<FinanceChanges> FinanceDetailsToday=null;
-		List<IbasLabMaster> LabDetails=null;
-		if(HoaJsonData!=null) {
+//		ObjectMapper mao = new ObjectMapper().configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+		if(projectDetails1!=null) {
 			try {
 
-				projectDetails1 = mao.readValue(HoaJsonData, mao.getTypeFactory().constructCollectionType(List.class, ProjectHoa.class));
-				LabDetails = mao.readValue(LabData, mao.getTypeFactory().constructCollectionType(List.class, IbasLabMaster.class));
+//				projectDetails1 = mao.readValue(HoaJsonData, mao.getTypeFactory().constructCollectionType(List.class, ProjectHoa.class));
+//				LabDetails = mao.readValue(LabData, mao.getTypeFactory().constructCollectionType(List.class, IbasLabMaster.class));
 				long count = rfpmainservice.ProjectHoaUpdate(projectDetails1,"auto-update",LabDetails);
 				
 			} catch (JsonProcessingException e) {
@@ -1473,12 +1536,12 @@ public class LoginController {
 			}
 		}
 		
-		if(MonthlyData!=null) {
+		if(FinanceDetailsMonthly!=null && FinanceDetailsWeekly != null && FinanceDetailsToday != null) {
 			try {
 
-				FinanceDetailsMonthly = mao.readValue(MonthlyData, mao.getTypeFactory().constructCollectionType(List.class, FinanceChanges.class));
-				FinanceDetailsWeekly = mao.readValue(WeeklyData, mao.getTypeFactory().constructCollectionType(List.class, FinanceChanges.class));
-				FinanceDetailsToday = mao.readValue(TodayData, mao.getTypeFactory().constructCollectionType(List.class, FinanceChanges.class));
+//				FinanceDetailsMonthly = mao.readValue(MonthlyData, mao.getTypeFactory().constructCollectionType(List.class, FinanceChanges.class));
+//				FinanceDetailsWeekly = mao.readValue(WeeklyData, mao.getTypeFactory().constructCollectionType(List.class, FinanceChanges.class));
+//				FinanceDetailsToday = mao.readValue(TodayData, mao.getTypeFactory().constructCollectionType(List.class, FinanceChanges.class));
 				//we have to pass empid instead of 0
 				rfpmainservice.ProjectFinanceChangesUpdate(FinanceDetailsMonthly,FinanceDetailsWeekly,FinanceDetailsToday,"auto-update","0");
 				
@@ -1503,7 +1566,9 @@ public class LoginController {
     	String ProjectId = "A";
     	String Interval = "T";
     	String ActiveTab = "all-tab_alltab";
-    	String ClusterId = (String)ses.getAttribute("clusterid");
+    	String ClusterId = (String)ses.getAttribute("clusterid");		  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
     	
     	 String DGName = headerservice.LabMasterList(ClusterId).stream().filter(e-> "Y".equalsIgnoreCase(e[2].toString())).collect(Collectors.toList()).get(0)[1].toString();
 	     String IsDG = "No";
@@ -1554,41 +1619,46 @@ public class LoginController {
     	req.setAttribute("labmasterlist", LabMasterList);
     	req.setAttribute("labcode", LabCode);
  
-    	final String localUri=uri+"/pfms_serv/pfms-finance-changes?projectCode="+projectCode+"&interval="+Interval;
+//    	final String localUri=uri+"/pfms-serv/pfms-finance-changes?projectCode="+projectCode+"&interval="+Interval;
     	List<FinanceChanges> FinanceDetails=null;
-    	String FinanceChanges=null;
-    	long count= 0L;
+//    	String FinanceChanges=null;
+//    	long count= 0L;
     	long ibasserveron=0L;
     	try {
     		
-    		HttpHeaders headers = new HttpHeaders();
-	 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-	 		headers.set("labcode", LabCode);
-    		HttpEntity<String> entity = new HttpEntity<String>(headers);
-			ResponseEntity<String> response1=restTemplate.exchange(localUri, HttpMethod.POST, entity, String.class);
-			FinanceChanges=response1.getBody();
+//    		HttpHeaders headers = new HttpHeaders();
+//	 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+//	 		headers.set("labcode", LabCode);
+//    		HttpEntity<String> entity = new HttpEntity<String>(headers);
+//			ResponseEntity<String> response1=restTemplate.exchange(localUri, HttpMethod.GET, entity, String.class);
+//			FinanceChanges=response1.getBody();
+    		
+    		FinanceDetails = PFMSServ.PfmsFinanceChanges(auToken,projectCode, Interval);
+    		
     	}
     	catch(HttpClientErrorException  | ResourceAccessException e) {
-    		logger.error(new Date() +" Inside ChangesinProject.htm pfms_serv not Responding "+ e);
+    		logger.error(new Date() +" Inside ChangesinProject.htm pfms-serv not Responding "+ e);
     		ibasserveron = 1;
+    		req.setAttribute("financechangesdata", new ArrayList<>());
 		}
     	catch(Exception e)
 		{
     		logger.error(new Date() +" Inside ChangesinProject.htm  "+ e);
 			e.printStackTrace();
+    		req.setAttribute("financechangesdata", new ArrayList<>());
 		}
 
-		ObjectMapper mao = new ObjectMapper().configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-		
-		if(FinanceChanges!=null) {
-			try {
-				FinanceDetails = mao.readValue(FinanceChanges, mao.getTypeFactory().constructCollectionType(List.class, FinanceChanges.class));
-			} catch (JsonProcessingException e) {
-
-				logger.error(new Date() +" Inside ChangesinProject.htm pfms_serv not Responding "+ e);
-				e.printStackTrace();
-			}
-		}
+//		ObjectMapper mao = new ObjectMapper().configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+//		
+//		if(FinanceChanges!=null) {
+//			try {
+//				FinanceDetails = mao.readValue(FinanceChanges, mao.getTypeFactory().constructCollectionType(List.class, FinanceChanges.class));
+//			} catch (JsonProcessingException e) {
+//
+//				logger.error(new Date() +" Inside ChangesinProject.htm pfms-serv not Responding "+ e);
+//				e.printStackTrace();
+//			}
+//		}
 		
 		req.setAttribute("financechangesdata", FinanceDetails );
 		

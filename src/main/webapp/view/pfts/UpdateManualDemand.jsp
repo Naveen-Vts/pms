@@ -25,11 +25,13 @@
   <%
   Object[] fileView = (Object[])request.getAttribute("fileViewList");
   List<Object[]> fileStage=(List<Object[]>)request.getAttribute("pftsStageList");
+  List<Object[]> OrderLists=(List<Object[]>)request.getAttribute("OrderLists");
   List<Object[]> pftsStageList1=fileStage.stream().filter(i->Integer.parseInt(i[0].toString())<=10).collect(Collectors.toList());
   List<Object[]> pftsStageList2=fileStage.stream().filter(i->Integer.parseInt(i[0].toString())>=10).collect(Collectors.toList());
   List<Object[]> pftsStageList3=fileStage.stream().filter(i->Integer.parseInt(i[0].toString())>10).collect(Collectors.toList());
   String projectid = fileView[11].toString();
   int fileViewValue = Integer.parseInt(fileView[7].toString()); 
+  SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
  %>
 <% 
     String ses = (String) request.getParameter("result");
@@ -105,9 +107,12 @@
 						    <div class="col-md-1" >
 								<label> Remarks : </label> 
 								</div>
-								<div class="col-md-3">
+								<div class="col-md-3 d-flex justify-content-between">
 								<input type="text" class="form-control style5" value="<%=fileView[9]!=null?StringEscapeUtils.escapeHtml4(fileView[9].toString()):"" %>"
 									name="procRemarks" id="procRemarks" required="required">
+									<div class="form-group" align="center" id="RemarksEditbtn">
+										<button formaction="updateManualDemandRemarksEdit.htm" class="btn btn-primary btn-sm edit"  value="SUBMIT" onclick ="return confirm('Are you sure to submit?')"><i class="fa fa-edit" ></i> </button>
+									</div>
 							</div>
 					 </div>
 					 <br>
@@ -192,6 +197,15 @@
 					 	   <input type="hidden" id="fileRemarks" name="procRemarks" value="">
 					 	   <input type="hidden" name="flag" value="order">
 					       <a class="btn btn-info btn-sm  shadow-nohover back" href="ProcurementStatus.htm?projectid=<%=projectid%>">Back</a>
+					       <%if(OrderLists != null && !OrderLists.isEmpty()){ %>
+						       <button type="button" 
+						       class="btn btn-sm add"
+						       data-toggle="modal"
+					            data-target="#orderDetailsModal"
+					            >
+						       		Order Details
+						       </button>
+					       <%} %>
 				      </div>
 				 </form>
 		              <br>
@@ -271,6 +285,61 @@
 				</div> -->
          </div>
 	</div>
+	
+	
+	<div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog large-order-modal modal-dialog-censtered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary text-light">
+                <h5 class="modal-title">Order Details</h5>
+                <button type="button" class="close text-light" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Put your order details here -->
+               <table class="table table-bordered table-hover table-striped table-condensed " id="myTable" > 
+                	<thead>
+                		<tr class="text-center">
+                			<th>SN</th>
+                			<th>Order No</th>
+                			<th>Order Date</th>
+                			<th>Order Cost</th>
+                			<th>DP Date</th>
+                			<th>Item For</th>
+                			<th>Vendor</th>
+                		</tr>
+                	</thead>
+                	<tbody>
+                		<% if(OrderLists != null && !OrderLists.isEmpty()){
+                			int count=1;
+                			for(Object[] obj: OrderLists){ %>
+                				<tr>
+                					<td class="text-center"><%= count++ %></td>
+                					<td><%=obj[6]!=null ? StringEscapeUtils.escapeHtml4(obj[6].toString()) : " - " %></td>
+                					<td class="text-center"><%=obj[7]!=null ? sdf.format(obj[7]) : " - " %></td>
+                					<td class="text-right"><%=obj[10]!=null ? StringEscapeUtils.escapeHtml4(obj[10].toString()) : " - " %></td>
+                					<td class="text-center"><%=obj[8]!=null ? sdf.format(obj[8]) : " - " %></td>
+                					<td><%=obj[9]!=null ? StringEscapeUtils.escapeHtml4(obj[9].toString()) : " - " %></td>
+                					<td><%=obj[11]!=null ? StringEscapeUtils.escapeHtml4(obj[11].toString()) : " - " %></td>
+                				</tr>
+                		<%}} %>
+                	</tbody>                
+                </table>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal">
+                    Close
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
 </div>
 
 	<!-- <div class="modal fade my-modal" id="exampleModalCenter" tabindex="-1"
@@ -382,6 +451,13 @@
 			format : 'DD-MM-YYYY'
 		}
 	});
+	$(document).ready(function(){
+		  $("#myTable").DataTable({
+		 "lengthMenu": [ 5,10,20, 40, 60, 80, 100 ],
+		 "pagingType": "simple",
+		 "pageLength": 10
+		});
+	});
 </script>
 <script type="text/javascript">
 $(document).ready(function() {
@@ -400,6 +476,7 @@ function modalOpen() {
 		$('#btnplus').show();
 		$('#btnSubmit2').show();
 		$('#btnSubmit1').hide();
+		$('#RemarksEditbtn').show();
 		$('#fileStatusId').val(status);
 		$('#fileEventDate').val(eventdate);
 		$('#fileRemarks').val(remarks);
@@ -408,6 +485,7 @@ function modalOpen() {
 		$('#divHidden').hide();
 		$('#btnSubmit2').hide();
 		$('#btnplus').hide();
+		$('#RemarksEditbtn').hide();
 	}
 	
 }

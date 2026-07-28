@@ -39,10 +39,10 @@
 	int committeecons = (Integer) request.getAttribute("committeecons");
 	List<Object[]> AgendaDocList = (List<Object[]>) request.getAttribute("AgendaDocList");
 
-	String projectid = committeescheduleeditdata[9].toString();
-	String divisionid = committeescheduleeditdata[16].toString();
-	String initiationid = committeescheduleeditdata[17].toString();
-	String carsInitiationId = committeescheduleeditdata[25].toString();
+	String projectid =  committeescheduleeditdata[9] != null ? committeescheduleeditdata[9].toString() : "0";
+	String divisionid =  committeescheduleeditdata[16] != null ? committeescheduleeditdata[16].toString() : "0";
+	String initiationid =  committeescheduleeditdata[17] != null ? committeescheduleeditdata[17].toString() : "0";
+	String carsInitiationId = committeescheduleeditdata[25] != null ? committeescheduleeditdata[25].toString() : "0";
 	String programmeId = committeescheduleeditdata[26] != null ? committeescheduleeditdata[26].toString() : "0";
 	Object[] projectdetails = (Object[]) request.getAttribute("projectdetails");
 	Object[] divisiondetails = (Object[]) request.getAttribute("divisiondetails");
@@ -245,7 +245,8 @@
 
 									<th class="pl-40">
 										<%if(useraccess>=1){ %> <input type="hidden" name="scheduleid"
-										value="<%=committeescheduleeditdata[6]%>"> <%					   		
+										value="<%=committeescheduleeditdata[6]%>"> <%					
+										System.out.println(userview);
 						   							if(Integer.parseInt(committeescheduleeditdata[10].toString())<6 && (userview==null || userview.equalsIgnoreCase("CS") || userview.equalsIgnoreCase("CC") )) { %>
 										<input type="submit" id="update" class="btn  btn-sm submit"
 										value="SUBMIT" onclick="Add(myfrm)"> <%}else{ %> <script
@@ -420,7 +421,7 @@
 						<%} %>
 
 						<div class="form-group mt-25px" align="center">
-							<%	if(Integer.parseInt(committeescheduleeditdata[10].toString())<6 && (userview==null || userview.equalsIgnoreCase("CS") || userview.equalsIgnoreCase("CC") )) { %>
+							<%	if((("PGAD".equalsIgnoreCase(labcode) && !"0".equals(projectid)) || Integer.parseInt(committeescheduleeditdata[10].toString())<6) && (userview==null || userview.equalsIgnoreCase("CS") || userview.equalsIgnoreCase("CC") )) { %>
 							<%if(!committeeagendalist.isEmpty()){%>
 							<%if(useraccess>1){ %>
 							<form <%if(programmeId.equals("0")) {%>

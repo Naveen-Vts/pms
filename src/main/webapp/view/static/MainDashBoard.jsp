@@ -328,6 +328,7 @@ String LoginTypes[] = {"A","P","E","Z","Y","Q","X","K","C","I","G","F"}  ;
 int ProjectCount = 0;
 List<Object[]> projecthealthtotaldg = (List<Object[]>)request.getAttribute("projecthealthtotaldg");
 String IsDG = (String)request.getAttribute("IsDG");
+IsDG = IsDG != null ? IsDG: "";
 
 %>
 <% 
@@ -1782,8 +1783,8 @@ String IsDG = (String)request.getAttribute("IsDG");
 													<%} %>
 												</td>
 												<td class="custom-td">
-													<%if(Integer.parseInt(obj[20].toString())>0){ %>
-														<div class="row">
+													<%if(obj[20]!=null && Integer.parseInt(obj[20].toString())>0){ %>
+													<div class="row">
 														<div class="col-md-11">
 															<div class="progress" onclick="overallcommonredirect('mil','<%=obj[2]%>')">
 															  <div class="progress-bar progress-bar-striped bg-success width-<%=obj[19]%>"  data-toggle="tooltip" title="Completed : <%=obj[18]%> / <%=obj[20] %>" ></div>
@@ -1809,7 +1810,7 @@ String IsDG = (String)request.getAttribute("IsDG");
 													<%} %>
 												</td>
 												<td class="custom-td">
-													<%if(Integer.parseInt(obj[29].toString())>0){ %>
+													<%if(obj[29]!=null && Integer.parseInt(obj[29].toString())>0){ %>
 													<div class="row">
 														<div class="col-md-11">
 															<div class="progress" onclick="overallcommonredirect('action','<%=obj[2]%>')">
@@ -1836,7 +1837,7 @@ String IsDG = (String)request.getAttribute("IsDG");
 													<%} %>
 												</td>
 												<td class="custom-td">
-													<%if(Integer.parseInt(obj[34].toString())>0){ %>
+													<%if(obj[34]!=null && Integer.parseInt(obj[34].toString())>0){ %>
 													<div class="row">
 														<div class="col-md-11">
 															<div class="progress" onclick="overallcommonredirect('risk','<%=obj[2]%>')">
@@ -2034,7 +2035,7 @@ String IsDG = (String)request.getAttribute("IsDG");
 									<li><span class="modal-span green" >&#8226;</span><span class="modal-text">Completed</span></li>
 									<li><span class="modal-span yellow" >&#8226;</span><span class="modal-text">Delayed</span></li>
 						          	<li><span class="modal-span red" >&#8226;</span><span class="modal-text">Pending</span></li>
-					           		 	<!-- // DLRL --><li><span class="modal-span blue" >&#8226;</span><span class="modal-text">Upcoming</span></li>
+					<!-- // DLRL --><li><span class="modal-span blue" >&#8226;</span><span class="modal-text">Upcoming</span></li>
 					            </ul>
 							</div>
 					</div>		
@@ -2166,7 +2167,7 @@ String IsDG = (String)request.getAttribute("IsDG");
 													<%} %>
 												</td> --%>
 												<td class="custom-td">
-													<%if(Integer.parseInt(obj[5].toString())>0){ %>
+													<%if(obj[5] != null && Integer.parseInt(obj[5].toString())>0){ %>
 														
 														<div class="row">
 															<div class="col-md-11">
@@ -2193,7 +2194,7 @@ String IsDG = (String)request.getAttribute("IsDG");
 													<%} %>
 												</td>
 												<td class="custom-td">
-													<%if(Integer.parseInt(obj[2].toString())>0){ %>
+													<%if(obj[2] != null && Integer.parseInt(obj[2].toString())>0){ %>
 														<div class="row">
 															<div class="col-md-11">
 															    <div class="progress" data-toggle="tooltip" title="PMRC Held : <%=obj[0]%> <br> PMRC To Be Held : <%=obj[2]%><br> Total PMRC To Be Held : <%=obj[46] %>" >
@@ -2220,7 +2221,7 @@ String IsDG = (String)request.getAttribute("IsDG");
 													<%} %>
 												</td>	
 												<td class="custom-td">
-													<%if(Integer.parseInt(obj[9].toString())>0){ %>
+													<%if(obj[9] != null && Integer.parseInt(obj[9].toString())>0){ %>
 													<div class="row">
 														<div class="col-md-11">
 															<div class="progress" onclick="overallcommonredirectdg('mil','<%=obj[2]%>')">
@@ -2246,7 +2247,7 @@ String IsDG = (String)request.getAttribute("IsDG");
 													<%} %>
 												</td>
 												<td class="custom-td">
-													<%if(Integer.parseInt(obj[15].toString())>0){ %>
+													<%if( obj[15] !=null && Integer.parseInt(obj[15].toString())>0){ %>
 													<div class="row">
 														<div class="col-md-11">
 															<div class="progress" onclick="overallcommonredirect('action','<%=obj[2]%>')">
@@ -2273,7 +2274,7 @@ String IsDG = (String)request.getAttribute("IsDG");
 													<%} %>
 												</td> 
 												<td class="custom-td">
-													<%if(Integer.parseInt(obj[18].toString())>0){ %>
+													<%if(obj[18] != null && Integer.parseInt(obj[18].toString())>0){ %>
 													<div class="row">
 														<div class="col-md-11">
 															<div class="progress" onclick="overallcommonredirect('risk','<%=obj[2]%>')">

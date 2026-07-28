@@ -134,7 +134,9 @@ public class PFTSController {
 	{
 		
 		String UserId = (String) ses.getAttribute("Username");
-		String LabCode = (String)ses.getAttribute("labcode");
+		String LabCode = (String)ses.getAttribute("labcode");	  
+    	String token=(String)ses.getAttribute("token");
+    	String auToken = "Bearer "+token;
 		logger.info(new Date() +"Inside AddNewDemandFile.htm "+UserId);		
 		try {
 			String projectId =req.getParameter("projectId");
@@ -144,7 +146,7 @@ public class PFTSController {
 			//final String localUri=uri+"/pfms_serv/newDemandsDetails?projectcode="+projectcode;
 			List<DemandDetails> demandList=null;
 			try {
-				demandList = serv.DemandsDetails(projectcode);	
+				demandList = serv.DemandsDetails(auToken,projectcode);	
 			}catch (Exception e) {
 				e.printStackTrace();
 				// TODO: handle exception
@@ -265,7 +267,9 @@ public class PFTSController {
              String eventDate=req.getParameter("eventDate");
              String fileId=req.getParameter("fileId");
              String remarks=req.getParameter("remarks");
-             String demandNo=req.getParameter("demandNo");
+             String demandNo=req.getParameter("demandNo");	  
+         	String token=(String)ses.getAttribute("token");
+        	String auToken = "Bearer "+token;
              
              redir.addFlashAttribute("projectid",projectId);
              
@@ -303,7 +307,7 @@ public class PFTSController {
 //    				}
     				
     				try {
-    					demandOrderList = serv.DemandsOrderDetails(demandNo);
+    					demandOrderList = serv.DemandsOrderDetails(auToken,demandNo);
     				}catch(Exception e) {
     					redir.addAttribute("resultfail","Order not placed in IBAS");
 						return  "redirect:/ProcurementStatus.htm";
@@ -407,7 +411,9 @@ public class PFTSController {
 			
              String projectId=req.getParameter("projectId");
              String fileId=req.getParameter("fileId");
-             String demandNo=req.getParameter("demandNo");
+             String demandNo=req.getParameter("demandNo");	  
+         	String token=(String)ses.getAttribute("token");
+        	String auToken = "Bearer "+token;
              redir.addFlashAttribute("projectid",projectId);
             	   	//final String localUri=uri+"/pfms_serv/newDemandsOrderDetails?demandNo="+demandNo;
     				List<DemandOrderDetails> demandOrderList=null;
@@ -438,7 +444,7 @@ public class PFTSController {
 //    				}
     				
     				try {
-    				demandOrderList = serv.DemandsOrderDetails(demandNo);
+    				demandOrderList = serv.DemandsOrderDetails(auToken,demandNo);
     				}catch (Exception e) {
     					e.printStackTrace();
     					redir.addAttribute("resultfail","Order not placed in IBAS");
@@ -761,17 +767,18 @@ public class PFTSController {
 						redir.addAttribute("resultfail","Something went worng");
 					}
 					
-					redir.addAttribute("projectslist",projectlist);
+//					redir.addAttribute("projectslist",projectlist);
 					redir.addAttribute("projectid",ProjectId);
-					redir.addAttribute("fileStatusList",service.getFileStatusList(ProjectId));
-					redir.addAttribute("pftsStageList", service.getpftsStageList());
-					return  "redirect:/ProcurementStatus.htm";
+//					redir.addAttribute("fileStatusList",service.getFileStatusList(ProjectId));
+//					redir.addAttribute("pftsStageList", service.getpftsStageList());
+//					return  "redirect:/ProcurementStatus.htm";
 				
 			} catch (Exception e) {
 				e.printStackTrace(); 
-				logger.error(new Date() +" Inside AddManualDemandSubmit.htm "+UserId, e); 
+				logger.error(new Date() +" Inside AddManualDemandSubmit.htm "+UserId, e);
 				return "static/Error";	
 			}
+			return "redirect:/ProcurementStatus.htm";
 		}
 		
 		@RequestMapping(value = "updateManualDemand.htm", method = {RequestMethod.GET,RequestMethod.POST})
@@ -784,6 +791,7 @@ public class PFTSController {
 				
 	             String fileId=req.getParameter("fileId");
 	             req.setAttribute("fileViewList",service.getpftsFileViewList(fileId));
+	             req.setAttribute("OrderLists", service.getOrderDetailsAjax(fileId));
 	 		     req.setAttribute("pftsStageList", service.getpftsStageList());
 				return  "pfts/UpdateManualDemand";
 			}
@@ -1750,5 +1758,48 @@ public class PFTSController {
 		    redir.addAttribute("resultfail", message);
 		    return "redirect:/"+redirURL;
 		}
+		
+		
+		@RequestMapping(value = "updateManualDemandRemarksEdit.htm", method = RequestMethod.POST)
+		public String updateManualDemandRemarksEdit(HttpServletRequest req, HttpSession ses, RedirectAttributes redir) throws Exception
+		{
+			String EmpId = ((Long) ses.getAttribute("EmpId")).toString();
+			String Logintype= (String)ses.getAttribute("LoginType");
+			String UserId = (String) ses.getAttribute("Username");
+			String LabCode = (String)ses.getAttribute("labcode");
+			
+			logger.info(new Date() +"Inside updateManualDemandSubmit.htm "+UserId);
+			
+			try {
+
+	             String fileId=req.getParameter("fileId");
+	             String remarks=req.getParameter("procRemarks");
+	             
+	             if(InputValidator.isContainsHTMLTags(remarks)) {
+	            	 
+	            	 redir.addAttribute("fileId", fileId);
+	 				return redirectWithError(redir, "updateManualDemand.htm", "'Remarks' should not contain HTML tags");
+	 			}
+	        
+	             long result=0l;
+	             result =service.upadteDemandFileRemarks(fileId,remarks);
+	             	             
+	             if(result>0) {
+	     				redir.addAttribute("result","Remarks Updated Successfully");
+	     			}else {
+	     				redir.addAttribute("resultfail","Something went worng");
+	     			}
+	             
+				 redir.addAttribute("fileId",fileId);
+				 
+				 return  "redirect:/updateManualDemand.htm";
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				logger.info(new Date() +"Inside updateManualDemandSubmit.htm "+UserId);
+				return "static/Error";
+			}
+		}
+		
 }
 

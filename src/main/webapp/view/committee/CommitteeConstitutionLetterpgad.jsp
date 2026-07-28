@@ -58,7 +58,7 @@ if(!projectid.equalsIgnoreCase("0")){
 FormatConverter fc = new FormatConverter();
 SimpleDateFormat sdf = fc.getRegularDateFormat();
 SimpleDateFormat sdf1 = fc.getSqlDateFormat();
-SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy",Locale.ENGLISH);
 SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 Object[]CommitteMainEnoteList = (Object[])request.getAttribute("CommitteMainEnoteList");
 List<String>memtypes=Arrays.asList("PS","CS");
@@ -140,20 +140,21 @@ p{
 
 <table style="<% if(isLetter!=null && isLetter.equalsIgnoreCase("Y")){%>width:50%; margin:auto;<%}else{ %>width:100%;<%} %>">
     <tr>
+    	<td style="width:100px;"></td>
+
         <td style="text-align:center;">
-            <img class="logo" style="width:120px;height:120px;margin-bottom:5px"
+            <p style="text-align: center;line-height: 2px;text-transform: uppercase;font-weight: bold;">Programme 'AD', Research Center IMARAT</p>
+            <p style="text-align:center;line-height: 2px;text-transform: uppercase;">DRDO, Ministry of Defense</p>
+            <p style="text-align:center;line-height: 2px;text-transform: uppercase;">Kanchanbagh P.O, Hyderabad - 500058</p>
+            <p style="text-align:center;line-height: 2px;text-transform: uppercase;">Telefax: +91-40-24342850</p>
+        </td>
+        <td style="text-align:center;">
+            <span style="border: 2px solid black;"><img class="logo" style="width:80px;height:80px;margin-bottom:5px;padding:5px;"
             <% if(lablogo!=null ){ %>
                 src="data:image/*;base64,<%=lablogo%>" alt="Logo"
             <% } else { %>
                 alt="File Not Found"
-            <% } %> >
-        </td>
-
-        <td style="text-align:right;">
-            <h3>Programme 'AD', Research Center IMARAT</h3>
-            <h3>DRDO, Ministry of Defense</h3>
-            <h3>Kanchanbagh P.o, Hyderabad - 500058</h3>
-            <h3>Telefax: +91-40-24342850</h3>
+            <% } %> ></span>
         </td>
     </tr>
 </table>
@@ -178,9 +179,22 @@ p{
 				<div style="text-align: center;" >
 					<div style="margin-bottom: 2px; max-width: 650px;text-align: justify;text-justify: inter-word;text-align: justify;text-justify: inter-word;" align="center">
 						<%if(Long.parseLong(projectid)>0 || Long.parseLong(divisionid)>0 || Long.parseLong(initiationid)>0){ %>
-								<%if(committeedescription[1]!=null){ %><%=committeedescription[1] %> <%}else{ %>No Data <%} %>
+								<%if(committeedescription[1]!=null){
+									String terms = committeedescription[1] != null 
+										    ? committeedescription[1].toString()										           
+										        .replace("&nbsp;", " ")      // replace nbsp
+										        .trim()
+										    : "";
+									
+									%><%=terms %> <%}else{ %>No Data <%} %>
 						<%}else { %>
-								<%if(committeeedata[10]!=null){ %><%=committeeedata[10] %> <%}else{ %>No Data <%} %>
+								<%if(committeeedata[10]!=null){ 
+									String terms = committeeedata[10] != null 
+										    ? committeeedata[10].toString()										        
+										        .replace("&nbsp;", " ")      // replace nbsp
+										        .trim()
+										    : "";
+								%><%= terms %> <%}else{ %>No Data <%} %>
 						<%} %>
 					</div>
 				</div>
@@ -233,7 +247,7 @@ p{
 		<table style=" margin-left: 15px; max-width: 650px; font-size: 16px; border-collapse:collapse;" >
 		<tr>
 			<td >				
-				<h3 style="margin-bottom: 2px; width: 650px; text-align:left;" >The Terms and Reference of this committee as below: </h3>
+				<p style="margin-bottom: 2px; width: 650px; text-align:left;text-decoration: underline;" >The Terms and References of this committee is as below: </p>
 			</td>
 		</tr>
 		<tr>
@@ -242,10 +256,27 @@ p{
 					<p style="margin-bottom: 2px; max-width: 650px;text-align: justify;text-justify: inter-word;text-align: justify;text-justify: inter-word;" align="center">
 						
 					<%if(Long.parseLong(projectid)>0 || Long.parseLong(divisionid)>0 || Long.parseLong(initiationid)>0){ %>
-						<%if(committeedescription[2]!=null){ %><%=committeedescription[2] %> <%}else{ %>No Data <%} %>
+						<%if(committeedescription[2]!=null){ 
+						
+							String terms = committeedescription[2] != null 
+								    ? committeedescription[2].toString()
+								        .replace("&nbsp;", " ")      // replace nbsp
+								        .trim()
+								    : "";
+						
+						
+						%><%=terms %> <%}else{ %>No Data <%} %>
 														
-					<%}else if(projectid!=null && Long.parseLong(projectid)==0){ %>
-								<%if(committeeedata[11]!=null){ %><%=committeeedata[11] %> <%}else{ %> No Data <%} %>
+					<%}else if(projectid!=null && Long.parseLong(projectid)==0){ 
+						
+						String terms = committeeedata[11] != null 
+							    ? committeeedata[11].toString()							        
+							        .replace("&nbsp;", " ")      // replace nbsp
+							        .trim()
+							    : "";
+					
+					%>
+								<%if(committeeedata[11]!=null){ %><%=terms %> <%}else{ %> No Data <%} %>
 					<%} %>
 					
 					</p>
@@ -257,25 +288,29 @@ p{
 </div>
 
 	<div class="row " style="text-align: left;">
-	<br>
-	<div align="center" style="text-align: center">
-		Approved /  Not Approved 
-		<br>
-		<br>
-		<%if(projectDirector!=null){ %>
-			<%=projectDirector[3]!=null ? projectDirector[3].toString() : " - " %> <%=projectDirector[4]!=null ?", "+ projectDirector[4].toString() : " - " %> <br> (<%=projectdata[1]!=null ? projectdata[1].toString(): " - " %>)
+		<div align="right"  style="<% if(isLetter!=null && isLetter.equalsIgnoreCase("Y")){%>width:50%; margin:auto;<%}else{ %>width:100%;<%} %>">
+		<%if(dpd!=null){ %>
+			<%=dpd[3]!=null ? dpd[3].toString() : " - " %> <%=dpd[4]!=null ?", "+ dpd[4].toString() : " - " %> 
 			<br>
-			Project Director 
+			Deputy Project Director
+			<br>
+			(<%=projectdata[1]!=null ? projectdata[1].toString(): " - " %>)
 		<%} %>
 	</div>
 	<br><br>
-	<div align="right"  style="<% if(isLetter!=null && isLetter.equalsIgnoreCase("Y")){%>width:50%; margin:auto;<%}else{ %>width:100%;<%} %>">
-		<%if(dpd!=null){ %>
-			<%=dpd[3]!=null ? dpd[3].toString() : " - " %> <%=dpd[4]!=null ?", "+ dpd[4].toString() : " - " %> <br> (<%=projectdata[1]!=null ? projectdata[1].toString(): " - " %>)
+	<div align="center" style="text-align: center">	
+		Approved /  Not Approved 
+		
+		<br><br><br>
+		<%if(projectDirector!=null){ %>
+			<%=projectDirector[3]!=null ? projectDirector[3].toString() : " - " %> <%=projectDirector[4]!=null ?", "+ projectDirector[4].toString() : " - " %>
+			<br> 
+			Project Director
 			<br>
-			Deputy Project Director
+			(<%=projectdata[1]!=null ? projectdata[1].toString(): " - " %>) 
 		<%} %>
 	</div>
+
 	<%-- <div style="text-align: left;font-size: 13px;">
 	Initiated By : <%if(CommitteMainEnoteList!=null && CommitteMainEnoteList[18]!=null ){ %> <%=CommitteMainEnoteList[18].toString() %>, <%=CommitteMainEnoteList[19].toString() %>  <%}else{ %>  <%= constitutionapprovalflow.get(0)[0]%>,  <%= constitutionapprovalflow.get(0)[1]%> <%} %>
 	</div> --%>

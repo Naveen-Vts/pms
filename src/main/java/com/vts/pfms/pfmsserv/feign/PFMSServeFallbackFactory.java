@@ -23,53 +23,53 @@ public class PFMSServeFallbackFactory  implements FallbackFactory<PFMSServeFeign
         return new PFMSServeFeignClient() {
 
             @Override
-            public List<CCMView> getCCMViewData(String LabCode) {
+            public List<CCMView> getCCMViewData(String token, String LabCode) {
                 return Collections.emptyList();
             }
 
             @Override
             public List<ProjectSanctionDetailsMaster>
-            getDetailsOfSupplyOrder(String inType, String employeeNo) {
+            getDetailsOfSupplyOrder(String token,String inType, String employeeNo) {
                 return Collections.emptyList();
             }
 
             @Override
             public List<ProjectFinancialDetails>
-            financialStatusBriefing(String ProjectCode, String rupess) {
+            financialStatusBriefing(String token,String ProjectCode, String rupess) {
                 return Collections.emptyList();
             }
 
             @Override
-            public List<TotalDemand> getTotalDemand() {
+            public List<TotalDemand> getTotalDemand(String token) {
                 return Collections.emptyList();
             }
 
             @Override
             public List<DemandDetails>
-            DemandsDetails(String projectcode) {
+            DemandsDetails(String token,String projectcode) {
                 return Collections.emptyList();
             }
 
             @Override
             public List<DemandOrderDetails>
-            DemandsOrderDetails(String demandNo) {
+            DemandsOrderDetails(String token,String demandNo) {
                 return Collections.emptyList();
             }
 
             @Override
             public List<FinanceChanges>
-            PfmsFinanceChanges(String projectCode, String interval) {
+            PfmsFinanceChanges(String token,String projectCode, String interval) {
                 return Collections.emptyList();
             }
 
             @Override
             public List<ProjectHoa>
-            ProjectHoaData(String labcode) {
+            ProjectHoaData(String token,String labcode) {
                 return Collections.emptyList();
             }
 
             @Override
-            public List<IbasLabMaster> LabDetails() {
+            public List<IbasLabMaster> LabDetails(String token) {
                 return Collections.emptyList();
             }
         };

@@ -2815,7 +2815,7 @@ public class MilestoneServiceImpl implements MilestoneService {
 	public Object[] getFileRepUploadDetails(String projectId) throws Exception {
 		return dao.getFileRepUploadDetails(projectId);
 	}
-	
+
 	// Naveen 05-03-2026
 	@Override
 	public long saveMilestoneActivityBriefing(MilestoneActivityBriefing entity) throws Exception  {

@@ -1,3 +1,4 @@
+<%@page import="com.vts.pfms.model.BriefingFinance"%>
 <%@page import="java.time.temporal.ChronoUnit"%>
 <%@page import="com.vts.pfms.committee.model.Committee"%>
 <%@page import="org.apache.commons.text.StringEscapeUtils"%>
@@ -267,16 +268,18 @@ th, td
 	Map<Integer,String> committeeWiseMap=(Map<Integer,String>)request.getAttribute("committeeWiseMap");
 	Committee committeeData = (Committee) request.getAttribute("committeeData");
 	LocalDate before6months = LocalDate.now().minusDays(committeeData.getPeriodicDuration());
-	SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+	SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy", Locale.ENGLISH);
 	SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");	
 	String text=(String)request.getAttribute("text");
 	List<List<Object[]>> lastpmrcactions = (List<List<Object[]>>)request.getAttribute("lastpmrcactions");
 	Map<String, List<Object[]>> reviewMeetingListMap = (Map<String, List<Object[]>>) request.getAttribute("reviewMeetingListMap");
 	List<Object[]> otherMeetingList = (List<Object[]>)request.getAttribute("otherMeetingList");
 
+	List<BriefingFinance> briefingFinanceDetials = (List<BriefingFinance>)request.getAttribute("briefingFinanceDetials");
+
 %>
 <body>
-					<div align="center" style="margin-top:20px;font-weight: bold;font-size: 18px;">(Annexure - A)</div>				
+<%-- <div align="center" style="margin-top:20px;font-weight: bold;font-size: 18px;">(Annexure - A)</div>				
 	<% for(int z=0 ; z<1;z++) {   %>
 		<div align="left" style="margin-left: 10px;"><b class="sub-title"> Particulars of Meeting</b></div><br>
 		<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(a) <%if(CommitteeCode.equalsIgnoreCase("PMRC")){ %>
@@ -345,7 +348,7 @@ th, td
 								</td>
 							<td>
 								<%if(obj[4]!= null){ %>  
-									<%=obj[12]!=null?(obj[12].toString()): " - " %><%-- , <%=obj[13] %> --%>
+									<%=obj[12]!=null?(obj[12].toString()): " - " %>, <%=obj[13] %>
 								<%}else { %> <!-- <span class="notassign">NA</span>  --> <span class="">Not Assigned</span> <%} %> 
 							</td>
 						
@@ -362,7 +365,7 @@ th, td
 			<%} %>
 			
 		<% for(int z=0 ; z<1;z++) {   %>
-		<%-- <h1 class="break"></h1> --%>
+		<h1 class="break"></h1>
 				 	<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(b) Last <%=CommitteeCode!=null?(CommitteeCode).toUpperCase(): " - "%>
 														   						Meeting action points with Probable Date of completion (PDC), Actual Date of Completion (ADC) and status.</b>
 					</div>
@@ -444,7 +447,7 @@ th, td
 									</span>	
 									<%} %>
 								</td>
-									<td > <%=obj[11]!=null?(obj[11].toString()): " - " %><%-- , <%=obj[12] %> --%> </td>
+									<td > <%=obj[11]!=null?(obj[11].toString()): " - " %>, <%=obj[12] %> </td>
 									<td  class="text-center" > 
 										<% if(lastdate!=null && actionstatus.equalsIgnoreCase("C") ){ %>
 										<%if(actionstatus.equals("C") && (pdcorg.isAfter(lastdate) || pdcorg.equals(lastdate))){%>
@@ -479,7 +482,7 @@ th, td
 					<%} %>	
 					
 						<% for(int z=0 ; z<1;z++) {   %>
-					<%-- <h1 class="break"></h1> --%>
+					<h1 class="break"></h1>
 						<div align="left" style="margin-left: 15px;margin-top:20px;"><b class="mainsubtitle">(c) Details of Technical/ User Reviews (if any).</b></div>
 							<div >
 							<%for(Map.Entry<String, List<Object[]>> entry : reviewMeetingListMap.entrySet()) { 
@@ -522,16 +525,84 @@ th, td
 
 
 <h1 class="break"></h1>
+ --%>
+					<div align="center" style="margin-top:20px;font-weight: bold;font-size: 18px;">(Annexure - A)</div>				
 
-					<div align="center" style="margin-top:20px;font-weight: bold;font-size: 18px;">(Annexure - B)</div>				
-
-		<% char fch='a'; for(int z=0 ; z<projectidlist.size();z++) {   
+		<% char fch='a'; for(int z=0 ; z<1;z++) {   
 			
 			%>
 					<!-- ----------------------------------------------8. Overall financial Status------------------------------------------------- -->
 		 
-   					<div align="left" style="margin-left: 10px;"><b class="sub-title"><%if(projectidlist.size()>1) {%> (<%=(fch++) %>). <%} %> Overall Financial Status </b> 			<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  </b></div><div align="right"><b><span class="currency" >(&#8377; <span>Crore</span>)</span></b></div>
-						 
+   					<div align="left" style="margin-left: 10px;"><b class="sub-title"><%if(projectidlist.size()>1) {%> (<%=(fch++) %>). <%} %> Overall Financial Status </b></div><div align="right"><b><span class="currency" >(&#8377; <span>Crore</span>)</span></b></div>
+   					
+   					<div class="content">
+   								<%for(int i=0;i<projectidlist.size();i++){ 
+		                		BigDecimal allotment = BigDecimal.ZERO, sanction = BigDecimal.ZERO,
+		                				balance = BigDecimal.ZERO, oustanding = BigDecimal.ZERO, exp = BigDecimal.ZERO, inr = BigDecimal.ZERO,fe = BigDecimal.ZERO ;
+				                int sn = 1;
+						  	%>
+						  	<%if(ProjectDetail.size()>1){ %>
+								<div>
+									<b>Project : <%=ProjectDetail.get(i)[1] %> 	<%if(i!=0){ %>(SUB)<%} %>	</b>
+								</div>	
+							<%} %>
+							<br>				 
+							  	<table  class="subtables width1100" style="margin-bottom:20px!important;border-collapse: collapse;">
+							  		<thead>
+								  		<tr>
+								  			<th>Category No</th>
+								  			<th>Category Name</th>
+								  			<th>Allotment</th>
+								  			<th>Sanction</th>
+								  			<th>Balance</th>
+								  			<th>SO Value</th>
+								  			<th>Expenditure</th>
+								  			<th>INR</th>
+								  			<th>FE</th>
+								  		</tr>
+							  		</thead>
+							  		<tbody>
+							  			<%if(briefingFinanceDetials!=null && !briefingFinanceDetials.isEmpty()){
+							  				for(BriefingFinance finance : briefingFinanceDetials){ 
+							  					allotment = allotment.add(finance.getAllotment());
+							  					sanction = sanction.add(finance.getSanction());
+							  					balance = balance.add(finance.getBalance());
+							  					oustanding = oustanding.add(finance.getOutStanding());
+							  					exp = exp.add(finance.getExpenditure());
+							  					inr = inr.add(finance.getInr());
+							  					fe = fe.add(finance.getFe());
+							  				%>
+							  				<tr>
+							  					<td class="text-center" ><%=sn++ %></td>
+							  					<td class="text-start" ><%=finance.getCategoryName() %></td>
+							  					<td style="text-align:right!important;"><%=df.format(finance.getAllotment()) %></td>
+							  					<td style="text-align:right!important;"><%=df.format(finance.getSanction()) %></td>
+							  					<td style="text-align:right!important;"><%=df.format(finance.getBalance()) %></td>
+							  					<td style="text-align:right!important;"><%=df.format(finance.getOutStanding()) %></td>
+							  					<td style="text-align:right!important;"><%=df.format(finance.getExpenditure()) %></td>
+							  					<td style="text-align:right!important;" ><%=df.format(finance.getInr()) %></td>
+							  					<td style="text-align:right!important;" ><%=df.format(finance.getFe()) %></td>
+							  				</tr>
+							  			<%}}else{ %>
+							  				<tr>
+							  					<td colspan="8" class="text-center">No Data Availabe</td>
+							  				</tr>
+							  			<%} %>
+							  			
+							  			<tr>
+							  				<td colspan="2" class="text-center" >Total:</td>
+							  				<td style="text-align:right!important;"><%= df.format(allotment)%></td>
+							  				<td style="text-align:right!important;"><%=df.format(sanction) %></td>
+							  				<td style="text-align:right!important;"><%=df.format(balance) %></td>
+							  				<td style="text-align:right!important;"><%=df.format(oustanding) %></td>
+							  				<td style="text-align:right!important;"><%=df.format(exp) %></td>
+							  				<td style="text-align:right!important;"><%=df.format(inr) %></td>
+							  				<td style="text-align:right!important;"><%=df.format(fe) %></td>
+							  			</tr>
+							  		</tbody>
+							  	</table>
+   						</div>
+					<%-- 	 
 						  	<table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
 						  	    <thead>
 		                           <tr>
@@ -705,8 +776,8 @@ th, td
 			     </tbody>
 			     <% } %>
 			</table>  
-		
-		<%} %>
+		 --%>
+		<%}} %>
 		
 </body>
-</html>
+</html> 

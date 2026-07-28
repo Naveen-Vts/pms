@@ -286,7 +286,7 @@ p{
 										
 										<tr>
 											<th class="std" style="border: 1px solid black;width: 30px !important;">SN</th>
-											<th class="std" style="border: 1px solid black;max-width:90px;">Demand No <br> Demand Date</</th>
+											<th class="std" style="border: 1px solid black;max-width:90px;">Demand No <br> Demand Date</th>
 <!-- 											<th class="std" style="border: 1px solid black;max-width:90px; ">Demand Date</th>
  -->											<th class="std" colspan="4" style="border: 1px solid black;max-width: 150px;"> Nomenclature</th>
 											<th class="std" style="border: 1px solid black;max-width:90px;"> Est. Cost</th>
@@ -606,7 +606,8 @@ p{
 										</tbody>        
 										<%}else{ int z= 0;%>
 										<%-- <% char fch='a'; for (int z = 0; z < projectidlist.size(); z++) {%> --%>
-									     <tbody id="tbody">
+
+									     <tbody id="tbody<%=ProjectDetail!=null ? ProjectDetail.get(z)[0].toString() : "1"%>">
 									     <%int count=0;
 									     if(overallfinance!=null && overallfinance.size()>0 && overallfinance.get(z)!=null && overallfinance.get(z).size()>0)  {
 									    	for(Object[]obj:overallfinance.get(z)){ 
@@ -878,7 +879,7 @@ p{
 					</table>
 					</div>
 					<br>	
-				<%}%>
+					<%}%>
 					
 					
 					

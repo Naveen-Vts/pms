@@ -155,7 +155,8 @@ public interface MilestoneService {
 	public Object[] getFileRepUploadDetails(String projectId)throws Exception;
 	
 	// Naveen R 05-03-2026
-		public long saveMilestoneActivityBriefing(MilestoneActivityBriefing entity) throws Exception ;
-		public MilestoneActivityBriefing getMilestoneActivityBriefing(String mileStoneActivityBriefingId) throws Exception ;
-		public Object[] getMilestoneActivityBriefingById(String recdecid) throws Exception ;
+	public long saveMilestoneActivityBriefing(MilestoneActivityBriefing entity) throws Exception ;
+	public MilestoneActivityBriefing getMilestoneActivityBriefing(String mileStoneActivityBriefingId) throws Exception ;
+	public Object[] getMilestoneActivityBriefingById(String recdecid) throws Exception ;
+	
 }

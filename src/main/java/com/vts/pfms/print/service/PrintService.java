@@ -6,6 +6,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.vts.pfms.committee.model.Committee;
 import com.vts.pfms.milestone.dto.MilestoneActivityLevelConfigurationDto;
+import com.vts.pfms.model.BriefingFinance;
+import com.vts.pfms.model.BriefingHeading;
+import com.vts.pfms.model.BriefingHeadingDetails;
 import com.vts.pfms.model.LabMaster;
 import com.vts.pfms.print.dto.PfmsBriefingFwdDto;
 import com.vts.pfms.print.model.CommitteeProjectBriefingFrozen;
@@ -139,7 +142,21 @@ public interface PrintService {
 	public List<Object[]> getProjectMeetings(String string) throws Exception;
 	public List<Object[]> getProjectClosureReport() throws Exception;
 	public List<Object[]> getprojectListProjectDirectorWise() throws Exception;
+
 	// Naveen R 06-03-2026
-		public List<Object[]> getMilestoneBriefingList(String scheduleId) throws Exception;
-		public Object[] getLastcreatedSchedule(String projectId, String committeId) throws Exception;
+	public List<Object[]> getMilestoneBriefingList(String scheduleId) throws Exception;
+	public Object[] getLastcreatedSchedule(String projectId, String committeId) throws Exception;
+	
+	
+	// Naveen R 08-04-2026
+	public  List<BriefingFinance> getBriefingFinanceDetails(String scheduleId) throws Exception;
+	public long addOverallFinaceForPgad(List<BriefingFinance> list,String scheduleId) throws Exception;
+	public long addHeadings(List<BriefingHeading> list, String projectid) throws Exception;
+	public List<BriefingHeading> getBriefingHeading(String projectid) throws Exception;
+	public List<Object[]> getHeadingDetails(String headingid, String projectid, String scheduleid) throws Exception;
+	public BriefingHeadingDetails getDetailsById(String detailid) throws Exception;
+	public long addDetails(BriefingHeadingDetails dto) throws Exception;
+	public List<Object[]> getAllHeadingDetails(String projectid,String scheduleid) throws Exception;
+	public long previouseHeadingAdd(String scheduleidto, String scheduleidfrom, String[] headingIds, String userId) throws Exception;
+	public int updateRemarks(long long1, String remarks, String userId) throws Exception;
 }

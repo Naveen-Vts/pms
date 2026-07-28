@@ -1,8 +1,9 @@
 @charset "ISO-8859-1";
 
 .masterTableDiv{
-	width: 80%;
+	width: 85%;
 	margin: 0 auto;
+	overflow-x: hidden;
 }
 
 #myTable{
@@ -26,7 +27,7 @@
 	}
 	
 	.sanctionedOn{
-		width:"15%";
+		width:"10%";
 	}
 	
 	

@@ -71,7 +71,7 @@
 	String lablogo=(String)request.getAttribute("lablogo");
 	/* String committeeid1=committeescheduleeditdata[0].toString(); */
 	/* newly Added  */
-	  SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+	  SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy",Locale.ENGLISH);
       SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
       String todayDate=outputFormat.format(new Date()).toString();
     /* ------- */

@@ -1,3 +1,4 @@
+<%@page import="java.util.Locale"%>
 <%@page import="java.util.Date"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.time.temporal.ChronoUnit"%>
@@ -50,7 +51,7 @@
 
 	<%
 		FormatConverter fc = new FormatConverter();
-		SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+		SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy",Locale.ENGLISH);
 	    SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");	
 	    LocalDate today = LocalDate.now();
 	    

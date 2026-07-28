@@ -22,6 +22,7 @@ List<Object[]> DesignationList=(List<Object[]>)request.getAttribute("Designation
 List<Object[]> DivisionList=(List<Object[]>)request.getAttribute("OfficerDivisionList");
 List<Object[]> LabList=(List<Object[]>)request.getAttribute("LabList");
 List<Object[]> OfficerList = (List<Object[]>)request.getAttribute("OfficerList");
+String labCode = (String) session.getAttribute("labcode");
 %>
 
 
@@ -78,7 +79,13 @@ List<Object[]> OfficerList = (List<Object[]>)request.getAttribute("OfficerList")
 								<option value="Prof.">Prof.</option>
 								<option value="Lt.">Lt.</option>
 								<option value="Dr.">Dr.</option>
-								
+								<%if("PGAD".equalsIgnoreCase(labCode)){ %>
+									<option value="Air Cmd">Air Cmd</option>
+									<option value="Gp Capt">Gp Capt</option>
+									<option value="Wg Cdr">Wg Cdr</option>
+									<option value="Fqn Ldr">Fqn Ldr</option>
+								<%} %>
+																
 							</select>
 					</div>
 </div>

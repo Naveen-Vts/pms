@@ -42,7 +42,7 @@ if(!projectid.equalsIgnoreCase("0")){
 FormatConverter fc = new FormatConverter();
 SimpleDateFormat sdf = fc.getRegularDateFormat();
 SimpleDateFormat sdf1 = fc.getSqlDateFormat();
-SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy");
+SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy",Locale.ENGLISH);
 SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 Object[]CommitteMainEnoteList = (Object[])request.getAttribute("CommitteMainEnoteList");
 List<String>memtypes=Arrays.asList("PS","CS");
@@ -248,7 +248,7 @@ p{
 	</div>
 	<br><br>
 	<div style="text-align: left;font-size: 13px;">
-	Initiated By : <%if(CommitteMainEnoteList!=null && CommitteMainEnoteList[18]!=null ){ %> <%=CommitteMainEnoteList[18].toString() %>, <%=CommitteMainEnoteList[19].toString() %>  <%}else{ %>  <%= constitutionapprovalflow.get(0)[0]%>,  <%= constitutionapprovalflow.get(0)[1]%> <%} %>
+	Initiated By : <%if(CommitteMainEnoteList!=null && CommitteMainEnoteList[18]!=null ){ %> <%=CommitteMainEnoteList[18].toString() %>,  <%=CommitteMainEnoteList[19].toString() %>  <%}else{ %>  <%= constitutionapprovalflow.get(0)[0]%>, <%= constitutionapprovalflow.get(0)[1]%> <%} %>
 	</div>
 <!-- 	<div style="margin-top:30px;margin-left:10px;">Recommended Officer :- </div>
 	<div style="margin-top:10px;margin-left:10px;">Approving Officer :-</div> -->

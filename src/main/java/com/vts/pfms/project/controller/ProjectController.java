@@ -4508,7 +4508,6 @@ public class ProjectController
 //						.anyMatch(field-> InputValidator.isContainsHTMLTags(field))){
 //					return redirectWithError(redir, "ProjectList.htm", "HTML tags are not permitted.");				
 //				}
-//	
 				ProjectMaster protype=new ProjectMaster();
 				//     		 protype.setIsMainWC(Integer.parseInt(isMainWC));
 				//			 protype.setWorkCenter(WCname);

@@ -53,6 +53,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -5238,123 +5239,123 @@ private boolean isValidFileType(MultipartFile file) {
 				);
 
 	}
-
 	
 	// Naveen 05-03-2026
 
-		@RequestMapping(value = "MilestoneActivityAddBriefingPaper.htm", method = {RequestMethod.GET,RequestMethod.POST})
-		public String addMileStoneActivityData(HttpServletRequest req,HttpSession ses, RedirectAttributes redir) {
-			String UserId = (String)ses.getAttribute("Username");
-			String labcode = (String)ses.getAttribute("labcode");
+	@RequestMapping(value = "MilestoneActivityAddBriefingPaper.htm", method = {RequestMethod.GET,RequestMethod.POST})
+	public String addMileStoneActivityData(HttpServletRequest req,HttpSession ses, RedirectAttributes redir) {
+		String UserId = (String)ses.getAttribute("Username");
+		String labcode = (String)ses.getAttribute("labcode");
 
-			try {
-				
-				logger.info("Inside MilestoneActivityAddBriefingPaper.htm with userId "+UserId+ "on "+new Date());
-				
-				String projectId = (String) req.getParameter("projectid");
-				String committeeid = (String) req.getParameter("committeeid");
-				String MileStoneActivityBriefingId = (String) req.getParameter("MileStoneActivityBriefingId");
-				String briefingPointId = (String) req.getParameter("briefingPointId");
-				String points = (String) req.getParameter("mileStonePoints");
-				String scheduleId = (String) req.getParameter("scheduleid");
-				
-				redir.addAttribute("projectid",projectId);
-				redir.addAttribute("committeeid",committeeid);
-							
-				MilestoneActivityBriefing entity = new MilestoneActivityBriefing();
-				if(MileStoneActivityBriefingId!=null && !MileStoneActivityBriefingId.isBlank() && Long.parseLong(MileStoneActivityBriefingId) > 0) {
-					entity = service.getMilestoneActivityBriefing(MileStoneActivityBriefingId);
-					if(entity!=null) {
-						entity.setBriefingPointId(Long.parseLong(briefingPointId));
-						entity.setScheduleId(Long.parseLong(scheduleId));
-						entity.setPoints(points);
-						entity.setModifiedBy(UserId);
-						entity.setModifiedDate(LocalDate.now());
-						entity.setIsActive(1);
-						long count = service.saveMilestoneActivityBriefing(entity);
-						if (count > 0) {
-							redir.addAttribute("result", "Milestone Points Edited Successfuly.");
-						} else {
-							redir.addAttribute("resultfail", "Milestone Points Edit Unsuccessful");
-						}
-					}else {
-						redir.addAttribute("resultfail", "Milestone Points Edit Unsuccessful");
-					}
-					return "redirect:/ProjectBriefingPaper.htm";
-				}
-				else {
+		try {
+			
+			logger.info("Inside MilestoneActivityAddBriefingPaper.htm with userId "+UserId+ "on "+new Date());
+			
+			String projectId = (String) req.getParameter("projectid");
+			String committeeid = (String) req.getParameter("committeeid");
+			String MileStoneActivityBriefingId = (String) req.getParameter("MileStoneActivityBriefingId");
+			String briefingPointId = (String) req.getParameter("briefingPointId");
+			String points = (String) req.getParameter("mileStonePoints");
+			String scheduleId = (String) req.getParameter("scheduleid");
+			
+			redir.addAttribute("projectid",projectId);
+			redir.addAttribute("committeeid",committeeid);
+						
+			MilestoneActivityBriefing entity = new MilestoneActivityBriefing();
+			if(MileStoneActivityBriefingId!=null && !MileStoneActivityBriefingId.isBlank() && Long.parseLong(MileStoneActivityBriefingId) > 0) {
+				entity = service.getMilestoneActivityBriefing(MileStoneActivityBriefingId);
+				if(entity!=null) {
 					entity.setBriefingPointId(Long.parseLong(briefingPointId));
 					entity.setScheduleId(Long.parseLong(scheduleId));
 					entity.setPoints(points);
-					entity.setCreatedBy(UserId);
-					entity.setCreatedDate(LocalDate.now());
-					entity.setIsActive(1);				
+					entity.setModifiedBy(UserId);
+					entity.setModifiedDate(LocalDate.now());
+					entity.setIsActive(1);
+					long count = service.saveMilestoneActivityBriefing(entity);
+					if (count > 0) {
+						redir.addAttribute("result", "Milestone Points Edited Successfuly.");
+					} else {
+						redir.addAttribute("resultfail", "Milestone Points Edit Unsuccessful");
+					}
+				}else {
+					redir.addAttribute("resultfail", "Milestone Points Edit Unsuccessful");
 				}
+				return "redirect:/ProjectBriefingPaper.htm";
+			}
+			else {
+				entity.setBriefingPointId(Long.parseLong(briefingPointId));
+				entity.setScheduleId(Long.parseLong(scheduleId));
+				entity.setPoints(points);
+				entity.setCreatedBy(UserId);
+				entity.setCreatedDate(LocalDate.now());
+				entity.setIsActive(1);				
+			}
+			
+			long count = service.saveMilestoneActivityBriefing(entity);
+		
+			
+			if (count > 0) {
+				redir.addAttribute("result", "Milestone Points Added Successfuly.");
+			} else {
+				redir.addAttribute("resultfail", "Milestone Points Add Unsuccessful");
+			}
+			
+			return "redirect:/ProjectBriefingPaper.htm";			
+		}catch (Exception e) {
+			logger.error("Error in the MilestoneActivityAddBriefingPaper.htm error: {}",e.getMessage());
+			e.printStackTrace();
+			return "static/Error";
+		}
+	}
+	
+
+	@RequestMapping(value = "GetMilestoneBriefingData.htm", method = RequestMethod.GET)
+	public @ResponseBody String Getrecdecdata(HttpServletRequest req) throws Exception {
+		Object[] list = null;
+		try {
+			String milestoneid = req.getParameter("milestoneid");
+			list = service.getMilestoneActivityBriefingById(milestoneid);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Gson json = new Gson();
+		return json.toJson(list);
+	}
+	
+	@RequestMapping(value = "DeleteMilestoneActivityBriefing.htm",method = RequestMethod.GET)
+	public String deleteMileStoneActivityBriefing(HttpServletRequest req, RedirectAttributes redir) {
+		try {
+
+			String MileStoneActivityBriefingId = req.getParameter("MileStoneActivityBriefingDeleteId");
+			String projectId = (String) req.getParameter("projectid");
+			String committeeid = (String) req.getParameter("committeeid");
+			
+			redir.addAttribute("projectid",projectId);
+			redir.addAttribute("committeeid",committeeid);
+			
+			if(MileStoneActivityBriefingId!=null && !MileStoneActivityBriefingId.isBlank()) {
+				MilestoneActivityBriefing entity = service.getMilestoneActivityBriefing(MileStoneActivityBriefingId);
+				entity.setIsActive(0);
 				
 				long count = service.saveMilestoneActivityBriefing(entity);
-			
-				
+
 				if (count > 0) {
-					redir.addAttribute("result", "Milestone Points Added Successfuly.");
+					redir.addAttribute("result", "Milestone Points Deleted Successfuly.");
 				} else {
-					redir.addAttribute("resultfail", "Milestone Points Add Unsuccessful");
-				}
-				
-				return "redirect:/ProjectBriefingPaper.htm";			
-			}catch (Exception e) {
-				logger.error("Error in the MilestoneActivityAddBriefingPaper.htm error: {}",e.getMessage());
-				e.printStackTrace();
-				return "static/Error";
+					redir.addAttribute("resultfail", "Milestone Points Delete Unsuccessful");
+				}							
+				return "redirect:/ProjectBriefingPaper.htm";	
 			}
+			redir.addAttribute("resultfail", "Milestone Points Delete Unsuccessful");
+
+			return "redirect:/ProjectBriefingPaper.htm";			
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "static/Error";
 		}
-		
-
-		@RequestMapping(value = "GetMilestoneBriefingData.htm", method = RequestMethod.GET)
-		public @ResponseBody String Getrecdecdata(HttpServletRequest req) throws Exception {
-			Object[] list = null;
-			try {
-				String milestoneid = req.getParameter("milestoneid");
-				list = service.getMilestoneActivityBriefingById(milestoneid);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			Gson json = new Gson();
-			return json.toJson(list);
-		}
-		
-		@RequestMapping(value = "DeleteMilestoneActivityBriefing.htm",method = RequestMethod.GET)
-		public String deleteMileStoneActivityBriefing(HttpServletRequest req, RedirectAttributes redir) {
-			try {
-
-				String MileStoneActivityBriefingId = req.getParameter("MileStoneActivityBriefingDeleteId");
-				String projectId = (String) req.getParameter("projectid");
-				String committeeid = (String) req.getParameter("committeeid");
-				
-				redir.addAttribute("projectid",projectId);
-				redir.addAttribute("committeeid",committeeid);
-				
-				if(MileStoneActivityBriefingId!=null && !MileStoneActivityBriefingId.isBlank()) {
-					MilestoneActivityBriefing entity = service.getMilestoneActivityBriefing(MileStoneActivityBriefingId);
-					entity.setIsActive(0);
-					
-					long count = service.saveMilestoneActivityBriefing(entity);
-
-					if (count > 0) {
-						redir.addAttribute("result", "Milestone Points Deleted Successfuly.");
-					} else {
-						redir.addAttribute("resultfail", "Milestone Points Delete Unsuccessful");
-					}							
-					return "redirect:/ProjectBriefingPaper.htm";	
-				}
-				redir.addAttribute("resultfail", "Milestone Points Delete Unsuccessful");
-
-				return "redirect:/ProjectBriefingPaper.htm";			
-				
-			}catch (Exception e) {
-				e.printStackTrace();
-				return "static/Error";
-			}
-		}
+	}
+	
 		
 }
 

@@ -311,6 +311,7 @@ renderEmployeeList('2','M', '<%=getMA[9]!=null?StringEscapeUtils.escapeHtml4(get
 </div>
 <div class="col-md-12">
 <%
+
 changes.add(getMA[20]!=null? getMA[20].toString():"0");
 
 if(MilestoneActivityA!=null&&MilestoneActivityA.size()>0){

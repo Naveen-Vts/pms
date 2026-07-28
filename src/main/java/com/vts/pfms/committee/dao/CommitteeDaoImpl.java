@@ -808,8 +808,7 @@ public class CommitteeDaoImpl  implements CommitteeDao
 			""";
 	
 	@Override
-	public List<Object[]> CommitteeScheduleMinutes(String scheduleid) throws Exception
-	{
+	public List<Object[]> CommitteeScheduleMinutes(String scheduleid) throws Exception{
 		Query query=manager.createNativeQuery(AGENDASPECLIST);
 		query.setParameter("InScheduleId", Long.parseLong(scheduleid));
 		List<Object[]> CommitteeScheduleMinutes =(List<Object[]>)query.getResultList();
@@ -3193,7 +3192,7 @@ public class CommitteeDaoImpl  implements CommitteeDao
 		return null;
 	}
 	
-	private static final String MOMREPORTLIST="SELECT ScheduleId,CommitteeId,MeetingId,ScheduleDate,ScheduleStartTime,MeetingVenue FROM committee_schedule WHERE ProjectId=:projectId AND CommitteeId=:committeeId AND ScheduleFlag IN('MKV','MMR','MMF','MMS','MMA')";
+	private static final String MOMREPORTLIST="SELECT ScheduleId,CommitteeId,MeetingId,ScheduleDate,ScheduleStartTime,MeetingVenue,ScheduleFlag FROM committee_schedule WHERE ProjectId=:projectId AND CommitteeId=:committeeId AND ScheduleFlag IN('MKV','MMR','MMF','MMS','MMA')";
 	
 	@Override
 	public List<Object[]> MomReportList(String projectId, String committeeId) throws Exception {
@@ -3629,32 +3628,32 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 		private static final String MEETINGCHECK="""
 				
 				SELECT a.ScheduleId,a.MeetingId,a.MeetingVenue,b.empid,CONCAT(IFNULL(CONCAT(c.title,' '),IFNULL(CONCAT(c.salutation,' '),'')), c.emp_name) AS 'empname',b.labcode,a.ScheduleStartTime,d.Description
-								FROM committee_schedule a, committee_member_type d,
-								committee_member b ,employee c WHERE a.ScheduleDate = :adate
-								AND b.CommitteeMainId = a.CommitteeMainId  AND b.empid=c.emp_id AND b.labcode=c.lab_code AND b.empid IN 
-								(SELECT  EmpId FROM committee_member WHERE  CommitteeMainId =:committeemainid AND labcode<> '@EXP' AND labcode<> '@IP')  AND b.MemberType = d.MemberType AND a.isactive='1'
-								UNION
-								SELECT a.ScheduleId,a.MeetingId,a.MeetingVenue,b.empid,CONCAT(IFNULL(CONCAT(c.title,' '),IFNULL(CONCAT(c.salutation,' '),'')), c.ExpertName) AS 'empname',b.labcode,a.ScheduleStartTime,d.Description
-								FROM committee_schedule a,  committee_member_type d,
-								committee_member b ,expert c WHERE a.ScheduleDate = :adate
-								AND b.CommitteeMainId = a.CommitteeMainId  AND b.empid=c.expertid  AND b.empid IN 
-								(SELECT  EmpId FROM committee_member WHERE  CommitteeMainId =:committeemainid AND labcode= '@EXP') AND b.MemberType = d.MemberType AND b.labcode ='@EXP' AND a.isactive='1'
-								UNION
-								SELECT a.ScheduleId,a.MeetingId,a.MeetingVenue,b.empid,CONCAT(IFNULL(CONCAT(c.title,' '),IFNULL(CONCAT(c.salutation,' '),'')), c.emp_name) AS 'empname',b.labcode,a.ScheduleStartTime,d.Description
-								FROM committee_schedule a,committee_member_type d,
-								committee_schedules_invitation b ,employee c WHERE a.ScheduleDate = :adate
-								AND b.CommitteeScheduleId = a.ScheduleId AND 
-								b.EmpId IN 
-								(SELECT  EmpId FROM committee_member 
-								WHERE  CommitteeMainId =:committeemainid AND isactive=1 AND LabCode<>'@EXP' AND LabCode<>'@IP') AND b.MemberType = d.MemberType AND a.isactive='1'
-								AND b.empid=c.emp_id  
-								UNION 
-								SELECT a.ScheduleId,a.MeetingId,a.MeetingVenue,b.empid,CONCAT(IFNULL(CONCAT(c.title,' '),IFNULL(CONCAT(c.salutation,' '),'')), c.ExpertName) AS 'empname' ,b.labcode,a.ScheduleStartTime,d.Description
-								FROM committee_schedule a, committee_member_type d, committee_schedules_invitation b ,expert c WHERE a.ScheduleDate = :adate
-								AND b.CommitteeScheduleId = a.ScheduleId AND 
-								b.EmpId IN 
-								(SELECT  EmpId FROM committee_member 
-								WHERE  CommitteeMainId =:committeemainid AND isactive=1 AND LabCode='@EXP') AND b.MemberType = d.MemberType AND a.isactive='1'
+				FROM committee_schedule a, committee_member_type d,
+				committee_member b ,employee c WHERE a.ScheduleDate = :adate
+				AND b.CommitteeMainId = a.CommitteeMainId  AND b.empid=c.emp_id AND b.labcode=c.lab_code AND b.empid IN 
+				(SELECT  EmpId FROM committee_member WHERE  CommitteeMainId =:committeemainid AND labcode<> '@EXP' AND labcode<> '@IP')  AND b.MemberType = d.MemberType AND a.isactive='1'
+				UNION
+				SELECT a.ScheduleId,a.MeetingId,a.MeetingVenue,b.empid,CONCAT(IFNULL(CONCAT(c.title,' '),IFNULL(CONCAT(c.salutation,' '),'')), c.ExpertName) AS 'empname',b.labcode,a.ScheduleStartTime,d.Description
+				FROM committee_schedule a,  committee_member_type d,
+				committee_member b ,expert c WHERE a.ScheduleDate = :adate
+				AND b.CommitteeMainId = a.CommitteeMainId  AND b.empid=c.expertid  AND b.empid IN 
+				(SELECT  EmpId FROM committee_member WHERE  CommitteeMainId =:committeemainid AND labcode= '@EXP') AND b.MemberType = d.MemberType AND b.labcode ='@EXP' AND a.isactive='1'
+				UNION
+				SELECT a.ScheduleId,a.MeetingId,a.MeetingVenue,b.empid,CONCAT(IFNULL(CONCAT(c.title,' '),IFNULL(CONCAT(c.salutation,' '),'')), c.emp_name) AS 'empname',b.labcode,a.ScheduleStartTime,d.Description
+				FROM committee_schedule a,committee_member_type d,
+				committee_schedules_invitation b ,employee c WHERE a.ScheduleDate = :adate
+				AND b.CommitteeScheduleId = a.ScheduleId AND 
+				b.EmpId IN 
+				(SELECT  EmpId FROM committee_member 
+				WHERE  CommitteeMainId =:committeemainid AND isactive=1 AND LabCode<>'@EXP' AND LabCode<>'@IP') AND b.MemberType = d.MemberType AND a.isactive='1'
+				AND b.empid=c.emp_id  
+				UNION 
+				SELECT a.ScheduleId,a.MeetingId,a.MeetingVenue,b.empid,CONCAT(IFNULL(CONCAT(c.title,' '),IFNULL(CONCAT(c.salutation,' '),'')), c.ExpertName) AS 'empname' ,b.labcode,a.ScheduleStartTime,d.Description
+				FROM committee_schedule a, committee_member_type d, committee_schedules_invitation b ,expert c WHERE a.ScheduleDate = :adate
+				AND b.CommitteeScheduleId = a.ScheduleId AND 
+				b.EmpId IN 
+				(SELECT  EmpId FROM committee_member 
+				WHERE  CommitteeMainId =:committeemainid AND isactive=1 AND LabCode='@EXP') AND b.MemberType = d.MemberType AND a.isactive='1'
 				""";
 		
 		@Override
@@ -4014,7 +4013,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 			WHERE a.scheduleid = :InScheduleId ORDER BY CASE WHEN MinutesId = 3 THEN 1 ELSE 3 END, AgendaPriority, minutesSubOfSubId, agenda, ScheduleMinutesId ,idarck, ActionNo IS NULL;
 			""";
 	@Override
-	public List<Object[]> CommitteeScheduleMinutesforAction(String committeescheduleid) {
+	public List<Object[]> CommitteeScheduleMinutesforAction(String committeescheduleid) throws Exception {
 		Query query=manager.createNativeQuery(AGENDAACTIONLIST); 
 		query.setParameter("InScheduleId", Long.parseLong(committeescheduleid));
 		List<Object[]> CommitteeScheduleMinutes =(List<Object[]>)query.getResultList();
@@ -4022,7 +4021,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 	}
 
 	@Override
-	public Long addRepresentative(CommitteeRepresentative rep) {
+	public Long addRepresentative(CommitteeRepresentative rep) throws Exception {
 		try {
 			manager.persist(rep);
 			manager.flush();
@@ -4034,7 +4033,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 	}
 
 	@Override
-	public CommitteeRepresentative getRepresentativeById(String repId) {
+	public CommitteeRepresentative getRepresentativeById(String repId) throws Exception {
 		try {
 			return manager.find(CommitteeRepresentative.class, Long.parseLong(repId));
 		}catch (Exception e) {
@@ -4045,7 +4044,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 
 	private static final String DUPLICATEREPNAMECOUNT = "SELECT COUNT(RepName) FROM committee_rep WHERE RepName=:RepName";
 	@Override
-	public Long getRepNameDuplicateCount(String repName) {
+	public Long getRepNameDuplicateCount(String repName) throws Exception {
 		try {
 			Query query = manager.createNativeQuery(DUPLICATEREPNAMECOUNT);
 			query.setParameter("RepName", repName);
@@ -4058,7 +4057,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 
 	private static final String DUPLICATEREPCODECOUNT = "SELECT COUNT(RepCode) FROM committee_rep WHERE RepCode=:RepCode";
 	@Override
-	public Long getRepCodeDuplicateCount(String repCode) {
+	public Long getRepCodeDuplicateCount(String repCode) throws Exception {
 		try {
 			Query query = manager.createNativeQuery(DUPLICATEREPCODECOUNT);
 			query.setParameter("RepCode", repCode);
@@ -4071,7 +4070,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 
 	private static final String AIRCRAFTLIST = "SELECT AircraftId, Aircraft FROM committee_aircraft ORDER BY AircraftId; ";
 	@Override
-	public List<Object[]> getAircraftList(String committeeScheduleId) {
+	public List<Object[]> getAircraftList(String committeeScheduleId) throws Exception {
 		Query query=manager.createNativeQuery(AIRCRAFTLIST);
 		List<Object[]> aircraftList =(List<Object[]>)query.getResultList();
 		return aircraftList;
@@ -4079,14 +4078,14 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 
 	private static final String SUBSYSTEMLIST = "SELECT SubSystemId, SubSystem FROM committee_subsystem ORDER BY SubSystemId; ";
 	@Override
-	public List<Object[]> getSubSystemList(String committeeScheduleId) {
+	public List<Object[]> getSubSystemList(String committeeScheduleId) throws Exception {
 		Query query=manager.createNativeQuery(SUBSYSTEMLIST);
 		List<Object[]> subsystemList =(List<Object[]>)query.getResultList();
 		return subsystemList;
 	}
 
 	@Override
-	public Long addAircraft(CommitteeAircraft aircraft) {
+	public Long addAircraft(CommitteeAircraft aircraft) throws Exception {
 		try {
 			manager.persist(aircraft);
 			manager.flush();
@@ -4098,7 +4097,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 	}
 
 	@Override
-	public CommitteeAircraft getAircraftById(String aircraftId) {
+	public CommitteeAircraft getAircraftById(String aircraftId) throws Exception {
 		try {
 			return manager.find(CommitteeAircraft.class, Long.parseLong(aircraftId));
 		}catch (Exception e) {
@@ -4108,7 +4107,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 	}
 
 	@Override
-	public Long addSubSystem(CommitteeSubSystem sub) {
+	public Long addSubSystem(CommitteeSubSystem sub) throws Exception {
 		try {
 			manager.persist(sub);
 			manager.flush();
@@ -4120,7 +4119,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 	}
 
 	@Override
-	public CommitteeSubSystem getSubSystemById(String subsystemId) {
+	public CommitteeSubSystem getSubSystemById(String subsystemId) throws Exception {
 		try {
 			return manager.find(CommitteeSubSystem.class, Long.parseLong(subsystemId));
 		}catch (Exception e) {
@@ -4141,7 +4140,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 			+ "ON e.Assignee = j.ExpertId LEFT JOIN employee_desig gd ON gd.DesigId = j.DesigId  WHERE a.scheduleid = :InScheduleId "
 			+ "ORDER BY CASE WHEN MinutesId = 3 THEN 1 ELSE 3 END, AgendaPriority,agenda,idarck,ActionNo,ScheduleMinutesId";
 	@Override
-	public List<Object[]> committeeScheduleMinutesforActionForMomADE(String committeescheduleid) {
+	public List<Object[]> committeeScheduleMinutesforActionForMomADE(String committeescheduleid)  throws Exception{
 		Query query=manager.createNativeQuery(ACTIONLISTFORMOMADE);
 		query.setParameter("InScheduleId", Long.parseLong(committeescheduleid));
 		List<Object[]> CommitteeScheduleMinutes =(List<Object[]>)query.getResultList();
@@ -4158,11 +4157,11 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 			+ "a.scheduleid=:committeescheduleid AND a.committeeid=b.committeeid AND d.committeeId = b.committeeid AND d.ProgrammeId = a.ProgrammeId;";
 
 	@Override
-	public Object[] CommitteeScheduleEditDataforMom(String committeescheduleid) {
+	public Object[] CommitteeScheduleEditDataforMom(String committeescheduleid) throws Exception {
 		Query query=manager.createNativeQuery(COMMITTEESCHEDULEEDITFORMOM);
 		query.setParameter("committeescheduleid", Long.parseLong(committeescheduleid));
-		Object[] CommitteeScheduleEditData=(Object[])query.getSingleResult();
-		return CommitteeScheduleEditData;
+		List<Object[]> CommitteeScheduleEditData=(List<Object[]>)query.getResultList();
+		return CommitteeScheduleEditData!=null && !CommitteeScheduleEditData.isEmpty() ? CommitteeScheduleEditData.get(0) : null;
 	}
 
 	private static final String PRGMAGENDALIST = """
@@ -4198,12 +4197,49 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 			ORDER BY agendapriority 
 			""";
 	@Override
-	public List<Object[]> PrgmAgendaList(String CommitteeScheduleId) {
+	public List<Object[]> PrgmAgendaList(String CommitteeScheduleId) throws Exception {
 		Query query=manager.createNativeQuery(PRGMAGENDALIST);
 		query.setParameter("committeescheduleid", Long.parseLong(CommitteeScheduleId));
 		List<Object[]> AgendaList=(List<Object[]>)query.getResultList();
 		
 		return AgendaList;
+	}
+
+	// Naveen R 05-03-2026
+	private static final String MEETINGCOUNTPROJECT = """
+			SELECT pm.projectShortName, pm.projectCode, pm.projectName,cs.projectId,COUNT(cs.projectId) AS meetingcount, c.committeeShortName, c.committeeName
+			FROM committee c LEFT JOIN committee_schedule cs ON c.committeeId = cs.committeeId
+			LEFT JOIN project_master pm ON cs.projectId = pm.projectId
+			WHERE cs.committeeId = :committeeId AND c.isBriefing = 'Y' AND c.isActive = 1 AND pm.projectId > 0 AND cs.isActive = 1 AND cs.ScheduleFlag IN ('MKV','MMR','MMF','MMS','MMA')
+			GROUP BY c.committeeShortName, c.committeeName, cs.projectId, pm.projectName, pm.projectShortName;
+			"""; 
+	@Override
+	public List<Object[]> getMeetingCountList(String committeeId) throws Exception {
+		Query query=manager.createNativeQuery(MEETINGCOUNTPROJECT);
+		query.setParameter("committeeId", Long.parseLong(committeeId));
+		List<Object[]> meetingCounts=(List<Object[]>)query.getResultList();		
+		return meetingCounts;
+	}
+
+	private static final String AGENDASPECLISTORDERWISE = """
+			SELECT  a.ScheduleMinutesId, a.Details,a.ScheduleId,a.MinutesId,a.ScheduleSubId,a.MinutesSubOfSubId,a.MinutesSubId,a.idarck,a.remarks,b.outcomename,c.agendaitem AS agenda, a.agendasubhead,c.scheduleAgendaId,c.AgendaPriority
+			FROM committee_schedules_minutes_details a,committee_schedules_minutes_outcome b,committee_schedules_agenda c
+			WHERE a.scheduleid =:InScheduleId  AND a.idarck=b.idarck AND c.scheduleagendaid=a.minutessubid AND a.minutesid='3'
+			
+			UNION
+			
+			SELECT  a.ScheduleMinutesId, a.Details,a.ScheduleId,a.MinutesId,a.ScheduleSubId,a.MinutesSubOfSubId,a.MinutesSubId,a.idarck,a.remarks,b.outcomename,
+			CASE WHEN a.minutesid='4' THEN 'Other Discussion' ELSE 'Other Outcomes' END AS agenda, a.agendasubhead, NULL AS scheduleAgendaId, NULL AS AgendaPriority
+			FROM committee_schedules_minutes_details a,committee_schedules_minutes_outcome b
+			WHERE a.scheduleid =:InScheduleId  AND a.idarck=b.idarck AND a.minutesid<>'3'
+			ORDER BY  CASE WHEN minutesid = '3' THEN 1  ELSE 2 END, AgendaPriority, scheduleAgendaId, agenda,ScheduleMinutesId;
+			""";
+	@Override
+	public List<Object[]> CommitteeScheduleMinutesMom(String committeescheduleid) throws Exception {
+		Query query=manager.createNativeQuery(AGENDASPECLISTORDERWISE);
+		query.setParameter("InScheduleId", Long.parseLong(committeescheduleid));
+		List<Object[]> CommitteeScheduleMinutes =(List<Object[]>)query.getResultList();
+		return CommitteeScheduleMinutes;
 	}
 	
 	@Override
@@ -4214,26 +4250,7 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	
-	// Naveen R 05-03-2026
-		private static final String MEETINGCOUNTPROJECT = """
-				SELECT pm.projectShortName, pm.projectCode, pm.projectName,cs.projectId,COUNT(cs.projectId) AS meetingcount, c.committeeShortName, c.committeeName
-				FROM committee c LEFT JOIN committee_schedule cs ON c.committeeId = cs.committeeId
-				LEFT JOIN project_master pm ON cs.projectId = pm.projectId
-				WHERE cs.committeeId = :committeeId AND c.isBriefing = 'Y' AND c.isActive = 1 AND pm.projectId > 0 AND cs.isActive = 1 AND cs.ScheduleFlag IN ('MKV','MMR','MMF','MMS','MMA')
-				GROUP BY c.committeeShortName, c.committeeName, cs.projectId, pm.projectName, pm.projectShortName;
-				"""; 
-		@Override
-		public List<Object[]> getMeetingCountList(String committeeId) {
-			Query query=manager.createNativeQuery(MEETINGCOUNTPROJECT);
-			query.setParameter("committeeId", Long.parseLong(committeeId));
-			List<Object[]> meetingCounts=(List<Object[]>)query.getResultList();		
-			return meetingCounts;
-		}
-		
-		
+	}		
 }
 
 

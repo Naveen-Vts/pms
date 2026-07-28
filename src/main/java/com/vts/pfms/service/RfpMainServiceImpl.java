@@ -452,7 +452,7 @@ public class RfpMainServiceImpl implements RfpMainService {
 	}
 	
 	@Override
-	public long ProjectHoaUpdate(List<ProjectHoa> hoa,String Username,List<IbasLabMaster> LabDetails) throws Exception{
+	public long ProjectHoaUpdate(List<ProjectHoa> hoa,String Username,List<LabMaster> LabDetails) throws Exception{
 		logger.info(new Date() +"Inside SERVICE ProjectHoaUpdate ");
 		
 		long count1 =0 ;

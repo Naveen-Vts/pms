@@ -1,6 +1,7 @@
 package com.vts.pfms.cfg;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,8 +20,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.vts.pfms.login.CaptchaFilter;
+//import com.vts.pfms.login.CaptchaFilter;
 import com.vts.pfms.login.CustomAuthenticationFailureHandler;
 import com.vts.pfms.login.CustomLogoutHandler;
 import com.vts.pfms.login.LoginDetailsServiceImpl;
@@ -36,20 +39,27 @@ public class SecurityConfiguration{
 	
 	@Autowired
 	private PasswordDecryptFilter passwordDecryptFilter;
+//	@Autowired
+//	private CaptchaFilter captchaFilter;
+	
 	@Autowired
-	private CaptchaFilter captchaFilter;
+	@Qualifier("loginFilter")
+	private FilterForLogInFromOtherApp loginFilterFromOtherApp;
 
 	@Autowired
 	private CustomAuthenticationFailureHandler failureHandler;
 	
+	
+	
 	@Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		
+		System.out.println();
         http.authorizeHttpRequests(request -> 
         		request.requestMatchers("/").hasAnyRole("USER", "ADMIN")
 	        		   .requestMatchers("/webjars/**", "/resources/**", "/view/**", "/LoginPage/*", "/pfms-dg/*", "/api/sync/**","/refresh-captcha", 
-	        					  "/login", "/wr", "/login?sessionInvalid", "/login?sessionExpired", "/wr?sessionInvalid", "/wr?sessionExpired", "/ProjectBriefingPaper.htm", 
-	        					  "/ProjectRequirementAttachmentDownload.htm", "/ProjectClosureChecklistFileDownload.htm", "/TimeSheetWorkFlowPdf.htm", "/CommitteeMinutesViewAllDownloadPdf.htm/**").permitAll()
+	        					  "/login", "/wr", "/login?sessionInvalid", "/login?sessionExpired", "/wr?sessionInvalid", "/wr?sessionExpired", 
+	        					  "/ProjectBriefingPaper.htm","/ProjectRequirementAttachmentDownload.htm","/ProjectClosureChecklistFileDownload.htm",
+	        					  "/TimeSheetWorkFlowPdf.htm", "/CommitteeMinutesViewAllDownloadPdf.htm/**","/TMDS").permitAll()
 	        		   .requestMatchers(HttpMethod.OPTIONS, "/**").denyAll()
 	        		   .anyRequest()
 	        		   .authenticated()
@@ -92,26 +102,28 @@ public class SecurityConfiguration{
         		        response.setHeader("Pragma", "no-cache");
         		        response.setDateHeader("Expires", 0);
         		    })
-         		   .contentSecurityPolicy(csp -> 
-                  csp.policyDirectives(
-       				    "default-src 'self'; " +
-       				    "script-src 'self' 'unsafe-inline' blob:; " +
-       				    "style-src 'self' ; " +
-       				    "img-src 'self' data: blob:; " +
-       				    "font-src 'self'; " +
-       				    "connect-src 'self'; " +
-       				    "object-src 'self' data: blob:; " +  
-       				    "frame-src 'self' data: blob:; " +   
-       				    "frame-ancestors 'self'; " +
-       				    "base-uri 'self'; " +
-       				    "form-action 'self';"
-       				))
+//         		   .contentSecurityPolicy(csp -> 
+//                  csp.policyDirectives(
+//       				    "default-src 'self'; " +
+//       				    "script-src 'self' 'unsafe-inline' blob:; " +
+//       				    "style-src 'self' ; " +
+//       				    "img-src 'self' data: blob:; " +
+//       				    "font-src 'self'; " +
+//       				    "connect-src 'self'; " +
+//       				    "object-src 'self' data: blob:; " +  
+//       				    "frame-src 'self' data: blob:; " +   
+//       				    "frame-ancestors 'self'; " +
+//       				    "base-uri 'self'; " +
+//       				    "form-action 'self';"
+//       				))
         		)
-        	.addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class)
-        	.addFilterBefore(passwordDecryptFilter, UsernamePasswordAuthenticationFilter.class);
-        
+//            .addFilterBefore(new JwtToSessionFilter(), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(loginFilterFromOtherApp, UsernamePasswordAuthenticationFilter.class)
+//            .addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(passwordDecryptFilter, UsernamePasswordAuthenticationFilter.class);
 
         	;
+        	http.cors(Customizer.withDefaults());
           return http.build();
     }
 	
@@ -148,4 +160,19 @@ public class SecurityConfiguration{
 	LogoutHandler logoutSuccessHandler() {
 		return new CustomLogoutHandler();
 	}
+	
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+
+                registry.addMapping("/**")
+                        .allowedOrigins("http://192.168.1.150:3000") // React app
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(true); // 🔥 REQUIRED for session
+            }
+        };
+    }
 }

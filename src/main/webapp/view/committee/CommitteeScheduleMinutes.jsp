@@ -56,7 +56,7 @@ SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd");
 SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
 
 String LabCode =(String) session.getAttribute("labcode");
-
+//LabCode = "PGAD";
 Object[] committeescheduleeditdata=(Object[])request.getAttribute("committeescheduleeditdata");
 List<Object[]> committeeagendalist=(List<Object[]>)request.getAttribute("committeeagendalist");
 
@@ -98,6 +98,7 @@ scheduleId=committeescheduleeditdata[6].toString();
 String ccmFlag = (String) request.getAttribute("ccmFlag");
 String committeeMainId = (String) request.getAttribute("committeeMainId");
 String committeeId = (String) request.getAttribute("committeeId");
+String redirect = (String) request.getAttribute("redirect");
 
 List<Object[]> agendaList = (List<Object[]>)request.getAttribute("agendaList");
 
@@ -178,7 +179,7 @@ List<CommitteeSchedule> dmcScheduleList = (List<CommitteeSchedule>) request.getA
 		<button type="submit" class="btn btn-sm prints my-2 my-sm-0 fs-12px" formtarget="_blank">MINUTES</button>
 		<%} %>
 		<% if(committeescheduleeditdata[26]!=null && committeescheduleeditdata[26].toString().equalsIgnoreCase("0")){ %> 
-			<%if(LabCode.equalsIgnoreCase("PGAD")){ %>
+			<%if(LabCode.equalsIgnoreCase("PGAD") && !"0".equalsIgnoreCase(programmeId)){ %>
 			<input type="submit" class="btn  btn-sm view minutesBtnStyle" value="TABULAR MINUTES" formaction="MeetingTabularMinutesNewDownload.htm" formtarget="_blank"/>
 			<%}else{ %><input type="submit" class="btn  btn-sm view minutesBtnStyle" value="TABULAR MINUTES" formaction="MeetingTabularMinutesDownload.htm" formtarget="_blank"/>
 			<%if(Long.parseLong(projectid)==0 && Long.parseLong(divisionid)==0 && Long.parseLong(initiationid)==0 && Long.parseLong(carsInitiationId)==0 && Long.parseLong(programmeId)==0 && userview==null && LabCode.equalsIgnoreCase("ADE")){%>
@@ -198,6 +199,7 @@ List<CommitteeSchedule> dmcScheduleList = (List<CommitteeSchedule>) request.getA
 		<input type="hidden" name="membertype" value="<%=membertype%>">
 		<input type="hidden" name="committeescheduleid" value="<%=committeescheduleeditdata[6]%>">
 		<input type="hidden" name="scheduleid" value="<%=committeescheduleeditdata[6]%>">
+		
 		<%if(ccmFlag!=null && ccmFlag.equalsIgnoreCase("Y")) {%>
 
 			<input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
@@ -218,7 +220,9 @@ List<CommitteeSchedule> dmcScheduleList = (List<CommitteeSchedule>) request.getA
 		<%if(ccmFlag==null && dmcFlag==null) {%>
 			<input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
 			<input type="hidden" name="scheduleid" value="<%=committeescheduleeditdata[6] %>">
-			<button  class="btn  btn-sm back fs-12px" formaction="CommitteeScheduleView.htm">BACK</button>
+			<input type="hidden" name="committeeid" value="<%=committeeid %>">
+			<input type="hidden" name="projectid" value="<%=projectid %>">
+			<button  class="btn  btn-sm back fs-12px" formaction="<%if("MOM".equalsIgnoreCase(redirect)){ %> MomReportList.htm <%}else{ %> CommitteeScheduleView.htm <% } %>">BACK</button>
 
 		<%} %>	
 	</form>
@@ -1957,14 +1961,15 @@ function showAttachmentModal(){
 					</div>
    					
    				 <div class="col-md-12 ml-0px w-100"  align="left">
-						 <% if(!LabCode.equalsIgnoreCase("PGAD")){ %>
+
+						  <% if(!LabCode.equalsIgnoreCase("PGAD")){ %>
 						 		<label >Action Name</label>
 						 		<textarea class="form-control w-100 height-140px" required="required"  name="NoteText" id="editorair" maxlength="5000"></textarea>
-						 <%}else{ %>						 
+						 <%}else{ %> 						 
 						<div   id="summernoteair" class="center">
 						</div>
 						 <textarea class="textAreaClass" name="NoteText" id="editorair"></textarea>
-						 <%} %> 
+						  <%} %> 
 					</div>
 
   					
@@ -3104,108 +3109,164 @@ function editcheck1(editfileid)
   
     </script>
    
-   <script>
-CKEDITOR.replace( 'summernote', {
-	
-	
-toolbar: [{
-          name: 'clipboard',
-          items: ['PasteFromWord', '-', 'Undo', 'Redo']
-        },
-        {
-          name: 'basicstyles',
-          items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat', 'Subscript', 'Superscript']
-        },
-        {
-          name: 'links',
-          items: ['Link', 'Unlink']
-        },
-        {
-          name: 'paragraph',
-          items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote']
-        },
-        {
-          name: 'insert',
-          items: ['Image', 'Table']
-        },
-        {
-          name: 'editing',
-          items: ['Scayt']
-        },
-        '/',
+   <script>   
+   var editor_config = {
+		    maxlength: '4000',
 
-        {
-          name: 'styles',
-          items: ['Format', 'Font', 'FontSize']
-        },
-        {
-          name: 'colors',
-          items: ['TextColor', 'BGColor', 'CopyFormatting']
-        },
-        {
-          name: 'align',
-          items: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']
-        },
-        {
-          name: 'document',
-          items: ['Print', 'PageBreak', 'Source']
-        }
-      ],
-     
-    removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar',
+		    extraPlugins: 'specialchar',   // important
 
-	customConfig: '',
+		    toolbar: [
+		        {
+		            name: 'clipboard',
+		            items: ['PasteFromWord', '-', 'Undo', 'Redo']
+		        },
+		        {
+		            name: 'basicstyles',
+		            items: [
+		                'Bold', 'Italic', 'Underline', 'Strike',
+		                'RemoveFormat', 'Subscript', 'Superscript',
+		                'SpecialChar'   // fixed here
+		            ]
+		        },
+		        {
+		            name: 'links',
+		            items: ['Link', 'Unlink']
+		        },
+		        {
+		            name: 'paragraph',
+		            items: [
+		                'NumberedList', 'BulletedList',
+		                '-', 'Outdent', 'Indent', '-', 'Blockquote'
+		            ]
+		        },
+		        {
+		            name: 'insert',
+		            items: ['Image', 'Table']
+		        },
+		        {
+		            name: 'editing',
+		            items: ['Scayt']
+		        },
+		        '/',
+		        {
+		            name: 'styles',
+		            items: ['Format', 'Font', 'FontSize']
+		        },
+		        {
+		            name: 'colors',
+		            items: ['TextColor', 'BGColor', 'CopyFormatting']
+		        },
+		        {
+		            name: 'align',
+		            items: [
+		                'JustifyLeft', 'JustifyCenter',
+		                'JustifyRight', 'JustifyBlock'
+		            ]
+		        }
+		    ],
 
-	disallowedContent: 'img{width,height,float}',
-	extraAllowedContent: 'img[width,height,align]',
+		    // removed wrong Specialchar from here
+		    removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles',
 
-	height: 380,
+		    customConfig: '',
+		    disallowedContent: 'img{width,height,float}',
+		    extraAllowedContent: 'img[width,height,align]',
+		    height: 300,
+		    
 
-	
-	contentsCss: [CKEDITOR.basePath +'mystyles.css' ],
+			contentsCss: [CKEDITOR.basePath + 'mystyles.css'],
+		    bodyClass: 'document-editor',
+		    
+		    // DEFAULT FONT SIZE IN DROPDOWN
+		    fontSize_defaultLabel: '14px',
 
-	
-	bodyClass: 'document-editor',
-
-	
-	format_tags: 'p;h1;h2;h3;pre',
-
-	
-	removeDialogTabs: 'image:advanced;link:advanced',
-
-	stylesSet: [
-	
-		{ name: 'Marker', element: 'span', attributes: { 'class': 'marker' } },
-		{ name: 'Cited Work', element: 'cite' },
-		{ name: 'Inline Quotation', element: 'q' },
-
-		
-		{
-			name: 'Special Container',
-			element: 'div',
-			styles: {
-				padding: '5px 10px',
-				background: '#eee',
-				border: '1px solid #ccc'
-			}
-		},
-		{
-			name: 'Compact table',
-			element: 'table',
-			attributes: {
-				cellpadding: '5',
-				cellspacing: '0',
-				border: '1',
-				bordercolor: '#ccc'
+		    // FORCE FONT SIZE EVERYWHERE (INCLUDING TABLES)
+		    contentsStyle: `
+		        body { font-size: 14px; }
+		        p, div { font-size: 14px; }
+		        table, td, th { font-size: 14px; }
+		    `,
+		    on: {
+			    instanceReady: function (ev) {
+			        const editor = ev.editor;
+			
+			        // Function to force font size inside tables
+			        function fixTableFont() {
+			            const tables = editor.document.find('table');
+			
+			            for (let i = 0; i < tables.count(); i++) {
+			                const table = tables.getItem(i);
+			                const cells = table.find('td, th');
+			
+			                for (let j = 0; j < cells.count(); j++) {
+			                    const cell = cells.getItem(j);
+			
+			                    // Remove inline font-size
+			                    cell.removeStyle('font-size');
+			
+			                    // Apply 14px
+			                    cell.setStyle('font-size', '14px');
+			                }
+			            }
+			        }
+			
+			        // Run on load
+			        fixTableFont();
+			
+			        // Run whenever content changes (paste, typing, table insert)
+			        editor.on('change', fixTableFont);
+			        editor.on('afterPaste', fixTableFont);
+			    }
 			},
-			styles: {
-				'border-collapse': 'collapse'
-			}
-		},
-		{ name: 'Borderless Table', element: 'table', styles: { 'border-style': 'hidden', 'background-color': '#E6E6FA' } },
-		{ name: 'Square Bulleted List', element: 'ul', styles: { 'list-style-type': 'square' } }
-	]
-} );
+		    format_tags: 'p;h1;h2;h3;pre',
+		    removeDialogTabs: 'image:advanced;link:advanced',
+
+		    stylesSet: [
+		        { name: 'Marker', element: 'span', attributes: { 'class': 'marker' } },
+		        { name: 'Cited Work', element: 'cite' },
+		        { name: 'Inline Quotation', element: 'q' },
+		        {
+		            name: 'Special Container',
+		            element: 'div',
+		            styles: {
+		                padding: '5px 10px',
+		                background: '#eee',
+		                border: '1px solid #ccc'
+		            }
+		        },
+		        {
+		            name: 'Compact table',
+		            element: 'table',
+		            attributes: {
+		                cellpadding: '5',
+		                cellspacing: '0',
+		                border: '1',
+		                bordercolor: '#ccc'
+		            },
+		            styles: {
+		                'border-collapse': 'collapse'
+		            }
+		        },
+		        {
+		            name: 'Borderless Table',
+		            element: 'table',
+		            styles: {
+		                'border-style': 'hidden',
+		                'background-color': '#E6E6FA'
+		            }
+		        },
+		        {
+		            name: 'Square Bulleted List',
+		            element: 'ul',
+		            styles: { 'list-style-type': 'square' }
+		        }
+		    ]
+		    
+		};   
+CKEDITOR.replace( 'summernote', editor_config);
+
+
+CKEDITOR.replace( 'summernoteair', editor_config );
 
 
 CKEDITOR.replace( 'summernoteair', {
