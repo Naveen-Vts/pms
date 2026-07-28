@@ -43,14 +43,14 @@
   <div class="modal-dialog modal-dialog-centered  modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <font color="red"><h5 class="modal-title "  id="staticBackdropLabel">Version Mismatch</h5></font>
+        <font color="red"><h5 class="modal-title " data-lang="VERSION_MISMATCH"  id="staticBackdropLabel">Version Mismatch</h5></font>
       </div>
       <div class="modal-body center" ><b>
       <p id="version"></p>
         </b>
       </div>
       <div class="modal-footer">
-      <button type="button" class="btn btn-primary" data-dismiss="modal">Still want to continue</button>
+      <button type="button" class="btn btn-primary" data-lang="CONTINUE" data-dismiss="modal">Still want to continue</button>
       </div>
     </div>
   </div>
@@ -71,6 +71,7 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
   
   
 	<header id="header" class="clearfix">
+	   
  
 	
   		<div class="btmhead clearfix">
@@ -83,9 +84,14 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
         			</div>
       			</div>
      			<div class="logo">
-     				<a href="#" title="PMS"><span class="c projName"  >PROJECT MANAGEMENT SYSTEM  (VER 1.7.0)</span></a>
-     			</div>
+     				<a href="#" title="PMS"><span class="c projName" data-lang="PMS_TITLE"  >PROJECT MANAGEMENT SYSTEM  (VER 1.7.0)</span></a>
      		
+     		
+     		
+     			</div>
+     			
+     	       
+    
      			
     		</div>
 
@@ -93,24 +99,30 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
   		
   		
   				<ul class="nav nav-tabs justify-content-end ">
-					  <li class="nav-item"  onclick="$('#footer').show();">
+					  <li class="nav-item"    onclick="$('#footer').show();">
 						 <a class="nav-link active" data-toggle="tab" href="#tab-1" role="tab" ><i class="fa fa-home" aria-hidden="true"></i>&nbsp;Home</a>
 					  </li> 
 					<!--   <li class="nav-item">
 					    <a class="nav-link" href="LoginPage/PPFMDoc2016.htm" target="_blank" ><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; PPFM-2016</a>
 					  </li> -->
-					 <li class="nav-item">
+					  
+					  <li class="nav-item">
+					    <a class="nav-link" href="LoginPage/DPFMDoc2026.htm" target="_blank" ><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; DPFM-2026</a>
+					  </li>					  
+					  <li class="nav-item">
 					    <a class="nav-link" href="LoginPage/DPFMDoc2021.htm" target="_blank" ><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; DPFM-2021</a>
 					  </li>
 					  <li class="nav-item">
 					    <a class="nav-link" href="LoginPage/DPFMDoc2021Handbook.htm" target="_blank" ><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; DPFM Handbook-2021</a>
-					  </li>
-					 <!--  <li class="nav-item">
+
+					  </li >
+					  <li class="nav-item link">
+					  <div class="language-wrapper">
 					    <button id="languageToggle"
 					            class="language-toggle-btn"
 					            onclick="toggleLanguage()"
-					            title="Change Language"
-					            aria-label="Change Language">
+								title="Change Language"
+				                aria-label="Change Language">
 					
 					        <svg xmlns="http://www.w3.org/2000/svg"
 					             width="24"
@@ -118,21 +130,19 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 					             viewBox="0 0 64 64"
 					             fill="none"
 					            class="language-icon" >
-					
+
 					            <path d="M37.6672 9.95973V31.9997H34.4272V9.95973H31.5071V7.11973H41.8271V9.95973H37.6672ZM22.5871 6.71973C24.6671 6.71973 26.2538 7.23973 27.3471 8.27973C28.4671 9.31973 29.0271 10.6264 29.0271 12.1997C29.0271 13.3464 28.7205 14.3864 28.1071 15.3197C27.5205 16.2264 26.6405 16.9464 25.4671 17.4797C24.2938 18.0131 22.8271 18.3064 21.0671 18.3597L20.8671 15.5597C22.6805 15.5064 23.9605 15.1864 24.7071 14.5997C25.4805 14.0131 25.8671 13.2264 25.8671 12.2397C25.8671 11.2797 25.5471 10.5864 24.9071 10.1597C24.2938 9.73306 23.5738 9.51973 22.7471 9.51973C21.7605 9.51973 20.8671 9.65306 20.0671 9.91973C19.2671 10.1864 18.4138 10.5464 17.5071 10.9997L16.5071 8.23973C17.2005 7.86639 18.0538 7.51973 19.0671 7.19973C20.1071 6.87973 21.2805 6.71973 22.5871 6.71973ZM29.4671 23.2797C29.4671 24.5064 29.1871 25.5331 28.6271 26.3597C28.0671 27.1864 27.3071 27.7997 26.3471 28.1997C25.4138 28.5997 24.3471 28.7997 23.1471 28.7997C21.6271 28.7997 20.2138 28.4264 18.9071 27.6797C17.6271 26.9331 16.4005 25.7464 15.2271 24.1197C14.0805 22.4931 12.9471 20.3731 11.8271 17.7597L14.6671 16.7197C15.4405 18.6131 16.2405 20.2531 17.0671 21.6397C17.9205 22.9997 18.8271 24.0531 19.7871 24.7997C20.7471 25.5197 21.7738 25.8797 22.8671 25.8797C23.8805 25.8797 24.7071 25.6531 25.3471 25.1997C25.9871 24.7197 26.3071 23.9597 26.3071 22.9197C26.3071 21.6397 25.8671 20.5331 24.9871 19.5997C24.1071 18.6664 23.0405 17.8131 21.7871 17.0397L24.1471 16.9197L25.8671 16.5597C26.2405 16.8797 26.6538 17.2664 27.1071 17.7197C27.5605 18.1731 27.9205 18.6264 28.1871 19.0797L28.3872 19.8397C28.7338 20.3464 29.0005 20.8797 29.1871 21.4397C29.3738 21.9997 29.4671 22.6131 29.4671 23.2797ZM30.1071 17.9997C31.3871 17.9997 32.4938 17.9064 33.4272 17.7197C34.3605 17.5064 35.4538 17.1731 36.7071 16.7197V19.5997C35.5605 20.1064 34.5205 20.4397 33.5871 20.5997C32.6805 20.7597 31.6805 20.8397 30.5871 20.8397C30.1871 20.8397 29.7205 20.8131 29.1871 20.7597C28.6538 20.6797 28.1471 20.5997 27.6671 20.5197C27.2138 20.4131 26.8805 20.3197 26.6671 20.2397L24.7871 17.9997L25.0271 17.3997C25.8005 17.5864 26.6138 17.7331 27.4671 17.8397C28.3205 17.9464 29.2005 17.9997 30.1071 17.9997Z"
 					                  fill="currentColor"/>
 					                  
 					                  <path d="M52.3467 58.6664L49.136 50.4158H38.5707L35.3973 58.6664H32L42.416 31.8984H45.44L55.8187 58.6664H52.3467ZM48.128 47.4291L45.1413 39.3651C45.0667 39.1659 44.9421 38.8051 44.768 38.2824C44.5939 37.7598 44.4195 37.2246 44.2453 36.6771C44.096 36.1046 43.9715 35.6691 43.872 35.3704C43.6728 36.1419 43.4613 36.9011 43.2373 37.6478C43.0381 38.3696 42.864 38.9419 42.7147 39.3651L39.6907 47.4291H48.128Z" fill="#ffffff"></path>
 					
-					            
-					        </svg>
-					    
-					
-					    </button>
-					      <span id="languageTooltip" class="lang-tooltip">
-					        Change Language
-					    </span>
-					</li> -->
+					        </svg>		
+							</button>
+					          <span id="languageTooltip" class="lang-tooltip">
+					            Change Language
+					        </span>
+				        </div>
+					</li>
 				</ul>
 				
   		
@@ -155,8 +165,8 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 							<div >
 								
 								<div>
-									<p class="quote">Lets simplify project management</p>
-								 	<h4 class="h4S" >Analytics  &nbsp;|&nbsp;  Insights  &nbsp;|&nbsp;  Empowerment</h4>
+									<p class="quote"  data-lang="QUOTE">Lets simplify project management</p>
+								 	<h4 class="h4S" data-lang="TAGLINE" >Analytics  &nbsp;|&nbsp;  Insights  &nbsp;|&nbsp;  Empowerment</h4>
 								</div>
 								
 								<div class="product-banner-container m35" >
@@ -173,12 +183,12 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 	
 								<div class="col-md-12">
 								
-									<div align="center"><h5  class="welcome h5S">Welcome !</h5></div> 
+									<div align="center"><h5  class="welcome h5S" data-lang="WELCOME">Welcome !</h5></div> 
 									
 									<div class="login-form-wrapper p43"  >
 										
 										<div class="login-info-container">
-											<h4 class="h4st" >Login</h4><br>
+											<h4 class="h4st" data-lang="LOGIN" >Login</h4><br>
 										</div>
 										
 										<div class="login-form-container">
@@ -189,12 +199,12 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 												<div class="form-row">
 													
 													<div class="form-group col-12 position-relative ${error != null ? 'has-error' : ''}">
-														<input type="text" name="username" placeholder="Username" class="form-control"  autocomplete="off" required>
+														<input type="text" name="username" placeholder="Username" data-placeholder="USERNAME" class="form-control"  autocomplete="off" required>
 														<i class="fa fa-user fa-lg position-absolute"></i>
 													</div>
 													
 													<div class="form-group col-12 position-relative">
-														<input name="password" type="password" placeholder="Password" id="password" class="form-control" autocomplete="new-password">
+														<input name="password" type="password" placeholder="Password" data-placeholder="PASSWORD" id="password" class="form-control" autocomplete="new-password">
 														<i class="fa fa-lock fa-lg position-absolute"></i>	
 													</div>
 														
@@ -232,8 +242,8 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 													<div class="row align-items-center mb-5">
 														<div class="col-md-5">
 															<div class="form-submit-button">
-																<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-																<button type="submit" class="btn btn-block btn-success f2s"  >Login</button>
+																<input type="hidden"  name="${_csrf.parameterName}" value="${_csrf.token}"/>
+																<button type="submit" data-lang="LOGIN" class="btn btn-block btn-success f2s"  >Login</button>
 																<!-- <button type="submit" class="btn btn-link" formaction="fpwd/ForgotPassword.htm" > Forgot Password?</button> -->
 															</div>
 														</div>
@@ -254,7 +264,7 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 												<div class="col-md-12">
 													
 													<div class="info-container text-md-left">
-														<p class="text-secondary e2s" >* Do not share credentials with anyone</p>
+														<p class="text-secondary e2s" data-lang="LOGIN_WARNING" >* Do not share credentials with anyone</p>
 													</div>
 													
 												</div>
@@ -278,8 +288,9 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 	<div class="credentials-info-container d2s" >
     	<%
         	boolean expstatus = (boolean)request.getAttribute("expstatus");
-       		if(!expstatus) { %>
-				<marquee  class="news-scroll c2s" behavior="scroll" direction="left" scrollamount="7" onmouseover="this.stop();" onmouseout="this.start();" >Your License has been Expired..!</marquee>
+
+       		if(!expstatus) {%>
+				<marquee  class="news-scroll c2s" data-lang="LICENSE_EXPIRED" behavior="scroll" direction="left" scrollamount="7" onmouseover="this.stop();" onmouseout="this.start();" >Your License has been Expired..!</marquee>
 		<%} %>
 		<!-- <marquee  class="news-scroll" behavior="scroll" direction="left" scrollamount="7" onmouseover="this.stop();" onmouseout="this.start();" style="color: red;font-weight: bold;">Please ensure the Work Register details for January 2025 are filled in by 10 February 2025. Kindly disregard if it has already been completed.</marquee> -->
 	</div>
@@ -311,8 +322,8 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 		</section>
 		<div class="widget-guide clearfix">
        		<div class="footr-rt">
-            	<div class="copyright-content"> 
-            		<p>Website maintained by Vedant Tech Solutions<br><b>Site best viewed at 1360 x 768 resolution in I.E / Microsoft Edge 110+, Mozilla 110+, Google Chrome 110+</b>	</p> 
+            	<div class="copyright-content" data-lang="WEBSITE_MAINTAINED"> 
+            		<p>Website maintained by Vedant Tech Solutions<br><b data-lang="SITE_VIEW">Site best viewed at 1360 x 768 resolution in I.E / Microsoft Edge 110+, Mozilla 110+, Google Chrome 110+</b>	</p> 
             	</div>
     		</div>
   		</div>
