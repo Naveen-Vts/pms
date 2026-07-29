@@ -26,31 +26,31 @@ fallbackFactory = PFMSServeFallbackFactory.class
 )
 public interface PFMSServeFeignClient {
 
-	@GetMapping(value =  "/api/pfms-serv/getCCMViewData",consumes = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value =  "/getCCMViewData",consumes = MediaType.APPLICATION_JSON_VALUE)
     List<CCMView> getCCMViewData(@RequestHeader("Authorization") String token, @RequestParam(name = "labCode") String LabCode);
     
-	@GetMapping( value = "/api/pfms-serv/pfms-chart-service", consumes = MediaType.APPLICATION_JSON_VALUE )
+	@GetMapping( value = "/pfms-chart-service", consumes = MediaType.APPLICATION_JSON_VALUE )
 	List<ProjectSanctionDetailsMaster> getDetailsOfSupplyOrder(@RequestHeader("Authorization") String token,@RequestParam(name="inType")String inType, @RequestParam(name="empNo")String employeeNo);
 	
-	@GetMapping(value="/api/pfms-serv/financialStatusBriefing",consumes = MediaType.APPLICATION_JSON_VALUE )
+	@GetMapping(value="/financialStatusBriefing",consumes = MediaType.APPLICATION_JSON_VALUE )
 	List<ProjectFinancialDetails> financialStatusBriefing(@RequestHeader("Authorization") String token,@RequestParam(name="projectCode")String ProjectCode, @RequestParam(name="rupees")String rupess);
 
-	@GetMapping(value="/api/pfms-serv/getTotalDemand",consumes = MediaType.APPLICATION_JSON_VALUE )
+	@GetMapping(value="/getTotalDemand",consumes = MediaType.APPLICATION_JSON_VALUE )
 	List<TotalDemand> getTotalDemand(@RequestHeader("Authorization") String token);
 	
 
-	@GetMapping(value="/api/pfms-serv/newDemandsDetails",consumes = MediaType.APPLICATION_JSON_VALUE )
+	@GetMapping(value="/newDemandsDetails",consumes = MediaType.APPLICATION_JSON_VALUE )
 	List<DemandDetails> DemandsDetails(@RequestHeader("Authorization") String token,@RequestParam(name="projectCode")String projectcode);
 	
-	@GetMapping(value="/api/pfms-serv/newDemandsOrderDetails",consumes = MediaType.APPLICATION_JSON_VALUE )
+	@GetMapping(value="/newDemandsOrderDetails",consumes = MediaType.APPLICATION_JSON_VALUE )
 	List<DemandOrderDetails> DemandsOrderDetails(@RequestHeader("Authorization") String token,@RequestParam(name="demandNo")String demandNo);
 	
-	@GetMapping(value="/api/pfms-serv/pfms-finance-changes",consumes = MediaType.APPLICATION_JSON_VALUE )
+	@GetMapping(value="/pfms-finance-changes",consumes = MediaType.APPLICATION_JSON_VALUE )
 	List<FinanceChanges> PfmsFinanceChanges(@RequestHeader("Authorization") String token,@RequestParam(name="projectCode")String projectCode,@RequestParam(name="interval")String interval);
 	
-	@GetMapping(value="/api/pfms-serv/tblprojectdata",consumes = MediaType.APPLICATION_JSON_VALUE )
+	@GetMapping(value="/tblprojectdata",consumes = MediaType.APPLICATION_JSON_VALUE )
 	List<ProjectHoa> ProjectHoaData(@RequestHeader("Authorization") String token,@RequestParam(name="labCode")String labcode);
 	
-	@GetMapping(value="/api/pfms-serv/tblprojectdata",consumes = MediaType.APPLICATION_JSON_VALUE )
+	@GetMapping(value="/tblprojectdata",consumes = MediaType.APPLICATION_JSON_VALUE )
 	List<IbasLabMaster> LabDetails(@RequestHeader("Authorization") String token);
 }
