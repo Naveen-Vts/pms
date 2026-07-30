@@ -528,10 +528,10 @@ public class MilestoneController {
 		logger.info(new Date() +"Inside MilestoneActivityDetails.htm "+UserId);		
 		try {
 			int countA=1;
-			req.setAttribute("MilestoneActivity", service.MilestoneActivity(req.getParameter("MilestoneActivityId")).get(0));
+			List<Object[]> list = service.MilestoneActivity(req.getParameter("MilestoneActivityId"));
+			req.setAttribute("MilestoneActivity", list != null && !list.isEmpty() ? list.get(0) : new Object[100]);
 			
-			  Object[] objd=
-			  service.MilestoneActivity(req.getParameter("MilestoneActivityId")).get(0);
+			  Object[] objd= service.MilestoneActivity(req.getParameter("MilestoneActivityId")).stream().findFirst().orElse(new Object[100]);
 			 
 			List<Object[]>  MilestoneActivityA=service.MilestoneActivityLevel(req.getParameter("MilestoneActivityId"),"1");
 			req.setAttribute("MilestoneActivityA", MilestoneActivityA);

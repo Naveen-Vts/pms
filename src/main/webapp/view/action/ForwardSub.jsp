@@ -32,6 +32,10 @@
   List<Object[]> LinkList=(List<Object[]> ) request.getAttribute("LinkList");
   String actionno= (String) request.getAttribute("actionno");
   String flag = (String) request.getAttribute("flag");
+  String isReview = (String) request.getAttribute("isReview");
+  if(isReview == null ){
+	  isReview = "N";
+  }
   Object[] AttachmentList=(Object[]) request.getAttribute("AttachmentList");
  %>
 
@@ -180,7 +184,7 @@
 									<%if(Assignee[19]!=null && Long.parseLong(Assignee[19].toString())>1){%>
 										<button type="button" class="btn btn-danger btn-sm revoke" name="sub" value="C"  onclick="CloseAction('<%=Assignee[18] %>')" > Close Action</button>
 					        		<%}else{%>
-						        			<button type="submit" class="btn btn-danger btn-sm revoke"   onclick="return  close5()" formaction="CloseSubmit.htm"> Close Action</button>
+						        			<button type="submit" class="btn btn-danger btn-sm revoke"   onclick="return  close5('<%=Assignee[24] %>')" formaction="CloseSubmit.htm"> Close Action</button>
 					        		<%}%>
 					        		<%if(Assignee!=null && Assignee[21]!=null && "I".equalsIgnoreCase( Assignee[21].toString())){%>
 					        			<input type="submit" class="btn btn-primary btn-sm back" value="Back" onclick="close2()" formaction="ActionIssue.htm"/>
@@ -193,6 +197,7 @@
 					        		<input type="hidden" name="ActionMainId" value="<%=Assignee[0]%>" />	
 					        		<input type="hidden" name="ActionAssignId" value="<%=Assignee[18]%>" />
 					        		<input type="hidden" name="LevelCount" value="<%=Assignee[19] %>" />
+					        		<input type="hidden" name="isReview" value="<%=isReview%>" />
 					        		<input type="hidden" name="BACK" value="Issue" />
 					        		
 								</div>
@@ -1128,10 +1133,16 @@ var dt = new Date(from[2], from[1] - 1, from[0]);
 				format : 'DD-MM-YYYY'
 			}
 		});
-function close5(){
+function close5(progress){
 	
 	event.preventDefault;
 	$("#Remarks").prop('required',true);
+	
+	const limit = Number(progress);
+	
+	if(limit < 100){
+		return confirm("Are You Sure to Close this Action Before 100%");
+	}
 	
 	if(confirm('Are You Sure to Close This Action ?')){
 		return true;

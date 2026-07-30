@@ -195,7 +195,8 @@
 																	<input type="hidden" name="Assignee" value="<%=obj[1]%>,<%=obj[2]%>"/>
 																	<input type="hidden" name="ActionMainId" value="<%=obj[0]%>"/>
 																	<input type="hidden" name="ActionAssignId" value="<%=obj[15]%>"/>
- 																	<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+																	<input type="hidden" name="isReview" value="Y"/>
+ 																	<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> 
 																</form> 
 																<%}else if(obj[6]!=null && "C".equalsIgnoreCase(obj[6].toString())){%>
 																<span class="badge badge-pill badge-success p-2">Closed</span>

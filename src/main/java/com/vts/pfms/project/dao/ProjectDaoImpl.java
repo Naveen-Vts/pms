@@ -2142,7 +2142,7 @@ public class ProjectDaoImpl implements ProjectDao {
 
 	@Override
 	public long TechnicalWorkDataAdd(ProjectTechnicalWorkData modal) throws Exception {
-		manager.persist(modal);
+		modal = manager.merge(modal);
 		manager.flush();
 		return modal.getTechDataId();
 	}

@@ -84,3 +84,54 @@ h6{
  	font-weight:bold;
  	font-family:'Lato';
  }
+ /* Loader overlay */
+.download-loader-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.65);
+    z-index: 9999;
+    text-align: center;
+}
+
+.download-loader-overlay.active {
+    display: block;
+}
+
+.download-loader-content {
+    position: relative;
+    top: 45%;
+    transform: translateY(-50%);
+}
+
+.download-loader-spinner {
+    width: 3.5rem;
+    height: 3.5rem;
+    border: 0.4rem solid #e0e0e0;
+    border-top: 0.4rem solid #64b5f6;
+    border-radius: 50%;
+    display: inline-block;
+    animation: download-spin 0.8s linear infinite;
+}
+
+.download-loader-text {
+    margin-top: 14px;
+    font-weight: 600;
+    font-size: 15px;
+    color: #145374;
+    letter-spacing: 0.3px;
+}
+
+@keyframes download-spin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Optional: disabled button state while exporting */
+#imageBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

@@ -893,6 +893,7 @@ private boolean isValidFileType(MultipartFile file) {
 			logger.info(new Date() +"Inside ForwardSub.htm "+UserId);		
 			try { 
 			String AssigneeName=req.getParameter("Assignee");
+			req.setAttribute("isReview",req.getParameter("isReview"));
 			req.setAttribute("actionno", req.getParameter("ActionNo"));
 			req.setAttribute("Assignee", service.AssigneeData(req.getParameter("ActionMainId"),req.getParameter("ActionAssignId")).get(0));
 			req.setAttribute("SubList", service.SubList(req.getParameter("ActionAssignId")));
@@ -967,6 +968,7 @@ private boolean isValidFileType(MultipartFile file) {
 		public String CloseSubmit(HttpServletRequest req, HttpSession ses, RedirectAttributes redir) throws Exception {
 
 		 	String UserId = (String) ses.getAttribute("Username");
+		 	String labCode = (String) ses.getAttribute("labcode");
 			logger.info(new Date() +"Inside CloseSubmit.htm "+UserId);		
 			try { 
 				
@@ -991,15 +993,26 @@ private boolean isValidFileType(MultipartFile file) {
 				
 
 				String levelcount = req.getParameter("LevelCount");
-				long count = service.ActionClosed(req.getParameter("ActionMainId"),Remarks, UserId,req.getParameter("ActionAssignId") ,levelcount);
+//				long count = service.ActionClosed(req.getParameter("ActionMainId"),Remarks, UserId,req.getParameter("ActionAssignId") ,levelcount);
 				
 			  
-			if (count > 0) {
+//			if (count > 0) {
 				redir.addAttribute("result", "Action Closed Successfully");
-			} else {
-				redir.addAttribute("resultfail", "Action Closed Unsuccessful");
+//			} else {
+//				redir.addAttribute("resultfail", "Action Closed Unsuccessful");
 
+//			}
+			
+			if("DLRL".equalsIgnoreCase(labCode) && "Y".equalsIgnoreCase(req.getParameter("isReview"))) {
+				redir.addAttribute("ActionPath", req.getParameter("ActionPath"));
+				redir.addAttribute("ActionAssignId", req.getParameter("ActionAssignId"));
+				redir.addAttribute("ActionMainId", req.getParameter("ActionMainId"));
+				redir.addAttribute("sub", req.getParameter("sub"));
+				redir.addAttribute("isReview", req.getParameter("isReview"));
+				
+				return "redirect:/ForwardSub.htm";
 			}
+			
 			if ("C".equalsIgnoreCase(req.getParameter("sub"))) {
 				return "redirect:/ActionLaunch.htm";
 			}
