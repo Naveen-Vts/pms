@@ -2112,6 +2112,15 @@ public class CommitteeServiceImpl implements CommitteeService{
 			emplist.addAll(Arrays.asList(dto.getIndustrialPartnerRepIds()));
 		}
 		/* ------------------ end ----------------------- */
+		if (dto.getRepIds() != null) {
+			
+			for(int i=0;i<dto.getRepIds().length;i++) {
+				
+				lablist.add("@REP");
+				membertype.add("CIR");
+			}
+			emplist.addAll(Arrays.asList(dto.getRepIds()));
+		}
 		
 		for(int i=0;i< emplist.size();i++)
 		{
@@ -4226,6 +4235,11 @@ public Long UpdateMomAttach(Long scheduleId) throws Exception {
 	@Override
 	public List<Object[]> CommitteeScheduleMinutesMom(String committeescheduleid) throws Exception {
 		return dao.CommitteeScheduleMinutesMom(committeescheduleid);
+	}
+
+	@Override
+	public long changeRepresentative(String invitationId, String newEmpNo, String newLabCode, String designationId) throws Exception {
+		return dao.changeRepresentative(invitationId,newEmpNo,newLabCode,designationId);
 	}
 	
 }

@@ -67,3 +67,125 @@ b{
 .width-30{
 	width: 30%;
 }
+
+/* --- Modern Design for Change Reps Modal --- */
+
+#changeRepsModal .modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    overflow: hidden; 
+}
+
+#changeRepsModal .modal-header {
+    background-color: #2c78c5;
+    border-bottom: 1px solid #edf2f7;
+    padding: 1.25rem 1.5rem;
+}
+
+#changeRepsModal .modal-title {
+    font-weight: 600;
+    color: white!important;
+    font-size: 1.15rem;
+}
+
+#changeRepsModal .close {
+    opacity: 0.4;
+    transition: opacity 0.2s ease;
+    font-size: 1.5rem;
+    color: white!important;
+}
+
+#changeRepsModal .close:hover {
+    opacity: 1;
+    color: #e53e3e;
+}
+
+#changeRepsModal .modal-body {
+    padding: 1.75rem 1.5rem;
+}
+
+#changeRepsModal label {
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Styles the current rep <p> tag into a modern highlighted block */
+#changeRepsModal #currentRepDisplay {
+    background-color: #f7fafc; 
+    padding: 0.85rem 1rem;
+    border-radius: 6px;
+    color: #1a202c;
+    border-left: 4px solid #3182ce; 
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+#changeRepsModal .form-control {
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    height: auto;
+    box-shadow: none;
+    transition: all 0.2s ease;
+}
+
+#changeRepsModal .form-control:focus {
+    border-color: #63b3ed;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+}
+
+/* Smooth out the Bootstrap-Select plugin if it renders its own button */
+#changeRepsModal .bootstrap-select > .dropdown-toggle {
+    border: 1px solid #cbd5e0 !important;
+    border-radius: 6px !important;
+    padding: 0.6rem 1rem !important;
+    background-color: #ffffff !important;
+    box-shadow: none !important;
+}
+
+#changeRepsModal .bootstrap-select > .dropdown-toggle:focus {
+    border-color: #63b3ed !important;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15) !important;
+}
+
+#changeRepsModal .modal-footer {
+    border-top: 1px solid #edf2f7;
+    padding: 1.25rem 1.5rem;
+    background-color: #f8f9fa;
+}
+
+#changeRepsModal .btn {
+    border-radius: 6px;
+    font-weight: 500;
+    padding: 0.5rem 1.25rem;
+    transition: all 0.2s ease;
+}
+
+#changeRepsModal .btn-secondary {
+    background-color: #edf2f7;
+    border-color: #edf2f7;
+    color: #4a5568;
+}
+
+#changeRepsModal .btn-secondary:hover {
+    background-color: #e2e8f0;
+    border-color: #e2e8f0;
+    color: #1a202c;
+}
+
+#changeRepsModal .btn-primary {
+    background-color: #3182ce;
+    border-color: #3182ce;
+    box-shadow: 0 2px 4px rgba(49, 130, 206, 0.2);
+}
+
+#changeRepsModal .btn-primary:hover {
+    background-color: #2b6cb0;
+    border-color: #2b6cb0;
+    box-shadow: 0 4px 6px rgba(49, 130, 206, 0.3);
+}

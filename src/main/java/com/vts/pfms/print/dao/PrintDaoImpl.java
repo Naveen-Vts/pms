@@ -1188,7 +1188,7 @@ public class PrintDaoImpl implements PrintDao {
 				updateQuery="UPDATE milestone_activity_level set "+point+"='N' where ActivityId=:ActivityId";
 			}
 			Query query=manager.createNativeQuery(updateQuery);
-			query.setParameter("ActivityId", Long.parseLong(activityid));
+			query.setParameter("ActivityId", Long.parseLong(activityid.trim()));
 			int count=query.executeUpdate();
 			return count;
 		}

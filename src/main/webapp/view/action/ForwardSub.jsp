@@ -33,8 +33,12 @@
   String actionno= (String) request.getAttribute("actionno");
   String flag = (String) request.getAttribute("flag");
   String isReview = (String) request.getAttribute("isReview");
+  String isClosed = (String) request.getAttribute("isClosed");
   if(isReview == null ){
 	  isReview = "N";
+  }
+  if(isClosed == null){
+	  isClosed = "N";
   }
   Object[] AttachmentList=(Object[]) request.getAttribute("AttachmentList");
  %>
@@ -180,12 +184,14 @@
 								</div>
 								
 								<div class="col-md-4">
+								<%if("N".equalsIgnoreCase(isClosed)){ %>
 									<button type="submit" class="btn btn-warning btn-sm edit"  onclick="return back()" >Send Back </button>
 									<%if(Assignee[19]!=null && Long.parseLong(Assignee[19].toString())>1){%>
 										<button type="button" class="btn btn-danger btn-sm revoke" name="sub" value="C"  onclick="CloseAction('<%=Assignee[18] %>')" > Close Action</button>
 					        		<%}else{%>
 						        			<button type="submit" class="btn btn-danger btn-sm revoke"   onclick="return  close5('<%=Assignee[24] %>')" formaction="CloseSubmit.htm"> Close Action</button>
 					        		<%}%>
+					        		<%} %>
 					        		<%if(Assignee!=null && Assignee[21]!=null && "I".equalsIgnoreCase( Assignee[21].toString())){%>
 					        			<input type="submit" class="btn btn-primary btn-sm back" value="Back" onclick="close2()" formaction="ActionIssue.htm"/>
 					        			<input type="hidden" name="Action"  value="F">
@@ -207,6 +213,7 @@
 						</form>
 		    		<br>
 		    		<hr><br>
+		    		<%if("N".equalsIgnoreCase(isClosed)){ %>
 		    		<form method="post"  action="ExtendPdc.htm" >
 		          			<div class="row" align="left"> 							
 								<div class="col-sm-6" >
@@ -230,6 +237,7 @@
 								</div>
 							</div>
 		      			</form>
+		      			<%} %>
 		      			<br>
 		      			<hr>
 	  

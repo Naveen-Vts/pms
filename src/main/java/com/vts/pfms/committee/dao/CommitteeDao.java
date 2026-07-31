@@ -382,5 +382,6 @@ public interface CommitteeDao {
 	// Naveen R 05-03-2026 
 	public List<Object[]> getMeetingCountList(String committeeId) throws Exception;
 	public List<Object[]> CommitteeScheduleMinutesMom(String committeescheduleid) throws Exception;
+	public long changeRepresentative(String invitationId, String newEmpNo, String newLabCode, String designationId) throws Exception;
 
 }

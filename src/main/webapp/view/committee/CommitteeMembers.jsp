@@ -668,7 +668,7 @@ String logintype = (String)session.getAttribute("LoginType");
 											<%} %>							
 										</div>									
 										<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-										<input type="hidden" name="committeemainid" value="<%=committeemainid%>"> 
+										<input type="hidden" name="committeemainid" value="<%=committeemainid%>">
 									</div>
 							</form>
 	<!-- --------------------------------------Internal members -------------------------------------------- -->
@@ -810,6 +810,39 @@ String logintype = (String)session.getAttribute("LoginType");
 						</form>
 				<!-- -------------------------------------- Industry Partner -------------------------------------------- -->
 				<!-- Prudhvi - 27/03/2024 end -->
+				<!-- Naveen 31/07/2026 start -->
+				
+					<form action="CommitteeMainMembersSubmit.htm" method="post"  >				
+						<div class="row">				
+							<div class="col-md-9">
+								<table class="table  table-bordered table-hover table-striped table-condensed  info shadow-nohover mt-10" id="table1">
+								<thead>  
+									<tr>
+										<th colspan="2"> Add Reps</th>
+									</tr>
+								</thead>
+								<tr class="tr_clone1">
+									<td class="externalMemberIdWidth">
+										<div class="input select ">
+											<select class="form-control selectdee" name="RepIds" data-live-search="true" data-placeholder="Select Rep" multiple required="required" >
+												<option value="0" disabled="disabled" >Select Rep </option>
+												<option value="1">IAF REP </option>
+												<option value="2">DFA REP </option>
+											</select>
+										</div>
+									</td>						
+								</tr>
+							</table>
+									</div>
+									<div class="col-md-2 align-self-center">					
+										<button class="btn  btn-sm submit" name="submit" value="add" type="submit" onclick="return confirm('Are you Sure to Add ?');" >SUBMIT</button>
+									</div>	
+									<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />											
+									<input type="hidden" name="committeemainid" value="<%=committeemainid%>"> 
+							</div>
+						</form>
+					<!-- Naveen R 31/07/2026 end -->
+				
 				</div>
 				
 							<div class="col-md-5">

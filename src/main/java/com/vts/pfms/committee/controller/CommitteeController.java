@@ -46,6 +46,8 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGrid;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGridCol;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblPr;
@@ -148,6 +150,7 @@ import com.vts.pfms.mail.CustomJavaMailSender;
 import com.vts.pfms.mail.MailConfigurationDto;
 import com.vts.pfms.mail.MailService;
 import com.vts.pfms.master.dto.ProjectFinancialDetails;
+import com.vts.pfms.master.model.Employee;
 import com.vts.pfms.master.service.MasterService;
 import com.vts.pfms.milestone.model.FileRepUploadPreProject;
 import com.vts.pfms.model.TotalDemand;
@@ -240,7 +243,7 @@ public class CommitteeController {
 	
 	@Autowired	
 	ProjectService projectService;
-
+	
 	SimpleDateFormat inputFormat = new SimpleDateFormat("ddMMMyyyy",Locale.ENGLISH);
 	SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 	FormatConverter fc=new FormatConverter(); 
@@ -867,6 +870,9 @@ public class CommitteeController {
 			dto.setIndustrialPartnerRepIds(req.getParameterValues("industryPartnerRep"));
 			dto.setIndustrialPartnerLabCode(req.getParameter("industrypartnerlabid"));
 			/* ------------------ end ----------------------- */
+			
+			dto.setRepIds(req.getParameterValues("RepIds"));
+			
 			dto.setCreatedBy(Username);
 
 			long count=service.CommitteeMembersInsert(dto);
@@ -12600,5 +12606,57 @@ private boolean isValidFileType(MultipartFile file) {
 			e.printStackTrace(); 
 			logger.error(new Date() +"Inside CommitteeMinutesNewMOMDownload.htm "+UserId,e);
 		}
+	}
+	
+	@RequestMapping(value = "EligibleRepEmployees.htm", method = {RequestMethod.GET})
+	@ResponseBody
+	public String getEligibleRepEmployees(
+	        @RequestParam("repType") String repType,
+	        @RequestParam("scheduleid") String scheduleId,
+	        @RequestParam("currentInvitationId") String currentInvitationId) {
+
+	    try {
+	        List<Object[]> allEmployees = masterservice.getEmployees();
+
+
+	        JSONArray jsonArray = new JSONArray();
+	        for (Object[] emp : allEmployees) {
+	            String empNo = emp[0] != null ? emp[0].toString() : "";
+
+	            JSONObject obj = new JSONObject();
+	            obj.put("id", empNo);
+	            obj.put("name", emp[3]);
+	            obj.put("labCode", emp[2]);
+	            jsonArray.put(obj);
+	        }
+	        return jsonArray.toString();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new JSONArray().toString();
+	    }
+	}
+	
+	@RequestMapping(value = "ChangeRepresentative.htm", method = {RequestMethod.POST})
+	public String changeRepresentative(HttpServletRequest req,HttpSession ses,RedirectAttributes redir) {
+	    try {
+	        
+	    	String invitationId = req.getParameter("invitationId");
+	    	String newEmpNo = req.getParameter("newEmpNo");
+	    	String newLabCode = req.getParameter("newLabCode");
+	    	String designationId = req.getParameter("designationId");
+
+	    	long count = service.changeRepresentative(invitationId,newEmpNo,newLabCode,designationId);
+	    	if(count > 0) {
+	    		redir.addAttribute("result","Rep Change Successful");
+	    	}else {
+	    		redir.addAttribute("resultFail","Rep Change Unsuccessful");
+	    	}
+	    	return "redirect:/CommitteeAttendance.htm";
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    
+	    return "static/Error";
 	}
 }

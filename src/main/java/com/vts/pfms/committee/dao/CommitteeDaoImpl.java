@@ -351,11 +351,11 @@ public class CommitteeDaoImpl  implements CommitteeDao
 
 		Query query=manager.createNativeQuery(LASTCOMMITTEEID);
 		query.setParameter("committeeid", CommitteeId);
-		query.setParameter("projectid", Long.parseLong(projectid));
-		query.setParameter("divisionid",Long.parseLong(divisionid));
-		query.setParameter("initiationid", Long.parseLong(initiationid));
-		query.setParameter("CARSInitiationId",Long.parseLong(carsInitiationId));
-		query.setParameter("ProgrammeId", Long.parseLong(programmeId));
+		query.setParameter("projectid",projectid != null ? Long.parseLong(projectid) : 0);
+		query.setParameter("divisionid",divisionid != null ? Long.parseLong(divisionid) : 0);
+		query.setParameter("initiationid",initiationid != null ?  Long.parseLong(initiationid) : 0);
+		query.setParameter("CARSInitiationId",carsInitiationId != null ? Long.parseLong(carsInitiationId) : 0);
+		query.setParameter("ProgrammeId",programmeId != null ?  Long.parseLong(programmeId) : 0);
 		return Long.parseLong(query.getResultList().stream().findFirst().orElse(0).toString());
 	}
 
@@ -4241,6 +4241,11 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 		query.setParameter("InScheduleId", Long.parseLong(committeescheduleid));
 		List<Object[]> CommitteeScheduleMinutes =(List<Object[]>)query.getResultList();
 		return CommitteeScheduleMinutes;
+	}
+
+	@Override
+	public long changeRepresentative(String invitationId, String newEmpNo, String newLabCode, String designationId) throws Exception {
+		return 0;
 	}
 	
 	
