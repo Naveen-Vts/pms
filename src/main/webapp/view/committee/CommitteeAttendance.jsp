@@ -613,7 +613,7 @@ $(document).on('click', '.editRepBtn', function () {
                     return; // acts like "continue" skips this iteration
                 }
 
-                options += '<option value="' + e.id + '|' + e.labCode + '">'
+                options += '<option value="' + e.id + '|' + e.labCode + '|' + e.designationId + '|' + e.scheduleId + '">'
                          + e.name + ' (' + e.labCode + ')</option>';
             });
             
@@ -646,29 +646,29 @@ $('#saveRepChangeBtn').on('click', function () {
     var newEmpNo = parts[0];
     var newLabCode = parts[1];
     var designationId = parts[2];
+    var committeescheduleid = parts[3];
+    if(!confirm("Are you sure to Update?")) return;
+    var form = document.createElement("form");
+    form.method = "POST";
+    form.action = "ChangeRepresentative.htm";
 
-    $.ajax({
-        type: "POST",
-        url: "ChangeRepresentative.htm",
-        data: {
-            invitationId: invitationId,
-            newEmpNo: newEmpNo,
-            newLabCode: newLabCode,
-            designationId: designationId,
-            "${_csrf.parameterName}": "${_csrf.token}"
-        },
-        success: function (result) {
-            var res = JSON.parse(result);
-            if (res.status === "success") {
-                $('#repName' + invitationId).text(res.newRepName);
-                $('#EmpNo' + invitationId).val(res.newEmpNo);
-                $('#LabCode' + invitationId).val(res.newLabCode);
-                $('#changeRepsModal').modal('hide');
-            } else {
-                alert(res.message || 'Failed to update representative');
-            }
-        }
-    });
+    function addField(name, value) {
+        var input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+    }
+
+    addField("invitationId", invitationId);
+    addField("newEmpNo", newEmpNo);
+    addField("newLabCode", newLabCode);
+    addField("designationId", designationId);
+    addField("committeescheduleid", committeescheduleid);
+    addField("${_csrf.parameterName}", "${_csrf.token}");
+
+    document.body.appendChild(form);
+    form.submit();
 });
 
 

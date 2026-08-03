@@ -12616,8 +12616,7 @@ private boolean isValidFileType(MultipartFile file) {
 	        @RequestParam("currentInvitationId") String currentInvitationId) {
 
 	    try {
-	        List<Object[]> allEmployees = masterservice.getEmployees();
-
+	        List<Object[]> allEmployees = masterservice.EmployeeList();
 
 	        JSONArray jsonArray = new JSONArray();
 	        for (Object[] emp : allEmployees) {
@@ -12625,8 +12624,10 @@ private boolean isValidFileType(MultipartFile file) {
 
 	            JSONObject obj = new JSONObject();
 	            obj.put("id", empNo);
-	            obj.put("name", emp[3]);
+	            obj.put("name", emp[1]);
 	            obj.put("labCode", emp[2]);
+	            obj.put("designationId", emp[3]);
+	            obj.put("scheduleId", scheduleId);
 	            jsonArray.put(obj);
 	        }
 	        return jsonArray.toString();
@@ -12645,6 +12646,8 @@ private boolean isValidFileType(MultipartFile file) {
 	    	String newEmpNo = req.getParameter("newEmpNo");
 	    	String newLabCode = req.getParameter("newLabCode");
 	    	String designationId = req.getParameter("designationId");
+
+	    	redir.addAttribute("committeescheduleid",req.getParameter("committeescheduleid"));
 
 	    	long count = service.changeRepresentative(invitationId,newEmpNo,newLabCode,designationId);
 	    	if(count > 0) {

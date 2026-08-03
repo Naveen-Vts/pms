@@ -3994,7 +3994,7 @@ public Long UpdateMomAttach(Long scheduleId) throws Exception {
 		        subemps.addAll(filteredList);
 		    }
 			if(subemps.size()==0) {
-				if(role[i]!=null && role[i].length()>0) {
+				if(role[i]!=null) {
 				PfmsEmpRoles pf = new PfmsEmpRoles();
 				pf.setEmpNo(empNo[i]);
 				pf.setOrganization(labCode[i]);
@@ -4005,7 +4005,7 @@ public Long UpdateMomAttach(Long scheduleId) throws Exception {
 				masterDao.addPfmsEmpRoles(pf);
 				}
 			}
-			if(role[i]!=null && role[i].length()>0) {
+			if(role[i]!=null) {
 				dao.InvitationRoleoUpdate(role[i],invitationid[i]);
 			}
 		}

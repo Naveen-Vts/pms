@@ -37,7 +37,7 @@ public class HeaderDaoImpl implements HeaderDao {
 	private static final String PROJECTLIST="SELECT projectid,projectcode,projectname,projectmainid,projecttype FROM project_master WHERE isactive=1";
 	private static final String GANTTCHARTLIST="SELECT milestoneactivityid,projectid,activityname,milestoneno,orgstartdate,orgenddate,startdate,enddate,progressstatus,revisionno FROM milestone_activity WHERE isactive=1 AND projectid=:projectid ORDER BY MilestoneNo";
 	private static final String PROJECTMASTER="SELECT a.projectid,a.projectcode,a.projectname FROM project_master a WHERE  a.isactive='1'";
-	private static final String PROJECTDETAILS="SELECT a.projectid,a.projectcode,a.projectname FROM project_master a WHERE a.projectid=:projectid and  a.isactive='1'";
+	private static final String PROJECTDETAILS="SELECT a.projectid,a.projectcode,a.projectname, a.SanctionDate, a.PDC FROM project_master a WHERE a.projectid=:projectid and  a.isactive='1'";
 	private static final String LABDETAILS ="SELECT labid,clusterid,labcity FROM lab_master WHERE labcode=:labcode"; 
 	
 	private static final String HEADERSCHEDULELIST ="SELECT a.formname,a.formurl FROM pfms_form_detail a , pfms_form_role_access b WHERE a.formdetailid=b.formdetailid AND a.formmoduleid=:formmoduleid AND b.logintype=:logintype AND b.isactive=1 AND CASE WHEN 'Y'= (SELECT iscluster FROM lab_master WHERE labcode=:labcode) THEN labhq IN ('H','B') ELSE labhq IN ('L','B') END AND a.isactive=1 ORDER BY a.formserialno";

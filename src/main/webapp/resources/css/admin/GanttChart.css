@@ -8,7 +8,7 @@ font-weight: bold;
 }
 body{
 background-color: #f2edfa;
-overflow-x:hidden !important; 
+overflow-x: auto!important;  
 }
 h6{
 	text-decoration: none !important;

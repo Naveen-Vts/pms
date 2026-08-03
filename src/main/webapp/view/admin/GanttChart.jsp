@@ -25,6 +25,41 @@
   List<Object[]> ProjectList=(List<Object[]>)request.getAttribute("ProjectList");
   List<Object[]> ganttchartlist=(List<Object[]>)request.getAttribute("ganttchartlist");
   String ProjectId=(String)request.getAttribute("ProjectId");
+  
+  Object[] ProjectDetail = (Object[]) request.getAttribute("ProjectDetails");
+  LocalDate minDate = null, maxDate = LocalDate.now().plusYears(10);
+
+  if (ProjectDetail != null) {
+      if (ProjectDetail[3] != null) {
+          Object startObj = ProjectDetail[3];
+          if (startObj instanceof java.sql.Date) {
+              minDate = ((java.sql.Date) startObj).toLocalDate();
+          } else if (startObj instanceof java.sql.Timestamp) {
+              minDate = ((java.sql.Timestamp) startObj).toLocalDateTime().toLocalDate();
+          } else {
+              String s = startObj.toString();
+              // handle "yyyy-MM-dd HH:mm:ss" by trimming the time part if present
+              if (s.contains(" ")) s = s.substring(0, s.indexOf(" "));
+              if (s.contains("T")) s = s.substring(0, s.indexOf("T"));
+              minDate = LocalDate.parse(s);
+          }
+      }
+
+      /* if (ProjectDetail[4] != null) {
+          Object endObj = ProjectDetail[4];
+          if (endObj instanceof java.sql.Date) {
+              maxDate = ((java.sql.Date) endObj).toLocalDate();
+          } else if (endObj instanceof java.sql.Timestamp) {
+              maxDate = ((java.sql.Timestamp) endObj).toLocalDateTime().toLocalDate();
+          } else {
+              String s = endObj.toString();
+              if (s.contains(" ")) s = s.substring(0, s.indexOf(" "));
+              if (s.contains("T")) s = s.substring(0, s.indexOf("T"));
+              maxDate = LocalDate.parse(s);
+          }
+      } */
+  }
+ 
   List<Boolean> isDateMatching =
 	        ganttchartlist != null
 	                ? ganttchartlist.stream().map(row -> {
@@ -81,7 +116,7 @@
 
 	                }).collect(Collectors.toList())
 	                : new ArrayList<>();
-
+		
 
  %>
 <div class="container-fluid">
@@ -146,18 +181,21 @@
 								<div class="col-md-12 f-right"  >
 									
 									<div class="row mt-2"  >
-										<div class="col-md-8"></div>
-										<div class="col-md-4">
+										<div class="col-md-4"></div>
+										<div class="col-md-8 d-flex justify-content-end">
 											<div class="f-bold" >
 												<span class="text-margin" >Original :&ensp; <span class="text-padding bg-blue" ></span></span>
 												<span class="text-margin">Ongoing :&ensp; <span class="text-padding bg-success" ></span></span>
 												<span class="text-margin">Revised :&ensp; <span class="text-padding bg-orange" ></span></span>
 												<span class="text-margin">Delay Ongoing :&ensp; <span class="text-padding bg-danger" ></span></span>
+												<span class="text-margin">Completed Within Time :&ensp; <span class="text-padding" style="background:#6F42C1;"></span></span>
+												<span class="text-margin">Completed With Delay :&ensp; <span class="text-padding" style="background:#8B5A2B;"></span></span>
 											</div>
 										</div>
 									</div>
 									
 					   				<div class="flex-container" id="containers" ></div>
+					   				
                         			
                         		</div>
 						   	</div>
@@ -275,9 +313,7 @@
 								        
 								        
 								        
-								        <%if(ProjectId!=null){
-												Object[] ProjectDetail=(Object[])request.getAttribute("ProjectDetails");
-												%>
+								        <%if(ProjectId!=null && ProjectDetail != null){	%>
 
 												/* Title */
 												var title = chart.title();
@@ -348,8 +384,7 @@
 								     	
 								     	//chart.getTimeline().scale().zoomLevels([["month", "quarter","year"]]);
 								     	
-								     	if(interval==="year"){
-								     		/* Yearly */
+			/* 					     	if(interval==="year"){
 									     	chart.getTimeline().scale().zoomLevels([["year"]]);
 									     	var header = chart.getTimeline().header();
 									     	header.level(2).format("{%value}-{%endValue}");
@@ -357,10 +392,8 @@
 								     	}
 								     	
 								     	if(interval==="half"){
-								     		/* Half-yearly */
 									     	chart.getTimeline().scale().zoomLevels([["semester", "year"]]);
 									     	var header = chart.getTimeline().header();
-									     	/* header.level(2).format("{%value}-{%endValue}"); */
 									     	header.level(2).format("{%value}-{%endValue}");
 									     	header.level(0).format(function() {
 									     			var duration = '';
@@ -373,7 +406,6 @@
 								     	}
 								     	
 								     	if(interval==="quarter"){
-								     		/* Quarterly */
 									     	chart.getTimeline().scale().zoomLevels([["quarter", "semester","year"]]);
 									     	var header = chart.getTimeline().header();
 									     	header.level(1).format(function() {
@@ -389,13 +421,10 @@
 								     	}
 								     	
 								     	if(interval==="month"){
-								     		/* Monthly */
 									     	chart.getTimeline().scale().zoomLevels([["month", "quarter","year"]]);
 								     	}
 								     	
 								     	else if(interval===""){
-
-								     		/* Quarterly */
 									     	chart.getTimeline().scale().zoomLevels([["quarter", "semester","year"]]);
 									     	var header = chart.getTimeline().header();
 									     	header.level(1).format(function() {
@@ -410,7 +439,69 @@
 								     		  return duration;
 								     		});
 								     		
-								     	}
+								     	} */
+								     	
+												chart.getTimeline().scale().minimum("<%=minDate%>");
+												chart.getTimeline().scale().maximum("<%=maxDate%>");
+
+												if(interval==="year"){
+												    chart.getTimeline().scale().zoomLevels([["year"]]);
+												    chart.zoomTo("year", 2, "first-date");   // show 2 years at a time
+												    var header = chart.getTimeline().header();
+												    header.level(2).format("{%value}-{%endValue}");
+												    header.level(1).format("{%value}-{%endValue}"); 
+												}
+
+												if(interval==="half"){
+												    chart.getTimeline().scale().zoomLevels([["semester", "year"]]);
+												    chart.zoomTo("semester", 2, "first-date");  // show 2 half-years at a time
+											     	var header = chart.getTimeline().header();
+											     	header.level(2).format("{%value}-{%endValue}");
+											     	header.level(0).format(function() {
+											     			var duration = '';
+											     			if(this.value=='Q1')
+											     				duration='H1';
+											     			if(this.value=='Q3')
+											     				duration='H2'
+											     		  return duration;
+											     		});
+												}
+
+												if(interval==="quarter"){
+												    chart.getTimeline().scale().zoomLevels([["quarter", "semester","year"]]);
+												    chart.zoomTo("quarter", 3, "first-date");   // show 3 quarters at a time
+												    var header = chart.getTimeline().header();
+											     	header.level(1).format(function() {
+										     			var duration = '';
+										     			if(this.value=='Q1')
+										     				duration='H1';
+										     			if(this.value=='Q3')
+										     				duration='H2'
+										     		  return duration;
+										     		});
+												}
+
+												if(interval==="month"){
+												    chart.getTimeline().scale().zoomLevels([["month", "quarter","year"]]);
+												    chart.zoomTo("month", 4, "first-date");     // show 4 months at a time
+												}
+
+												else if(interval===""){
+												    chart.getTimeline().scale().zoomLevels([["quarter", "semester","year"]]);
+												    chart.zoomTo("quarter", 3, "first-date");
+												    var header = chart.getTimeline().header();
+											     	header.level(1).format(function() {
+										     			
+										     			var duration = '';
+										     		
+										     			if(this.value=='Q1')
+										     				duration='H1';
+										     			if(this.value=='Q3')
+										     				duration='H2'
+					
+										     		  return duration;
+										     		});
+												}
 								     	
 								     	
 								     	

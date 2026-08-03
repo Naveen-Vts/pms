@@ -4243,9 +4243,29 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 		return CommitteeScheduleMinutes;
 	}
 
+	private static final String REPUPDATE = """
+			UPDATE committee_schedules_invitation
+		    SET EmpId = :empId,
+		        DesigId = :designationId,
+		        LabCode = :labcode
+		    WHERE CommitteeInvitationId = :invitationId
+			""";
 	@Override
 	public long changeRepresentative(String invitationId, String newEmpNo, String newLabCode, String designationId) throws Exception {
-		return 0;
+		try {
+			
+			Query query =manager.createNativeQuery(REPUPDATE);
+			query.setParameter("invitationId", invitationId);
+			query.setParameter("empId",newEmpNo);
+			query.setParameter("labcode", newLabCode != null ? newLabCode.toUpperCase() : null);
+			query.setParameter("designationId", designationId);
+			
+			return query.executeUpdate();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			return 0l;
+		}
 	}
 	
 	

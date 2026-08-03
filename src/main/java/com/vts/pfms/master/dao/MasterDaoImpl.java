@@ -65,7 +65,7 @@ public class MasterDaoImpl implements MasterDao {
 	private static final String GROUPADDCHECK ="SELECT SUM(IF(GroupCode =:gcode,1,0))   AS 'dCode','0' AS 'codecount'FROM division_group WHERE isactive=1 ";
 	private static final String GROUPDATA = "SELECT dg.GroupId,dg.GroupCode,dg.GroupName,dg.GroupHeadId,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.empname) AS 'empname',ed.designation,dg.isactive,dg.tdid,e.labcode AS 'Group Head Labcode' FROM division_group dg,employee e, employee_desig ed WHERE e.isActive=1 AND dg.GroupHeadId=e.empid AND e.desigid=ed.desigid AND  dg.groupid=:groupid";
 	private static final String LABLIST="select labmasterid,labcode,labname,labunitcode,labaddress,labcity,labpin FROM lab_master";
-	private static final String EMPLOYEELIST="SELECT empid, CONCAT(IFNULL(CONCAT(title,' '),''), empname) AS 'empname' FROM employee WHERE isactive=1 ORDER BY srno ";
+	private static final String EMPLOYEELIST="SELECT EmpId, CONCAT(IFNULL(CONCAT(title,' '),''), EmpName) AS 'empname', LabCode, DesigId FROM employee WHERE isactive=1 ORDER BY srno ";
 	private static final String LABMASTEREDITDATA="select labmasterid,labcode,labname,labunitcode,labaddress,labcity,labpin,labtelno,labfaxno,labemail,labauthority,labauthorityid,labrfpemail,lablogo,labid from lab_master where labmasterid= :labmasterid";
 	private static final String LABSLIST="SELECT labid,clusterid,labname,labcode FROM cluster_lab";
 	private static final String EMPNOCHECKAJAX="SELECT empid, CONCAT(IFNULL(CONCAT(title,' '),''), empname) AS 'empname' , empno FROM employee WHERE empno=:empno"; 
@@ -965,10 +965,10 @@ public class MasterDaoImpl implements MasterDao {
 			return employee.getEmpId();
 		}
 
-		private static final String EMPWITHROLES ="SELECT b.Empid AS'Empid',a.Roleid,b.labcode AS 'Organization', CONCAT(IFNULL(CONCAT(b.title,' '),IFNULL(CONCAT(b.salutation,' '),'')), b.empname) AS 'empname' ,a.EmpRole,b.empno AS 'empno'  ,'I' AS 'emptype'\r\n"
+		private static final String EMPWITHROLES ="SELECT b.Empid AS'Empid',a.Roleid,b.labcode AS 'Organization', CONCAT(IFNULL(CONCAT(b.title,' '),IFNULL(CONCAT(b.salutation,' '),'')), b.empname) AS 'empname' ,a.EmpRole,b.empno AS 'empno'  ,'I' AS 'emptype', b.desigId "
 				+ "FROM  employee b  LEFT JOIN pfms_emp_roles a ON b.empno = a.empno\r\n"
 				+ "UNION \r\n"
-				+ "SELECT b.ExpertId AS'Empid',a.Roleid,b.Organization AS 'Organization', CONCAT(IFNULL(CONCAT(b.title,' '),IFNULL(CONCAT(b.salutation,' '),'')), b.expertname) AS 'empname' ,a.EmpRole,b.ExpertNo AS 'empno'  ,'E' AS 'emptype'\r\n"
+				+ "SELECT b.ExpertId AS'Empid',a.Roleid,b.Organization AS 'Organization', CONCAT(IFNULL(CONCAT(b.title,' '),IFNULL(CONCAT(b.salutation,' '),'')), b.expertname) AS 'empname' ,a.EmpRole,b.ExpertNo AS 'empno'  ,'E' AS 'emptype', b.desigId "
 				+ "FROM  expert b  LEFT JOIN pfms_emp_roles a ON b.ExpertNo = a.empno ORDER BY Empid;";
 		@Override
 		public List<Object[]> getEmployees() throws Exception {
