@@ -1,4 +1,5 @@
 
+<%@page import="java.time.LocalDate"%>
 <%@page import="org.apache.commons.text.StringEscapeUtils"%>
 <%@page import="com.vts.pfms.FormatConverter"%>
 <%@page import="com.ibm.icu.text.DecimalFormat"%>
@@ -24,6 +25,40 @@
   <%
   List<Object[]> ProjectList=(List<Object[]>)request.getAttribute("ProjectList");
   String ProjectId=(String)request.getAttribute("ProjectId");
+  Object[] ProjectDetail = (Object[]) request.getAttribute("ProjectDetails");
+  LocalDate minDate = null, maxDate = null;
+  
+
+  if (ProjectDetail != null) {
+      if (ProjectDetail[3] != null) {
+          Object startObj = ProjectDetail[3];
+          if (startObj instanceof java.sql.Date) {
+              minDate = ((java.sql.Date) startObj).toLocalDate();
+          } else if (startObj instanceof java.sql.Timestamp) {
+              minDate = ((java.sql.Timestamp) startObj).toLocalDateTime().toLocalDate();
+          } else {
+              String s = startObj.toString();
+              // handle "yyyy-MM-dd HH:mm:ss" by trimming the time part if present
+              if (s.contains(" ")) s = s.substring(0, s.indexOf(" "));
+              if (s.contains("T")) s = s.substring(0, s.indexOf("T"));
+              minDate = LocalDate.parse(s);
+          }
+      }
+
+       if (ProjectDetail[4] != null) {
+          Object endObj = ProjectDetail[4];
+          if (endObj instanceof java.sql.Date) {
+              maxDate = ((java.sql.Date) endObj).toLocalDate();
+          } else if (endObj instanceof java.sql.Timestamp) {
+              maxDate = ((java.sql.Timestamp) endObj).toLocalDateTime().toLocalDate();
+          } else {
+              String s = endObj.toString();
+              if (s.contains(" ")) s = s.substring(0, s.indexOf(" "));
+              if (s.contains("T")) s = s.substring(0, s.indexOf("T"));
+              maxDate = LocalDate.parse(s);
+          }
+      } 
+  }
   
   List<Object[]> MilestoneActivityMain=(List<Object[]>)request.getAttribute("MilestoneActivityMain");
   List<Object[]> MilestoneActivityA=(List<Object[]>)request.getAttribute("MilestoneActivityA");
@@ -502,9 +537,7 @@ $('#ProjectId').on('change',function(){
 								        
 								        
 								        
-								        <%if(ProjectId!=null){
-											Object[] ProjectDetail=(Object[])request.getAttribute("ProjectDetails");
-										%>
+								        <%if(ProjectId!=null && ProjectDetail != null){										%>
 
 									        /* Title */
 									        
@@ -564,6 +597,12 @@ $('#ProjectId').on('change',function(){
 								     	chart.dataGrid().column(0).width(40);
 								     	
 								     	chart.dataGrid().tooltip().useHtml(true);    
+								     	
+								     	var col0Width = 40;
+								     	var col1Width = 400;
+								     	chart.dataGrid().column(0).width(col0Width);
+								     	column_2.width(col1Width);
+								     	chart.splitterPosition(col0Width + col1Width);
 								        
 								     	
 								     	
@@ -587,9 +626,39 @@ $('#ProjectId').on('change',function(){
 								     	
 								     	//chart.getTimeline().scale().zoomLevels([["month", "quarter","year"]]);
 								     	
+								     	
+
+								     	var minDate = "<%=minDate != null ? minDate : ""%>";
+								     	var maxDate = "<%=maxDate != null ? maxDate : ""%>";
+								     	var min, max;
+								     	var months = 0, quarters = 0, years = 0;
+
+								     	if (minDate !== "" && maxDate !== "") {
+								     	    min = new Date(minDate);
+								     	    max = new Date(maxDate);
+
+								     	    months =
+								     	        (max.getFullYear() - min.getFullYear()) * 12 +
+								     	        (max.getMonth() - min.getMonth()) + 1;
+
+								     	    quarters = Math.ceil(months / 3);
+								     	    years = Math.ceil(months / 12);
+								     	}
+								     	months =
+								     	    (max.getFullYear() - min.getFullYear()) * 12 +
+								     	    (max.getMonth() - min.getMonth()) + 1;
+
+								     	quarters = Math.ceil(months / 3);
+								     	years = Math.ceil(months / 12);
+								     	
+												chart.getTimeline().scale().minimum("<%=minDate%>");
+												chart.getTimeline().scale().maximum("<%=maxDate%>");
+								     	
+								     	
 								     	if(interval==="year"){
 								     		/* Yearly */
 									     	chart.getTimeline().scale().zoomLevels([["year"]]);
+										    chart.zoomTo("year", years, "first-date");   // show 2 years at a time
 									     	var header = chart.getTimeline().header();
 									     	header.level(2).format("{%value}-{%endValue}");
 									     	header.level(1).format("{%value}-{%endValue}"); 
@@ -598,6 +667,7 @@ $('#ProjectId').on('change',function(){
 								     	if(interval==="half"){
 								     		/* Half-yearly */
 									     	chart.getTimeline().scale().zoomLevels([["semester", "year"]]);
+										    chart.zoomTo("semester", years, "first-date");  // show 2 half-years at a time
 									     	var header = chart.getTimeline().header();
 									     	header.level(2).format("{%value}-{%endValue}");
 									     	var header = chart.getTimeline().header();
@@ -614,6 +684,7 @@ $('#ProjectId').on('change',function(){
 								     	if(interval==="quarter"){
 								     		/* Quarterly */
 									     	chart.getTimeline().scale().zoomLevels([["quarter", "semester","year"]]);
+										    chart.zoomTo("quarter", quarters, "first-date");   // show 3 quarters at a time
 									     	var header = chart.getTimeline().header();
 									     	header.level(1).format(function() {
 								     			var duration = '';
@@ -628,11 +699,13 @@ $('#ProjectId').on('change',function(){
 								     	if(interval==="month"){
 								     		/* Monthly */
 									     	chart.getTimeline().scale().zoomLevels([["month", "quarter","year"]]);
+										    chart.zoomTo("month", months / 2, "first-date");     // show 4 months at a time
 								     	}
 								     	
 								     	else if(interval===""){
 								     		/* Quarterly */
 									     	chart.getTimeline().scale().zoomLevels([["quarter", "semester","year"]]);
+										    chart.zoomTo("quarter", quarters , "first-date");
 									     	var header = chart.getTimeline().header();
 									     	header.level(1).format(function() {
 								     			var duration = '';

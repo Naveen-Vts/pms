@@ -52,44 +52,99 @@ h6{
   List<Object[]> MilestoneActivityC=(List<Object[]>)request.getAttribute("MilestoneActivityC0");
   List<Object[]> MilestoneActivityD=(List<Object[]>)request.getAttribute("MilestoneActivityD0");
   List<Object[]> MilestoneActivityE=(List<Object[]>)request.getAttribute("MilestoneActivityE0");
-  String maxDate = LocalDate.now().plusMonths(6).toString();
 
+  Object[] ProjectDetail = (Object[]) request.getAttribute("ProjectDetails");
+  LocalDate minDate = null, maxDate = null;
+
+  if (ProjectDetail != null) {
+      if (ProjectDetail[3] != null) {
+          Object startObj = ProjectDetail[3];
+          if (startObj instanceof java.sql.Date) {
+              minDate = ((java.sql.Date) startObj).toLocalDate();
+          } else if (startObj instanceof java.sql.Timestamp) {
+              minDate = ((java.sql.Timestamp) startObj).toLocalDateTime().toLocalDate();
+          } else {
+              String s = startObj.toString();
+              // handle "yyyy-MM-dd HH:mm:ss" by trimming the time part if present
+              if (s.contains(" ")) s = s.substring(0, s.indexOf(" "));
+              if (s.contains("T")) s = s.substring(0, s.indexOf("T"));
+              minDate = LocalDate.parse(s);
+          }
+      }
+
+       if (ProjectDetail[4] != null) {
+          Object endObj = ProjectDetail[4];
+          if (endObj instanceof java.sql.Date) {
+              maxDate = ((java.sql.Date) endObj).toLocalDate();
+          } else if (endObj instanceof java.sql.Timestamp) {
+              maxDate = ((java.sql.Timestamp) endObj).toLocalDateTime().toLocalDate();
+          } else {
+              String s = endObj.toString();
+              if (s.contains(" ")) s = s.substring(0, s.indexOf(" "));
+              if (s.contains("T")) s = s.substring(0, s.indexOf("T"));
+              maxDate = LocalDate.parse(s);
+          }
+      } 
+  }
 String lastEnddate = MilestoneActivityMain!=null && !MilestoneActivityMain.isEmpty()?MilestoneActivityMain.get(0)[9].toString():LocalDate.now().toString();
+
 List<Boolean> isDateMatching =
 MilestoneActivityMain != null
-        ? MilestoneActivityMain.stream().map(row -> {
+	                ? MilestoneActivityMain.stream().map(row -> {
 
-            String fromDate = row[4] != null ? row[4].toString() : "";
-            String toDate = row[5] != null ? row[5].toString() : "";
-            String revisedFromDate = row[6] != null ? row[6].toString() : "";
-            String revisedToDate = row[7] != null ? row[7].toString() : "";
+	                    String fromDate = row[4] != null ? row[4].toString() : "";
+	                    String toDate = row[5] != null ? row[5].toString() : "";
+	                    String revisedFromDate = row[6] != null ? row[6].toString() : "";
+	                    String revisedToDate = row[7] != null ? row[7].toString() : "";
 
-            return toDate.equalsIgnoreCase(revisedToDate)
-                    && fromDate.equalsIgnoreCase(revisedFromDate);
-        }).collect(Collectors.toList())
-        : new ArrayList<>();
+	                    return toDate.equalsIgnoreCase(revisedToDate)
+	                            && fromDate.equalsIgnoreCase(revisedFromDate);
+	                }).collect(Collectors.toList())
+	                : new ArrayList<>();
 
 
-List<Boolean> isDatePassed =
-MilestoneActivityMain != null
-        ? MilestoneActivityMain.stream().map(row -> {
+	List<Boolean> isDatePassed =
+			MilestoneActivityMain != null
+	                ? MilestoneActivityMain.stream().map(row -> {
 
-            String fromDate = row[4] != null ? row[4].toString() : "";
-            String toDate = row[5] != null ? row[5].toString() : "";
-            String revisedFromDate = row[6] != null ? row[6].toString() : "";
-            String revisedToDate = row[7] != null ? row[7].toString() : "";
+	                    String fromDate = row[4] != null ? row[4].toString() : "";
+	                    String toDate = row[5] != null ? row[5].toString() : "";
+	                    String revisedFromDate = row[6] != null ? row[6].toString() : "";
+	                    String revisedToDate = row[7] != null ? row[7].toString() : "";
 
-            String dateStr = !toDate.isEmpty() ? toDate : toDate;
+	                    String dateStr = !toDate.isEmpty() ? toDate : toDate;
 
-            if (dateStr.isEmpty()) {
-                return false;
-            }
+	                    if (dateStr.isEmpty()) {
+	                        return false;
+	                    }
 
-            LocalDate compDate = LocalDate.parse(dateStr);
-            return compDate.isBefore(LocalDate.now());
+	                    LocalDate compDate = LocalDate.parse(dateStr);
+	                    return compDate.isBefore(LocalDate.now());
 
-        }).collect(Collectors.toList())
-        : new ArrayList<>();
+	                }).collect(Collectors.toList())
+	                : new ArrayList<>();
+	
+	List<Boolean> isRevisedDatePassed =
+			MilestoneActivityMain != null
+	                ? MilestoneActivityMain.stream().map(row -> {
+
+	                    String fromDate = row[4] != null ? row[4].toString() : "";
+	                    String toDate = row[5] != null ? row[5].toString() : "";
+	                    String revisedFromDate = row[6] != null ? row[6].toString() : "";
+	                    String revisedToDate = row[7] != null ? row[7].toString() : "";
+
+	                    String dateStr = !revisedToDate.isEmpty() ? revisedToDate : toDate;
+
+	                    if (dateStr.isEmpty()) {
+	                        return false;
+	                    }
+
+	                    LocalDate compDate = LocalDate.parse(dateStr);
+	                    return compDate.isBefore(LocalDate.now());
+
+	                }).collect(Collectors.toList())
+	                : new ArrayList<>();
+		
  %>
  
 <div class="container-fluid">
@@ -126,14 +181,14 @@ MilestoneActivityMain != null
 						
 							
 								<div class="row" style="margin-bottom: 5px;font-weight: bold;"   >
-										<div class="col-md-4"></div>
-										<div class="col-md-3"></div>
-										<div class="col-md-5">
+										<div class="col-md-12 d-flex justify-content-end">
 											<div style="font-weight: bold; " >
 												<span style="margin:0px 0px 10px  10px;">Original :&ensp; <span style=" background-color: #455a64;;  padding: 0px 15px; border-radius: 3px;"></span></span>
 												<span style="margin:0px 0px 10px  15px;">Ongoing :&ensp; <span style=" background-color: #059212;  padding: 0px 15px;border-radius: 3px;"></span></span>
 												<span style="margin:0px 0px 10px  15px;">Revised :&ensp; <span style=" background-color: #F5A623; opacity: 0.5; padding: 0px 15px;border-radius: 3px;"></span></span>
 												<span style="margin:0px 0px 10px  15px;">Delay Ongoing :&ensp; <span style=" background-color: #D0021B; padding: 0px 15px;border-radius: 3px;" ></span></span>
+												<span style="margin:0px 0px 10px  15px;">Completed Within Time :&ensp; <span style="background-color: #6F42C1;padding: 0px 15px;border-radius: 3px;"></span></span>
+												<span style="margin:0px 0px 10px  15px;">Completed With Delay :&ensp; <span style="background-color: #8B5A2B;padding: 0px 15px;border-radius: 3px;"></span></span>
 												
 											</div>
 										</div>
@@ -184,7 +239,34 @@ $('#interval').on('change',function(){
 								    			  boolean datePassed = isDatePassed != null 
 								    	                     && index < isDatePassed.size() 
 								    	                     && Boolean.TRUE.equals(isDatePassed.get(index));
-											    	String progressColor = !datePassed ? "#059212" : "#D0021B";
+								    			  boolean revisedDatePassed = isRevisedDatePassed != null 
+								    	                     && index < isRevisedDatePassed.size() 
+								    	                     && Boolean.TRUE.equals(isRevisedDatePassed.get(index));
+											    	
+											    	boolean completed = ((Number) obj[8]).intValue() == 100;
+
+											    	String progressColor;
+
+											    	if (completed) {
+
+											    	    if (isDateMatching.get(index)) {
+											    	        // Completed Within Time
+											    	        progressColor = "#6F42C1";   // Purple
+											    	    } else {
+											    	        // Completed With Delay
+											    	        progressColor = "#8B5A2B";   // Brown
+											    	    }
+
+											    	} else if (revisedDatePassed) {
+
+											    	    // Ongoing but revised end date also crossed
+											    	    progressColor = "#D0021B";       // Red
+
+											    	} else {
+
+											    	    // Ongoing
+											    	    progressColor = "#059212";       // Green
+											    	}
 								    		  %>
 								    		  
 								    		  {
@@ -216,7 +298,6 @@ $('#interval').on('change',function(){
 								    		  },
 								    		  
 								    		  <%
-								    		  maxDate = obj[7].toString();
 								    		  index++;
 								    		  }%>
 								    		  ];
@@ -286,9 +367,7 @@ $('#interval').on('change',function(){
 								        
 								        
 								        
-								<%--         <%if(ProjectId!=null){
-												Object[] ProjectDetail=(Object[])request.getAttribute("ProjectDetails");
-												%>
+								<%--   <%if(ProjectId!=null && ProjectDetail != null){ 	%>
 
 												/* Title */
 												var title = chart.title();

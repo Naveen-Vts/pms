@@ -27,7 +27,7 @@
   String ProjectId=(String)request.getAttribute("ProjectId");
   
   Object[] ProjectDetail = (Object[]) request.getAttribute("ProjectDetails");
-  LocalDate minDate = null, maxDate = LocalDate.now().plusYears(10);
+  LocalDate minDate = null, maxDate = null;
 
   if (ProjectDetail != null) {
       if (ProjectDetail[3] != null) {
@@ -45,7 +45,7 @@
           }
       }
 
-      /* if (ProjectDetail[4] != null) {
+       if (ProjectDetail[4] != null) {
           Object endObj = ProjectDetail[4];
           if (endObj instanceof java.sql.Date) {
               maxDate = ((java.sql.Date) endObj).toLocalDate();
@@ -57,7 +57,7 @@
               if (s.contains("T")) s = s.substring(0, s.indexOf("T"));
               maxDate = LocalDate.parse(s);
           }
-      } */
+      } 
   }
  
   List<Boolean> isDateMatching =
@@ -181,8 +181,7 @@
 								<div class="col-md-12 f-right"  >
 									
 									<div class="row mt-2"  >
-										<div class="col-md-4"></div>
-										<div class="col-md-8 d-flex justify-content-end">
+										<div class="col-md-12 d-flex justify-content-end">
 											<div class="f-bold" >
 												<span class="text-margin" >Original :&ensp; <span class="text-padding bg-blue" ></span></span>
 												<span class="text-margin">Ongoing :&ensp; <span class="text-padding bg-success" ></span></span>
@@ -223,15 +222,38 @@
 								    			  boolean revisedDatePassed = isRevisedDatePassed != null 
 								    	                     && index < isRevisedDatePassed.size() 
 								    	                     && Boolean.TRUE.equals(isRevisedDatePassed.get(index));
-											    	String progressColor = !revisedDatePassed ? "#059212" : "#D0021B";
-											    	String progresscolor2 = datePassed ? "" :"";
+											    	
+											    	boolean completed = ((Number) obj[8]).intValue() == 100;
+
+											    	String progressColor;
+
+											    	if (completed) {
+
+											    	    if (isDateMatching.get(index)) {
+											    	        // Completed Within Time
+											    	        progressColor = "#6F42C1";   // Purple
+											    	    } else {
+											    	        // Completed With Delay
+											    	        progressColor = "#8B5A2B";   // Brown
+											    	    }
+
+											    	} else if (revisedDatePassed) {
+
+											    	    // Ongoing but revised end date also crossed
+											    	    progressColor = "#D0021B";       // Red
+
+											    	} else {
+
+											    	    // Ongoing
+											    	    progressColor = "#059212";       // Green
+											    	}
 											    	%>
 											    	{
 											    		id: "<%=obj[3]%>",
 										    		    name: "<%=obj[2]%>",
 										    		    <%if(!obj[9].toString().equalsIgnoreCase("0") && !obj[9].toString().equalsIgnoreCase("1") && !isDateMatching.get(index)){ %>
 										    		   	baselineStart: "<%=obj[6]%>",
-										    		    baselineEnd: "<%=obj[7]%>", 
+										    		    baselineEnd: "<%=obj[7]%>",  
 										    		    baseline: {fill: "#F5A623 0.5", stroke: "0.0 #F5A623"},
 										    		    actualStart: "<%=obj[4]%>",
 										    		    actualEnd: "<%=obj[5]%>",
@@ -441,12 +463,35 @@
 								     		
 								     	} */
 								     	
+								     	var minDate = "<%=minDate != null ? minDate : ""%>";
+								     	var maxDate = "<%=maxDate != null ? maxDate : ""%>";
+								     	var min, max;
+								     	var months = 0, quarters = 0, years = 0;
+
+								     	if (minDate !== "" && maxDate !== "") {
+								     	    min = new Date(minDate);
+								     	    max = new Date(maxDate);
+
+								     	    months =
+								     	        (max.getFullYear() - min.getFullYear()) * 12 +
+								     	        (max.getMonth() - min.getMonth()) + 1;
+
+								     	    quarters = Math.ceil(months / 3);
+								     	    years = Math.ceil(months / 12);
+								     	}
+								     	months =
+								     	    (max.getFullYear() - min.getFullYear()) * 12 +
+								     	    (max.getMonth() - min.getMonth()) + 1;
+
+								     	quarters = Math.ceil(months / 3);
+								     	years = Math.ceil(months / 12);
+								     	
 												chart.getTimeline().scale().minimum("<%=minDate%>");
 												chart.getTimeline().scale().maximum("<%=maxDate%>");
 
 												if(interval==="year"){
 												    chart.getTimeline().scale().zoomLevels([["year"]]);
-												    chart.zoomTo("year", 2, "first-date");   // show 2 years at a time
+												    chart.zoomTo("year", years, "first-date");   // show 2 years at a time
 												    var header = chart.getTimeline().header();
 												    header.level(2).format("{%value}-{%endValue}");
 												    header.level(1).format("{%value}-{%endValue}"); 
@@ -454,7 +499,7 @@
 
 												if(interval==="half"){
 												    chart.getTimeline().scale().zoomLevels([["semester", "year"]]);
-												    chart.zoomTo("semester", 2, "first-date");  // show 2 half-years at a time
+												    chart.zoomTo("semester", years, "first-date");  // show 2 half-years at a time
 											     	var header = chart.getTimeline().header();
 											     	header.level(2).format("{%value}-{%endValue}");
 											     	header.level(0).format(function() {
@@ -469,7 +514,7 @@
 
 												if(interval==="quarter"){
 												    chart.getTimeline().scale().zoomLevels([["quarter", "semester","year"]]);
-												    chart.zoomTo("quarter", 3, "first-date");   // show 3 quarters at a time
+												    chart.zoomTo("quarter", quarters, "first-date");   // show 3 quarters at a time
 												    var header = chart.getTimeline().header();
 											     	header.level(1).format(function() {
 										     			var duration = '';
@@ -483,12 +528,12 @@
 
 												if(interval==="month"){
 												    chart.getTimeline().scale().zoomLevels([["month", "quarter","year"]]);
-												    chart.zoomTo("month", 4, "first-date");     // show 4 months at a time
+												    chart.zoomTo("month", months / 2, "first-date");     // show 4 months at a time
 												}
 
 												else if(interval===""){
 												    chart.getTimeline().scale().zoomLevels([["quarter", "semester","year"]]);
-												    chart.zoomTo("quarter", 3, "first-date");
+												    chart.zoomTo("quarter", quarters , "first-date");
 												    var header = chart.getTimeline().header();
 											     	header.level(1).format(function() {
 										     			
