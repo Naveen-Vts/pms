@@ -1225,8 +1225,7 @@ public class CommitteeServiceImpl implements CommitteeService{
 	}
 	
 	@Override
-	public Long CommitteeInvitationCreate(CommitteeInvitationDto committeeinvitationdto) throws Exception 
-	{
+	public Long CommitteeInvitationCreate(CommitteeInvitationDto committeeinvitationdto) throws Exception {
 		logger.info(new Date() +"Inside SERVICE CommitteeInvitationCreate ");
 		long ret=0;
 		long slno=1;
@@ -1248,6 +1247,8 @@ public class CommitteeServiceImpl implements CommitteeService{
 			committeeinvitation.setAttendance("P");
 			committeeinvitation.setCreatedDate(sdf1.format(new Date()));
 			committeeinvitation.setEmpId(Long.parseLong(MemberType[0]));
+			committeeinvitation.setRevisionNo(committeeinvitationdto.getRevisionNo());
+			committeeinvitation.setParentInvitationId(0L);
 			if(committeeinvitationdto.getReptype()!= null && !committeeinvitationdto.getReptype().equals("0")) 
 			{
 				committeeinvitation.setMemberType(committeeinvitationdto.getReptype());

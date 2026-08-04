@@ -3092,6 +3092,7 @@ public class CommitteeController {
 			committeeinvitationdto.setLabCodeList(labCodelist);
 			committeeinvitationdto.setReptype(reptype);
 			committeeinvitationdto.setInviteFlag(req.getParameter("inviteFlag"));
+			committeeinvitationdto.setRevisionNo(0L);
 
 			long count =  service.CommitteeInvitationCreate(committeeinvitationdto);
 
@@ -3530,6 +3531,7 @@ public class CommitteeController {
 			//committeeinvitationdto.setCommitteeScheduleId(req.getParameter("scheduleid"));
 			committeeinvitationdto.setLabCodeList(lablist);
 			committeeinvitationdto.setReptype(reptype);
+			committeeinvitationdto.setRevisionNo(0L);
 
 			if(req.getParameter("chairperson") != null )
 			{

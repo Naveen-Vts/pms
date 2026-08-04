@@ -22,5 +22,8 @@ public class CommitteeInvitationDto {
 	private String reptype;
 	private String inviteFlag;
 	
+	private String isOnlineAttendance;
+	private Long RevisionNo;
+	private Long ParentInvitationId;
 	
 }

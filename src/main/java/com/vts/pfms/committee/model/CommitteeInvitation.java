@@ -32,4 +32,7 @@ public class CommitteeInvitation
 
 	//DLRL changes 
 	private String isOnlineAttendence;
+	
+	private Long RevisionNo;
+	private Long ParentInvitationId;
 }

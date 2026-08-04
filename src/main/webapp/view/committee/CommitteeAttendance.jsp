@@ -124,12 +124,8 @@ List<String> repList = new ArrayList<>();
 											else { repCount++;  %> 
 											<%
 											String repName = "REP_" +
-											    (obj[3] != null ? StringEscapeUtils.escapeHtml4(obj[3].toString()) : " - ") +
-											    " (" +
-											    (obj[11] != null ? StringEscapeUtils.escapeHtml4(obj[11].toString()) : " - ") +
-											    ")";
-												repList.add(repName);
-												
+											    (obj[3] != null ? StringEscapeUtils.escapeHtml4(obj[3].toString()) : " - ");
+											
 												String memberName =
 												    (obj[6] != null ? StringEscapeUtils.escapeHtml4(obj[6].toString()) : " - ")
 												    + ", "
@@ -137,12 +133,13 @@ List<String> repList = new ArrayList<>();
 												    + " ("
 												    + (obj[11] != null ? StringEscapeUtils.escapeHtml4(obj[11].toString()) : " - ")
 												    + ")";
+												repList.add(memberName);
 												
 											%>
 											<%-- <%=repName %> --%>
 											<%-- REP_<%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - "%> (<%=obj[11]!=null?StringEscapeUtils.escapeHtml4(obj[11].toString()): " - " %>) --%>
 											
-											<span id="repName<%=obj[1]%>"><%=memberName%></span>
+											<span id="repName<%=obj[1]%>" data-member-name="<%=memberName%>" ><%=repName%></span>
 											<button type="button" class="btn btn-xs btn-link editRepBtn"
 											        data-invitationid="<%=obj[1]%>"
 											        data-reptype="<%=StringEscapeUtils.escapeHtml4(obj[3].toString())%>">
@@ -587,7 +584,9 @@ $(document).on('click', '.editRepBtn', function () {
     var repType = $(this).data('reptype');
 
     $('#changeRepInvitationId').val(invitationId);
-    $('#currentRepDisplay').text($('#repName' + invitationId).text());
+    var memberName = $('#repName' + invitationId).data('memberName');
+    console.log($('#repName' + invitationId));
+    $('#currentRepDisplay').text(memberName);
 
     $.ajax({
         type: "GET",
