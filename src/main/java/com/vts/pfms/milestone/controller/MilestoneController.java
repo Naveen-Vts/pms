@@ -1069,7 +1069,8 @@ public class MilestoneController {
 				}
 				countA++;
 			}	
-			req.setAttribute("MilestoneActivity1", service.ActivityCompareMAin(req.getParameter("MilestoneActivityId"),String.valueOf(rev2),"1").get(0));
+			List<Object[]> list = service.ActivityCompareMAin(req.getParameter("MilestoneActivityId"),String.valueOf(rev2),"1");
+			req.setAttribute("MilestoneActivity1", list != null && !list.isEmpty() ?list.get(0) : null );
 			List<Object[]>  MilestoneActivity1A=service.ActivityLevelCompare(req.getParameter("MilestoneActivityId"),String.valueOf(rev2),"1","1");
 			req.setAttribute("MilestoneActivity1A", MilestoneActivity1A);
 			for(Object[] obj:MilestoneActivity1A) {

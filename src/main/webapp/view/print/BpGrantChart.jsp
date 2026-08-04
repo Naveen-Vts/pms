@@ -53,12 +53,13 @@ h6{
   List<Object[]> MilestoneActivityD=(List<Object[]>)request.getAttribute("MilestoneActivityD0");
   List<Object[]> MilestoneActivityE=(List<Object[]>)request.getAttribute("MilestoneActivityE0");
 
-  Object[] ProjectDetail = (Object[]) request.getAttribute("ProjectDetails");
+  List<Object[]> ProjectDetail = (List<Object[]>) request.getAttribute("ProjectDetails");
   LocalDate minDate = null, maxDate = null;
 
-  if (ProjectDetail != null) {
-      if (ProjectDetail[3] != null) {
-          Object startObj = ProjectDetail[3];
+  if (ProjectDetail != null && !ProjectDetail.isEmpty()) {
+	  Object[] objects = ProjectDetail.get(0);
+      if (objects[8] != null) {
+          Object startObj = objects[8];
           if (startObj instanceof java.sql.Date) {
               minDate = ((java.sql.Date) startObj).toLocalDate();
           } else if (startObj instanceof java.sql.Timestamp) {
@@ -72,8 +73,8 @@ h6{
           }
       }
 
-       if (ProjectDetail[4] != null) {
-          Object endObj = ProjectDetail[4];
+       if (objects[9] != null) {
+          Object endObj = objects[9];
           if (endObj instanceof java.sql.Date) {
               maxDate = ((java.sql.Date) endObj).toLocalDate();
           } else if (endObj instanceof java.sql.Timestamp) {
@@ -439,9 +440,37 @@ $('#interval').on('change',function(){
 								     	
 								     	//chart.getTimeline().scale().zoomLevels([["month", "quarter","year"]]);
 								     	
+								     	
+								     	var minDate = "<%=minDate != null ? minDate : ""%>";
+								     	var maxDate = "<%=maxDate != null ? maxDate : ""%>";
+								     	var min, max;
+								     	var months = 0, quarters = 0, years = 0;
+
+								     	if (minDate !== "" && maxDate !== "") {
+								     	    min = new Date(minDate);
+								     	    max = new Date(maxDate);
+
+								     	    months =
+								     	        (max.getFullYear() - min.getFullYear()) * 12 +
+								     	        (max.getMonth() - min.getMonth()) + 1;
+
+								     	    quarters = Math.ceil(months / 3);
+								     	    years = Math.ceil(months / 12);
+								     	}
+								     	months =
+								     	    (max.getFullYear() - min.getFullYear()) * 12 +
+								     	    (max.getMonth() - min.getMonth()) + 1;
+
+								     	quarters = Math.ceil(months / 3);
+								     	years = Math.ceil(months / 12);
+								     	
+												chart.getTimeline().scale().minimum("<%=minDate%>");
+												chart.getTimeline().scale().maximum("<%=maxDate%>");
+								     	
 								     	if(interval==="year"){
 								     		/* Yearly */
 									     	chart.getTimeline().scale().zoomLevels([["year"]]);
+										    chart.zoomTo("year", years, "first-date");   // show 2 years at a time
 									     	var header = chart.getTimeline().header();
 									     	header.level(2).format("{%value}-{%endValue}");
 									     	header.level(1).format("{%value}-{%endValue}"); 
@@ -450,6 +479,7 @@ $('#interval').on('change',function(){
 								     	if(interval==="half"){
 								     		/* Half-yearly */
 									     	chart.getTimeline().scale().zoomLevels([["semester", "year"]]);
+										    chart.zoomTo("semester", years, "first-date");  // show 2 half-years at a time
 									     	var header = chart.getTimeline().header();
 									     	/* header.level(2).format("{%value}-{%endValue}"); */
 									     	header.level(2).format("{%value}-{%endValue}");
@@ -466,6 +496,7 @@ $('#interval').on('change',function(){
 								     	if(interval==="quarter"){
 								     		/* Quarterly */
 									     	chart.getTimeline().scale().zoomLevels([["quarter", "semester","year"]]);
+										    chart.zoomTo("quarter", quarters, "first-date");   // show 3 quarters at a time
 									     	var header = chart.getTimeline().header();
 									     	header.level(1).format(function() {
 								     			var duration = '';
@@ -482,12 +513,14 @@ $('#interval').on('change',function(){
 								     	if(interval==="month"){
 								     		/* Monthly */
 									     	chart.getTimeline().scale().zoomLevels([["month", "quarter","year"]]);
+										    chart.zoomTo("month", months / 2, "first-date");     // show 4 months at a time
 								     	}
 								     	
 								     	else if(interval===""){
 
 								     		/* Quarterly */
 									     	chart.getTimeline().scale().zoomLevels([["quarter", "semester","year"]]);
+										    chart.zoomTo("quarter", quarters , "first-date");
 									     	var header = chart.getTimeline().header();
 									     	header.level(1).format(function() {
 								     			
