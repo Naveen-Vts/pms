@@ -2015,7 +2015,7 @@ public class CommitteeController {
 			req.setAttribute("ReturnData", service.AgendaReturnData(CommitteeScheduleId));
 			req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
 			req.setAttribute("committeeagendalist", committeeagendalist);
-			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(CommitteeScheduleId));	
+			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(CommitteeScheduleId,"0"));	
 			req.setAttribute("employeelist", service.EmployeeList(LabCode));
 			req.setAttribute("pfmscategorylist", service.PfmsCategoryList());
 			req.setAttribute("logintype", Logintype);
@@ -2937,7 +2937,7 @@ public class CommitteeController {
 			String carsInitiationId=committeescheduledata[16].toString();
 			String programmeId=committeescheduledata[17].toString();
 			
-			List<Object[]> committeeinvitedlist = service.CommitteeAtendance(committeescheduleid);
+			List<Object[]> committeeinvitedlist = service.CommitteeAtendance(committeescheduleid,"0");
 			// Prudhvi - 27/03/2024
 			/* ------------------ start ----------------------- */
 			req.setAttribute("industryPartnerList",  masterservice.getIndustryPartnerList());
@@ -3166,7 +3166,7 @@ public class CommitteeController {
 			req.setAttribute("CommitteeAgendaList", service.AgendaList(committeescheduleid));
 			req.setAttribute("committeeminutes",service.CommitteeMinutesSpecdetails());
 			req.setAttribute("committeeminutessub",service.CommitteeMinutesSub());
-			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));			
+			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid,"1"));			
 			req.setAttribute("actionlist",actionsdata);
 			req.setAttribute("labdetails", service.LabDetails(scheduleeditdata[24].toString()));
 			req.setAttribute("isprint", "N");	    
@@ -3264,7 +3264,7 @@ public class CommitteeController {
 
 			req.setAttribute("scheduledata",ScheduletData);			
 			req.setAttribute("committeedata", service.CommitteeMainList(labcode) );			
-			req.setAttribute("invitedlist",service.CommitteeAtendance(ScheduleId));
+			req.setAttribute("invitedlist",service.CommitteeAtendance(ScheduleId,"0"));
 			req.setAttribute("AgendaDocList",service.AgendaLinkedDocList(ScheduleId));
 		}
 		catch (Exception e) {
@@ -3389,7 +3389,7 @@ public class CommitteeController {
 
 			Object[] committeescheduledata =service.CommitteeScheduleData(committeescheduleid);
 
-			List<Object[]> committeeinvitedlist = service.CommitteeAtendance(committeescheduleid);
+			List<Object[]> committeeinvitedlist = service.CommitteeAtendance(committeescheduleid,"1");
 			List<Object[]> EmployeeList = service.EmployeeListNoInvitedMembers(committeescheduleid,LabCode);
 			List<Object[]> ExpertList = service.ExternalMembersNotInvited(committeescheduleid);
 
@@ -3797,7 +3797,7 @@ public class CommitteeController {
 			req.setAttribute("CommitteeAgendaList", service.AgendaList(committeescheduleid));
 			req.setAttribute("committeeminutes",service.CommitteeMinutesSpecdetails());
 			req.setAttribute("committeeminutessub",service.CommitteeMinutesSub());
-			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));
+			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid,"1"));
 
 			req.setAttribute("actionlist",  actionsdata);
 			req.setAttribute("labdetails", service.LabDetails(scheduleeditdata[24].toString()));
@@ -4864,7 +4864,7 @@ private boolean isValidFileType(MultipartFile file) {
 			req.setAttribute("CommitteeAgendaList", service.AgendaList(committeescheduleid));
 			req.setAttribute("committeeminutes",service.CommitteeMinutesSpecdetails());
 			req.setAttribute("committeeminutessub",service.CommitteeMinutesSub());
-			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));			
+			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid,"1"));			
 			req.setAttribute("actionlist",actionsdata);
 			req.setAttribute("labdetails", service.LabDetails(committeescheduleeditdata[24].toString()));
 			req.setAttribute("lablogo", LogoUtil.getLabLogoAsBase64String(committeescheduleeditdata[24].toString()));
@@ -5142,7 +5142,7 @@ private boolean isValidFileType(MultipartFile file) {
 				req.setAttribute("projectdata", service.projectdetails(projectid));
 			}			
 
-			List<Object[]> invitedlist=service.CommitteeAtendance(scheduleid);
+			List<Object[]> invitedlist=service.CommitteeAtendance(scheduleid,"0");
 
 			Object[] tomemberdata=null;
 			for(int i=0;i<invitedlist.size();i++) {
@@ -5246,7 +5246,7 @@ private boolean isValidFileType(MultipartFile file) {
 
 
 
-			List<Object[]> invitedlist=service.CommitteeAtendance(scheduleid);
+			List<Object[]> invitedlist=service.CommitteeAtendance(scheduleid,"0");
 
 			Object[] tomemberdata=null;
 			for(int i=0;i<invitedlist.size();i++) {
@@ -5323,7 +5323,7 @@ private boolean isValidFileType(MultipartFile file) {
 			req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutes(committeescheduleid) );
 			req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
 			req.setAttribute("committeeminutes",service.CommitteeMinutesSpecdetails());
-			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));
+			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid,"1"));
 			req.setAttribute("projectid", projectid);				
 			req.setAttribute("actionlist", service.MinutesViewAllActionList(committeescheduleid));
 			req.setAttribute("labdetails", service.LabDetails(committeescheduleeditdata[24].toString()));
@@ -5390,7 +5390,7 @@ private boolean isValidFileType(MultipartFile file) {
 			//req.setAttribute("CommitteeAgendaList", service.CommitteeAgendaList(committeescheduleid));
 			req.setAttribute("committeeminutes",service.CommitteeMinutesSpecdetails());
 			//req.setAttribute("committeeminutessub",service.CommitteeMinutesSub());
-			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));
+			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid,"1"));
 			req.setAttribute("projectid", projectid);				
 			req.setAttribute("actionlist", service.MinutesViewAllActionList(committeescheduleid));
 			req.setAttribute("labdetails", service.LabDetails(committeescheduleeditdata[24].toString()));
@@ -5866,7 +5866,7 @@ private boolean isValidFileType(MultipartFile file) {
 		try {
 
 
-			List<Object[]> committeeinvitedlist=service.CommitteeAtendance(committeescheduleid);
+			List<Object[]> committeeinvitedlist=service.CommitteeAtendance(committeescheduleid,"0");
 
 			// Prudhvi - 05/03/2024
 			/* ------------------ start ----------------------- */
@@ -7510,7 +7510,7 @@ private boolean isValidFileType(MultipartFile file) {
 				req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutes(committeescheduleid) );
 				req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
 				req.setAttribute("committeeminutes",service.CommitteeMinutesSpecNew());
-				req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));			
+				req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid,"1"));			
 				req.setAttribute("labdetails", service.LabDetails(committeescheduleeditdata[24].toString()));
 				req.setAttribute("lablogo", LogoUtil.getLabLogoAsBase64String(committeescheduleeditdata[24].toString()));
 				req.setAttribute("meetingcount",service.MeetingNo(committeescheduleeditdata));
@@ -7888,7 +7888,7 @@ private boolean isValidFileType(MultipartFile file) {
 				req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutes(committeescheduleid) );
 				req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
 				req.setAttribute("committeeminutes",service.CommitteeMinutesSpecNew());
-				req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));			
+				req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid,"1"));			
 				req.setAttribute("labdetails", service.LabDetails(committeescheduleeditdata[24].toString()));
 				req.setAttribute("lablogo", LogoUtil.getLabLogoAsBase64String(committeescheduleeditdata[24].toString()));
 				req.setAttribute("meetingcount",service.MeetingNo(committeescheduleeditdata));
@@ -8570,7 +8570,7 @@ private boolean isValidFileType(MultipartFile file) {
 			req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutes(committeescheduleid) );
 			req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
 			req.setAttribute("committeeminutes",service.CommitteeMinutesSpecNew());
-			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));			
+			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid,"1"));			
 			req.setAttribute("labdetails", service.LabDetails(committeescheduleeditdata[24].toString()));
 			req.setAttribute("isprint", "Y");	
 			req.setAttribute("lablogo", LogoUtil.getLabLogoAsBase64String(committeescheduleeditdata[24].toString()));
@@ -9208,7 +9208,7 @@ private boolean isValidFileType(MultipartFile file) {
 				req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutes(committeescheduleid) );
 				req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
 				req.setAttribute("committeeminutes",service.CommitteeMinutesSpecNew());
-				req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));			
+				req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid,"1"));			
 				req.setAttribute("labdetails", service.LabDetails(committeescheduleeditdata[24].toString()));
 				req.setAttribute("isprint", "Y");	
 				req.setAttribute("lablogo", LogoUtil.getLabLogoAsBase64String(committeescheduleeditdata[24].toString()));
@@ -9700,7 +9700,7 @@ private boolean isValidFileType(MultipartFile file) {
 			req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutes(committeescheduleid) );
 			req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
 			req.setAttribute("committeeminutes",service.CommitteeMinutesSpecNew());
-			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));			
+			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid,"1"));			
 			req.setAttribute("labdetails", service.LabDetails(committeescheduleeditdata[24].toString()));
 			req.setAttribute("lablogo", LogoUtil.getLabLogoAsBase64String(committeescheduleeditdata[24].toString()));
 			req.setAttribute("meetingcount",service.MeetingNo(committeescheduleeditdata));
@@ -9937,7 +9937,7 @@ private boolean isValidFileType(MultipartFile file) {
 				req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutes(committeescheduleid) );
 				req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
 				req.setAttribute("committeeminutes",service.CommitteeMinutesSpecNew());
-				req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));			
+				req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid,"1"));			
 				req.setAttribute("labdetails", service.LabDetails(committeescheduleeditdata[24].toString()));
 				req.setAttribute("lablogo", LogoUtil.getLabLogoAsBase64String(committeescheduleeditdata[24].toString()));
 				req.setAttribute("meetingcount",service.MeetingNo(committeescheduleeditdata));
@@ -10221,7 +10221,7 @@ private boolean isValidFileType(MultipartFile file) {
 				ArrayList<String> emails= new ArrayList<String>();
 				ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","I","P","CH"));
 
-				List<Object[]>committeeinvitedlist=service.CommitteeAtendance(committeescheduleid);
+				List<Object[]>committeeinvitedlist=service.CommitteeAtendance(committeescheduleid,"1");
 
 				String MainEmail="";
 
@@ -10390,7 +10390,7 @@ private boolean isValidFileType(MultipartFile file) {
 			req.setAttribute("CommitteeAgendaList", service.AgendaList(committeescheduleid));
 			req.setAttribute("committeeminutes",service.CommitteeMinutesSpecdetails());
 			req.setAttribute("committeeminutessub",service.CommitteeMinutesSub());
-			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));
+			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid,"1"));
 
 			req.setAttribute("actionlist",  actionsdata);
 			req.setAttribute("labdetails", service.LabDetails(scheduleeditdata[24].toString()));
@@ -10448,7 +10448,7 @@ private boolean isValidFileType(MultipartFile file) {
 			File f=new File(path +File.separator+ "Mom.pdf");
 			ArrayList<String> emails= new ArrayList<String>();
 			ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","I","P","CH"));
-			List<Object[]>committeeinvitedlist=service.CommitteeAtendance(committeescheduleid);
+			List<Object[]>committeeinvitedlist=service.CommitteeAtendance(committeescheduleid,"1");
 			String MainEmail="";
 			for(Object[] obj : committeeinvitedlist) 
 			{	 
@@ -11033,7 +11033,7 @@ private boolean isValidFileType(MultipartFile file) {
 			}
 			
 			
-			List<Object[]> committeeinvitedlist = service.CommitteeAtendance(committeescheduleid);
+			List<Object[]> committeeinvitedlist = service.CommitteeAtendance(committeescheduleid,"1");
 			
 			
 			
@@ -11260,7 +11260,7 @@ private boolean isValidFileType(MultipartFile file) {
 			req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutesforAction(committeescheduleid) );
 			req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
 			req.setAttribute("committeeminutes",service.CommitteeMinutesSpecdetails());
-			List<Object[]> invitedlists= service.CommitteeAtendance(committeescheduleid);
+			List<Object[]> invitedlists= service.CommitteeAtendance(committeescheduleid,"1");
 			
 			Map<Object,List<Object[]>> invitedlist = invitedlists.stream().filter(row->row[4].toString().equalsIgnoreCase("P")).collect(Collectors.groupingBy(row -> row[3]));
 			List<Map.Entry<Object, List<Object[]>>> entries = new ArrayList<>(invitedlist.entrySet());
@@ -11450,7 +11450,7 @@ private boolean isValidFileType(MultipartFile file) {
 			req.setAttribute("committeeminutesspeclist",service.committeeScheduleMinutesforActionForMomADE(committeescheduleid));
 			req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
 			req.setAttribute("committeeminutes",service.CommitteeMinutesSpecdetails());
-			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));
+			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid,"1"));
 			req.setAttribute("projectid", projectid);				
 			req.setAttribute("actionlist", service.MinutesViewAllActionList(committeescheduleid));
 			req.setAttribute("labdetails", service.LabDetails(committeescheduleeditdata[24].toString()));
@@ -11480,7 +11480,7 @@ private boolean isValidFileType(MultipartFile file) {
 
 			HtmlConverter.convertToPdf(html1,new FileOutputStream(path+File.separator+filename+"1.pdf")); 
 
-			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));
+			req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid,"1"));
 			CharArrayWriterResponse customResponse2 = new CharArrayWriterResponse(res);
 			req.getRequestDispatcher("/view/committee/MinutesOfMeetingAttendence.jsp").forward(req, customResponse2);
 			String html2 = customResponse2.getOutput();
@@ -11652,7 +11652,7 @@ private boolean isValidFileType(MultipartFile file) {
 			req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutesforAction(committeescheduleid) );
 			req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
 			req.setAttribute("committeeminutes",service.CommitteeMinutesSpecdetails());
-			List<Object[]> invitedlists= service.CommitteeAtendance(committeescheduleid);
+			List<Object[]> invitedlists= service.CommitteeAtendance(committeescheduleid,"1");
 			
 			Map<Object,List<Object[]>> invitedlist = invitedlists.stream().filter(row->row[4].toString().equalsIgnoreCase("P")).collect(Collectors.groupingBy(row -> row[3]));
 			List<Map.Entry<Object, List<Object[]>>> entries = new ArrayList<>(invitedlist.entrySet());
@@ -11705,7 +11705,7 @@ private boolean isValidFileType(MultipartFile file) {
 			List<String> ccEmails = new ArrayList<>();
 			String mainEmail = "";
 			ArrayList<String> membertypes = new ArrayList<>(Arrays.asList("CC","CS","PS","CI","I","P","CH"));
-			List<Object[]> committeeInvitedList = service.CommitteeAtendance(committeescheduleid);
+			List<Object[]> committeeInvitedList = service.CommitteeAtendance(committeescheduleid,"1");
 
 			for(Object[] obj : committeeInvitedList) {
 			    if(membertypes.contains(obj[3].toString()) && obj[4].toString().equalsIgnoreCase("P") && obj[8] != null) {
@@ -11882,7 +11882,7 @@ private boolean isValidFileType(MultipartFile file) {
 				req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutesMom(committeescheduleid) );
 				req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
 				req.setAttribute("committeeminutes",service.CommitteeMinutesSpecNew());
-				req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));			
+				req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid,"1"));			
 				req.setAttribute("labdetails", service.LabDetails(committeescheduleeditdata[24].toString()));
 				req.setAttribute("lablogo", LogoUtil.getLabLogoAsBase64String(committeescheduleeditdata[24].toString()));
 				req.setAttribute("meetingcount",service.MeetingNo(committeescheduleeditdata));
@@ -12236,7 +12236,7 @@ private boolean isValidFileType(MultipartFile file) {
 			req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutesforAction(committeescheduleid) );
 			req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
 			req.setAttribute("committeeminutes",service.CommitteeMinutesSpecdetails());
-			List<Object[]> invitedlists= service.CommitteeAtendance(committeescheduleid);
+			List<Object[]> invitedlists= service.CommitteeAtendance(committeescheduleid,"1");
 			
 			Map<Object,List<Object[]>> invitedlist = invitedlists.stream().filter(row->row[4].toString().equalsIgnoreCase("P")).collect(Collectors.groupingBy(row -> row[3]));
 			List<Map.Entry<Object, List<Object[]>>> entries = new ArrayList<>(invitedlist.entrySet());
@@ -12374,7 +12374,7 @@ private boolean isValidFileType(MultipartFile file) {
 				req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutes(committeescheduleid) );
 				req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
 				req.setAttribute("committeeminutes",service.CommitteeMinutesSpecNew());
-				req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid));			
+				req.setAttribute("committeeinvitedlist", service.CommitteeAtendance(committeescheduleid,"1"));			
 				req.setAttribute("labdetails", service.LabDetails(committeescheduleeditdata[24].toString()));
 				req.setAttribute("lablogo", LogoUtil.getLabLogoAsBase64String(committeescheduleeditdata[24].toString()));
 				req.setAttribute("meetingcount",service.MeetingNo(committeescheduleeditdata));

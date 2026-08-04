@@ -92,7 +92,7 @@ public interface CommitteeDao {
 	public int MeetingAgendaApprovalSubmit(CommitteeSchedule schedule,CommitteeMeetingApproval approval,PfmsNotification notfication) throws Exception;
 	
 	public Object[] CommitteeScheduleData(String committeescheduleid) throws Exception;
-	public List<Object[]> CommitteeAtendance(String committeescheduleid) throws Exception;
+	public List<Object[]> CommitteeAtendance(String committeescheduleid,String revisionNo) throws Exception;
 	public Long CommitteeInvitationDelete(String committeeinvitationid) throws Exception;
 	public List<String> CommitteeAttendanceList(String invitationId) throws Exception;
 	public Long CommitteeAttendanceUpdate(String InvitationId, String Value) throws Exception;

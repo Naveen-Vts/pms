@@ -95,7 +95,7 @@ public interface CommitteeService {
  	public int MeetingAgendaApprovalSubmit( String ScheduleId, String Remarks,String UserId, String EmpId,String Option) throws Exception;
  	
  	public Object[] CommitteeScheduleData(String committeescheduleid) throws Exception;
- 	public List<Object[]> CommitteeAtendance(String committeescheduleid) throws Exception;
+ 	public List<Object[]> CommitteeAtendance(String committeescheduleid,String revisionNo) throws Exception;
 	public List<Object[]> EmployeeListNoInvitedMembers(String scheduleid,String LabCode) throws Exception;
 	public Long CommitteeInvitationCreate(CommitteeInvitationDto committeeinvitationdto) throws Exception;
 	public Long CommitteeInvitationDelete(String committeeinvitationid) throws Exception;

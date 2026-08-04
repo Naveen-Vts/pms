@@ -856,7 +856,7 @@ public class CommitteeServiceImpl implements CommitteeService{
 				.append(" on "+scheduleDate.split("-")[2] + "-"+ scheduleDate.split("-")[1] + "-"+ scheduleDate.split("-")[0]+" has been rescheduled on "+committeescheduledto.getScheduleDate()+ " at "+newTime);
 	
 			
-		List<Object[]>list = 	dao.CommitteeAtendance(schedule.getScheduleId()+"");
+		List<Object[]>list = 	dao.CommitteeAtendance(schedule.getScheduleId()+"","0");
 		
 		ArrayList<String> emails= new ArrayList<String>();
 		ArrayList<String> emps= new ArrayList<String>();
@@ -1200,9 +1200,9 @@ public class CommitteeServiceImpl implements CommitteeService{
 
 
 	@Override
-	public List<Object[]> CommitteeAtendance(String committeescheduleid) throws Exception
+	public List<Object[]> CommitteeAtendance(String committeescheduleid,String revisionNo) throws Exception
 	{
-		return dao.CommitteeAtendance(committeescheduleid);
+		return dao.CommitteeAtendance(committeescheduleid,revisionNo);
 	}
 	
 	

@@ -914,10 +914,11 @@ public class CommitteeDaoImpl  implements CommitteeDao
 		return (Object[] )query.getResultList().get(0);
 	}
 	@Override
-	public List<Object[]> CommitteeAtendance(String committeescheduleid) throws Exception
+	public List<Object[]> CommitteeAtendance(String committeescheduleid,String revisionNo) throws Exception
 	{
-		Query query= manager.createNativeQuery("Call Pfms_Committee_Invitation (:committeescheduleid)");
+		Query query= manager.createNativeQuery("Call Pfms_Committee_Invitation (:committeescheduleid,:revisionNo)");
 		query.setParameter("committeescheduleid", Long.parseLong(committeescheduleid));
+		query.setParameter("revisionNo", Long.parseLong(revisionNo));
 		return (List<Object[]>)query.getResultList();
 	}
 
@@ -937,10 +938,19 @@ public class CommitteeDaoImpl  implements CommitteeDao
 	
 	
 	@Override
-	public long CommitteeInvitationCreate(CommitteeInvitation committeeinvitation) throws Exception
-	{
-		manager.persist(committeeinvitation);
-		return committeeinvitation.getCommitteeInvitationId();
+	public long CommitteeInvitationCreate(CommitteeInvitation committeeinvitation) throws Exception {
+
+	    CommitteeInvitation invitation = manager.merge(committeeinvitation);
+	    manager.flush();
+
+	    if (invitation.getRevisionNo() == 0 &&
+	        invitation.getParentInvitationId() == null) {
+	        invitation.setParentInvitationId(invitation.getCommitteeInvitationId());
+	    }
+
+	    manager.flush();
+
+	    return invitation.getCommitteeInvitationId();
 	}
 	
 	 
