@@ -67,8 +67,9 @@ import jakarta.transaction.Transactional;
 
 @Transactional
 @Repository
-public class CommitteeDaoImpl  implements CommitteeDao
-{
+public class CommitteeDaoImpl  implements CommitteeDao {
+
+	
 	private static final Logger logger=LogManager.getLogger(CommitteeDaoImpl.class);
 	
 	private static final String EMPLOYEELIST="SELECT a.EmpId, CONCAT(IFNULL(CONCAT(a.Title,' '),(IFNULL(CONCAT(a.Salutation, ' '), ''))), a.EmpName) AS 'EmpName',b.Designation,a.EmpNo  FROM employee a,employee_desig b WHERE a.IsActive='1' AND a.DesigId=b.DesigId AND LabCode=:labcode ORDER BY a.SrNo=0,a.SrNo";
@@ -134,9 +135,9 @@ public class CommitteeDaoImpl  implements CommitteeDao
 	private static final String CLUSTERLABLIST="SELECT labid,clusterid,labname,labcode FROM cluster_lab";
 	private static final String EXTERNALMEMBERSNOTADDEDCOMMITTEE="SELECT a.expertid,a.expertname,b.designation  FROM expert a,employee_desig b WHERE a.isactive='1' AND a.DesigId=b.DesigId AND a.expertid NOT IN (SELECT  empid FROM committee_member  WHERE isactive=1 AND labcode='@EXP' AND committeemainid=:committeemainid);";
 	private static final String EXTERNALEMPLOYEELISTFORMATION="SELECT a.empid, a.empname,a.empno,b.designation FROM employee_external a,employee_desig b WHERE a.labid>0 AND a.labid=:labid AND a.desigid=b.desigid AND a.empid NOT IN (SELECT  empid FROM committee_member   WHERE isactive=1  AND labid=:labid AND committeemainid=:committeemainid)   ";
-	private static final String EXTERNALEMPLOYEELISTINVITATIONS =" SELECT a.empid, a.empname,a.empno,b.designation, a.desigid  FROM employee a,employee_desig b   WHERE a.isActive='1' AND labcode=:labcode AND a.desigid=b.desigid AND a.empid NOT IN (SELECT empid  FROM committee_schedules_invitation WHERE  committeescheduleid=:scheduleid AND labcode=:labcode)  ";
-	private static final String EMPLOYEELISTNOINVITEDMEMBERS="SELECT a.empid, CONCAT(IFNULL(CONCAT(a.title,' '),''), a.empname) as 'empname' ,b.designation,a.desigid FROM employee a,employee_desig b WHERE a.isactive='1' AND a.LabCode = :LabCode AND a.DesigId=b.DesigId AND a.empid NOT IN ( SELECT c.empid FROM committee_schedules_invitation c WHERE c.committeescheduleid=:scheduleid AND c.labcode=:LabCode ) ORDER BY a.srno=0,a.srno";
-	private static final String EXPERTLISTNOINVITEDMEMBERS = "SELECT a.expertid,CONCAT(IFNULL(CONCAT(a.title,' '),''),a.expertname) as 'expertname'  ,b.designation,a.desigid FROM expert a,employee_desig b WHERE a.isactive='1' AND a.DesigId=b.DesigId AND a.expertid NOT IN( SELECT empid FROM committee_schedules_invitation WHERE committeescheduleid=:scheduleid AND labcode='@EXP'  ) ORDER BY a.expertname ";
+	private static final String EXTERNALEMPLOYEELISTINVITATIONS =" SELECT a.empid, a.empname,a.empno,b.designation, a.desigid,a.labcode  FROM employee a,employee_desig b   WHERE a.isActive='1' AND labcode=:labcode AND a.desigid=b.desigid AND a.empid NOT IN (SELECT empid  FROM committee_schedules_invitation WHERE  committeescheduleid=:scheduleid AND labcode=:labcode)  ";
+	private static final String EMPLOYEELISTNOINVITEDMEMBERS="SELECT a.empid, CONCAT(IFNULL(CONCAT(a.title,' '),''), a.empname) as 'empname' ,b.designation,a.desigid, a.LabCode FROM employee a,employee_desig b WHERE a.isactive='1' AND a.LabCode = :LabCode AND a.DesigId=b.DesigId AND a.empid NOT IN ( SELECT c.empid FROM committee_schedules_invitation c WHERE c.committeescheduleid=:scheduleid AND c.labcode=:LabCode ) ORDER BY a.srno=0,a.srno";
+	private static final String EXPERTLISTNOINVITEDMEMBERS = "SELECT a.expertid,CONCAT(IFNULL(CONCAT(a.title,' '),''),a.expertname) as 'expertname'  ,b.designation,a.desigid, a.Organization FROM expert a,employee_desig b WHERE a.isactive='1' AND a.DesigId=b.DesigId AND a.expertid NOT IN( SELECT empid FROM committee_schedules_invitation WHERE committeescheduleid=:scheduleid AND labcode='@EXP'  ) ORDER BY a.expertname ";
 	private static final String ALLPROJECTDETAILSLIST ="SELECT a.projectid,a.projectcode,a.projectname,a.ProjectMainId,a.ProjectDescription,a.UnitCode,a.ProjectType,a.ProjectCategory,a.SanctionNo,a.SanctionDate,a.PDC,a.ProjectDirector, a.ProjectShortName FROM project_master a WHERE a.isactive=1 ";
 	private static final String PROJECTCOMMITTEEDESCRIPTIONTOR="SELECT committeeprojectid,description , termsofreference, committeeid , projectid  FROM committee_project WHERE committeeid=:committeeid AND projectid=:projectid";
 	private static final String PROJECTCOMMITTEEFORMATIONCHECKLIST="SELECT a.committeeprojectid,b.committeemainid FROM committee_project a LEFT JOIN committee_main b ON a.projectid = b.projectid AND a.committeeid = b.committeeid AND b.isactive=1 WHERE a.projectid = :projectid";
@@ -944,7 +945,7 @@ public class CommitteeDaoImpl  implements CommitteeDao
 	    manager.flush();
 
 	    if (invitation.getRevisionNo() == 0 &&
-	        invitation.getParentInvitationId() == null) {
+	        (invitation.getParentInvitationId() == null || invitation.getParentInvitationId() == 0)) {
 	        invitation.setParentInvitationId(invitation.getCommitteeInvitationId());
 	    }
 
@@ -4253,32 +4254,92 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 		return CommitteeScheduleMinutes;
 	}
 
-	private static final String REPUPDATE = """
-			UPDATE committee_schedules_invitation
-		    SET EmpId = :empId,
-		        DesigId = :designationId,
-		        LabCode = :labcode
-		    WHERE CommitteeInvitationId = :invitationId
-			""";
+//	private static final String REPUPDATE = """
+//			UPDATE committee_schedules_invitation
+//		    SET EmpId = :empId,
+//		        DesigId = :designationId,
+//		        LabCode = :labcode
+//		    WHERE CommitteeInvitationId = :invitationId
+//			""";
+//	@Override
+//	public long changeRepresentative(String invitationId, String newEmpNo, String newLabCode, String designationId) throws Exception {
+//		try {
+//			
+//			Query query =manager.createNativeQuery(REPUPDATE);
+//			query.setParameter("invitationId", invitationId);
+//			query.setParameter("empId",newEmpNo);
+//			query.setParameter("labcode", newLabCode != null ? newLabCode.toUpperCase() : null);
+//			query.setParameter("designationId", designationId);
+//			
+//			return query.executeUpdate();
+//			
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//			return 0l;
+//		}
+//	}
+	
+	
 	@Override
-	public long changeRepresentative(String invitationId, String newEmpNo, String newLabCode, String designationId) throws Exception {
+	public CommitteeInvitation getcommitteeInvitation(String invitationId) throws Exception {
+	    try {
+	        Long id = (invitationId != null && !invitationId.isBlank())
+	                ? Long.parseLong(invitationId)
+	                : 0L;
+
+	        return manager.find(CommitteeInvitation.class, id);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return null;
+	}
+
+	@Override
+	public List<Object[]> getCommitteeRepIsActiveList(String committeescheduleid) throws Exception {
 		try {
-			
-			Query query =manager.createNativeQuery(REPUPDATE);
-			query.setParameter("invitationId", invitationId);
-			query.setParameter("empId",newEmpNo);
-			query.setParameter("labcode", newLabCode != null ? newLabCode.toUpperCase() : null);
-			query.setParameter("designationId", designationId);
-			
-			return query.executeUpdate();
-			
+			Query query=manager.createNativeQuery("CALL Pfms_Committee_Invitation_Rep(:InScheduleId)");
+			query.setParameter("InScheduleId", Long.parseLong(committeescheduleid));
+			return (List<Object[]>)query.getResultList();
 		}catch (Exception e) {
 			e.printStackTrace();
-			return 0l;
+		}
+		return List.of();
+	}
+
+	@Override
+	public List<CommitteeInvitation> getCommitteeInvitationList(Long scheduleId) throws Exception {
+	    String jpql = "FROM CommitteeInvitation c WHERE c.CommitteeScheduleId = :scheduleId AND c.RevisionNo = 0 AND c.IsActive = 0";
+
+	    TypedQuery<CommitteeInvitation> query = manager.createQuery(jpql, CommitteeInvitation.class);
+	    query.setParameter("scheduleId", scheduleId);
+
+	    return query.getResultList();
+	}
+
+	@Override
+	public void CommitteeOnlineAttendanceToggle(String invitationid, String isOnlineAttendenc) throws Exception {
+		CommitteeInvitation ExistingCommitteeInvitation = manager.find(CommitteeInvitation.class, Long.parseLong(invitationid));
+		ExistingCommitteeInvitation.setIsOnlineAttendence(isOnlineAttendenc);
+	}
+
+	private static final String COMMITTEEMAINREPLIST = """
+				SELECT b.RepId,b.RepCode,b.RepName,a.CommitteeMainId
+				FROM committee_member_rep a
+				INNER JOIN committee_rep b ON b.RepId = a.RepId
+				WHERE a.CommitteeMainId = :committeeMainId;
+			""";
+	@Override
+	public List<Object[]> getCommitteeMainRepList(String committeeMainId) {
+		try {
+			Query query=manager.createNativeQuery(COMMITTEEMAINREPLIST);
+			query.setParameter("committeeMainId", Long.parseLong(committeeMainId));
+			return (List<Object[]>)query.getResultList();
+		}catch (Exception e) {
+			e.printStackTrace();
+			return List.of();
 		}
 	}
-	
-	
 }
 
 

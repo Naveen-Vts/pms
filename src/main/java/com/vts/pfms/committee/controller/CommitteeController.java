@@ -29,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
@@ -2949,45 +2950,50 @@ public class CommitteeController {
 			}else {
 				committeemainid=String.valueOf(service.LastCommitteeId(committeeid, projectid, divisionid, "0", carsInitiationId, programmeId));
 			}
+			
+			List<Object[]> repInvitationList = service.getCommitteeRepIsActiveList(committeescheduleid);
 
+			List<Object[]> EmployeeList = service.EmployeeListNoInvitedMembers(committeescheduleid,LabCode);
+			List<Object[]> ExpertList = service.ExternalMembersNotInvited(committeescheduleid);
+			req.setAttribute("designationlist", adminservice.DesignationList());
+			req.setAttribute("committeereplist", service.CommitteeMemberRepList(committeescheduledata[1].toString()));
+			req.setAttribute("committeeinvitedlist", committeeinvitedlist);
+			req.setAttribute("repInvitationList", repInvitationList);
+			req.setAttribute("EmployeeList", EmployeeList);
+			req.setAttribute("ExpertList", ExpertList);
+			req.setAttribute("committeescheduleid", committeescheduleid);
+			req.setAttribute("committeemainid",committeemainid);
+			req.setAttribute("committeeId", committeeid);
+			req.setAttribute("committeescheduledata",committeescheduledata);
+			if(ccmFlag!=null && ccmFlag.equalsIgnoreCase("Y")) {
+				req.setAttribute("agendaList", ccmservice.getCCMScheduleAgendaListByCCMScheduleId(committeescheduleid));
+				req.setAttribute("ccmFlag", ccmFlag);
+			}else {
+				req.setAttribute("agendalist",service.AgendaList(committeescheduleid) );
+			}
+			req.setAttribute("clusterlablist", service.AllLabList());
+			req.setAttribute("labid", service.LabDetails(committeescheduledata[15].toString())[13].toString());
+			
+			req.setAttribute("committeeallmemberlist",service.CommitteeAllMembersList(committeemainid) );
 			if(committeeinvitedlist.size()==0) 
 			{	
 
-				req.setAttribute("committeemainid",committeemainid);
-				req.setAttribute("committeeallmemberlist",service.CommitteeAllMembersList(committeemainid) );
-				req.setAttribute("committeescheduleid", committeescheduleid);
-				req.setAttribute("committeescheduledata",committeescheduledata );
-				req.setAttribute("committeeId", committeeid);
-				if(ccmFlag!=null && ccmFlag.equalsIgnoreCase("Y")) {
-					req.setAttribute("agendaList", ccmservice.getCCMScheduleAgendaListByCCMScheduleId(committeescheduleid));
-					req.setAttribute("ccmFlag", ccmFlag);
-				}else {
-					req.setAttribute("agendalist",service.AgendaList(committeescheduleid) );
-				}
-				req.setAttribute("labid", service.LabDetails(committeescheduledata[15].toString())[13].toString());
+//				req.setAttribute("committeemainid",committeemainid);
+//				req.setAttribute("committeeallmemberlist",service.CommitteeAllMembersList(committeemainid) );
+//				req.setAttribute("committeescheduleid", committeescheduleid);
+//				req.setAttribute("committeescheduledata",committeescheduledata );
+//				req.setAttribute("committeeId", committeeid);
+//				if(ccmFlag!=null && ccmFlag.equalsIgnoreCase("Y")) {
+//					req.setAttribute("agendaList", ccmservice.getCCMScheduleAgendaListByCCMScheduleId(committeescheduleid));
+//					req.setAttribute("ccmFlag", ccmFlag);
+//				}else {
+//					req.setAttribute("agendalist",service.AgendaList(committeescheduleid));
+//				}
+//				req.setAttribute("labid", service.LabDetails(committeescheduledata[15].toString())[13].toString());
 				return "committee/CommitteeInvitation";
 			}
 			else
 			{
-				List<Object[]> EmployeeList = service.EmployeeListNoInvitedMembers(committeescheduleid,LabCode);
-				List<Object[]> ExpertList = service.ExternalMembersNotInvited(committeescheduleid);
-				req.setAttribute("designationlist", adminservice.DesignationList());
-				req.setAttribute("committeereplist", service.CommitteeMemberRepList(committeescheduledata[1].toString()));
-				req.setAttribute("committeeinvitedlist", committeeinvitedlist);
-				req.setAttribute("EmployeeList", EmployeeList);
-				req.setAttribute("ExpertList", ExpertList);
-				req.setAttribute("committeescheduleid", committeescheduleid);
-				req.setAttribute("committeemainid",committeemainid);
-				req.setAttribute("committeeId", committeeid);
-				req.setAttribute("committeescheduledata",committeescheduledata );
-				if(ccmFlag!=null && ccmFlag.equalsIgnoreCase("Y")) {
-					req.setAttribute("agendaList", ccmservice.getCCMScheduleAgendaListByCCMScheduleId(committeescheduleid));
-					req.setAttribute("ccmFlag", ccmFlag);
-				}else {
-					req.setAttribute("agendalist",service.AgendaList(committeescheduleid) );
-				}
-				req.setAttribute("clusterlablist", service.AllLabList());
-				req.setAttribute("labid", service.LabDetails(committeescheduledata[15].toString())[13].toString());
 				return "committee/ViewCommitteeInvitation";
 			}
 
@@ -5385,6 +5391,14 @@ private boolean isValidFileType(MultipartFile file) {
 
 			req.setAttribute("actionsdata",actionsdata );
 
+			List<Object[]> repList = service.getCommitteeMainRepList(committeescheduleeditdata[1]!=null?committeescheduleeditdata[1].toString():"0");
+			List<String> repCodes = new ArrayList<>();
+			
+			if(repList != null && !repList.isEmpty()){
+				repCodes = repList.stream().map(obj -> obj[1]!=null ? obj[1].toString() : null).filter(Objects::nonNull).collect(Collectors.toList());
+			}
+
+			req.setAttribute("repCodes", repCodes);
 			req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutes(committeescheduleid) );
 			req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
 			//req.setAttribute("CommitteeAgendaList", service.CommitteeAgendaList(committeescheduleid));
@@ -7498,6 +7512,16 @@ private boolean isValidFileType(MultipartFile file) {
 				}
 
 				Committee committee = printservice.getCommitteeData(committeeid);
+				
+				List<Object[]> repList = service.getCommitteeMainRepList(committeescheduleeditdata[1]!=null?committeescheduleeditdata[1].toString():"0");
+				List<String> repCodes = new ArrayList<>();
+				
+				if(repList != null && !repList.isEmpty()){
+					repCodes = repList.stream().map(obj -> obj[1]!=null ? obj[1].toString() : null).filter(Objects::nonNull).collect(Collectors.toList());
+				}
+
+				req.setAttribute("repCodes", repCodes);
+				
 
 				HashMap< String, ArrayList<Object[]>> actionsdata=new LinkedHashMap<String, ArrayList<Object[]>>();
 				long lastid=service.getLastPmrcId(projectid, committeeid, committeescheduleid);
@@ -7877,6 +7901,15 @@ private boolean isValidFileType(MultipartFile file) {
 
 				Committee committee = printservice.getCommitteeData(committeeid);
 
+
+				List<Object[]> repList = service.getCommitteeMainRepList(committeescheduleeditdata[1]!=null?committeescheduleeditdata[1].toString():"0");
+				List<String> repCodes = new ArrayList<>();
+				
+				if(repList != null && !repList.isEmpty()){
+					repCodes = repList.stream().map(obj -> obj[1]!=null ? obj[1].toString() : null).filter(Objects::nonNull).collect(Collectors.toList());
+				}
+
+				req.setAttribute("repCodes", repCodes);
 				HashMap< String, ArrayList<Object[]>> actionsdata=new LinkedHashMap<String, ArrayList<Object[]>>();
 				long lastid=service.getLastPmrcId(projectid, committeeid, committeescheduleid);
 
@@ -9202,6 +9235,14 @@ private boolean isValidFileType(MultipartFile file) {
 
 				Committee committee = printservice.getCommitteeData(committeeid);
 
+				List<Object[]> repList = service.getCommitteeMainRepList(committeescheduleeditdata[1]!=null?committeescheduleeditdata[1].toString():"0");
+				List<String> repCodes = new ArrayList<>();
+				
+				if(repList != null && !repList.isEmpty()){
+					repCodes = repList.stream().map(obj -> obj[1]!=null ? obj[1].toString() : null).filter(Objects::nonNull).collect(Collectors.toList());
+				}
+
+				req.setAttribute("repCodes", repCodes);
 				HashMap< String, ArrayList<Object[]>> actionsdata=new LinkedHashMap<String, ArrayList<Object[]>>();
 				long lastid=service.getLastPmrcId(projectid, committeeid, committeescheduleid);
 
@@ -9689,6 +9730,14 @@ private boolean isValidFileType(MultipartFile file) {
 
 			Committee committee = printservice.getCommitteeData(committeeid);
 
+			List<Object[]> repList = service.getCommitteeMainRepList(committeescheduleeditdata[1]!=null?committeescheduleeditdata[1].toString():"0");
+			List<String> repCodes = new ArrayList<>();
+			
+			if(repList != null && !repList.isEmpty()){
+				repCodes = repList.stream().map(obj -> obj[1]!=null ? obj[1].toString() : null).filter(Objects::nonNull).collect(Collectors.toList());
+			}
+
+			req.setAttribute("repCodes", repCodes);
 			HashMap< String, ArrayList<Object[]>> actionsdata=new LinkedHashMap<String, ArrayList<Object[]>>();
 			long lastid=service.getLastPmrcId(projectid, committeeid, committeescheduleid);
 
@@ -9926,6 +9975,14 @@ private boolean isValidFileType(MultipartFile file) {
 
 				Committee committee = printservice.getCommitteeData(committeeid);
 
+				List<Object[]> repList = service.getCommitteeMainRepList(committeescheduleeditdata[1]!=null?committeescheduleeditdata[1].toString():"0");
+				List<String> repCodes = new ArrayList<>();
+				
+				if(repList != null && !repList.isEmpty()){
+					repCodes = repList.stream().map(obj -> obj[1]!=null ? obj[1].toString() : null).filter(Objects::nonNull).collect(Collectors.toList());
+				}
+
+				req.setAttribute("repCodes", repCodes);
 				HashMap< String, ArrayList<Object[]>> actionsdata=new LinkedHashMap<String, ArrayList<Object[]>>();
 				long lastid=service.getLastPmrcId(projectid, committeeid, committeescheduleid);
 
@@ -10385,6 +10442,14 @@ private boolean isValidFileType(MultipartFile file) {
 				}
 			} 
 
+			List<Object[]> repList = service.getCommitteeMainRepList(scheduleeditdata[1]!=null?scheduleeditdata[1].toString():"0");
+			List<String> repCodes = new ArrayList<>();
+			
+			if(repList != null && !repList.isEmpty()){
+				repCodes = repList.stream().map(obj -> obj[1]!=null ? obj[1].toString() : null).filter(Objects::nonNull).collect(Collectors.toList());
+			}
+
+			req.setAttribute("repCodes", repCodes);
 			req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutes(committeescheduleid) );
 			req.setAttribute("committeescheduleeditdata", scheduleeditdata);
 			req.setAttribute("CommitteeAgendaList", service.AgendaList(committeescheduleid));
@@ -11445,6 +11510,14 @@ private boolean isValidFileType(MultipartFile file) {
 				}
 			} 
 
+			List<Object[]> repList = service.getCommitteeMainRepList(committeescheduleeditdata[1]!=null?committeescheduleeditdata[1].toString():"0");
+			List<String> repCodes = new ArrayList<>();
+			
+			if(repList != null && !repList.isEmpty()){
+				repCodes = repList.stream().map(obj -> obj[1]!=null ? obj[1].toString() : null).filter(Objects::nonNull).collect(Collectors.toList());
+			}
+
+			req.setAttribute("repCodes", repCodes);
 			req.setAttribute("actionsdata",actionsdata );
 			req.setAttribute("userview",UserView);
 			req.setAttribute("committeeminutesspeclist",service.committeeScheduleMinutesforActionForMomADE(committeescheduleid));
@@ -12643,15 +12716,26 @@ private boolean isValidFileType(MultipartFile file) {
 	@RequestMapping(value = "ChangeRepresentative.htm", method = {RequestMethod.POST})
 	public String changeRepresentative(HttpServletRequest req,HttpSession ses,RedirectAttributes redir) {
 	    try {
+			String UserId=(String)ses.getAttribute("Username");
 	        
 	    	String invitationId = req.getParameter("invitationId");
+	    	String parentInvitationId = req.getParameter("parentInvitationId");
 	    	String newEmpNo = req.getParameter("newEmpNo");
 	    	String newLabCode = req.getParameter("newLabCode");
 	    	String designationId = req.getParameter("designationId");
 
 	    	redir.addAttribute("committeescheduleid",req.getParameter("committeescheduleid"));
+	    	
+	    	CommitteeInvitationDto dto = new CommitteeInvitationDto();
+	    	
+	    	dto.setDesignationId(designationId);
+	    	dto.setEmpId(newEmpNo);
+	    	dto.setInvitationId(invitationId);
+	    	dto.setEmpLabCode(newLabCode);
+	    	dto.setParentInvitationId(parentInvitationId);
+	    	dto.setCreatedBy(UserId);
 
-	    	long count = service.changeRepresentative(invitationId,newEmpNo,newLabCode,designationId);
+	    	long count = service.changeRepresentative(dto);
 	    	if(count > 0) {
 	    		redir.addAttribute("result","Rep Change Successful");
 	    	}else {
@@ -12663,5 +12747,64 @@ private boolean isValidFileType(MultipartFile file) {
 	    }
 	    
 	    return "static/Error";
+	}
+	
+	@RequestMapping(value = "AddRepresentative.htm", method = {RequestMethod.POST})
+	public String addRepresentative(HttpServletRequest req,HttpSession ses,RedirectAttributes redir) {
+	    try {
+			String UserId=(String)ses.getAttribute("Username");
+	        
+	    	String repCode = req.getParameter("repCode");
+	    	String parentInvitationId = req.getParameter("parentInvitationId");
+	    	String newEmpNo = req.getParameter("newEmpNo");
+	    	String newLabCode = req.getParameter("newLabCode");
+	    	String designationId = req.getParameter("designationId");
+	    	String scheduleId  = req.getParameter("committeescheduleid");
+
+	    	redir.addAttribute("committeescheduleid",scheduleId);
+	    	
+	    	CommitteeInvitationDto dto = new CommitteeInvitationDto();
+	    	
+	    	dto.setDesignationId(designationId);
+	    	dto.setEmpId(newEmpNo);
+	    	dto.setRepCode(repCode);
+	    	dto.setEmpLabCode(newLabCode);
+	    	dto.setCommitteeScheduleId(scheduleId);
+	    	dto.setParentInvitationId(parentInvitationId);
+	    	dto.setCreatedBy(UserId);
+
+	    	long count = service.addRepresentative(dto);
+	    	if(count > 0) {
+	    		redir.addAttribute("result","Rep Added Successfully");
+	    	}else {
+	    		redir.addAttribute("resultFail","Rep Add Unsuccessful");
+	    	}
+	    	return "redirect:/CommitteeInvitations.htm";
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    
+	    return "static/Error";
+	}
+	
+	//DLRL
+	@RequestMapping(value = "CommitteeOnlineAttendanceToggle.htm", method = RequestMethod.GET)
+	public @ResponseBody String CommitteeOnlineAttendanceToggle(HttpSession ses, HttpServletRequest req, RedirectAttributes redir)
+			throws Exception 
+	{
+		String UserId=(String)ses.getAttribute("Username");
+		logger.info(new Date() +"Inside CommitteeAttendanceToggle.htm "+UserId);
+		try
+		{
+			String Invitationid = req.getParameter("invitationid");
+			String isOnlineAttendenc = req.getParameter("isOnlineAttendenc");
+			
+			service.CommitteeOnlineAttendanceToggle(Invitationid,isOnlineAttendenc);
+		}
+		catch (Exception e) {
+			e.printStackTrace(); logger.error(new Date() +"Inside CommitteeAttendanceToggle.htm "+UserId,e);
+		}
+		
+		return "0";
 	}
 }

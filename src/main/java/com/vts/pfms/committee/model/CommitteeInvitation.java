@@ -7,7 +7,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import lombok.Data;
+import lombok.ToString;
 
+@ToString
 @Data
 @Entity
 @Table(name= "committee_schedules_invitation")
@@ -35,4 +37,6 @@ public class CommitteeInvitation
 	
 	private Long RevisionNo;
 	private Long ParentInvitationId;
+	
+	private Long IsActive;
 }

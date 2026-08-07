@@ -362,7 +362,11 @@ public interface CommitteeService {
 	// Naveen R 05-03-2026 
 	public List<Object[]> getMeetingCountList(String committeeId) throws Exception;
 	public List<Object[]> CommitteeScheduleMinutesMom(String committeescheduleid) throws Exception;
-	public long changeRepresentative(String invitationId, String newEmpNo, String newLabCode, String designationId) throws Exception;
+	public long changeRepresentative(CommitteeInvitationDto dto) throws Exception;
+	public List<Object[]> getCommitteeRepIsActiveList(String committeescheduleid) throws Exception;
+	public long addRepresentative(CommitteeInvitationDto dto) throws Exception;
+	public void CommitteeOnlineAttendanceToggle(String invitationid, String isOnlineAttendenc) throws Exception;
+	public List<Object[]> getCommitteeMainRepList(String committeeMainId);
 	
 
 }
