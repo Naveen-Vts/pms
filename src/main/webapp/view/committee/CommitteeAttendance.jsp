@@ -10,39 +10,6 @@
 <spring:url value="/resources/css/committeeModule/CommitteeAttendance.css" var="CommitteeAttendance" />
 <link href="${CommitteeAttendance}" rel="stylesheet" />
 <title>COMMMITTEE ATTENDANCE</title>
-<style>
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 20px;
-}
-
-.switch input { opacity: 0; width: 0; height: 0; }
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #ccc;
-  transition: .4s;
-  border-radius: 20px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 14px; width: 14px;
-  left: 3px; bottom: 3px;
-  background-color: white;
-  transition: .4s;
-  border-radius: 50%;
-}
-
-input:checked + .slider { background-color: #2196F3; }
-input:checked + .slider:before { transform: translateX(20px); }
-</style>
 </head>
 <body>
 <%
@@ -61,6 +28,7 @@ String LabCode=(String) request.getAttribute("LabCode");
 String ccmFlag = (String) request.getAttribute("ccmFlag");
 String committeeMainId = (String) request.getAttribute("committeeMainId");
 String committeeId = (String) request.getAttribute("committeeId");
+List<String> repList = new ArrayList<>();
 %>
 
 <% 
@@ -127,6 +95,7 @@ String committeeId = (String) request.getAttribute("committeeId");
 				    		<tbody>
 								<%
 								int count=1;
+								int repCount = 0;
 								
 									
 									for(Object[] obj:committeeinvitedlist){ %>
@@ -154,7 +123,42 @@ String committeeId = (String) request.getAttribute("committeeId");
 											else if(obj[3].toString().equalsIgnoreCase("SPL") )    {%> Special Invitee<%}
 											
 										// Prudhvi - 27/03/2024 end
-											else {%> REP_<%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - "%> (<%=obj[11]!=null?StringEscapeUtils.escapeHtml4(obj[11].toString()): " - " %>)  <%}
+											else { repCount++;  %> 
+											<%
+											String repCode = obj[3]!=null ? obj[3].toString() : "";
+											boolean isCommitteRep = !repCode.endsWith("_NORMAL");
+											
+											if(!isCommitteRep){
+												String[] reps = repCode.split("_");
+												repCode = "REP_"+reps[0];
+											}else{
+												repCode = "REP_"+repCode;
+											}
+											
+										
+												String memberName =
+												    (obj[6] != null ? StringEscapeUtils.escapeHtml4(obj[6].toString()) : " - ")
+												    + ", "
+												    + (obj[7] != null ? StringEscapeUtils.escapeHtml4(obj[7].toString()) : " - ")
+												    + " ("
+												    + (obj[11] != null ? StringEscapeUtils.escapeHtml4(obj[11].toString()) : " - ")
+												    + ")";
+												repList.add(memberName);
+												
+											%>
+											<%-- <%=repName %> --%>
+											<%-- REP_<%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - "%> (<%=obj[11]!=null?StringEscapeUtils.escapeHtml4(obj[11].toString()): " - " %>) --%>
+											
+											<span id="repName<%=obj[1]%>" data-member-name="<%=memberName%>" ><%=repCode%></span>
+												<%if(isCommitteRep){ %>
+													<button type="button" class="btn btn-xs btn-link editRepBtn"
+													        data-invitationid="<%=obj[1]%>"
+													        data-emptype="<%=obj[18]%>"
+													        data-reptype="<%=StringEscapeUtils.escapeHtml4(obj[3].toString())%>">
+													    <i class="fa fa-pencil"></i>
+													</button>
+												<%} %>
+											<%}
 										%>
 										
 									</td>
@@ -172,7 +176,7 @@ String committeeId = (String) request.getAttribute("committeeId");
 											<input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
 											<input type="hidden" name="scheduleid" value="<%=committeescheduleid %>">
 									</td>
-									
+										
 									<td style="text-align:center">
 								
 										<label class="switch">
@@ -181,11 +185,11 @@ String committeeId = (String) request.getAttribute("committeeId");
 										    <span class="slider"></span>
 										</label>
 									</td>
-										
+									
 								</tr>
 							
 							<% count++;}%>
-						   <%if(committeeinvitedlist.size()>1	){ %>
+						   <%if(committeeinvitedlist.size()>1){ %>
 							<tr>
 						    <td> <button type="submit" class="btn btn-sm edit" onclick="return slnocheck('serialnoupdate');" >Update</button></td>
 							<td></td>
@@ -223,12 +227,69 @@ String committeeId = (String) request.getAttribute("committeeId");
 							<input type="hidden" name="scheduleid" value="<%=committeescheduleid %>">
 							<!-- <button type="button" class="btn btn-sm add" id="addrep" onclick="showaddladd();">Add Additional Members</button>
 							<button type="button" class="btn btn-sm add" id="addrep" onclick="showrepadd();">Add Representative</button> -->
-							<button class="btn btn-info btn-sm  shadow-nohover back" >Back</button>
+							<button type="submit" class="btn btn-info btn-sm  shadow-nohover back" >Back</button>
 						</form>		
 	          		<%} %>	
 			      								
 				 </div>
-			
+				
+					<div class="modal fade" id="changeRepsModal" tabindex="-1" role="dialog">
+					  <div class="modal-dialog modal-lg" role="document">
+					    <div class="modal-content">
+					      <div class="modal-header">
+					        <h5 class="modal-title">Change Representative</h5>
+					        <button type="button" class="close" data-dismiss="modal">&times;</button>
+					      </div>
+					      <div class="modal-body">
+					        <input type="hidden" id="changeRepInvitationId" />
+					        <input type="hidden" id="parentInvitationId" />
+					        <div class="form-group">
+					          <label>Current Representative</label>
+					          <p id="currentRepDisplay" class="font-weight-bold"></p>
+					        </div>
+					        
+					        <!-- Member Type Selector -->
+					        <div class="form-group">
+					          <label>Select Member Type</label>
+					          <br>
+					          <select class="form-control selectdee" id="repMemberTypeSelect" data-width="80%">
+					            <option value="">-- Select Type --</option>
+					            <option value="INTERNAL">Internal Member</option>
+					            <option value="EXTERNAL_INSIDE">External Member (Inside DRDO)</option>
+					            <option value="EXPERT">Expert (Outside DRDO)</option>
+					            <!-- <option value="INDUSTRY_PARTNER">Industry Partner</option> -->
+					          </select>
+					        </div>
+					
+					        <!-- NEW: Lab Selection (Hidden by default) -->
+					        <div class="form-group" id="modalLabSelectionDiv" style="display: none;">
+					          <label>Select Lab</label>
+					          <br>
+					          <select class="form-control selectdee" id="repLabSelect" data-width="80%">
+					            <option value="">-- Select Lab --</option>
+					            <% for (Object[] obj : clusterlablist) {
+					                 if(!LabCode.equals(obj[3].toString())){ %>
+					                    <option value="<%=obj[3]%>"><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - "%></option>
+					            <%   } 
+					               } %>
+					          </select>
+					        </div>
+					        
+					        <div class="form-group">
+					          <label>Select New Representative</label>
+					          <br>
+					          <select class="form-control selectdee" id="newRepSelect" name="newRepSelect" data-width="80%" data-live-search="true" required="required">
+					            <option value="">-- Select Employee --</option>
+					          </select>
+					        </div>
+					      </div>
+					      <div class="modal-footer">
+					        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+					        <button type="button" class="btn btn-primary" id="saveRepChangeBtn">Save</button>
+					      </div>
+					    </div>
+					  </div>
+					</div>
 <!------------------------------------------------------------------------------------------------------------------------------------------------ -->	
 			
 				<div class=row>
@@ -240,7 +301,6 @@ String committeeId = (String) request.getAttribute("committeeId");
 		       			<h5 class="addMembersColor">Add Representative Members</h5>
 		       			<hr> 
 		          	</div>
-		          	
 		     	</div>			
 					
 <!-- --------------------------------internal add ----------------------------------------------- -->
@@ -320,7 +380,7 @@ String committeeId = (String) request.getAttribute("committeeId");
 							<td class="width-30">							
 								<div class="input select">
 									<select class="form-control selectdee" name="LabId" tabindex="-1"   id="LabCode" onchange="employeename()" required>
-										<option disabled="true"  selected value="">Lab Name</option>
+										<option disabled selected value="">Lab Name</option>
 											<% for (Object[] obj : clusterlablist) {
 											if(!LabCode.equals(obj[3].toString())){%>
 												<option value="<%=obj[3]%>"><%=obj[3]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()): " - "%></option>
@@ -523,8 +583,6 @@ function FormNameEdit(id){
    	 
 }
 
-
-
 function OnlineFormNameEdit(id, checkbox) {
     // This will give you true or false
     var isChecked = checkbox.checked;
@@ -598,6 +656,95 @@ function employeename(){
 		}
 	}
 
+	
+	<%-- 
+$(document).on('click', '.editRepBtn', function () {
+    var invitationId = $(this).data('invitationid');
+
+    var repType = $(this).data('reptype');
+
+    $('#changeRepInvitationId').val(invitationId);
+
+   var memberName = $('#repName' + invitationId).data('memberName');
+    console.log($('#repName' + invitationId));
+    $('#currentRepDisplay').text(memberName);
+
+    $.ajax({
+        type: "GET",
+        url: "EligibleRepEmployees.htm",
+        data: {
+            repType: repType,
+            scheduleid: '<%=committeescheduleid%>',
+            currentInvitationId: invitationId
+        },
+        success: function (result) {
+            var employees = JSON.parse(result);
+            var options = '<option value="">-- Select Employee --</option>';
+           //  employees.forEach(function (e) {
+                // e.id = empNo, e.name, e.labCode
+               // options += '<option value="' + e.id + '|' + e.labCode + '">'
+                //         + e.name + ' (' + e.labCode + ')</option>';
+            //}); 
+            
+            employees.forEach(function (e) {
+                // Skip this row if name or labCode contains any HTML tag
+                var tagPattern = /<[^>]*>/;
+                if (tagPattern.test(e.name) || tagPattern.test(e.labCode)) {
+                    return; // acts like "continue" skips this iteration
+                }
+
+                options += '<option value="' + e.id + '|' + e.labCode + '|' + e.designationId + '|' + e.scheduleId + '">'
+                         + e.name + ' (' + e.labCode + ')</option>';
+            });
+            
+            $('#newRepSelect').html(options);
+
+            $('#changeRepsModal').modal('show');
+
+        },
+        error: function () {
+            alert('Could not load eligible representatives.');
+        }
+    });
+}); --%>
+/* 
+$('#saveRepChangeBtn').on('click', function () {
+    var invitationId = $('#changeRepInvitationId').val();
+
+    var selected = $('#newRepSelect').val();
+    if (!selected) { alert('Please select a representative'); return; }
+
+    var parts = selected.split('|');
+    var newEmpNo = parts[0];
+    var newLabCode = parts[1];
+    var designationId = parts[2];
+    var committeescheduleid = parts[3];
+    if(!confirm("Are you sure to Update?")) return;
+    var form = document.createElement("form");
+    form.method = "POST";
+    form.action = "ChangeRepresentative.htm";
+
+    function addField(name, value) {
+        var input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+    }
+
+    addField("invitationId", invitationId);
+
+    addField("newEmpNo", newEmpNo);
+    addField("newLabCode", newLabCode);
+    addField("designationId", designationId);
+    addField("committeescheduleid", committeescheduleid);
+    addField("${_csrf.parameterName}", "${_csrf.token}");
+
+    document.body.appendChild(form);
+    form.submit();
+}); */
+
+
 function getRoles() {
     // Get all input elements with the name attribute "Role"
     var  inputs = document.querySelectorAll('input[name="Role"]');
@@ -639,7 +786,159 @@ function getRoles() {
 
 
 </script>
+<script type="text/javascript">
+// 1. Serialize the Java lists from the request into JavaScript Arrays
+var internalEmployeesList = [
+    <% if(EmployeeList != null) { for (Object[] obj : EmployeeList) { %>
+        { id: "<%=obj[0]%>", name: "<%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):""%>", desig: "<%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):""%>",desigId: "<%=obj[3]!=null?obj[3].toString():""%>", labCode: "<%=obj[4]%>" },
+    <% } } %>
+];
 
+var expertEmployeesList = [
+    <% if(ExpertList != null) { for (Object[] obj : ExpertList) { %>
+        { id: "<%=obj[0]%>", name: "<%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):""%>", desig: "<%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):""%>",desigId: "<%=obj[3]!=null?obj[3].toString():""%>",  labCode: "@EXP" },
+    <% } } %>
+];
 
+<%-- var industryPartnerList = [
+    <% if(IndustryPartnerList != null) { for (Object[] obj : IndustryPartnerList) { %>
+        { id: "<%=obj[0]%>", name: "<%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):""%>", desig: "<%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):""%>", labCode: "<%=obj[3]%>" },
+    <% } } %>
+]; --%>
+
+// 2. Open the Modal
+$(document).on('click', '.editRepBtn', function () {
+    var invitationId = $(this).data('invitationid');
+    $('#changeRepInvitationId').val(invitationId);
+    
+    var memberName = $('#repName' + invitationId).data('memberName');
+    $('#currentRepDisplay').text(memberName);
+
+    // Reset dropdowns and hide lab div
+    $('#repMemberTypeSelect').val('').change();
+    $('#repLabSelect').val('');
+    $('#modalLabSelectionDiv').hide();
+    $('#newRepSelect').html('<option value="">-- Select Employee --</option>');
+    
+    $('#changeRepsModal').modal('show');
+});
+
+// 3. Handle Member Type Change
+$('#repMemberTypeSelect').on('change', function() {
+    var type = $(this).val();
+    var options = '<option value="">-- Select Employee --</option>';
+    
+    // Clear dependencies
+    $('#repLabSelect').val('');
+    $('#newRepSelect').html(options);
+
+    // If External (Inside DRDO), show Lab dropdown and STOP. (Wait for lab selection)
+    if (type === 'EXTERNAL_INSIDE') {
+        $('#modalLabSelectionDiv').show();
+        return; 
+    } 
+    
+    // Otherwise, hide Lab dropdown and populate employees immediately
+    $('#modalLabSelectionDiv').hide();
+    var targetList = [];
+
+    if (type === 'INTERNAL') targetList = internalEmployeesList;
+    else if (type === 'EXPERT') targetList = expertEmployeesList;
+    else if (type === 'INDUSTRY_PARTNER') targetList = industryPartnerList;
+
+    targetList.forEach(function(e) {
+        var tagPattern = /<[^>]*>/;
+        if (tagPattern.test(e.name) || tagPattern.test(e.labCode)) return; 
+        
+        var valString = e.id + '|' + e.labCode + '|' + e.desigId + '|' + '<%=committeescheduleid%>';
+        options += '<option value="' + valString + '">' + e.name + ' (' + e.labCode + ')</option>';
+    });
+
+    $('#newRepSelect').html(options);
+});
+
+// 4. NEW: Handle Lab Selection for External Members (AJAX Call)
+$('#repLabSelect').on('change', function() {
+    var selectedLab = $(this).val();
+    $('#newRepSelect').html('<option value="">-- Select Employee --</option>');
+    
+    if (selectedLab) {
+        $.ajax({
+            type: "GET",
+            url: "ExternalEmployeeListInvitations.htm",
+            data: {
+                LabCode: selectedLab,
+                scheduleid: '<%=committeescheduleid%>'
+            },
+            dataType: 'json',
+            success: function(result) {
+                // Ensure result is parsed correctly
+                var parsedResult = typeof result === 'string' ? JSON.parse(result) : result;
+                var values = Object.keys(parsedResult).map(function(e) { return parsedResult[e]; });
+                
+                var options = '<option value="">-- Select Employee --</option>';
+                for (var i = 0; i < values.length; i++) {
+                    // values[i][0] = EmpId, values[i][1] = Name, values[i][3] = Designation/Lab, values[i][4] = DesignationId
+                    var empId = values[i][0];
+                    var empName = values[i][1].replace(/</g, "").replace(/>/g, ""); // Strip tags
+                    var desigName = values[i][3].replace(/</g, "").replace(/>/g, "");
+                    var desigId = values[i][4];
+                    var labcode = values[i][5];
+                    
+                    // Format required by the Save button: id | labCode | desigId | scheduleId
+                    var valString = empId + '|' + selectedLab + '|' + desigId + '|' + '<%=committeescheduleid%>';
+                    options += '<option value="' + valString + '">' + empName + ' (' + desigName + ')</option>';
+                } 
+                
+                $('#newRepSelect').html(options);
+            },
+            error: function() {
+                alert("Failed to fetch employees for the selected lab.");
+            }
+        });
+    }
+});
+
+// 5. Submit Form
+$('#saveRepChangeBtn').on('click', function () {
+    var invitationId = $('#changeRepInvitationId').val();
+    var selected = $('#newRepSelect').val();
+    
+    if (!selected) { 
+        alert('Please select a representative'); 
+        return; 
+    }
+
+    var parts = selected.split('|');
+    var newEmpNo = parts[0];
+    var newLabCode = parts[1];
+    var designationId = parts[2];
+    var committeescheduleid = parts[3];
+    
+    if(!confirm("Are you sure you want to update the representative?")) return;
+    
+    var form = document.createElement("form");
+    form.method = "POST";
+    form.action = "ChangeRepresentative.htm";
+
+    function addField(name, value) {
+        var input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+    }
+
+    addField("invitationId", invitationId);
+    addField("newEmpNo", newEmpNo);
+    addField("newLabCode", newLabCode);
+    addField("designationId", designationId);
+    addField("committeescheduleid", committeescheduleid);
+    addField("${_csrf.parameterName}", "${_csrf.token}");
+
+    document.body.appendChild(form);
+    form.submit();
+});
+</script>
 </body>
 </html>

@@ -39,7 +39,7 @@
 	Object[] divisiondetails=(Object[])request.getAttribute("divisiondetails");
 	Object[] initiationdetails=(Object[])request.getAttribute("initiationdetails");
 	LabMaster labInfo=(LabMaster)request.getAttribute("labInfo");
-	
+	List<String> repCodes = (List<String> )request.getAttribute("repCodes");
 	
 	DecimalFormat df=new DecimalFormat("####################.##");
 	int meetingcount= (int) request.getAttribute("meetingcount");
@@ -314,7 +314,7 @@
 <%if(invitedlist.size()>0){ %>
 <% ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","CW","CO"));
 //ArrayList<String> addlmembertypes=new ArrayList<String>(Arrays.asList("W","E","I","P")); %>
-
+membertypes.addAll(repCodes);
 <% 
 int memPresent=0,memAbscent=0,ParPresent=0,parAbscent=0;
 int j=0;
@@ -475,7 +475,19 @@ for(Object[] temp : invitedlist){
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("I")){	 %>Internal<%}
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("W") ){	 %>External<%-- &nbsp;(<%=invitedlist.get(i)[11] %>) --%><%}
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("E") )    {%>External<%-- &nbsp;(<%=invitedlist.get(i)[11] %>) --%><%}
-					else {%> REP_<%=invitedlist.get(i)[3]!=null?invitedlist.get(i)[3].toString(): " - "%>&nbsp; (<%=invitedlist.get(i)[11]!=null?invitedlist.get(i)[11].toString(): " - " %>)  <%}
+					else {
+						String repCode = invitedlist.get(i)[3]!=null ? invitedlist.get(i)[3].toString() : "";
+						boolean isCommitteRep = !repCode.endsWith("_NORMAL");
+						
+						if(!isCommitteRep){
+							String[] reps = repCode.split("_");
+							repCode = "REP_"+reps[0];
+						}else{
+							repCode = "REP_"+repCode;
+						}
+						
+					
+					%> <%= repCode %> <%}
 				%>
 	 		</td>	
 	 		</tr>
@@ -523,7 +535,19 @@ for(Object[] temp : invitedlist){
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("I")){	 %>Internal<%}
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("W") ){	 %>External<%-- &nbsp;(<%=invitedlist.get(i)[11] %>) --%><%}
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("E") )    {%>External<%-- &nbsp;(<%=invitedlist.get(i)[11] %>) --%><%}
-					else {%> REP_<%=invitedlist.get(i)[3]!=null?invitedlist.get(i)[3].toString(): " - "%><%-- &nbsp; (<%=invitedlist.get(i)[11] %>) --%>  <%}
+					else {
+						String repCode = invitedlist.get(i)[3]!=null ? invitedlist.get(i)[3].toString() : "";
+						boolean isCommitteRep = !repCode.endsWith("_NORMAL");
+						
+						if(!isCommitteRep){
+							String[] reps = repCode.split("_");
+							repCode = "REP_"+reps[0];
+						}else{
+							repCode = "REP_"+repCode;
+						}
+						
+					
+					%> <%= repCode %> <%}
 				%>
 	 		</td>	
 	 	</tr>

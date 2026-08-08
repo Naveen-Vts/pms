@@ -92,7 +92,7 @@ public interface CommitteeDao {
 	public int MeetingAgendaApprovalSubmit(CommitteeSchedule schedule,CommitteeMeetingApproval approval,PfmsNotification notfication) throws Exception;
 	
 	public Object[] CommitteeScheduleData(String committeescheduleid) throws Exception;
-	public List<Object[]> CommitteeAtendance(String committeescheduleid) throws Exception;
+	public List<Object[]> CommitteeAtendance(String committeescheduleid,String revisionNo) throws Exception;
 	public Long CommitteeInvitationDelete(String committeeinvitationid) throws Exception;
 	public List<String> CommitteeAttendanceList(String invitationId) throws Exception;
 	public Long CommitteeAttendanceUpdate(String InvitationId, String Value) throws Exception;
@@ -382,6 +382,11 @@ public interface CommitteeDao {
 	// Naveen R 05-03-2026 
 	public List<Object[]> getMeetingCountList(String committeeId) throws Exception;
 	public List<Object[]> CommitteeScheduleMinutesMom(String committeescheduleid) throws Exception;
+//	public long changeRepresentative(String invitationId, String newEmpNo, String newLabCode, String designationId) throws Exception;
+	public CommitteeInvitation getcommitteeInvitation(String invitationId) throws Exception;
+	public List<Object[]> getCommitteeRepIsActiveList(String committeescheduleid) throws Exception;
+	public List<CommitteeInvitation> getCommitteeInvitationList(Long scheduleId) throws Exception;
 	public void CommitteeOnlineAttendanceToggle(String invitationid, String isOnlineAttendenc) throws Exception;
+	public List<Object[]> getCommitteeMainRepList(String committeeMainId);
 
 }

@@ -1,4 +1,5 @@
 
+<%@page import="java.time.LocalDate"%>
 <%@page import="org.apache.commons.text.StringEscapeUtils"%>
 <%@page import="com.vts.pfms.FormatConverter"%>
 <%@page import="com.ibm.icu.text.DecimalFormat"%>
@@ -24,6 +25,40 @@
   <%
   List<Object[]> ProjectList=(List<Object[]>)request.getAttribute("ProjectList");
   String ProjectId=(String)request.getAttribute("ProjectId");
+  Object[] ProjectDetail = (Object[]) request.getAttribute("ProjectDetails");
+  LocalDate minDate = null, maxDate = null;
+  
+
+  if (ProjectDetail != null) {
+      if (ProjectDetail[3] != null) {
+          Object startObj = ProjectDetail[3];
+          if (startObj instanceof java.sql.Date) {
+              minDate = ((java.sql.Date) startObj).toLocalDate();
+          } else if (startObj instanceof java.sql.Timestamp) {
+              minDate = ((java.sql.Timestamp) startObj).toLocalDateTime().toLocalDate();
+          } else {
+              String s = startObj.toString();
+              // handle "yyyy-MM-dd HH:mm:ss" by trimming the time part if present
+              if (s.contains(" ")) s = s.substring(0, s.indexOf(" "));
+              if (s.contains("T")) s = s.substring(0, s.indexOf("T"));
+              minDate = LocalDate.parse(s);
+          }
+      }
+
+       if (ProjectDetail[4] != null) {
+          Object endObj = ProjectDetail[4];
+          if (endObj instanceof java.sql.Date) {
+              maxDate = ((java.sql.Date) endObj).toLocalDate();
+          } else if (endObj instanceof java.sql.Timestamp) {
+              maxDate = ((java.sql.Timestamp) endObj).toLocalDateTime().toLocalDate();
+          } else {
+              String s = endObj.toString();
+              if (s.contains(" ")) s = s.substring(0, s.indexOf(" "));
+              if (s.contains("T")) s = s.substring(0, s.indexOf("T"));
+              maxDate = LocalDate.parse(s);
+          }
+      } 
+  }
   
   List<Object[]> MilestoneActivityMain=(List<Object[]>)request.getAttribute("MilestoneActivityMain");
   List<Object[]> MilestoneActivityA=(List<Object[]>)request.getAttribute("MilestoneActivityA");
@@ -42,7 +77,7 @@
 					<div class="card-header ">  
 
 					<div class="row m-minus">
-						<h3 class="col-md-4">
+						<h3 class="col-md-3">
 							Gantt Chart
 						</h3>  
 						<div class="col-md-3 justify-content-end">
@@ -71,6 +106,9 @@
 							</select>
 						</div>
 						
+							<div class="col-md-1">
+							    <button type="button" class="btn btn-sm btn-info f-left" onclick="downloadFullImage()">Image</button>
+							</div>
 							
 							<div class="col-md-2">
 								<form class="f-right" action="GanttChart.htm" method="post" >
@@ -108,6 +146,13 @@
 						</div>
 					
 				</div>
+				
+				<div class="download-loader-overlay" id="downloadLoader">
+				    <div class="download-loader-content">
+				        <span class="download-loader-spinner"></span>
+				        <div class="download-loader-text">Generating image...</div>
+				    </div>
+				</div>
 					
 		
 		</div>
@@ -134,6 +179,8 @@ $('#ProjectId').on('change',function(){
 									<script>
 								      /* anychart.onDocumentReady(function () {  */  
 								    	  
+												    	  var chart; 
+										  var globalItemSum = 0;
 									function chartprint(type,interval){
 
 
@@ -413,7 +460,7 @@ $('#ProjectId').on('change',function(){
 								    		var treeData = anychart.data.tree(data, "as-tree");
 								
 								    		// create a chart
-								    		var chart = anychart.ganttProject();
+								    	 chart = anychart.ganttProject();
 								
 								    		// set the data
 								    		chart.data(treeData);   
@@ -490,9 +537,7 @@ $('#ProjectId').on('change',function(){
 								        
 								        
 								        
-								        <%if(ProjectId!=null){
-											Object[] ProjectDetail=(Object[])request.getAttribute("ProjectDetails");
-										%>
+								        <%if(ProjectId!=null && ProjectDetail != null){										%>
 
 									        /* Title */
 									        
@@ -519,7 +564,7 @@ $('#ProjectId').on('change',function(){
 								     	chart.headerHeight(90);
 								     	
 								     	/* Hiding the middle column */
-								     	chart.splitterPosition("15.6%");
+								     	chart.splitterPosition("30%")
 								     	
 								     	var dataGrid = chart.dataGrid();
 								     	dataGrid.rowEvenFill("gray 0.3");
@@ -542,10 +587,22 @@ $('#ProjectId').on('change',function(){
 								     	column_2.title().text("Activity");
 								     	column_2.title().fontColor("#145374");
 								     	column_2.title().fontWeight(600);
+								     	column_2.width(400);
 								     	
-								     	chart.dataGrid().column(0).width(25);
+								     	column_2.labels()
+								        .fontWeight(600)
+								        .fontSize(18)        // Increase this number (e.g., 14 to 16 or 18)
+								        .useHtml(true)
+								        .fontColor("#055C9D");
+								     	chart.dataGrid().column(0).width(40);
 								     	
 								     	chart.dataGrid().tooltip().useHtml(true);    
+								     	
+								     	var col0Width = 40;
+								     	var col1Width = 400;
+								     	chart.dataGrid().column(0).width(col0Width);
+								     	column_2.width(col1Width);
+								     	chart.splitterPosition(col0Width + col1Width);
 								        
 								     	
 								     	
@@ -569,9 +626,39 @@ $('#ProjectId').on('change',function(){
 								     	
 								     	//chart.getTimeline().scale().zoomLevels([["month", "quarter","year"]]);
 								     	
+								     	
+
+								     	var minDate = "<%=minDate != null ? minDate : ""%>";
+								     	var maxDate = "<%=maxDate != null ? maxDate : ""%>";
+								     	var min, max;
+								     	var months = 0, quarters = 0, years = 0;
+
+								     	if (minDate !== "" && maxDate !== "") {
+								     	    min = new Date(minDate);
+								     	    max = new Date(maxDate);
+
+								     	    months =
+								     	        (max.getFullYear() - min.getFullYear()) * 12 +
+								     	        (max.getMonth() - min.getMonth()) + 1;
+
+								     	    quarters = Math.ceil(months / 3);
+								     	    years = Math.ceil(months / 12);
+								     	}
+								     	months =
+								     	    (max.getFullYear() - min.getFullYear()) * 12 +
+								     	    (max.getMonth() - min.getMonth()) + 1;
+
+								     	quarters = Math.ceil(months / 3);
+								     	years = Math.ceil(months / 12);
+								     	
+												chart.getTimeline().scale().minimum("<%=minDate%>");
+												chart.getTimeline().scale().maximum("<%=maxDate%>");
+								     	
+								     	
 								     	if(interval==="year"){
 								     		/* Yearly */
 									     	chart.getTimeline().scale().zoomLevels([["year"]]);
+										    chart.zoomTo("year", years, "first-date");   // show 2 years at a time
 									     	var header = chart.getTimeline().header();
 									     	header.level(2).format("{%value}-{%endValue}");
 									     	header.level(1).format("{%value}-{%endValue}"); 
@@ -580,6 +667,7 @@ $('#ProjectId').on('change',function(){
 								     	if(interval==="half"){
 								     		/* Half-yearly */
 									     	chart.getTimeline().scale().zoomLevels([["semester", "year"]]);
+										    chart.zoomTo("semester", years, "first-date");  // show 2 half-years at a time
 									     	var header = chart.getTimeline().header();
 									     	header.level(2).format("{%value}-{%endValue}");
 									     	var header = chart.getTimeline().header();
@@ -596,6 +684,7 @@ $('#ProjectId').on('change',function(){
 								     	if(interval==="quarter"){
 								     		/* Quarterly */
 									     	chart.getTimeline().scale().zoomLevels([["quarter", "semester","year"]]);
+										    chart.zoomTo("quarter", quarters, "first-date");   // show 3 quarters at a time
 									     	var header = chart.getTimeline().header();
 									     	header.level(1).format(function() {
 								     			var duration = '';
@@ -610,11 +699,13 @@ $('#ProjectId').on('change',function(){
 								     	if(interval==="month"){
 								     		/* Monthly */
 									     	chart.getTimeline().scale().zoomLevels([["month", "quarter","year"]]);
+										    chart.zoomTo("month", months / 2, "first-date");     // show 4 months at a time
 								     	}
 								     	
 								     	else if(interval===""){
 								     		/* Quarterly */
 									     	chart.getTimeline().scale().zoomLevels([["quarter", "semester","year"]]);
+										    chart.zoomTo("quarter", quarters , "first-date");
 									     	var header = chart.getTimeline().header();
 									     	header.level(1).format(function() {
 								     			var duration = '';
@@ -658,24 +749,17 @@ $('#ProjectId').on('change',function(){
 								     	
 								    // calculate height
 								     	var traverser = treeData.getTraverser();
-								        var itemSum = 0;
-								        var rowHeight = chart.defaultRowHeight();
-								        while (traverser.advance()){
-								           if (traverser.get('rowHeight')) {
-								          itemSum += traverser.get('rowHeight');
-								        } else {
-								        	itemSum += rowHeight;
-								        }
-								        if (chart.rowStroke().thickness != null) {
-								        	itemSum += chart.rowStroke().thickness;
-								        } else {
-								          itemSum += 1;
-								        }
-								        }
-								        itemSum += chart.headerHeight();
-								        
-								        //customize printing
-								        var menu = chart.contextMenu();
+								     	globalItemSum = 0;
+								     	var defaultRowHeight = chart.defaultRowHeight();
+
+								     	while (traverser.advance()){
+								     	    // Check if row is currently visible (expanded) or count all? 
+								     	    // Usually for a full image, we want all rows.
+								     	    var h = traverser.get('rowHeight');
+								     	    globalItemSum += h ? parseInt(h) : defaultRowHeight;
+								     	    globalItemSum += 1; // Stroke thickness
+								     	}
+								     	globalItemSum += chart.headerHeight() + 100;
 								        
 								        // To download and stuff 
 								        
@@ -714,6 +798,75 @@ $('#ProjectId').on('change',function(){
 
 								       
 								      }     
+									
+									
+									/* function downloadFullImage() {
+									    if (!chart) {
+									        alert("Chart not loaded!");
+									        return;
+									    }
+
+									    // 1. Get the container element
+									    var container = document.getElementById('containers');
+									    
+									    // 2. Save the original height (so we can put it back later)
+									    var originalHeight = container.style.height;
+
+									    // 3. FORCE the container to the full calculated height
+									    // This removes the scrollbar and forces the browser to render everything
+									    container.style.height = globalItemSum + "px";
+
+									    // 4. Give the browser a tiny moment (100ms) to recalculate the layout
+									    setTimeout(function() {
+									        chart.saveAsPng({
+									            "width": 2000, 
+									            "height": globalItemSum, 
+									            "filename": "Full_Project_Gantt_Chart"
+									        });
+
+									        // 5. Restore the original height so your UI stays pretty
+									        setTimeout(function() {
+									            container.style.height = originalHeight;
+									        }, 500);
+									    }, 100);
+									}
+										 */
+										 
+										 function downloadFullImage() {
+											    if (!chart) {
+											        alert("Chart not loaded!");
+											        return;
+											    }
+
+											    var container = document.getElementById('containers');
+											    var originalHeight = container.style.height;
+											    
+											    try{
+													var btn = document.getElementById('imageBtn');
+												    var loader = document.getElementById('downloadLoader');
+	
+												    loader.classList.add('active');
+												    btn.disabled = true;
+											    }catch (e) {
+													console.log(e)
+												}
+
+											    container.style.height = globalItemSum + "px";
+
+											    setTimeout(function() {
+											        chart.saveAsPng({
+											            "width": 2000,
+											            "height": globalItemSum,
+											            "filename": "Full_Project_Gantt_Chart"
+											        });
+
+											        setTimeout(function() {
+											            container.style.height = originalHeight;
+											            loader.classList.remove('active');
+											            btn.disabled = false;
+											        }, 500);
+											    }, 100);
+											}
 								      
 								   /*    });  */
 								      

@@ -873,7 +873,7 @@ public class PrintController {
 	                    }
 	                    zip.unpack(techPath.toString(), path, TechWorkDataList.get(z)[9].toString());
 
-	                    String anchor = "Technical Images";
+	                    String anchor = "Technical Work Carried";
 	                    insertPdfAtAnchor(destDoc, anchor,
 	                            path + File.separator + TechWorkDataList.get(z)[8].toString(), path, filename,
 	                            leftLogo, rightLogo, objData[12] + " :- Technical Work Carried");

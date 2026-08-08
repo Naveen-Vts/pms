@@ -64,7 +64,7 @@ public class PrintDaoImpl implements PrintDao {
 	private static final String PROJECTSLIST="SELECT projectid, projectcode, projectname FROM project_master";
 	
 	private static final String MILESTONESUBSYSTEMS="SELECT maa.activityId, maa.Parentactivityid, maa.activityname, maa.orgenddate, maa.enddate,maa.activitystatusid,mas.activityshort,  maa.ProgressStatus,ma.milestoneno, maa.StatusRemarks FROM milestone_activity ma,milestone_activity_level maa,milestone_activity_status mas WHERE ma.milestoneactivityid = maa.parentactivityid AND maa.activitylevelid='1' AND maa.activitystatusid=mas.activitystatusid  AND ma.projectid=:projectid ORDER BY ma.milestoneno";
-	private static final String PROJECTDETAILS="SELECT a.project_id,a.project_code,a.project_name,a.project_name AS 'name',a.project_code AS 'code',a.lab_code, a.is_ccs, a.is_main_wc FROM project_master a WHERE a.project_id=:projectid AND  a.is_active=1";
+	private static final String PROJECTDETAILS="SELECT a.project_id,a.project_code,a.project_name,a.project_name AS 'name',a.project_code AS 'code',a.lab_code, a.is_ccs, a.is_main_wc, a.sanction_date,a.pdc FROM project_master a WHERE a.project_id=:projectid AND  a.is_active=1";
 	private static final String GANTTCHARTLIST="SELECT milestoneactivityid,projectid,activityname,milestoneno,orgstartdate,orgenddate,startdate,enddate,progressstatus,revisionno FROM milestone_activity WHERE isactive=1 AND projectid=:projectid";
 //	private static final String MILESTONES="SELECT ma.milestoneactivityid,ma.projectid,ma.milestoneno,ma.activityname,ma.orgstartdate,ma.orgenddate,ma.startdate,ma.enddate, ma.activitytype AS 'activitytypeid' , mat.activitytype,ma.activitystatusid,mas.activityshort, ma.ProgressStatus,ma.StatusRemarks ,ma. dateofcompletion FROM milestone_activity ma, milestone_activity_type mat ,milestone_activity_status mas  WHERE ma.activitytype=mat.activitytypeid AND ma.activitystatusid=mas.activitystatusid AND ma.ProgressStatus>0 AND projectid=:projectid";
 	private static final String MILESTONES="CALL Pfms_Milestone_Level_Prior(:projectid,:committeeid)";
@@ -1179,7 +1179,7 @@ public class PrintDaoImpl implements PrintDao {
 				updateQuery="UPDATE milestone_activity_level set "+point+"='N' where ActivityId=:ActivityId";
 			}
 			Query query=manager.createNativeQuery(updateQuery);
-			query.setParameter("ActivityId", Long.parseLong(activityid));
+			query.setParameter("ActivityId", Long.parseLong(activityid.trim()));
 			int count=query.executeUpdate();
 			return count;
 		}

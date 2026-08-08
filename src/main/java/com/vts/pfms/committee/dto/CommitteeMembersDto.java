@@ -19,6 +19,8 @@ public class CommitteeMembersDto {
 	private String IndustrialPartnerLabCode;
 	/* ------------------ end ----------------------- */
 	
+	private String[] RepIds;
+	
 	
 	
 }

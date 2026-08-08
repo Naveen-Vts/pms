@@ -75,6 +75,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -112,6 +113,7 @@ import com.vts.pfms.milestone.dto.FileProjectDocDto;
 import com.vts.pfms.milestone.dto.FileUploadDto;
 import com.vts.pfms.milestone.dto.MileEditDto;
 import com.vts.pfms.milestone.dto.MilestoneActivityDto;
+import com.vts.pfms.milestone.dto.MilestoneScheduleDto;
 import com.vts.pfms.milestone.model.FileDocMaster;
 import com.vts.pfms.milestone.model.FileRepMaster;
 import com.vts.pfms.milestone.model.FileRepMasterPreProject;
@@ -526,12 +528,10 @@ public class MilestoneController {
 		logger.info(new Date() +"Inside MilestoneActivityDetails.htm "+UserId);		
 		try {
 			int countA=1;
+			List<Object[]> list = service.MilestoneActivity(req.getParameter("MilestoneActivityId"));
+			req.setAttribute("MilestoneActivity", list != null && !list.isEmpty() ? list.get(0) : new Object[100]);
 			
-			System.out.println(req.getParameter("MilestoneActivityId")+"---req.getParameter(\"MilestoneActivityId\")");
-			req.setAttribute("MilestoneActivity", service.MilestoneActivity(req.getParameter("MilestoneActivityId")).get(0));
-			
-			  Object[] objd=
-			  service.MilestoneActivity(req.getParameter("MilestoneActivityId")).get(0);
+			  Object[] objd= service.MilestoneActivity(req.getParameter("MilestoneActivityId")).stream().findFirst().orElse(new Object[100]);
 			 
 			List<Object[]>  MilestoneActivityA=service.MilestoneActivityLevel(req.getParameter("MilestoneActivityId"),"1");
 			req.setAttribute("MilestoneActivityA", MilestoneActivityA);
@@ -922,7 +922,6 @@ public class MilestoneController {
 			  LocalDate date1 = LocalDate.parse(level.getEndDate().toString());
 			  
 			  long daysBetween = ChronoUnit.DAYS.between(date1, date); 
-			  System.out.println("daysBetween"+daysBetween);
 			  if(daysBetween!=0) {
 				  updateTheLinkMilstoneTimeLine(req.getParameter("ActivityId"),daysBetween, UserId); 
 			  }
@@ -1071,7 +1070,8 @@ public class MilestoneController {
 				}
 				countA++;
 			}	
-			req.setAttribute("MilestoneActivity1", service.ActivityCompareMAin(req.getParameter("MilestoneActivityId"),String.valueOf(rev2),"1").get(0));
+			List<Object[]> list = service.ActivityCompareMAin(req.getParameter("MilestoneActivityId"),String.valueOf(rev2),"1");
+			req.setAttribute("MilestoneActivity1", list != null && !list.isEmpty() ?list.get(0) : null );
 			List<Object[]>  MilestoneActivity1A=service.ActivityLevelCompare(req.getParameter("MilestoneActivityId"),String.valueOf(rev2),"1","1");
 			req.setAttribute("MilestoneActivity1A", MilestoneActivity1A);
 			for(Object[] obj:MilestoneActivity1A) {
@@ -1112,6 +1112,7 @@ public class MilestoneController {
 		return "milestone/MilestoneActivityCompare";
 
 	}
+
 
 	@RequestMapping(value = "MilestoneActivityCompareSubmit.htm")
 	public String MilestoneActivityCompareSubmit(HttpServletRequest req, HttpSession ses, RedirectAttributes redir)throws Exception 
@@ -3832,6 +3833,7 @@ private boolean isValidFileType(MultipartFile file) {
 					}
 				}
 			}
+			
 			req.setAttribute("tabNo", tabNo!=null?tabNo:"1");
 			req.setAttribute("activityType", activityType!=null?activityType:"A");
 			req.setAttribute("empId", empId);
@@ -5356,7 +5358,7 @@ private boolean isValidFileType(MultipartFile file) {
 		}
 	}
 	
-		
+
 }
 
 

@@ -389,7 +389,7 @@ public class RODController {
 			req.setAttribute("ReturnData", committeeservice.AgendaReturnData(CommitteeScheduleId));
 			req.setAttribute("rodscheduleeditdata", rodscheduleeditdata);
 			req.setAttribute("rodagendalist", committeeservice.AgendaList(CommitteeScheduleId));
-			req.setAttribute("rodinvitedlist", committeeservice.CommitteeAtendance(CommitteeScheduleId));	
+			req.setAttribute("rodinvitedlist", committeeservice.CommitteeAtendance(CommitteeScheduleId,"0"));	
 			req.setAttribute("employeelist", committeeservice.EmployeeList(LabCode));
 			req.setAttribute("pfmscategorylist", committeeservice.PfmsCategoryList());
 			req.setAttribute("logintype", Logintype);
@@ -589,7 +589,7 @@ public class RODController {
 //			String divisionid=committeescheduledata[13].toString();
 //			String initiationid=committeescheduledata[14].toString();
 
-			List<Object[]> rodinvitedlist = committeeservice.CommitteeAtendance(committeescheduleid);
+			List<Object[]> rodinvitedlist = committeeservice.CommitteeAtendance(committeescheduleid,"0");
 			List<Object[]> EmployeeList = committeeservice.EmployeeListNoInvitedMembers(committeescheduleid,LabCode);
 			List<Object[]> ExpertList = committeeservice.ExternalMembersNotInvited(committeescheduleid);
 			List<IndustryPartner> industryPartnerList = masterservice.getIndustryPartnerList();
@@ -685,7 +685,7 @@ public class RODController {
 			
 			Object[] rodscheduledata =service.RODScheduleData(committeescheduleid);
 					
-			List<Object[]> rodinvitedlist = committeeservice.CommitteeAtendance(committeescheduleid);
+			List<Object[]> rodinvitedlist = committeeservice.CommitteeAtendance(committeescheduleid,"1");
 			List<Object[]> EmployeeList = committeeservice.EmployeeListNoInvitedMembers(committeescheduleid,LabCode);
 			List<Object[]> ExpertList = committeeservice.ExternalMembersNotInvited(committeescheduleid);
 			
@@ -813,7 +813,7 @@ public class RODController {
 			req.setAttribute("CommitteeAgendaList", committeeservice.AgendaList(committeescheduleid));
 			req.setAttribute("committeeminutes",committeeservice.CommitteeMinutesSpecdetails());
 			req.setAttribute("committeeminutessub",committeeservice.CommitteeMinutesSub());
-			req.setAttribute("committeeinvitedlist", committeeservice.CommitteeAtendance(committeescheduleid));
+			req.setAttribute("committeeinvitedlist", committeeservice.CommitteeAtendance(committeescheduleid,"1"));
 
 			req.setAttribute("actionlist",  actionsdata);
 			req.setAttribute("labdetails", committeeservice.LabDetails(scheduleeditdata[24].toString()));

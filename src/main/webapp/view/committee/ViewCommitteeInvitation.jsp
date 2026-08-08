@@ -483,13 +483,23 @@
 							for(int i=0;i<committeeinvitedlist.size();i++)
 							{								
 								if(!membertypes.contains(committeeinvitedlist.get(i)[3].toString()))
-								{%>		
+								{
+								String repCode = committeeinvitedlist.get(i)[3]!=null ? committeeinvitedlist.get(i)[3].toString() : "";
+								boolean isCommitteRep = !repCode.endsWith("_NORMAL");
+								
+								if(!isCommitteRep){
+									String[] reps = repCode.split("_");
+									repCode = "REP_"+reps[0];
+								}else{
+									repCode = "REP_"+repCode;
+								}
+								%>		
 										
 										<tr>
-										<td><%=repcount%> . <%=committeeinvitedlist.get(i)[6]!=null?StringEscapeUtils.escapeHtml4(committeeinvitedlist.get(i)[6].toString()): " - "%>, <%=committeeinvitedlist.get(i)[7]!=null?StringEscapeUtils.escapeHtml4(committeeinvitedlist.get(i)[7].toString()): " - "%> (<%=committeeinvitedlist.get(i)[11]!=null?StringEscapeUtils.escapeHtml4(committeeinvitedlist.get(i)[11].toString()): " - "%>)(REP_<%=committeeinvitedlist.get(i)[3]!=null?StringEscapeUtils.escapeHtml4(committeeinvitedlist.get(i)[3].toString()): " - "%>)</td> 
+										<td><%=repcount%> . <%=committeeinvitedlist.get(i)[6]!=null?StringEscapeUtils.escapeHtml4(committeeinvitedlist.get(i)[6].toString()): " - "%>, <%=committeeinvitedlist.get(i)[7]!=null?StringEscapeUtils.escapeHtml4(committeeinvitedlist.get(i)[7].toString()): " - "%> (<%=committeeinvitedlist.get(i)[11]!=null?StringEscapeUtils.escapeHtml4(committeeinvitedlist.get(i)[11].toString()): " - "%>) (<%= repCode %>)</td> 
 										<td class="pl-30px">
 										
-										<%if(Long.parseLong(committeescheduledata[10].toString())<5 && Long.parseLong(committeescheduledata[10].toString())!=3 ){ %>
+										<%if(Long.parseLong(committeescheduledata[10].toString())<5 && Long.parseLong(committeescheduledata[10].toString())!=3 && !isCommitteRep ){ %>
 											<form action="CommitteeInvitationDelete.htm" method="Post">
 												<input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
 												<input type="hidden" name="committeescheduleid" value="<%=committeescheduleid%>">

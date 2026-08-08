@@ -95,7 +95,7 @@ public interface CommitteeService {
  	public int MeetingAgendaApprovalSubmit( String ScheduleId, String Remarks,String UserId, String EmpId,String Option) throws Exception;
  	
  	public Object[] CommitteeScheduleData(String committeescheduleid) throws Exception;
- 	public List<Object[]> CommitteeAtendance(String committeescheduleid) throws Exception;
+ 	public List<Object[]> CommitteeAtendance(String committeescheduleid,String revisionNo) throws Exception;
 	public List<Object[]> EmployeeListNoInvitedMembers(String scheduleid,String LabCode) throws Exception;
 	public Long CommitteeInvitationCreate(CommitteeInvitationDto committeeinvitationdto) throws Exception;
 	public Long CommitteeInvitationDelete(String committeeinvitationid) throws Exception;
@@ -362,7 +362,12 @@ public interface CommitteeService {
 	// Naveen R 05-03-2026 
 	public List<Object[]> getMeetingCountList(String committeeId) throws Exception;
 	public List<Object[]> CommitteeScheduleMinutesMom(String committeescheduleid) throws Exception;
+	public long changeRepresentative(CommitteeInvitationDto dto) throws Exception;
+	public List<Object[]> getCommitteeRepIsActiveList(String committeescheduleid) throws Exception;
+	public long addRepresentative(CommitteeInvitationDto dto) throws Exception;
 	public void CommitteeOnlineAttendanceToggle(String invitationid, String isOnlineAttendenc) throws Exception;
+	public List<Object[]> getCommitteeMainRepList(String committeeMainId);
+	
 
 }
 

@@ -67,8 +67,9 @@ import jakarta.transaction.Transactional;
 
 @Transactional
 @Repository
-public class CommitteeDaoImpl  implements CommitteeDao
-{
+public class CommitteeDaoImpl  implements CommitteeDao {
+
+	
 	private static final Logger logger=LogManager.getLogger(CommitteeDaoImpl.class);
 	
 	private static final String EMPLOYEELIST="SELECT a.emp_id, CONCAT(IFNULL(CONCAT(a.title,' '),(IFNULL(CONCAT(a.salutation, ' '), ''))), a.emp_name) AS 'EmpName',b.Designation,a.emp_no  FROM employee a,employee_desig b WHERE a.is_active='1' AND a.desig_id=b.desig_id AND lab_code=:labcode ORDER BY a.sr_no=0,a.sr_no";
@@ -349,11 +350,11 @@ public class CommitteeDaoImpl  implements CommitteeDao
 
 		Query query=manager.createNativeQuery(LASTCOMMITTEEID);
 		query.setParameter("committeeid", CommitteeId);
-		query.setParameter("projectid", Long.parseLong(projectid));
-		query.setParameter("divisionid",Long.parseLong(divisionid));
-		query.setParameter("initiationid", Long.parseLong(initiationid));
-		query.setParameter("CARSInitiationId",Long.parseLong(carsInitiationId));
-		query.setParameter("ProgrammeId", Long.parseLong(programmeId));
+		query.setParameter("projectid",projectid != null ? Long.parseLong(projectid) : 0);
+		query.setParameter("divisionid",divisionid != null ? Long.parseLong(divisionid) : 0);
+		query.setParameter("initiationid",initiationid != null ?  Long.parseLong(initiationid) : 0);
+		query.setParameter("CARSInitiationId",carsInitiationId != null ? Long.parseLong(carsInitiationId) : 0);
+		query.setParameter("ProgrammeId",programmeId != null ?  Long.parseLong(programmeId) : 0);
 		return Long.parseLong(query.getResultList().stream().findFirst().orElse(0).toString());
 	}
 
@@ -912,10 +913,11 @@ public class CommitteeDaoImpl  implements CommitteeDao
 		return (Object[] )query.getResultList().get(0);
 	}
 	@Override
-	public List<Object[]> CommitteeAtendance(String committeescheduleid) throws Exception
+	public List<Object[]> CommitteeAtendance(String committeescheduleid,String revisionNo) throws Exception
 	{
-		Query query= manager.createNativeQuery("Call Pfms_Committee_Invitation (:committeescheduleid)");
+		Query query= manager.createNativeQuery("Call Pfms_Committee_Invitation (:committeescheduleid,:revisionNo)");
 		query.setParameter("committeescheduleid", Long.parseLong(committeescheduleid));
+		query.setParameter("revisionNo", Long.parseLong(revisionNo));
 		return (List<Object[]>)query.getResultList();
 	}
 
@@ -935,10 +937,19 @@ public class CommitteeDaoImpl  implements CommitteeDao
 	
 	
 	@Override
-	public long CommitteeInvitationCreate(CommitteeInvitation committeeinvitation) throws Exception
-	{
-		manager.persist(committeeinvitation);
-		return committeeinvitation.getCommitteeInvitationId();
+	public long CommitteeInvitationCreate(CommitteeInvitation committeeinvitation) throws Exception {
+
+	    CommitteeInvitation invitation = manager.merge(committeeinvitation);
+	    manager.flush();
+
+	    if (invitation.getRevisionNo() == 0 &&
+	        (invitation.getParentInvitationId() == null || invitation.getParentInvitationId() == 0)) {
+	        invitation.setParentInvitationId(invitation.getCommitteeInvitationId());
+	    }
+
+	    manager.flush();
+
+	    return invitation.getCommitteeInvitationId();
 	}
 	
 	 
@@ -4207,11 +4218,11 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 
 	// Naveen R 05-03-2026
 	private static final String MEETINGCOUNTPROJECT = """
-			SELECT pm.projectShortName, pm.projectCode, pm.projectName,cs.projectId,COUNT(cs.projectId) AS meetingcount, c.committeeShortName, c.committeeName
+			SELECT pm.project_short_name, pm.project_code, pm.project_name,cs.project_id,COUNT(cs.project_id) AS meetingcount, c.committeeShortName, c.committeeName
 			FROM committee c LEFT JOIN committee_schedule cs ON c.committeeId = cs.committeeId
-			LEFT JOIN project_master pm ON cs.projectId = pm.projectId
-			WHERE cs.committeeId = :committeeId AND c.isBriefing = 'Y' AND c.isActive = 1 AND pm.projectId > 0 AND cs.isActive = 1 AND cs.ScheduleFlag IN ('MKV','MMR','MMF','MMS','MMA')
-			GROUP BY c.committeeShortName, c.committeeName, cs.projectId, pm.projectName, pm.projectShortName;
+			LEFT JOIN project_master pm ON cs.projectId = pm.project_id
+			WHERE cs.committeeId = :committeeId AND c.isBriefing = 'Y' AND c.isActive = 1 AND pm.project_id > 0 AND cs.isActive = 1 AND cs.ScheduleFlag IN ('MKV','MMR','MMF','MMS','MMA')
+			GROUP BY c.committeeShortName, c.committeeName, cs.project_id, pm.project_name, pm.project_short_name;
 			"""; 
 	@Override
 	public List<Object[]> getMeetingCountList(String committeeId) throws Exception {
@@ -4241,16 +4252,93 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 		List<Object[]> CommitteeScheduleMinutes =(List<Object[]>)query.getResultList();
 		return CommitteeScheduleMinutes;
 	}
+
+//	private static final String REPUPDATE = """
+//			UPDATE committee_schedules_invitation
+//		    SET EmpId = :empId,
+//		        DesigId = :designationId,
+//		        LabCode = :labcode
+//		    WHERE CommitteeInvitationId = :invitationId
+//			""";
+//	@Override
+//	public long changeRepresentative(String invitationId, String newEmpNo, String newLabCode, String designationId) throws Exception {
+//		try {
+//			
+//			Query query =manager.createNativeQuery(REPUPDATE);
+//			query.setParameter("invitationId", invitationId);
+//			query.setParameter("empId",newEmpNo);
+//			query.setParameter("labcode", newLabCode != null ? newLabCode.toUpperCase() : null);
+//			query.setParameter("designationId", designationId);
+//			
+//			return query.executeUpdate();
+//			
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//			return 0l;
+//		}
+//	}
+	
 	
 	@Override
-	public void CommitteeOnlineAttendanceToggle(String invitationid, String isOnlineAttendenc) {
+	public CommitteeInvitation getcommitteeInvitation(String invitationId) throws Exception {
+	    try {
+	        Long id = (invitationId != null && !invitationId.isBlank())
+	                ? Long.parseLong(invitationId)
+	                : 0L;
+
+	        return manager.find(CommitteeInvitation.class, id);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return null;
+	}
+
+	@Override
+	public List<Object[]> getCommitteeRepIsActiveList(String committeescheduleid) throws Exception {
 		try {
-		CommitteeInvitation ExistingCommitteeInvitation = manager.find(CommitteeInvitation.class, Long.parseLong(invitationid));
-		ExistingCommitteeInvitation.setIsOnlineAttendence(isOnlineAttendenc);
+			Query query=manager.createNativeQuery("CALL Pfms_Committee_Invitation_Rep(:InScheduleId)");
+			query.setParameter("InScheduleId", Long.parseLong(committeescheduleid));
+			return (List<Object[]>)query.getResultList();
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-	}		
+		return List.of();
+	}
+
+	@Override
+	public List<CommitteeInvitation> getCommitteeInvitationList(Long scheduleId) throws Exception {
+	    String jpql = "FROM CommitteeInvitation c WHERE c.CommitteeScheduleId = :scheduleId AND c.RevisionNo = 0 AND c.IsActive = 0";
+
+	    TypedQuery<CommitteeInvitation> query = manager.createQuery(jpql, CommitteeInvitation.class);
+	    query.setParameter("scheduleId", scheduleId);
+
+	    return query.getResultList();
+	}
+
+	@Override
+	public void CommitteeOnlineAttendanceToggle(String invitationid, String isOnlineAttendenc) throws Exception {
+		CommitteeInvitation ExistingCommitteeInvitation = manager.find(CommitteeInvitation.class, Long.parseLong(invitationid));
+		ExistingCommitteeInvitation.setIsOnlineAttendence(isOnlineAttendenc);
+	}
+
+	private static final String COMMITTEEMAINREPLIST = """
+				SELECT b.RepId,b.RepCode,b.RepName,a.CommitteeMainId
+				FROM committee_member_rep a
+				INNER JOIN committee_rep b ON b.RepId = a.RepId
+				WHERE a.CommitteeMainId = :committeeMainId;
+			""";
+	@Override
+	public List<Object[]> getCommitteeMainRepList(String committeeMainId) {
+		try {
+			Query query=manager.createNativeQuery(COMMITTEEMAINREPLIST);
+			query.setParameter("committeeMainId", Long.parseLong(committeeMainId));
+			return (List<Object[]>)query.getResultList();
+		}catch (Exception e) {
+			e.printStackTrace();
+			return List.of();
+		}
+	}
 }
 
 

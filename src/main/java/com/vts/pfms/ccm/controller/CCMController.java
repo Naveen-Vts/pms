@@ -276,7 +276,7 @@ public class CCMController {
 					}
 				}
 				
-				req.setAttribute("committeeinvitedlist", committeeservice.CommitteeAtendance(ccmScheduleId));	
+				req.setAttribute("committeeinvitedlist", committeeservice.CommitteeAtendance(ccmScheduleId,"0"));	
 			}
 			
 			return "ccm/CCMSchedule";

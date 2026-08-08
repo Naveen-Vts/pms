@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 import jakarta.mail.Message;
@@ -886,28 +887,32 @@ private boolean isValidFileType(MultipartFile file) {
 			return "action/ForwardList";
 		}
 
-	 @RequestMapping(value = "ForwardSub.htm", method = RequestMethod.POST)
+	 @RequestMapping(value = "ForwardSub.htm", method = {RequestMethod.POST,RequestMethod.GET})
 		public String ForwardSub(HttpServletRequest req, HttpSession ses, RedirectAttributes redir)
 				throws Exception {
 		    String UserId = (String) ses.getAttribute("Username");
 			logger.info(new Date() +"Inside ForwardSub.htm "+UserId);		
 			try { 
+				
 			String AssigneeName=req.getParameter("Assignee");
+			req.setAttribute("isReview",req.getParameter("isReview"));
+			req.setAttribute("isClosed",req.getParameter("isClosed"));
 			req.setAttribute("actionno", req.getParameter("ActionNo"));
-			req.setAttribute("Assignee", service.AssigneeData(req.getParameter("ActionMainId"),req.getParameter("ActionAssignId")).get(0));
+			req.setAttribute("Assignee", service.AssigneeData(req.getParameter("ActionMainId"), req.getParameter("ActionAssignId")).get(0));
 			req.setAttribute("SubList", service.SubList(req.getParameter("ActionAssignId")));
 			req.setAttribute("AssigneeName", AssigneeName);
 			//req.setAttribute("LinkList", service.SubList(req.getParameter("ActionLinkId")));
 			req.setAttribute("actionslist", service.ActionSubLevelsList(req.getParameter("ActionAssignId")));
 			req.setAttribute("flag", req.getParameter("flag"));
 			req.setAttribute("AttachmentList", service.getActionMainAttachMent(req.getParameter("ActionMainId"))); // 18-08
-
+			return "action/ForwardSub";
 			}
 			catch (Exception e) {
-					e.printStackTrace();
-					logger.error(new Date() +" Inside ForwardSub.htm "+UserId, e);
+				e.printStackTrace();
+				logger.error(new Date() +" Inside ForwardSub.htm "+UserId, e);
+				return "static/Error";
 			}
-			return "action/ForwardSub";
+			
 		}
 	
 	 
@@ -967,6 +972,7 @@ private boolean isValidFileType(MultipartFile file) {
 		public String CloseSubmit(HttpServletRequest req, HttpSession ses, RedirectAttributes redir) throws Exception {
 
 		 	String UserId = (String) ses.getAttribute("Username");
+		 	String labCode = (String) ses.getAttribute("labcode");
 			logger.info(new Date() +"Inside CloseSubmit.htm "+UserId);		
 			try { 
 				
@@ -1000,6 +1006,18 @@ private boolean isValidFileType(MultipartFile file) {
 				redir.addAttribute("resultfail", "Action Closed Unsuccessful");
 
 			}
+			
+			if("DLRL".equalsIgnoreCase(labCode) && "Y".equalsIgnoreCase(req.getParameter("isReview"))) {  
+				redir.addAttribute("ActionPath", req.getParameter("ActionPath"));
+				redir.addAttribute("ActionAssignId", req.getParameter("ActionAssignId"));
+				redir.addAttribute("ActionMainId", req.getParameter("ActionMainId"));
+				redir.addAttribute("sub", req.getParameter("sub"));
+				redir.addAttribute("isReview", req.getParameter("isReview"));
+				redir.addAttribute("isClosed",count > 0 ? "Y" :"N");
+				
+				return "redirect:/ForwardSub.htm";
+			}
+			
 			if ("C".equalsIgnoreCase(req.getParameter("sub"))) {
 				return "redirect:/ActionLaunch.htm";
 			}

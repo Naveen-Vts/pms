@@ -114,7 +114,7 @@ public class DownloadDaoImpl implements DownloadDao{
 		}
 	}
 	
-	private static final String PROJECTTEMPATRR="SELECT a.HeaderFontSize,a.HeaderFontWeight,a.SubHeaderFontsize, a.SubHeaderFontweight,a.ParaFontSize,a.ParaFontWeight,a.MainTableWidth, a.subTableWidth,a.AttributId,a.SuperHeaderFontsize,a.SuperHeaderFontWeight,a.FontFamily,a.RestrictionOnUse FROM  pfms_doc_template_attributes a";
+	private static final String PROJECTTEMPATRR="SELECT a.HeaderFontSize,a.HeaderFontWeight,a.SubHeaderFontsize, a.SubHeaderFontweight,a.ParaFontSize,a.ParaFontWeight,a.MainTableWidth, a.subTableWidth,a.AttributId,a.SuperHeaderFontsize,a.SuperHeaderFontWeight,a.FontFamily,a.RestrictionOnUse FROM  pfms_doc_template_attributes a WHERE a.isActive = 1";
 
 	@Override
 	public Object[] ProjectDataTempAttr() throws Exception {

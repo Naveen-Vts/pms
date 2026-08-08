@@ -68,7 +68,7 @@
 	Map<Integer,String> mappmrc=(Map<Integer,String>)request.getAttribute("mappmrc");
 	Map<Integer,String> mapEB=(Map<Integer,String>)request.getAttribute("mapEB");
 	List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envisagedDemandlist");
-	
+	List<String> repCodes = (List<String> )request.getAttribute("repCodes");
 	
 	String labcode =(String) session.getAttribute("labcode");
 	// new
@@ -319,6 +319,7 @@ p{
 
 <%if(invitedlist.size()>0){ %>
 <% ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","CW","CO","CH"));
+membertypes.addAll(repCodes);
 
 int memPresent=0,memAbscent=0,ParPresent=0,parAbscent=0;
 int j=0;
@@ -392,7 +393,7 @@ for( Object[]obj:specialMembers){ %>
 		 	</td>
 		 	<td style="border: 1px solid black; padding: 5px;text-align: left;">  
 	 	  	
-	 			<%=invitedlist.get(i)[7]!=null?invitedlist.get(i)[7].toString(): " - " %> , <%=invitedlist.get(i)[15]!=null ?invitedlist.get(i)[15].toString()+", ":(invitedlist.get(i)[14]!=null ?invitedlist.get(i)[14].toString()+", ": "")  %> <%= invitedlist.get(i)[11]!=null?invitedlist.get(i)[11].toString(): " - "%>  
+	 			<%=invitedlist.get(i)[7]!=null?invitedlist.get(i)[7].toString(): " - " %>, <%=invitedlist.get(i)[15]!=null && !invitedlist.get(i)[15].toString().isBlank() ?(invitedlist.get(i)[15].toString()+", "):(invitedlist.get(i)[14]!=null && !invitedlist.get(i)[14].toString().isBlank() ? (invitedlist.get(i)[14].toString()+", "): "")  %> <%= invitedlist.get(i)[11]!=null?invitedlist.get(i)[11].toString(): " - "%>  
 		 	</td>	
 		 	<td style="border: 1px solid black;padding: 5px ;text-align: left">
 		 		<%  if(invitedlist.get(i)[3].toString().equalsIgnoreCase("CC")) {		 %>Chairperson<%}
@@ -510,7 +511,19 @@ for( Object[]obj:specialMembers){ %>
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("CIP") )    {%>Industry Partner<%}
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("IP") )    {%>Addl. Industry Partner<%}
 					// Prudhvi - 27/03/2024 end
-					else {%> REP_<%=invitedlist.get(i)[3]!=null?invitedlist.get(i)[3].toString(): " - "%>&nbsp; (<%=invitedlist.get(i)[11]!=null?invitedlist.get(i)[11].toString(): " - " %>)  <%}
+					else {
+						String repCode = invitedlist.get(i)[3]!=null ? invitedlist.get(i)[3].toString() : "";
+						boolean isCommitteRep = !repCode.endsWith("_NORMAL");
+						
+						if(!isCommitteRep){
+							String[] reps = repCode.split("_");
+							repCode = "REP_"+reps[0];
+						}else{
+							repCode = "REP_"+repCode;
+						}
+						
+					
+					%> <%= repCode %> <%}
 				%>
 	 		</td>	
 	 		</tr>
@@ -563,7 +576,19 @@ for( Object[]obj:specialMembers){ %>
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("CIP") )    {%>Industry Partner<%}
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("IP") )    {%>Addl. Industry Partner<%}
 					// Prudhvi - 27/03/2024 end
-					else {%> REP_<%=invitedlist.get(i)[3]!=null?invitedlist.get(i)[3].toString(): " - "%><%-- &nbsp; (<%=invitedlist.get(i)[11] %>) --%>  <%}
+					else {
+						String repCode = invitedlist.get(i)[3]!=null ? invitedlist.get(i)[3].toString() : "";
+						boolean isCommitteRep = !repCode.endsWith("_NORMAL");
+						
+						if(!isCommitteRep){
+							String[] reps = repCode.split("_");
+							repCode = "REP_"+reps[0];
+						}else{
+							repCode = "REP_"+repCode;
+						}
+						
+					
+					%> <%= repCode %> <%}
 				%>
 	 		</td>	
 	 	</tr>
@@ -876,13 +901,16 @@ for( Object[]obj:specialMembers){ %>
 										
 										<th class="std"  style="width: 155px;" >Responsibility</th>
 										<!-- <th class="std"  style="width: 40px;"  >Status(DD)</th>			 -->
+										<%if("ADE".equalsIgnoreCase(labcode)){ %>
+											<th class="std"  style="width: 155px;" >Remarks</th>
+										<%} %>
 									</tr>
 								</thead>
 								
 								
 								<tbody>
 											<%if(lastpmrcactions.size()==0){ %>
-								<tr><td colspan="7"  style="text-align: center;" > Nil</td></tr>
+								<tr><td colspan="<%= "ADE".equalsIgnoreCase(labcode) ? "8" : "7" %>"  style="text-align: center;" > Nil</td></tr>
 								<%}
 								else if(lastpmrcactions.size()>0){
 								Map<String,List<Object[]>> list = lastpmrcactions!=null ? lastpmrcactions.stream()
@@ -893,6 +921,10 @@ for( Object[]obj:specialMembers){ %>
 								List<Object[]> values = map.getValue();
 								int rowSpan = values.size();
 								for (Object[] obj : values) {
+									
+									if(obj[9] != null && "C".equalsIgnoreCase(obj[9].toString())){
+										continue;
+									}
 								%>
 								<tr>
 									<td  class="std"  align="center"><%=i %></td>
@@ -951,7 +983,11 @@ for( Object[]obj:specialMembers){ %>
 												
 												
 									<td class="std"> <%=obj[11]!=null?obj[11].toString(): " - " %>, <%=obj[12]!=null?obj[12].toString(): " - " %> </td>
-	
+			 					
+			 					<%if("ADE".equalsIgnoreCase(labcode)){ %>
+									<td class="std"> <%=obj[16]!=null?obj[16].toString(): " - " %></td>
+								<%}%>
+								
 								</tr>			
 							<%i++;
 							}}} %>

@@ -504,7 +504,7 @@
 															</div> <%} %>
 															</td>
 															<td>
-														 	                                                   <%if("A".equalsIgnoreCase(LoginType) || projectDirector.equals(empId) || Long.parseLong(objB[13].toString())==(empId)) { %>
+																 <%if("A".equalsIgnoreCase(LoginType) || projectDirector.equals(empId) || Long.parseLong(objB[13].toString())==(empId)) { %>
 	                                                         	
 	                                                         
 			                                                        <div class="maindivInput">
@@ -1153,7 +1153,7 @@ function ChangeButton(id) {
 		}
 	});
 	
-	
+	/* 
 	function updateBpPoints(ele){
 		var a=ele.value;
 		var value1=a.split("/")[0];
@@ -1177,6 +1177,30 @@ function ChangeButton(id) {
 		}else{
 			ele.value=value1+"/Y/"+value3
 		}
+	} */
+	
+	function updateBpPoints(ele){
+
+	    var arr = ele.value.split("/");
+
+	    var activityId = arr[0];
+	    var point = arr[2];
+
+	    var status = !ele.checked ? "Y" : "N";
+
+	    $.ajax({
+	        type: "GET",
+	        url: "BriefingPointsUpdate.htm",
+	        dataType: "json",
+	        data: {
+	            ActivityId: activityId,
+	            point: point,
+	            status: status
+	        },
+	        success: function() {
+	            ele.value = activityId + "/" + status + "/" + point;
+	        }
+	    });
 	}
 	
 	// Milestone No Check
