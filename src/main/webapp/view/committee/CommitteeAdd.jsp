@@ -142,6 +142,7 @@ String projectappliacble=(String)request.getAttribute("projectappliacble");
 									<input class="form-control mt-n5" type="number" min="1" name="periodicduration" id="periodicdurationfield" placeholder="Days">
 								</div>
 							</div>
+							<%if("P".equals(projectappliacble)){ %>
 							<div class="col-md-2">
 								<div class="form-group">
 									<label class="control-label">Is Briefing<span class="mandatory text-danger">*</span></label>
@@ -152,6 +153,7 @@ String projectappliacble=(String)request.getAttribute("projectappliacble");
 									</select>
 								</div>
 							</div>
+							<%} %>
 						</div>	
 						
 						<div class="row">
