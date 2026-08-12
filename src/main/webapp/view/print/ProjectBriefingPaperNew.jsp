@@ -192,6 +192,12 @@ String labcode = (String) session.getAttribute("labcode");
 											<i class="fa fa-download fa-lg" aria-hidden="true"></i>
 										</button>
 									</td>
+									<td class="border-0"> 
+										<button type="submit" class="btn btn-sm border-radius3 border-0"  formmethod="GET" formaction="ProjectBriefingWordDownload.htm" formtarget="_blank"
+										 data-toggle="tooltip" data-placement="top" title="Briefing Paper Word" >
+											<img alt="" src="view/images/worddoc.png" class="width19">
+										</button>
+									</td>
 									<td class="border-0 "> 
 										<button  type="submit" class="btn btn-sm border-radius3 border-0" formmethod="POST" formaction="ProjectBriefingFreeze.htm" onclick="return confirm('Are You Sure To Freeze Briefing Paper for Next Scheduled Meeting ?')" title="Freeze" 
 										data-toggle="tooltip" data-placement="top">

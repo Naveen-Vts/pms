@@ -15,6 +15,24 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <html>
 <head>
+<script src="./webjars/jquery/3.4.0/jquery.min.js"></script>
+<script src="./webjars/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet"
+	href="./webjars/bootstrap/4.0.0/css/bootstrap.min.css" />
+<link rel="stylesheet"
+	href="./webjars/font-awesome/4.7.0/css/font-awesome.min.css" />
+<script>
+ /* 	 $( document ).ready(function() {
+		 download();
+		});  */
+		 function download(){
+			$("#source-html").wordExport("System Requirements");
+	 }
+</script>
+<spring:url value="/resources/js/FileSaver.min.js" var="FileSaver" />
+<script src="${FileSaver}"></script>
+<spring:url value="/resources/js/jquery.wordexport.js" var="wordexport" />
+<script src="${wordexport}"></script>
 <meta charset="ISO-8859-1">
 <title>Requirement Document</title>
 <%
@@ -110,7 +128,7 @@ td {
 	bottom: 0;
 	border: 2px solid black;
 }
-@page {
+<%-- @page {
 	size: 770px 1050px;
 	margin-top: 49px;
 	margin-left: 70px;
@@ -156,13 +174,13 @@ bottom-center {
 	content:"<%if(Classification!=null){%> <%=StringEscapeUtils.escapeHtml4(Classification).toUpperCase()%> <%}else{%>RESTRICTED <%}%>";
 	width:300px;;
 }
-}
-#headerdiv {
-  position: running(pageHeader); /* This will be used for paged media */
-  justify-content: space-between; /* Distribute space between items */
-  align-items: center; /* Align items vertically in the center */
-  padding: 10px; /* Add some padding */
-}
+} --%>
+/* #headerdiv {
+  position: running(pageHeader);
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+} */
 
 .border-black {
 	border: 1px solid black !important;
@@ -207,13 +225,13 @@ margin-left:15x;
 </head>
 <body>
 
-	<div id="headerdiv">
+	<%-- <div id="headerdiv">
 	<div style="position: absolute; top: 450px; left:-400px;  transform: rotate(-90deg); font-size: 10px; color: #000; width:900px;opacity:0.5; ">
 
 				<%if(DocTempAtrr!=null && DocTempAtrr[12]!=null) {%><%=StringEscapeUtils.escapeHtml4(DocTempAtrr[12].toString()) %> <%} %>
 				
 				</div>
-   </div>
+   </div> --%>
   <%
    // Default font size
         if (DocTempAtrr != null && DocTempAtrr[0] != null) {
@@ -248,14 +266,76 @@ margin-left:15x;
     	        %>
     	        
     	        
+  <div class="content-footer" align="center"> 
+		<button id="btn-export" class="btn btn-lg bg-transparent" onclick="download()"
+			style="padding: 10px;">
+			<i class="fa fa-lg fa-download" aria-hidden="true"
+				style="color: green;"></i>
+		</button>
+	</div>
+	<div class="source-html-outer">
+		<div id="source-html">  	        
   <div class="heading-container" style="text-align: center; position: relative;">
-</div>
+  	<h6 class="heading-color top-center" style="font-family: <%= FontFamily %>;font-size: 14px !important; text-decoration: underline; display: inline-block; padding-bottom: 5px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-weight: normal;">RESTRICTED</h6>
+  </div>
+  <table style="width: 98%;border-collapse: collapse;margin-left: 5px;">
+	<tr>
+		<td style="text-align: left;">
+			<table style="width: 85%; border: 1px solid black; border-collapse: collapse;">
+	            <tr>
+	                <td style="text-align: center; padding: 5px;">
+	                    <span style="text-decoration: underline;font-family: <%= FontFamily %>;">RESTRICTED</span>
+	                </td>
+	            </tr>
+	            <tr>
+	                <td style="padding: 5px;text-align: justify;font-family: <%= FontFamily %>;">
+	                    <p>The information given in this document is not to be published or communicated, either directly or indirectly, to the press or to any personnel not authorized to receive it.</p>
+	                </td>
+	            </tr>
+        	</table>
+		</td>
+		<td style="text-align: right;">
+			<table style="width: 23%; border: none; border-collapse: collapse;">
+            	<tr>
+          			<td style="padding: 10px;">
+    					<h4 style="margin: 0; padding: 0;font-family: <%= FontFamily %>;">
+    				    				<%
+				if(LabList[0] != null) {
+				%>
+				<%=LabList[0].toString()%>:SSTP:....................</h4>
+  						<h6 style="margin: 0; padding: 0;font-family: <%= FontFamily %>;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Copy No.01</h6>
+						<%
+				}else {
+				%>-<%
+				}
+				%>
+					</td>
+            	</tr>
+        	</table>
+        	<br> <br> <br> <br> <br><br>
+		</td>
+	</tr>
+</table>
 
-<br><br><br><br><br><br><br><br><br><br><br><br>
-			<div align="center"></div>
+<div align="center"></div>
 			<div style="text-align: center; margin-top: 75px;">
-				<h4 style="font-size: 18pt;;font-family:<%= FontFamily %>;" class="heading-color ">SYSTEM REQUIREMENTS <br><br> FOR  <br><br>PROJECT <%=projectShortName!=null?StringEscapeUtils.escapeHtml4(projectShortName): " - " %> </h4>
-					<div align="center" >
+				<h4 style="font-size: 18pt;;font-family:<%= FontFamily %>; !important;" class="heading-color ">SYSTEM REQUIREMENTS</h4>
+				<h4 style="font-size: 15pt;font-family: <%= FontFamily %>;">For</h4>
+				<h4 style="font-size: 18pt;font-family: <%= FontFamily %>;">
+					Project:
+					<br> <br>
+				</h4>
+			<%-- 	<h4 style="font-size: 18pt;font-family: <%= FontFamily %>;">
+					Project:
+					<%=PfmsInitiationList[7].toString()%><br> <br>
+					<%="(" + PfmsInitiationList[6].toString() + ")"%>
+				</h4> --%>
+				
+			
+				<h4 style="font-family: <%= FontFamily %>;">
+				</h4>
+				
+					<div align="center"  >
 						<img class="logo" style="width: 80px; height: 80px; margin-bottom: 5px"
 							<%if (lablogo != null) {%> src="data:image/png;base64,<%=lablogo%>" alt="Configuration"
 							<%} else {%> alt="File Not Found" <%}%>>
@@ -264,9 +344,9 @@ margin-left:15x;
 				<div align="center">
 					<h4 style="font-size: 20px;font-family: <%= FontFamily %>;">
 				<%
-				if(LabList!=null && LabList[1] != null) {
+				if(LabList[1] != null) {
 				%>
-				<%=StringEscapeUtils.escapeHtml4(LabList[1].toString())+"("+(LabList[0]!=null?StringEscapeUtils.escapeHtml4(LabList[0].toString()):" - ")+")"%>
+				<%=LabList[1].toString()+"("+LabList[0].toString()+")"%>
 				<%
 				}else {
 				%>-<%
@@ -279,23 +359,19 @@ margin-left:15x;
 					</h4>
 				</div>
 				<h4 style="font-family: <%= FontFamily %>;">
-					<%if(LabList!=null && LabList[2]!=null && LabList[3]!=null && LabList[5]!=null){ %>
-					<%=StringEscapeUtils.escapeHtml4(LabList[2].toString())+" , "+StringEscapeUtils.escapeHtml4(LabList[3].toString())+", PIN-"+StringEscapeUtils.escapeHtml4(LabList[5].toString()) %>
+					<%if(LabList[2]!=null && LabList[3]!=null && LabList[5]!=null){ %>
+					<%=LabList[2]+" , "+LabList[3].toString()+", PIN-"+LabList[5].toString() %>
 					<%}else{ %>
 					-
 					<%} %>
 				</h4>
-<%-- <div style="text-align: right;margin-right:20px;">
-    <span style="font-weight: bold;font-family: <%= FontFamily %>;"><%= month.toString().substring(0,3) %> <%= year %></span>
-   </div> --%>
-   <br><br><br>
-
+		<div style="text-align: right;">
+		    <span style="font-weight: bold;font-family: <%= FontFamily %>;"><%= month.toString().substring(0,3) %> <%= year %></span>
+		   </div>
 			</div>
-			<br>
-			<p style="text-align: center; page-break-before: always;">&nbsp;&nbsp;&nbsp;&nbsp;</p>	
-		<!------------------------ page 2 -------Starts----------------------->
- 
+				<p style="text-align: center; page-break-before: always;">&nbsp;&nbsp;&nbsp;&nbsp;</p>	
 	<div class="heading-container" style="text-align: center; position: relative;">
+  <h6 class="heading-color top-center" style="font-family: <%= FontFamily %>;font-size: 14px !important; text-decoration: underline; display: inline-block; padding-bottom: 5px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-weight: normal;">RESTRICTED</h6>
 </div>
 				
 					<div style="text-align: center;font-family: <%= FontFamily %>;">
@@ -1139,5 +1215,7 @@ This appendix contains acronyms and provides standard definitions for terminolog
            </tbody>
 			</table>
 			</div>
+		</div>
+	</div>	
 </body>
 </html>

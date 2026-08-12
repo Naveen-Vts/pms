@@ -8947,5 +8947,78 @@ public class PrintController {
 	    }
 	}
 
+	@RequestMapping(value="ProjectBriefingWordDownload.htm")
+	public String ProjectBriefingWordDownload(HttpServletRequest req, HttpSession ses, HttpServletResponse res)	throws Exception 
+	{
+		String UserId = (String) ses.getAttribute("Username");
+		String LabCode = (String)ses.getAttribute("labcode");
+		logger.info(new Date() +"Inside ProjectBriefingWordDownload.htm "+UserId);		
+	    try {
+	    	String projectid=req.getParameter("projectid");
+	    	String committeeid= req.getParameter("committeeid");
+	    	
+	    	Committee committee = service.getCommitteeData(committeeid);
+	    	
+	    	String projectLabCode = service.ProjectDetails(projectid).get(0)[5].toString();
+	    	String CommitteeCode = committee.getCommitteeShortName().trim();
+	    	
+	    	if(LabCode.equalsIgnoreCase("ADE")) {
+	    		req.setAttribute("otherMeetingList", service.otherMeetingList(projectid));
+	    	}
+	    	List<Object[]> SpecialCommitteesList =  service.SpecialCommitteesList(LabCode);
+	    	Map<String, List<Object[]>> reviewMeetingListMap = new HashMap<String, List<Object[]>>();
+			for(Object[] obj : SpecialCommitteesList) {
+				reviewMeetingListMap.put(obj[1]+"", service.ReviewMeetingList(projectid, obj[1]+""));
+			}
+	    	req.setAttribute("reviewMeetingListMap",reviewMeetingListMap);
+
+	    	req.setAttribute("text", req.getParameter("text"));
+	    	req.setAttribute("IsIbasConnected", IsIbasConnected);
+	    	req.setAttribute("committeeData", committee);
+    		req.setAttribute("projectid",projectid);
+    		req.setAttribute("committeeid",committeeid);
+    		req.setAttribute("ProjectCost",ProjectCost);
+	    	req.setAttribute("isprint", "0");
+	    	req.setAttribute("AppFilesPath",ApplicationFilesDrive);
+	    	req.setAttribute("projectLabCode",projectLabCode);
+	    	req.setAttribute("labInfo", service.LabDetailes(projectLabCode));
+	    	req.setAttribute("lablogo", LogoUtil.getLabLogoAsBase64String(projectLabCode));  
+	    	req.setAttribute("thankYouImg", LogoUtil.getThankYouImageAsBase64String());
+            req.setAttribute("filePath", env.getProperty("ApplicationFilesDrive"));
+    		req.setAttribute("ApplicationFilesDrive",env.getProperty("ApplicationFilesDrive"));
+    		req.setAttribute("committeeMetingsCount", service.ProjectCommitteeMeetingsCount(projectid, "0", "0", "0", "0", CommitteeCode) );
+    		Object[] nextmeetVenue = (Object[])service.BriefingMeetingVenue(projectid, committeeid);
+	    	req.setAttribute("nextMeetVenue", nextmeetVenue);
+	    	Object[] lastmeetingVenue = service.getLastcreatedSchedule(projectid, committeeid);
+			req.setAttribute("lastmeetingVenue", lastmeetingVenue);
+			if (nextmeetVenue != null && nextmeetVenue[0] != null) {
+				req.setAttribute("recdecDetails", service.GetRecDecDetails(nextmeetVenue[0].toString()));
+			}
+			if(lastmeetingVenue!=null && lastmeetingVenue[0]!=null && LabCode.equalsIgnoreCase("PGAD")) {
+				List<Object[]> list = service.getMilestoneBriefingList(lastmeetingVenue[0].toString());
+				Map<String,List<Object[]>> milestoneBriefingMap = list!=null ? list.stream().collect(Collectors.groupingBy(obj -> obj[1]!=null?obj[1].toString():"UNKNOWN",LinkedHashMap::new,Collectors.toList())) : new LinkedHashMap<String, List<Object[]>>();
+				req.setAttribute("milestoneBriefingMap", milestoneBriefingMap);
+				req.setAttribute("recdecDetails", service.GetRecDecDetails(lastmeetingVenue[0].toString()));
+			}
+	    	req.setAttribute("RiskTypes", service.RiskTypes());
+    		
+    		Object[] mileStoneLevelId = service.MileStoneLevelId(projectid,committeeid);
+			req.setAttribute("levelid", mileStoneLevelId!=null?mileStoneLevelId[0].toString():"2");
+			
+			// Project Data
+			processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected, ses);
+			
+			// Milestone Data for Committee
+			milestoneLevelDataMap(req, reviewMeetingListMap, projectid, committee.getCommitteeShortName().trim());
+			
+			req.setAttribute("wordFlag", "Y");
+			
+			return "print/BriefingPaperNew1";
+	    } catch(Exception e) {    		
+    		logger.error(new Date() +" Inside ProjectBriefingWordDownload.htm "+UserId, e);
+    		e.printStackTrace();
+			return "static/Error"; 
 	
+    	}		
+	}
 }
