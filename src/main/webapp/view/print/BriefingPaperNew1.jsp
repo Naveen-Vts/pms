@@ -33,11 +33,22 @@
     pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>  
 
+<% String wordFlag = (String)request.getAttribute("wordFlag"); %>
     
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="ISO-8859-1">
+
+<%if(wordFlag!=null && wordFlag.equalsIgnoreCase("Y")) { %>	 
+	<script src="./webjars/jquery/3.4.0/jquery.min.js"></script>
+	<spring:url value="/resources/js/FileSaver.min.js" var="FileSaver" />
+	<script src="${FileSaver}"></script>
+	<spring:url value="/resources/js/jquery.wordexport.js" var="wordexport" />
+	<script src="${wordexport}"></script>
+	<script src="${wordexport}"></script>
+<%} %>
+
 
 <title>Briefing Paper</title>
 
@@ -69,293 +80,6 @@ List<List<Object[]>> overallfinance = (List<List<Object[]>>)request.getAttribute
 String IsIbasConnected=(String)request.getAttribute("IsIbasConnected");
 String thankYouImg = (String)request.getAttribute("thankYouImg");
 %>
-
-<style type="text/css">
-
-
-p{
-  text-align: justify;
-  text-justify: inter-word;
-}
-
- th
- {
- 	border: 1px solid black;
- 	text-align: center;
- 	padding: 5px;
-	overflow-wrap: break-word;
- }
- 
- td
- {
- 	border: 1px solid black;
- 	text-align: left;
- 	padding: 5px;
- 	overflow-wrap: break-word;
- }
-
-th, td
-{
-
-	word-break :normal;
-}
-
-.break
-	{
-		page-break-after: always;
-		margin: 25px 0px 25px 0px;
-	} 
-	 
-#pageborder {
-      position:fixed;
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      border: 2px solid black;
-}     
- 
-@page {             
-          size: 1120px 790px; 
-          margin-top: 49px;
-          margin-left: 72px;
-          margin-right: 39px;
-          margin-buttom: 49px; 	
-          border: 1px solid black; 
-          padding-top: 15px;
-          
-          @bottom-left {          		
-        
-             content : "The information in this Document is proprietary of <%=labInfo.getLabCode()!=null?(labInfo.getLabCode()): " - " %> /DRDO , MOD Government of India. Unauthorized possession/use is violating the Government procedure which may be liable for prosecution. ";
-             margin-bottom: 30px;
-             margin-right: 5px;
-             font-size: 10px;
-          }
-             
-           @bottom-right {          		
-             content: "Page " counter(page) " of " counter(pages);
-             margin-bottom: 30px;
-             margin-right: 10px;
-          }
-           @top-right {
-             
-             content: "<%= projectattributes.get(0)[12]!=null?(projectattributes.get(0)[12].toString()): " - " %>";
-             margin-top: 30px;
-             margin-right: 50px;
-          }
-          
-          <%-- @top-left {
-          	margin-top: 30px;
-            margin-left: 10px;
-            content: url("data:image/*;base64,<%=lablogo%>");  
-          }   --%>     
-          
-            @top-left {
-	          content: "Project: <%=ProjectCode!=null?(ProjectCode): " - "%>"; 
-			  margin-top: 30px;
-              margin-left: 50px;
-             
-  			}   
-  			
-  			@top-center {
-	         content: "<%=CommitteeCode!=null?(CommitteeCode): " - " %> #<%=Long.parseLong(committeeMetingsCount[1].toString())+1 %>"; 
-			
-			margin-top: 30px;
-             
-  			} 
-          
- }
- .border
- {
- 	border: 1px solid black;
- }
- .textleft{
- 	text-align: left;
- }
- div
- {
-  	width: 1000px;
- }
- 
- th
- {
- 	border: 1px solid black;
- 	text-align: center;
- 	padding: 5px;
- }
- 
- td
- {
- 	border: 1px solid black;
- 	text-align: left;
- 	padding: 5px;
- }
- 
-  
- .textcenter{
- 	
- 	text-align: center;
- }
-
- .sth
- {
- 	   
- 	   border: 1px solid black;
- }
- 
- .std
- {
- 	text-align: center;
- 	border: 1px solid black;
- }
- 
- 
-  #containers {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
-
-.anychart-credits {
-   display: none;
-}
-
-.flex-container 
-{
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-img
-{
-
-<%if(isprint!=null && isprint.equals("1")){%>
-	margin-left: -15px;
-<%}%>
-}
- 
-.pname
-{
-	margin: 10px 0px 10px 20px;
-}
- 
- .completed{
-	color: green;
-	font-weight: 700;
-}
-
-.briefactive{
-	color: blue;
-	font-weight: 700;
-}
-
-.inprogress{
-	color: #F66B0E;
-	font-weight: 700;
-}
-
-.assigned{
-	color: brown;
-	font-weight: 700;
-}
-
-.assigned{
-	color: purple;
-	font-weight: 700;
-}
-.notassign{
-	color:#AB0072;
-	font-weight: 700;
-}
-.ongoing{
-	color: #F66B0E;
-	font-weight: 700;
-}
-
-.completed{
-	color: green;
-	font-weight: 700;
-}
-
-.delay{
-	color: maroon;
-	font-weight: 700;
-}
-
-.completeddelay{
-	color:#BABD42;
-	font-weight: 700;
-}
-
-.inactive{
-	color: red;
-	font-weight: 700;
-}
- 
-.delaydays
-{
-	color:#000000;
-	font-weight: 700;
-}
-
-.firstpage th{
-	border:none !important
-}
- 
-.executive{
-	align-items: center;
-} 
-
-.sub-title{
-	font-size : 20px !important;
-	color: #145374 !important
-}
-
-.subtables{
-	width: 970px !important;
-}
-
-.date-column{
-	max-width:60px !important;
-}
- 
-.status-column{
-	max-width:10px !important;
-} 
-
-.resp-column{
-	max-width:80px !important;
-} 
- 
-.currency{
-	color:#367E18 !important;
-	font-style: italic;
-} 
-
-
-.subtables th{
-	/* background-color: #001253 !important; 
-	color: white !important;
-	border-color: white; */
-	color: #001253 !important;
-	
-}
- 
-.mainsubtitle{
-	font-size : 18px !important;
-	color:#882042 !important;
-}
- 
- 
-.projectattributetable th{
-	text-align: left !important;
-} 
- 
-</style>
-
-
 
 </head>
 
@@ -418,8 +142,338 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 %>
 
 
-<body <%if(text!=null && text.equalsIgnoreCase("p")) {%>style="background-color: rgba(245, 222, 179, 0.2);"<%} %>>
+<body id="export-container" <%if(text!=null && text.equalsIgnoreCase("p")) {%>style="background-color: rgba(245, 222, 179, 0.2);"<%} %>>
 
+	<style type="text/css">
+	
+		<%if(wordFlag != null && wordFlag.equalsIgnoreCase("Y")) { %>	 
+			/* Microsoft Word-specific CSS for Landscape & Margins */
+			@page WordSection1 {
+			    /* Width x Height (A4 Landscape: 841.95pt x 595.35pt | Letter: 11in x 8.5in) */
+			    size: 841.95pt 595.35pt; 
+			    mso-page-orientation: landscape;
+			    margin: 0.5in 0.5in 0.5in 0.5in; /* Top, Right, Bottom, Left margins */
+			    mso-header-margin: 0.5in;
+			    mso-footer-margin: 0.5in;
+			}
+			
+			div.WordSection1 {
+			    page: WordSection1;
+			}
+			
+			/* Keep tables from overflowing */
+			table {
+			    width: 100% !important;
+			    table-layout: fixed;
+			    word-wrap: break-word;
+			    border-collapse: collapse !important;
+			}
+			
+			.break {
+			    clear: both;
+			    page-break-before: always !important;
+			    break-before: page !important;
+			    mso-break-type: section-break; /* Forces Word to insert a true section/page break */
+			}
+			
+			/* Force reduced padding and override any inline styles */
+			th, td {
+			    border: 1px solid black;
+			    padding: 1px 2px !important; /* Reduces vertical padding to 1px and horizontal to 2px */
+			    text-align: left;
+			    overflow-wrap: break-word;
+			    word-break: normal;
+			}
+			
+			th {
+			    text-align: center;
+			}
+			
+			/* Specifically tighten custom sub-tables and attribute tables */
+			.subtables th, .subtables td,
+			.projectattributetable th, .projectattributetable td,
+			.std, .sth {
+			    padding: 1px 2px !important;
+			}
+		<% } %>
+		
+		<%if(wordFlag == null) { %>	 
+			.break
+			{
+				page-break-after: always;
+				margin: 25px 0px 25px 0px;
+			} 
+				
+			@page {              
+			          size: 1120px 790px; 
+			          margin-top: 49px;
+			          margin-left: 72px;
+			          margin-right: 39px;
+			          margin-buttom: 49px; 	
+			          border: 1px solid black; 
+			          padding-top: 15px;
+			          
+			          @bottom-left {          		
+			        
+			             content : "The information in this Document is proprietary of <%=labInfo.getLabCode()!=null?(labInfo.getLabCode()): " - " %> /DRDO , MOD Government of India. Unauthorized possession/use is violating the Government procedure which may be liable for prosecution. ";
+			             margin-bottom: 30px;
+			             margin-right: 5px;
+			             font-size: 10px;
+			          }
+			             
+			           @bottom-right {          		
+			             content: "Page " counter(page) " of " counter(pages);
+			             margin-bottom: 30px;
+			             margin-right: 10px;
+			          }
+			           @top-right {
+			             
+			             content: "<%= projectattributes.get(0)[12]!=null?(projectattributes.get(0)[12].toString()): " - " %>";
+			             margin-top: 30px;
+			             margin-right: 50px;
+			          }
+			          
+			          <%-- @top-left {
+			          	margin-top: 30px;
+			            margin-left: 10px;
+			            content: url("data:image/*;base64,<%=lablogo%>");  
+			          }   --%>     
+			          
+			            @top-left {
+				          content: "Project: <%=ProjectCode!=null?(ProjectCode): " - "%>"; 
+						  margin-top: 30px;
+			              margin-left: 50px;
+			             
+			  			}   
+			  			
+			  			@top-center {
+				         content: "<%=CommitteeCode!=null?(CommitteeCode): " - " %> #<%=Long.parseLong(committeeMetingsCount[1].toString())+1 %>"; 
+						
+						margin-top: 30px;
+			             
+			  			} 
+			          
+			 }
+			 
+			 th
+			 {
+			 	border: 1px solid black;
+			 	text-align: center;
+			 	padding: 5px;
+				overflow-wrap: break-word;
+			 }
+			 
+			 td
+			 {
+			 	border: 1px solid black;
+			 	text-align: left;
+			 	padding: 5px;
+			 	overflow-wrap: break-word;
+			 }
+			
+			th, td
+			{
+			
+				word-break :normal;
+			}
+			
+		 <%} %>
+		 
+		p{
+		  text-align: justify;
+		  text-justify: inter-word;
+		}
+		
+		
+		#pageborder {
+		      position:fixed;
+		      left: 0;
+		      right: 0;
+		      top: 0;
+		      bottom: 0;
+		      border: 2px solid black;
+		}     
+		
+		 .border
+		 {
+		 	border: 1px solid black;
+		 }
+		 .textleft{
+		 	text-align: left;
+		 }
+		 div
+		 {
+		  	width: 1000px;
+		 }
+		 
+		 .textcenter{
+		 	
+		 	text-align: center;
+		 }
+		 
+		 .sth
+		 {
+		 	   
+		 	   border: 1px solid black;
+		 }
+		 
+		 .std
+		 {
+		 	text-align: center;
+		 	border: 1px solid black;
+		 }
+			 
+		 #containers {
+		    width: 100%;
+		    height: 100%;
+		    margin: 0;
+		    padding: 0;
+		}
+		
+		.anychart-credits {
+		   display: none;
+		}
+		
+		.flex-container 
+		{
+		  display: flex;
+		  flex-direction: column;
+		  min-height: 100vh;
+		}
+		
+		img
+		{
+		
+		<%if(isprint!=null && isprint.equals("1")){%>
+			margin-left: -15px;
+		<%}%>
+		}
+		 
+		.pname
+		{
+			margin: 10px 0px 10px 20px;
+		}
+		 
+		 .completed{
+			color: green;
+			font-weight: 700;
+		}
+		
+		.briefactive{
+			color: blue;
+			font-weight: 700;
+		}
+		
+		.inprogress{
+			color: #F66B0E;
+			font-weight: 700;
+		}
+		
+		.assigned{
+			color: brown;
+			font-weight: 700;
+		}
+		
+		.assigned{
+			color: purple;
+			font-weight: 700;
+		}
+		.notassign{
+			color:#AB0072;
+			font-weight: 700;
+		}
+		.ongoing{
+			color: #F66B0E;
+			font-weight: 700;
+		}
+		
+		.completed{
+			color: green;
+			font-weight: 700;
+		}
+		
+		.delay{
+			color: maroon;
+			font-weight: 700;
+		}
+		
+		.completeddelay{
+			color:#BABD42;
+			font-weight: 700;
+		}
+		
+		.inactive{
+			color: red;
+			font-weight: 700;
+		}
+		 
+		.delaydays
+		{
+			color:#000000;
+			font-weight: 700;
+		}
+		
+		.firstpage th{
+			border:none !important
+		}
+		 
+		.executive{
+			align-items: center;
+		} 
+		
+		.sub-title{
+			font-size : 20px !important;
+			color: #145374 !important
+		}
+		
+		.subtables{
+			width: 970px !important;
+		}
+		
+		.date-column{
+			max-width:60px !important;
+		}
+		 
+		.status-column{
+			max-width:10px !important;
+		} 
+		
+		.resp-column{
+			max-width:80px !important;
+		} 
+		 
+		.currency{
+			color:#367E18 !important;
+			font-style: italic;
+		} 
+		
+		
+		.subtables th{
+			/* background-color: #001253 !important; 
+			color: white !important;
+			border-color: white; */
+			color: #001253 !important;
+			
+		}
+		 
+		.mainsubtitle{
+			font-size : 18px !important;
+			color:#882042 !important;
+		}
+		 
+		 
+		.projectattributetable th{
+			text-align: left !important;
+		} 
+	 
+		td.no-border, th.no-border {
+	        border: none !important;
+	        border-style: none !important;
+	        mso-border-alt: none !important;
+	    }
+	</style>
+	
+	<div class="WordSection1">
 	<div class="firstpage" id="firstpage" align="center" "> 
 	
 		<%if(text!=null && text.equalsIgnoreCase("p")) {%>
@@ -466,9 +520,13 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 								 </tr>
 								 <tr>
 								 	<%-- <%LocalTime starttime = LocalTime.parse(LocalTime.parse(nextMeetVenue[3].toString(),DateTimeFormatter.ofPattern("HH:mm:ss")).format( DateTimeFormatter.ofPattern("HH:mm") ));   %> --%>
-									 <td  style="text-align: center;  width: 50%;font-size: 20px ;padding: 0px;border:0px !important;"> <b><%=sdf.format(sdf1.parse(nextMeetVenue[2].toString()))%></b></td>
-									 <td  style="text-align: center;  width: 50%;font-size: 20px ;padding: 0px;border:0px !important;"> <b><%=nextMeetVenue[3]!=null?(nextMeetVenue[3].toString()): " - "/* starttime.format( DateTimeFormatter.ofPattern("hh:mm a") ) */ %></b></td>
-								 </tr>
+								    <td class="no-border" style="text-align: center; width: 50%; font-size: 20px; padding: 0px;">
+								        <b><%=sdf.format(sdf1.parse(nextMeetVenue[2].toString()))%></b>
+								    </td>
+								    <td class="no-border" style="text-align: center; width: 50%; font-size: 20px; padding: 0px;">
+								        <b><%=nextMeetVenue[3]!=null?(nextMeetVenue[3].toString()): " - "/* starttime.format( DateTimeFormatter.ofPattern("hh:mm a") ) */ %></b>
+								    </td>
+								</tr>
 							 </table>
 							 <table style=" margin-left: auto;margin-right:auto; " >
 								<tr >
@@ -502,9 +560,9 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 	</div>
 	
 	
-<h1 class="break"></h1>
+<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>
 <%char ch='a'; for(int z=0 ; z<projectidlist.size();z++) {   %>
-	<%if(z>0){ %><h1 class="break"></h1> <%} %>
+	<%if(z>0){ %><%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %> <%} %>
 	
 	<div  id="detailContainer" align="center" >
 	
@@ -656,10 +714,10 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 		</div>
 		<% } %>
 <!-- ------------------------------------project attributes------------------------------------------------- -->
-		<h1 class="break"></h1>
+		<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>
 <!-- ------------------------------------system configuration and Specification------------------------------------------------- -->	
 		<% for(int z=0 ; z<1;z++) {   %>
-	<%if(z>0){ %><h1 class="break"></h1> <%} %>
+	<%if(z>0){ %><%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %> <%} %>
 		<div style="margin-left: 10px;" align="left" class="sub-title"><b>2. Schematic Configuration</b></div><br>
 		<div align="left" style="margin-top: 5px;margin-left: 10px;"><b class="mainsubtitle">2 (a) System Configuration : </b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		<%if(projectdatadetails.get(z)!=null && projectdatadetails.get(z)[3]!=null){ %>
@@ -697,7 +755,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 				File systemfile1 = systemPath1.toFile();
 				if(systemfile1.exists()){ %>
 					<%if(!FilenameUtils.getExtension(projectdatadetails.get(z)[3].toString()).equalsIgnoreCase("pdf") ){ %>
-							<h1 class="break"></h1>
+							<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>
 					<% }else{ %>
 					<% }}}%>
 	
@@ -739,7 +797,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 		
 		
 	</div>	
-	<!-- <h1 class="break"></h1> -->
+	<!-- <%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %> -->
 					<%if(projectdatadetails.get(z)!=null && projectdatadetails.get(z)[4]!=null){ %>
 				
 				<%
@@ -747,7 +805,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 				File specificfile1 = specificPath1.toFile();
 				if(specificfile1.exists()){ %>
 					<%if(!FilenameUtils.getExtension(projectdatadetails.get(z)[4].toString()).equalsIgnoreCase("pdf") ){ %> <!-- changed -->
-							<h1 class="break"></h1>
+							<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>
 					<% }else{ %>
 					<% }}}%>
 <!-- --------------------------------------------- ----------------------------------------------- -->
@@ -786,7 +844,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 		<%} %>
 
 
-		<h1 class="break"></h1> 
+		<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %> 
 <!-- ----------------------------------------------4.Details of work------------------------------------------------- -->			
 		<% for(int z=0 ; z<1;z++) {   %>
 		<div align="left" style="margin-left: 10px;"><b class="sub-title">4. Particulars of Meeting</b></div><br>
@@ -817,7 +875,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 				</thead>
 				<tbody>
 					<%if(lastpmrcminsactlist.get(z).size()==0){ %>
-						<tr><td colspan="6" style="text-align: center;" > Nil</td></tr>
+						<tr><td colspan="7" style="text-align: center;" > Nil</td></tr>
 					<%}
 						else if(lastpmrcminsactlist.get(z).size()>0)
 							{int i=1;String key2="";
@@ -909,7 +967,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 			<%} %>
 			
 		<% for(int z=0 ; z<1;z++) {   %>
-		<h1 class="break"></h1>
+		<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>
 				 	<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(b) Last <%=CommitteeCode!=null?(CommitteeCode).toUpperCase(): " - "%>
 														   						Meeting action points with Probable Date of completion (PDC), Actual Date of Completion (ADC) and status.</b>
 					</div>
@@ -1026,7 +1084,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 					<%} %>	
 					
 						<% for(int z=0 ; z<1;z++) {   %>
-					<h1 class="break"></h1>
+					<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>
 						<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(c) Details of Technical/ User Reviews (if any).</b></div>
 							<div >
 							<%for(Map.Entry<String, List<Object[]>> entry : reviewMeetingListMap.entrySet()) { 
@@ -1068,7 +1126,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 			<%} %>
 			
 				<% for(int z=0 ; z<1;z++) {   %>
-							 <h1 class="break"></h1>
+							 <%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>
 <!-- -------------------------------------------------------------------------------------------- -->
 		<div align="left" style="margin-left: 10px;">
 		
@@ -1250,7 +1308,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 	<% for(int z=0 ; z<1;z++) {   %>
 	
 	
-						 <h1 class="break"></h1>
+						 <%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>
 <!-- ------------------------------------------------------------------------------------------------------------ -->
 
 		<div align="left" style="margin-left: 10px;"><b class="sub-title">6. Details of work and current status of sub system with major milestones ( since last <%= CommitteeCode!=null?(CommitteeCode).toUpperCase():" - " %> meeting ) period </b></div> 
@@ -1396,7 +1454,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 	<%} %>	
 	
 		<% for(int z=0 ; z<1;z++) {   %>
-						<h1 class="break"></h1>
+						<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>
 						 <div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(b) TRL table with TRL at sanction stage and current stage indicating overall PRI.</b></div>
 							<div>
 						
@@ -1439,7 +1497,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 										<% }}}%>
 										
 										
-							<h1 class="break"></h1> 
+							<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %> 
 			<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(c) Risk Matrix/Management Plan/Status. </b></div>
 										
 				<table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
@@ -1588,7 +1646,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 		<%int chapter=1;int chapter2=1;
 		for(int z=0 ; z<projectidlist.size();z++) {   %>
 		<!-- ----------------------------------------------7a. Procurement Status------------------------------------------------- -->
-						<h1 class="break"></h1>
+						<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>
 						<div align="left" style="margin-left: 10px;"><b class="sub-title">7. Details of Procurement</b></div>
 							<div align="left" style="margin-left: 15px;margin-top: 5px;"><b class="mainsubtitle">(a<%if(projectidlist.size()>1) {%><%="."+chapter++%><%} %>)Details of Procurement plan (Major Items) 			 </b>  <%if(projectidlist.size()>1) {%> (<b><%=ProjectDetail.get(z)[1]%><% if (z > 0) { %>(SUB)<% } %>  <%} %></b>)</div>
 							<div align="right"> <span class="currency" style="font-weight: bold;width: 970px !important;" >(In &#8377; Lakhs)</span></div>
@@ -1827,7 +1885,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 									  </table>
 								
 <!-- ----------------------------------------------7b. Procurement Status------------------------------------------------- -->								
-					  <h1 class="break"></h1>
+					  <%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>
 								
 								<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(b<%if(projectidlist.size()>1) {%><%="."+chapter2++%><%} %>) Procurement Status</b> 			<%if(projectidlist.size()>1) {%> (<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  <%} %></b>) </b></div>
 								<div align="right" style="width:980px !important;"> <span class="currency" style="font-weight: bold;" >(In &#8377; Lakhs)</span></div>
@@ -2039,7 +2097,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 		<%} %>	
 			<% char fch='a'; for(int z=0 ; z<projectidlist.size();z++) {   %>
 					<!-- ----------------------------------------------8. Overall financial Status------------------------------------------------- -->
-					<h1 class="break"></h1>	
+					<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>	
 		 
    					<div align="left" style="margin-left: 10px;"><b class="sub-title">8 <%if(projectidlist.size()>1) {%> (<%=(fch++) %>) <%} %>. Overall Financial Status </b> 			<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  </b></div><div align="right"><b><span class="currency" >(&#8377; <span>Crore</span>)</span></b></div>
 						 
@@ -2220,7 +2278,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 		<%} %>
 			
 	<% for(int z=0 ; z<1;z++) {   %>
-			<h1 class="break"></h1>	
+			<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>	
 			
 				<div align="left" style="margin-left: 10px;">
 				<%-- <a href="<%= HyperlinkPath+ "/MilestoneActivityList.htm?ProjectId="+projectid %>" target="_top" rel="noopener noreferrer" > --%>
@@ -2393,7 +2451,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 <% } %>
 
 	<% for(int z=0 ; z<1;z++) {   %>
-			<h1 class="break"></h1>
+			<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>
 <!-- ----------------------------------------------8. Action plan for next three------------------------------------------------- -->
 <!-- ----------------------------------------------9.GANTT chart---------------------------------------------------------- -->
 			<div align="left" style="margin-left: 15px;">
@@ -2437,7 +2495,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 	<%} %>
 	
 		<% for(int z=0 ; z<1;z++) {   %>
-			<h1 class="break"></h1>
+			<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>
 			<div align="left" style="margin-left: 10px;"><b class="sub-title">11. Issues:</b></div>
 			
 			<table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;   border-collapse:collapse;" >
@@ -2518,7 +2576,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 			<%} %>
 				
 			<% for(int z=0 ; z<1;z++) {   %>
-			<h1 class="break"></h1>	
+			<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>	
 			<div align="left" style="margin-left: 10px;"><b class="sub-title"> 
    							<%if(CommitteeCode.equalsIgnoreCase("EB")){ %>
    								12. Other Relevant Points (if any) and Technical Work Carried Out For Last Six Months
@@ -2547,7 +2605,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 							List<TechImages>  TechImagesList= TechImages.get(z); 
 							if(TechImagesList.size()>0){%>
 						
-						<h1 class="break"></h1>	
+						<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>	
 						<b class="mainsubtitle"> &nbsp;&nbsp;Technical Images</b> 
 						
 						<%} }%>
@@ -2581,7 +2639,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 						
 			<%} %>	
 			<% for(int z=0 ; z<1;z++) {   %>
-											<h1 class="break"></h1>		
+											<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>		
 <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------- -->
 						<div align="left" style="margin-left: 10px;"><b class="sub-title">13. Decision/Recommendations sought from <%=CommitteeCode.toUpperCase() %> Meeting :</b></div>
 							
@@ -2603,18 +2661,28 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 					</tbody>
 					</table>	
 				<%} %>	
-		<h1 class="break"></h1> 
+		<%if(wordFlag == null) {%> <h1 class="break"></h1><%} %> 
 
-		<!-- <div align="center" style="text-align: center; vertical-align: middle ;font-size:60px;font-weight: 600;margin: auto; position: relative;color: #145374 !important" >THANK YOU</div> -->
-       <%if(thankYouImg!=null ){ %>
-       <div class="content" >
-       			
+		<%if(wordFlag == null) {%>
+			<!-- <div align="center" style="text-align: center; vertical-align: middle ;font-size:60px;font-weight: 600;margin: auto; position: relative;color: #145374 !important" >THANK YOU</div> -->
+	       	<%if(thankYouImg!=null ){ %>
+	       		<div class="content" >
+	       			
 					<img class="" style="width: 100%; height: 100%;"  src="data:image/*;base64,<%=thankYouImg%>" alt="Logo" > 
-					</div>	
-				<%}else{ %>
-			 <div align="center" style="text-align: center; vertical-align: middle ;font-size:60px;font-weight: 600;margin-top: 250px; position: relative;color: #145374 !important" >THANK YOU</div>
-				<%} %>
-			
+				</div>	
+			<%}else{ %>
+				 <div align="center" style="text-align: center; vertical-align: middle ;font-size:60px;font-weight: 600;margin-top: 250px; position: relative;color: #145374 !important" >THANK YOU</div>
+			<%} %>
+		<%} %> 
+	</div>	
 </body>
+<%if(wordFlag!=null && wordFlag.equalsIgnoreCase("Y")) { %>	 
+<script type="text/javascript">
+
+	$(document).ready(function() {
+		$("#export-container").wordExport("Briefing_Paper");
+	});
+</script>	
+<%} %>
 </html>
 

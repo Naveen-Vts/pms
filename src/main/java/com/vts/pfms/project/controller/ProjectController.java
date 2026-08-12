@@ -6845,18 +6845,19 @@ public class ProjectController
 			req.setAttribute("ParaDetails", service.ReqParaDetails(reqInitiationId)); //changed the code here pass the projectId
 			req.setAttribute("isPdf", req.getParameter("isPdf"));
 			
-			CharArrayWriterResponse customResponse = new CharArrayWriterResponse(res);
-			req.getRequestDispatcher("/view/print/RequirementDownload.jsp").forward(req, customResponse);
-			String html = customResponse.getOutput();
-
-
-
+			String isPdf = req.getParameter("isPdf");
+			
+			if(isPdf!=null && isPdf.equalsIgnoreCase("N")) {
+				return "requirements/RequirementPDFDownload";
+			}
+			req.setAttribute("isPdf", isPdf);
+			
+			return "print/RequirementDownload";
 		}catch(Exception e) {
 			e.printStackTrace(); 
 			logger.error(new Date() +"Inside RequirementDocumentDownlod.htm "+UserId,e);
+			return "static/Error";
 		}
-
-		return "print/RequirementDownload";
 
 	}
 	public static String convertExcelToHtml(InputStream inputStream) throws Exception {

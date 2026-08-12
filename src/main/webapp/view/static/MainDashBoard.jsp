@@ -640,12 +640,12 @@ IsDG = IsDG != null ? IsDG: "";
 									<%long i=0;
 									for(ProjectSanctionDetailsMaster obj : budgetlist){
 										%>
-									<div class="carousel-item bot1"  id="chart<%=obj.getProjectid()%>"> 
+									<div class="carousel-item bot1"  id="chart<%=obj.getProjectId()%>"> 
 										<nav class="navbar navbar-light bg1" >
 											<a class="navbar-brand" >Financial Performance</a>
 										    <form class="form-inline" target="_blank" method="post" id="ibasform" action="<%=ibasUri%>/loginFromPfms">
 										    <input type="hidden" name="empNo" value="<%=EmpNo%>">
-											<input type="hidden" name="ProjectId" value="<%=obj.getProjectid()%>">
+											<input type="hidden" name="ProjectId" value="<%=obj.getProjectId()%>">
 											<input type="hidden" name="ProjectCode" value="<%=obj.getProjectCode()%>">
 											<input type="hidden" name="Expenditure" value="<%=obj.getExpAmt()%>">
 											<input type="hidden" name="Commitment" value="<%=obj.getOsComAmt()%>">
