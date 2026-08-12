@@ -674,7 +674,7 @@ public class MasterDaoImpl implements MasterDao {
 	}
 	
 	private static final String ALERTTDMASTER="SELECT dt.tdcode,dg.is_active,dg.group_name  FROM division_group dg,employee e, employee_desig ed, division_td dt \r\n"
-			+ "WHERE dg.group_head_id=e.empid AND e.desigid=ed.desigid AND dg.td_id=dt.tdid AND dg.is_active=1 AND dt.tdcode=:tdCode ORDER BY dg.group_id DESC";
+			+ "WHERE dg.group_head_id=e.emp_id AND e.desig_id=ed.desig_id AND dg.td_id=dt.tdid AND dg.is_active=1 AND dt.tdcode=:tdCode ORDER BY dg.group_id DESC";
 	@Override
 	public List<Object[]> CheckGroupMasterCode(String TdCode) throws Exception {
 		
