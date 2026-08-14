@@ -5352,6 +5352,29 @@ private boolean isValidFileType(MultipartFile file) {
 		}
 	}
 	
+	@RequestMapping(value = "DeleteMainMilestone.htm", method = {RequestMethod.GET,RequestMethod.POST})
+	public String deleteMainMilestone(HttpServletRequest req,HttpSession ses, RedirectAttributes redir) {
+		try {
+			String projectId = req.getParameter("projectId");
+			String mainId = req.getParameter("mainid");
+			String UserId = (String)ses.getAttribute("Username");
+			String labcode = (String)ses.getAttribute("labcode");
+			
+			redir.addAttribute("ProjectId",projectId);
+			
+			long count = service.deleteMainLevelMilsetone(mainId);
+			if (count > 0) {
+				redir.addAttribute("result", "Milestone Deleted Successfuly.");
+			} else {
+				redir.addAttribute("resultfail", "Milestone Delete Unsuccessful");
+			}	
+
+			return "redirect:/MilestoneActivityList.htm";
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "static/Error";
+		}		
+	}
 
 }
 

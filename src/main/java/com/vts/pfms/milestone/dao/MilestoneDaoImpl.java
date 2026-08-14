@@ -1939,4 +1939,17 @@ public class MilestoneDaoImpl implements MilestoneDao {
 		}
 		return null;
 	}
+
+	private static final String MAINMILEDELETE = "UPDATE milestone_activity SET isactive = 0 WHERE MilestoneActivityId = :mainId";
+	@Override
+	public long deleteMainLevelMilsetone(String mainId) throws Exception {
+		try {
+			Query query = manager.createNativeQuery(MAINMILEDELETE);
+			query.setParameter("mainId",mainId);
+			return query.executeUpdate();
+		}catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
 }

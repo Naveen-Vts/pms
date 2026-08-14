@@ -184,5 +184,6 @@ public interface MilestoneDao {
 	public long saveMilestoneActivityBriefing(MilestoneActivityBriefing entity)throws Exception;
 	public MilestoneActivityBriefing getMilestoneActivityBriefing(String mileStoneActivityBriefingId)throws Exception;
 	public Object[] getMilestoneActivityBriefingById(String milestoneid)throws Exception;
+	public long deleteMainLevelMilsetone(String mainId) throws Exception;
 
 }

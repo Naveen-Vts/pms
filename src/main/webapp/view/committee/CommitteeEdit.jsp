@@ -145,7 +145,7 @@ Object[] projectdetails=(Object[])request.getAttribute("projectdetails");
 							<div class="col-md-2">
 								<div class="form-group">
 									<label class="control-label">Is Briefing<span class="mandatory text-danger">*</span></label>
-									<select class="custom-select mt-n5" id="IsBriefing" required="required" name="IsBriefing" <%if("P".equalsIgnoreCase(committeedetails[7].toString())){ %> disabled="disabled" <%} %> >
+									<select class="custom-select mt-n5" id="IsBriefing" required="required" name="IsBriefing" >
 										<option disabled value="">Choose...</option>
 										<option <%if(committeedetails[14].toString().equalsIgnoreCase("N")){ %>selected <%} %> value="N">No</option>
 										<option <%if(committeedetails[14].toString().equalsIgnoreCase("Y")){ %>selected <%} %> value="Y">Yes</option>
@@ -433,6 +433,7 @@ var editor_config = {
 	    var isBriefing = document.getElementById('IsBriefing');
 	    if (this.value === "N") {
 	        isBriefing.disabled = true;
+	        isBriefing.value = "N";
 	    } else if (this.value === "P") {
 	        isBriefing.disabled = false;
 	    }
