@@ -80,7 +80,7 @@ public class SecurityConfiguration{
         			session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
         				   .invalidSessionUrl("/login?sessionInvalid")
         				   .sessionFixation().migrateSession()
-        				   .maximumSessions(2)
+        				   .maximumSessions(5)
         				   .maxSessionsPreventsLogin(false)
         			)
         	.headers(headers -> headers

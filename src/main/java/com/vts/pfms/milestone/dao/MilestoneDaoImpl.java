@@ -1952,4 +1952,78 @@ public class MilestoneDaoImpl implements MilestoneDao {
 			return 0;
 		}
 	}
+
+	private static final String MILESTONEPROGRESSCHECK = """
+			SELECT EXISTS (
+				    SELECT 1
+				    FROM milestone_activity_level l1
+				
+				    LEFT JOIN milestone_activity_level l2 ON l2.ParentActivityId = l1.ActivityId AND l2.ActivityLevelId = l1.ActivityLevelId + 1
+				    
+				    LEFT JOIN milestone_activity_level l3 ON l3.ParentActivityId = l2.ActivityId AND l3.ActivityLevelId = l2.ActivityLevelId + 1
+				
+				    LEFT JOIN milestone_activity_level l4 ON l4.ParentActivityId = l3.ActivityId AND l4.ActivityLevelId = l3.ActivityLevelId + 1
+				
+				    LEFT JOIN milestone_activity_level l5 ON l5.ParentActivityId = l4.ActivityId AND l5.ActivityLevelId = l4.ActivityLevelId + 1
+				
+				    WHERE l1.ActivityId = :activityId AND l1.ActivityLevelId = :levelId
+				      AND (
+				          l1.ProgressStatus > 0
+				          OR l1.ActivityStatusId > 1
+				          OR l1.Weightage > 0
+				
+				          OR l2.ProgressStatus > 0
+				          OR l2.ActivityStatusId > 1
+				          OR l2.Weightage > 0
+				
+				          OR l3.ProgressStatus > 0
+				          OR l3.ActivityStatusId > 1
+				          OR l3.Weightage > 0
+				
+				          OR l4.ProgressStatus > 0
+				          OR l4.ActivityStatusId > 1
+				          OR l4.Weightage > 0
+				
+				          OR l5.ProgressStatus > 0
+				          OR l5.ActivityStatusId > 1
+				          OR l5.Weightage > 0
+				      )
+				) AS hasDeletionRestriction
+			""";
+		@Override
+		public long deleteSubLevelMilsetone(String subId) throws Exception {
+			try {
+	
+			 Long activityId = Long.valueOf(subId);
+
+			    // Get the level of the activity
+			    Integer levelId = ((Number) manager.createNativeQuery("""
+			                SELECT ActivityLevelId
+			                FROM milestone_activity_level
+			                WHERE ActivityId = :activityId
+			                """)
+			            .setParameter("activityId", activityId)
+			            .getSingleResult())
+			            .intValue();
+
+			    Long hasRestriction = (Long) manager
+			            .createNativeQuery(MILESTONEPROGRESSCHECK)
+			            .setParameter("activityId", activityId)
+			            .setParameter("levelId", levelId)
+			            .getSingleResult();
+
+			    if (hasRestriction == 1) {
+			        return -1;
+			    }
+			    
+			    String deleteQuerry = "DELETE FROM milestone_activity_level WHERE ActivityId = :activityId";
+
+			    return manager.createNativeQuery(deleteQuerry)
+			    	    .setParameter("activityId", activityId)
+			    	    .executeUpdate();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return 0;
+			}
+		}
 }

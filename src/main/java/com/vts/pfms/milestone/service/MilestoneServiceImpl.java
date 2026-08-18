@@ -2836,4 +2836,9 @@ public class MilestoneServiceImpl implements MilestoneService {
 	public long deleteMainLevelMilsetone(String mainId) throws Exception {
 		return dao.deleteMainLevelMilsetone(mainId);
 	}
+
+	@Override
+	public long deleteSubLevelMilsetone(String subId) throws Exception {
+		return dao.deleteSubLevelMilsetone(subId);
+	}
 }

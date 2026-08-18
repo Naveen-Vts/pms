@@ -881,6 +881,12 @@ public class MilestoneController {
 		logger.info(new Date() +"Inside MilestoneActivityEditSubmit.htm "+UserId);		
 		try {
 
+			String chainId = req.getParameter("chainId");
+			String targetRowId = req.getParameter("targetRowId");
+			
+			redir.addFlashAttribute("chainId",chainId);
+			redir.addFlashAttribute("targetRowId",targetRowId);
+
 			if(InputValidator.isContainsHTMLTags(req.getParameter("ActivityName"))) {
 				redir.addAttribute("ProjectId", req.getParameter("ProjectId"));
 				redir.addAttribute("MilestoneActivityId", req.getParameter("MilestoneActivityId"));
@@ -5353,12 +5359,10 @@ private boolean isValidFileType(MultipartFile file) {
 	}
 	
 	@RequestMapping(value = "DeleteMainMilestone.htm", method = {RequestMethod.GET,RequestMethod.POST})
-	public String deleteMainMilestone(HttpServletRequest req,HttpSession ses, RedirectAttributes redir) {
+	public String deleteMainMilestone(HttpServletRequest req, RedirectAttributes redir) {
 		try {
 			String projectId = req.getParameter("projectId");
 			String mainId = req.getParameter("mainid");
-			String UserId = (String)ses.getAttribute("Username");
-			String labcode = (String)ses.getAttribute("labcode");
 			
 			redir.addAttribute("ProjectId",projectId);
 			
@@ -5370,6 +5374,30 @@ private boolean isValidFileType(MultipartFile file) {
 			}	
 
 			return "redirect:/MilestoneActivityList.htm";
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "static/Error";
+		}		
+	}
+	
+	@RequestMapping(value = "SubLevelMilestoneDelete.htm", method = {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE})
+	public String deleteSubLevelMilestone(HttpServletRequest req,HttpSession ses,RedirectAttributes redir) {
+		try {
+			String MilestoneActivityId = req.getParameter("MilestoneActivityId");
+			String subId = req.getParameter("subId");
+			
+			redir.addAttribute("MilestoneActivityId",MilestoneActivityId);
+			
+			long count = service.deleteSubLevelMilsetone(subId);
+			if (count > 0) {
+				redir.addAttribute("result", "Milestone Deleted Successfuly.");
+			} else if(count == -1) {
+				redir.addAttribute("resultfail", "Milestone deletion unsuccessful because the selected milestone or its sub-levels have progress.");
+			} else {
+				redir.addAttribute("resultfail", "Milestone Delete Unsuccessful");
+			} 
+
+			return "redirect:/MilestoneActivityDetails.htm";
 		}catch (Exception e) {
 			e.printStackTrace();
 			return "static/Error";
