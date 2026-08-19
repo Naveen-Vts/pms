@@ -3166,7 +3166,14 @@ public class CommitteeController {
 					actionsdata.put(obj[0].toString(), values);
 				}
 			} 
+			List<Object[]> repList = service.getCommitteeMainRepList(scheduleeditdata[1]!=null?scheduleeditdata[1].toString():"0");
+			List<String> repCodes = new ArrayList<>();
+			
+			if(repList != null && !repList.isEmpty()){
+				repCodes = repList.stream().map(obj -> obj[1]!=null ? obj[1].toString() : null).filter(Objects::nonNull).collect(Collectors.toList());
+			}
 
+			req.setAttribute("repCodes", repCodes);
 			req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutes(committeescheduleid) );
 			req.setAttribute("committeescheduleeditdata", scheduleeditdata);
 			req.setAttribute("CommitteeAgendaList", service.AgendaList(committeescheduleid));

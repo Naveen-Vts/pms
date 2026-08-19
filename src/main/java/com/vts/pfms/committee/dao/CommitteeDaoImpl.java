@@ -451,11 +451,11 @@ public class CommitteeDaoImpl  implements CommitteeDao {
 	private static final String EDITDATA = """
 			SELECT a.committeeid,a.committeemainid,a.scheduledate,a.schedulestarttime,a.scheduleflag,a.schedulesub,a.scheduleid,
 			CASE 
-		        WHEN TRUNC(a.scheduledate) < :compareDate AND b.committeeshortname = 'PMRC' THEN 'Project Meeting Review Committee'
+		        WHEN a.scheduledate < :compareDate AND b.committeeshortname = 'PMRB' THEN 'Project Meeting Review Committee'
 		        ELSE b.committeename
 		    END AS committeename,
 		    CASE 
-		        WHEN TRUNC(a.scheduledate) < :compareDate AND b.committeeshortname = 'PMRC' THEN 'PMRC'
+		        WHEN a.scheduledate < :compareDate AND b.committeeshortname = 'PMRB' THEN 'PMRC'
 		        ELSE b.committeeshortname
 		    END AS committeeshortname,
 			a.projectid,c.meetingstatusid,a.meetingid,a.meetingvenue,a.confidential,a.Reference,(SELECT d.classification FROM pfms_security_classification d WHERE a.confidential=d.classificationid) 
@@ -468,8 +468,8 @@ public class CommitteeDaoImpl  implements CommitteeDao {
 	@Override
 	public Object[] CommitteeScheduleEditData(String CommitteeScheduleId) throws Exception {
 
-//		Query query=manager.createNativeQuery(COMMITTEESCHEDULEEDITDATA);
-		Query query=manager.createNativeQuery(EDITDATA);
+		Query query=manager.createNativeQuery(COMMITTEESCHEDULEEDITDATA);
+//		Query query=manager.createNativeQuery(EDITDATA);
 		query.setParameter("committeescheduleid", Long.parseLong(CommitteeScheduleId));
 		query.setParameter("compareDate", "2026-04-01");
 		Object[] CommitteeScheduleEditData=(Object[])query.getSingleResult();

@@ -439,7 +439,7 @@ public class RfpMainServiceImpl implements RfpMainService {
 	public long ProjectHoaUpdate(List<ProjectHoa> hoa,String Username,List<IbasLabMaster> LabDetails) throws Exception{
 		logger.info(new Date() +"Inside SERVICE ProjectHoaUpdate ");
 		long count1 =0 ;
-		long count = dao.ProjectHoaDelete(LabDetails.get(0).getLabCode());
+		// long count = dao.ProjectHoaDelete(LabDetails.get(0).getLabCode());
 		for(ProjectHoa obj : hoa) {
 			obj.setCreatedBy(Username);
 			obj.setCreatedDate(sdf1.format(new Date()));

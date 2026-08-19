@@ -5397,6 +5397,7 @@ private boolean isValidFileType(MultipartFile file) {
 				redir.addAttribute("resultfail", "Milestone Delete Unsuccessful");
 			} 
 
+			redir.addAttribute("sub","C");
 			return "redirect:/MilestoneActivityDetails.htm";
 		}catch (Exception e) {
 			e.printStackTrace();

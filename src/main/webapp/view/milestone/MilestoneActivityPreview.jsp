@@ -1480,7 +1480,7 @@ function weightage_sum(id,activityid,type,levelid,chain,targetRowId){
 }  
 
 
-function deletSubMilestones(id,activityid,type,levelid){
+function deletSubMilestones(parentid,activityid,type,levelid){
 	event.preventDefault();
 	if(!confirm("Are you sure to delete ?")){
 		return;
@@ -1491,17 +1491,17 @@ function deletSubMilestones(id,activityid,type,levelid){
     form.method = "POST";
     form.action = "SubLevelMilestoneDelete.htm";
 
-    // Main Milestone ID
+    // sub Milestone ID
     const mainIdInput = document.createElement("input");
     mainIdInput.type = "hidden";
     mainIdInput.name = "subId";
     mainIdInput.value = activityid;
 
-    // Project ID
+    // main Milestone ID
     const projectIdInput = document.createElement("input");
     projectIdInput.type = "hidden";
     projectIdInput.name = "MilestoneActivityId";
-    projectIdInput.value = id;
+    projectIdInput.value = '<%= getMA[0] %>';
 
     // CSRF Token
     const csrfInput = document.createElement("input");
