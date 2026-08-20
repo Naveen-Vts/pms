@@ -799,7 +799,12 @@ public class MilestoneController {
 				redir.addAttribute("resultfail", "Refresh Not Allowed");
 				return "redirect:/MilestoneActivityList.htm";
 			}
-			req.setAttribute("MilestoneActivity", service.MilestoneActivity(MainId).get(0));
+			Object[] first = new Object[25];
+			List<Object[]> list = service.MilestoneActivity(MainId);
+			if(list != null && !list.isEmpty()) {
+				first = list.get(0);
+			}
+			req.setAttribute("MilestoneActivity", first);
 			List<Object[]>  MilestoneActivityA=service.MilestoneActivityLevel(MainId,"1");
 			req.setAttribute("MilestoneActivityA", MilestoneActivityA);
 			for(Object[] obj:MilestoneActivityA) {
