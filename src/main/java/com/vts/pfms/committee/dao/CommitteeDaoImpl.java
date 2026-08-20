@@ -471,7 +471,7 @@ public class CommitteeDaoImpl  implements CommitteeDao {
 		Query query=manager.createNativeQuery(COMMITTEESCHEDULEEDITDATA);
 //		Query query=manager.createNativeQuery(EDITDATA);
 		query.setParameter("committeescheduleid", Long.parseLong(CommitteeScheduleId));
-		query.setParameter("compareDate", "2026-04-01");
+//		query.setParameter("compareDate", "2026-04-01");
 		Object[] CommitteeScheduleEditData=(Object[])query.getSingleResult();
 		return CommitteeScheduleEditData;
 	}
