@@ -1,37 +1,47 @@
 label{
-font-weight: bold;
-  font-size: 13px;
+	font-weight: bold;
+	font-size: 13px;
 }
 body{
-overflow-x: hidden; 
+ 	overflow-x: hidden; 
 }
 
-  .container-fluid form {
-    border: 2px solid #055C9D;
-    padding: 15px;
-    border-radius: 6px;
-    margin-top: 10px;
-    color:#055C9D;
-    background-color: #f9f9f9; /* optional for better visibility */
-  }
-  
-  .fw600{
-  font-weight: 600; font-size: 14px;}
-  
-  .mp-1{
-  font-weight: bold;font-size: large;background-color: #055C9D; text-align: center;padding: 10px;color:white;
-  }
-  
-  .mp2{
-  width:100%;text-align: justify;
-  }
-  
-  .width120{
-  width:120px;}
-  
-  .width95{
-  width:95px;}
-  
-  .mandatory{
-  color:red;
-  }
+.container-fluid form {
+	border: 2px solid #055C9D;
+	padding: 15px;
+	border-radius: 6px;
+	margin-top: 10px;
+	color:#055C9D;
+	background-color: #f9f9f9; /* optional for better visibility */
+}
+
+.fw600{
+	font-weight: 600; 
+	font-size: 14px;
+}
+
+.mp-1{
+	font-weight: bold;
+	font-size: large;
+	background-color: #055C9D; 
+	text-align: center;
+	padding: 10px;
+	color:white;
+}
+
+.mp2{
+	width:100%;
+	text-align: justify;
+}
+
+.width120{
+ 	width:120px;
+}
+
+.width95{
+ 	width:95px;
+}
+
+.mandatory{
+	color:red;
+}

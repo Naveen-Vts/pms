@@ -242,6 +242,14 @@
 														                      </div>
 														                     </div>
 														                  </button>
+														                   <button type="button" class="editable-click" name="sub" value="C" onclick="deleteMainMilestone(<%= obj[0]%>)">
+																			<div class="cc-rockmenu">
+																			 <div class="rolling">	
+														                        <figure class="rolling_icon"><img src="view/images/delete.png" ></figure>
+														                        <span>Delete</span>
+														                      </div>
+														                     </div>
+														                  </button> 
 														                  <%} %>
 			                                                              <%}else if("Y".equalsIgnoreCase(obj[10].toString())){ %>
 <%-- 			                                                              <%if("A".equalsIgnoreCase(LoginType) || projectDirector.equals(empId) || Long.parseLong(obj[17].toString())==(empId)) { %>
@@ -1306,6 +1314,44 @@ function ChangeButton(id) {
 		$('[data-toggle="tooltip"]').tooltip()
 	})
 	
+	
+	function deleteMainMilestone(mainid) {
+
+    if (!confirm("Are you sure to Delete?")) {
+        return;
+    }
+
+    const form = document.createElement("form");
+
+    form.method = "POST";
+    form.action = "DeleteMainMilestone.htm";
+
+    // Main Milestone ID
+    const mainIdInput = document.createElement("input");
+    mainIdInput.type = "hidden";
+    mainIdInput.name = "mainid";
+    mainIdInput.value = mainid;
+
+    // Project ID
+    const projectIdInput = document.createElement("input");
+    projectIdInput.type = "hidden";
+    projectIdInput.name = "projectId";
+    projectIdInput.value = '<%=ProjectId%>';
+
+    // CSRF Token
+    const csrfInput = document.createElement("input");
+    csrfInput.type = "hidden";
+    csrfInput.name = "${_csrf.parameterName}";
+    csrfInput.value = "${_csrf.token}";
+
+    form.appendChild(mainIdInput);
+    form.appendChild(projectIdInput);
+    form.appendChild(csrfInput);
+
+    document.body.appendChild(form);
+
+    form.submit();
+}
 	
 </script>  
 

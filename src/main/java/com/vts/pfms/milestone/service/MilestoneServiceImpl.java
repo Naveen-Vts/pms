@@ -2831,4 +2831,14 @@ public class MilestoneServiceImpl implements MilestoneService {
 	public Object[] getMilestoneActivityBriefingById(String milestoneid) throws Exception  {
 		return dao.getMilestoneActivityBriefingById(milestoneid);
 	}
+
+	@Override
+	public long deleteMainLevelMilsetone(String mainId) throws Exception {
+		return dao.deleteMainLevelMilsetone(mainId);
+	}
+
+	@Override
+	public long deleteSubLevelMilsetone(String subId) throws Exception {
+		return dao.deleteSubLevelMilsetone(subId);
+	}
 }

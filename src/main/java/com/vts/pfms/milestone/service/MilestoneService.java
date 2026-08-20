@@ -158,5 +158,7 @@ public interface MilestoneService {
 	public long saveMilestoneActivityBriefing(MilestoneActivityBriefing entity) throws Exception ;
 	public MilestoneActivityBriefing getMilestoneActivityBriefing(String mileStoneActivityBriefingId) throws Exception ;
 	public Object[] getMilestoneActivityBriefingById(String recdecid) throws Exception ;
-	
+	public long deleteMainLevelMilsetone(String mainId) throws Exception;
+	public long deleteSubLevelMilsetone(String subId) throws Exception;
+
 }

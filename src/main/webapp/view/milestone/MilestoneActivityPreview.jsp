@@ -1,3 +1,4 @@
+<%@page import="com.fasterxml.jackson.databind.ObjectMapper"%>
 <%@page import="org.apache.commons.text.StringEscapeUtils"%>
 <%@page import="com.vts.pfms.NFormatConvertion"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
@@ -11,6 +12,12 @@
 <jsp:include page="../static/header.jsp"></jsp:include>
  <spring:url value="/resources/css/milestone/milestoneActivityPreview.css" var="milestoneActivityPreview" />     
 <link href="${milestoneActivityPreview}" rel="stylesheet" />
+<style>
+.mape-highlight {
+	background-color: #fff3b0 !important;
+	transition: background-color 1.2s ease;
+}
+</style>
 
 
 </head>
@@ -25,7 +32,13 @@ String LoginType = (String)session.getAttribute("LoginType");
 String projectDirector = (String)request.getAttribute("projectDirector");
 List<String> changes = new ArrayList<>();
 List<Object[]> allLabList=(List<Object[]>)request.getAttribute("allLabList");
+String chainId = (String) request.getAttribute("chainId");
+if(chainId != null && !chainId.isBlank()){
+	chainId = chainId.replace("'", "\"");
+}
+String targetRowId = (String) request.getAttribute("targetRowId");
 %>
+
 <script type="text/javascript">
 function changeempoic1(id,id3)
 {
@@ -93,11 +106,11 @@ var s = '';
 		var labCode  = $('#labCode'+rowId+level).val();
 		var currLabCode  = $('#currLabCode').val();
 		
-		console.log('rowId', rowId);
+		/* console.log('rowId', rowId);
 		console.log('level', level);
 		console.log('empid', empid);
 		console.log('labCode', labCode);
-		console.log('******************************');
+		console.log('******************************'); */
 		employeeListByLabCode(rowId, level, labCode, empid);
 		
 		if(currLabCode!=labCode) {
@@ -135,13 +148,83 @@ var s = '';
 		       }
 		});
 	}
+	
+	function toggleChildren(childDivId, btnElement) {
+	    var childDiv = document.getElementById(childDivId);
+	    if (childDiv.style.display === "none" || childDiv.style.display === "") {
+	        childDiv.style.display = "block";
+	        btnElement.innerHTML = '<i class="fa fa-minus" aria-hidden="true"></i>'; 
+	    } else {
+	        childDiv.style.display = "none";
+	        btnElement.innerHTML = '<i class="fa fa-plus" aria-hidden="true"></i>'; 
+	    }
+	}
+
+	// Remembers which nested branch (chain of ancestor ids) and which exact
+	// row is being edited, right before the page does a full POST + reload,
+	// so that after reload we can reopen that branch automatically.
+	function rememberReopenState(chain, targetRowId) {
+		try {
+			sessionStorage.setItem('mape_reopenChain', JSON.stringify(chain || []));
+			sessionStorage.setItem('mape_reopenTarget', targetRowId || '');
+		} catch (e) {
+			// sessionStorage unavailable - silently skip, page still works, it just won't auto-reopen
+		}
+	}
+
+	// Runs once on page load. If a branch was remembered before the last
+	// submit, expand every ancestor in that chain (so nested items become
+	// visible) and scroll/highlight the exact row that was updated.
+	function restoreReopenState() {
+		var raw;
+		try {
+			raw = '<%= chainId %>';
+			// raw = sessionStorage.getItem('mape_reopenChain');
+		} catch (e) {
+			return;
+		}
+		if (raw === null) {
+			return;
+		}
+		// var target = sessionStorage.getItem('mape_reopenTarget');
+		var target = '<%= targetRowId %>';
+		try {
+			var chain = JSON.parse(raw);
+			if(chain){
+				chain.forEach(function(item) {
+					var div = document.getElementById('children_' + item);
+					var btn = document.getElementById('btn_' + item);
+					if (div) { div.style.display = 'block'; }
+					if (btn) { btn.innerHTML = '<i class="fa fa-minus" aria-hidden="true"></i>'; }
+				});
+			}
+		} catch (e) {
+			console.log('restoreReopenState error', e);
+		}
+		// sessionStorage.removeItem('mape_reopenChain');
+		// sessionStorage.removeItem('mape_reopenTarget');
+		if (target) {
+			setTimeout(function() {
+				var el = document.getElementById(target);
+				if (el) {
+					el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					/* el.classList.add('mape-highlight');
+					setTimeout(function() { el.classList.remove('mape-highlight'); }, 2500); */
+				}
+			}, 300);
+		}
+	}
+
+	$(document).ready(function() {
+		restoreReopenState();
+	});
 </script>
 	
 <body>
 
   <nav class="navbar navbar-light bg-light" >
   	<div class="row text-danger m-3 fw600" > 
-Kindly note that only the Project Director, the Admin, and the OICs of the Parent Milestone are authorized to edit milestones.
+Kindly note that only the Project Director, the Admin, and the OICs of the Parent Milestone are authorized to Edit and Delete milestones.
 </div>
   <a class="navbar-brand"></a>
   <form class="form-inline"  method="POST" action="MilestoneActivityList.htm">
@@ -189,7 +272,7 @@ Kindly note that only the Project Director, the Admin, and the OICs of the Paren
 <div class="col-md-12">
 <div  class="panel-group" ><h5  class="mp-1"><%=getMA[1]!=null?StringEscapeUtils.escapeHtml4(getMA[1].toString()): " - " %> Milestone Activity Details  </h5>  
 <form   method="POST" action="MilestoneActivityEditSubmit.htm" id="form<%=getMA[0] %>M<%=getMA[10] %>">
-<div class="row container-fluid" >
+<div class="row container-fluid" id="row_M">
                              <div class="col-md-1 " ><br><label class="control-label">Type</label>  <br>  <b >Main</b>                    		
                         	</div>
                     		<div class="col-md-5 " ><br>
@@ -216,16 +299,16 @@ Kindly note that only the Project Director, the Admin, and the OICs of the Paren
 	                        	<%if(RevisionCount==0) { %>
 	                    		<label class="control-label">Activity Type  </label>
 	                              		<select class="form-control selectdee" id="ActivityTypeIdM" required="required" name="ActivityTypeId">
-	    									<option disabled="true"  selected value="">Choose...</option>
+	    									<option disabled selected value="">Choose...</option>
 	    										<% for (Object[] obj : ActivityTypeList) {%>
 											<option value="<%=obj[0]%>" <%if(getMA[15].toString().equalsIgnoreCase(obj[0].toString())){ %> selected="selected" <% }%>><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - "%> </option>
 												<%} %>
 	  									</select>
 	                        	<%}%>
                         	</div>
-                        	<div class="col-md-1 " ><br><label class="control-label"> &nbsp;&nbsp;Update<br></label><br>
+                        	<div class="col-md-1 " ><br><label class="control-label"> &nbsp;&nbsp;Actions<br></label><br>
                         				<%if( Arrays.asList(projectDirector).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A")  ){ %>
-                        	  <button type="button" class="btn btn-sm edit" onclick="weightage_sum('<%=getMA[0] %>','<%=getMA[10] %>','M');" >
+                        	  <button type="button" class="btn btn-sm edit" onclick="weightage_sum('<%=getMA[0] %>','<%=getMA[10] %>','M',undefined,[],'row_M');" >
                         	  <i class="fa fa-edit" aria-hidden="true"></i>
                         	  </button>
                         	 <input type="submit" hidden="hidden" id="<%=getMA[0] %>M<%=getMA[10] %>sub"/> 
@@ -236,9 +319,18 @@ Kindly note that only the Project Director, the Admin, and the OICs of the Paren
 	                              <input type="hidden" name="ActivityType"	value="M" /> 
 	                              <input type="hidden" name="projectDirector"	value="<%=projectDirector %>" /> 
 	                              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> 
+	                              <input type="hidden" name="chainId" value="[]" />
+	                              <input type="hidden" name="targetRowId" value="row_M" />
+                             
+
+                        	  <%-- 
+	                        	  <button type="button" class="btn btn-sm delete" onclick="deletSubMilestones('<%=getMA[0] %>','<%=getMA[10] %>','M',undefined,[],'row_M');" >
+	                        	  	<i class="fa fa-trash" aria-hidden="true"></i>
+	                        	  </button>
+                             
+	                               --%>
                              <%} %>
                         	</div>
-                        	
                        		</div>
                        		
                        		<div class="row container-fluid" >
@@ -327,12 +419,17 @@ if(MilestoneActivityA!=null&&MilestoneActivityA.size()>0){
 		
 
 
-					                        	 <form   method="POST" action="MilestoneActivityEditSubmit.htm" id="form<%=getMA[0] %>A<%=ActivityA[0] %>">
+				<form   method="POST" action="MilestoneActivityEditSubmit.htm" id="form<%=getMA[0] %>A<%=ActivityA[0] %>">
 					
-						<div class="row container-fluid" >
-						    <div class="col-md-1 " ><label class="control-label ml-1" ></label><br> <b class="ml-1">A-<%=countA %></b><br>
+						<div class="row container-fluid" id="row_A_<%=ActivityA[0]%>">
+						    <%-- <div class="col-md-1 " ><label class="control-label ml-1" ></label><br> <b class="ml-1">A-<%=countA %></b><br>
                     		
-                        	</div>
+                        	</div> --%>
+                        	<div class="col-md-1 " ><label class="control-label ml-1" ></label><br> <b class="ml-1">A-<%=countA %></b><br>
+							    <% if(MilestoneActivityB != null && MilestoneActivityB.size() > 0) { %>
+							         <button type="button" id="btn_A_<%=ActivityA[0]%>" class="btn btn-sm btn-primary py-0 px-2 mt-1" onclick="toggleChildren('children_A_<%=ActivityA[0]%>', this)"><i class="fa fa-plus" aria-hidden="true"></i></button>
+							    <% } %>
+							</div>
 						  <div class="col-md-5 " ><br>
                     		 <textarea rows="1" cols="50" class="form-control mp2" <%if(RevisionCount>0){ %>  <%} %> name="ActivityName" id="ActivityName"    maxlength="1000" required="required"><%=ActivityA[4]!=null?ActivityA[4].toString(): " - " %></textarea> 
                         	</div>
@@ -358,9 +455,15 @@ if(MilestoneActivityA!=null&&MilestoneActivityA.size()>0){
                         		<%} %>
                         	</div>
                             <div class="col-md-1 "><br>
-                            <%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].toString() ).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A")  ){ %>
-                        	  <button type="button"  class="btn btn-sm edit" onclick="weightage_sum('<%=getMA[0] %>','<%=ActivityA[0] %>','A','1');"> <i class="fa fa-edit" aria-hidden="true"></i> </button>
+                            <%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].toString() ).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A")){ %>
+                        	  <button type="button"  class="btn btn-sm edit" onclick="weightage_sum('<%=getMA[0] %>','<%=ActivityA[0] %>','A','1',[],'row_A_<%=ActivityA[0]%>');"> <i class="fa fa-edit" aria-hidden="true"></i> </button>
                         	 
+                        	 <%if((ActivityA[5] == null || Long.parseLong(ActivityA[5].toString()) <= 0) && (ActivityA[6] == null || Long.parseLong(ActivityA[6].toString()) <= 0)  && (ActivityA[9] == null || Long.parseLong(ActivityA[9].toString()) < 2)){ %>
+	                        	  <button type="button" class="btn btn-sm delete" onclick="deletSubMilestones('<%=getMA[0] %>','<%=ActivityA[0] %>','A','1');" >
+	                        	  	<i class="fa fa-trash" aria-hidden="true"></i>
+	                        	  </button>
+	                         <%} %>
+	                         
                         	  <input type="submit" hidden="hidden" id="<%=getMA[0] %>A<%=ActivityA[0] %>sub"/> 
                               <input type="hidden" name="RevId"	value="<%=RevisionCount %>" /> 
                               <input type="hidden" name="MilestoneActivityId"	value="<%=getMA[0] %>" /> 
@@ -368,6 +471,8 @@ if(MilestoneActivityA!=null&&MilestoneActivityA.size()>0){
                               <input type="hidden" name="ActivityType"	value="A" /> 
                               <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
                               <input type="hidden" name="projectDirector" value ="<%=projectDirector%>">
+                              <input type="hidden" name="chainId" value="[]" />
+                              <input type="hidden" name="targetRowId" value="row_A_<%=ActivityA[0]%>" />
                               
                         <%} %>
                         	</div>
@@ -493,6 +598,8 @@ $( document ).ready(function() {
 
 	    
 	</script>	                   
+	
+                      <div id="children_A_<%=ActivityA[0]%>" style="display:none; border-left: 2px dashed #ccc; margin-left: 15px;">
 								
 							<%
 
@@ -507,10 +614,15 @@ if(MilestoneActivityB!=null&&MilestoneActivityB.size()>0){
 
 	                              <form   method="POST" action="MilestoneActivityEditSubmit.htm" id="form<%=ActivityA[0] %>B<%=ActivityB[0] %>">
 		
-						    <div class="row container-fluid" >
-						     <div class="col-md-1 " ><br> <label class="control-label"></label><b class="ml-1">B-<%=countB %></b>
+						    <div class="row container-fluid" id="row_B_<%=ActivityB[0]%>">
+						     <%-- <div class="col-md-1 " ><br> <label class="control-label"></label><b class="ml-1">B-<%=countB %></b>
                     		
-                        	</div>
+                        	</div> --%>
+                        	<div class="col-md-1 " ><label class="control-label ml-1" ></label><br> <b class="ml-1">B-<%=countB %></b><br>
+							    <% if(MilestoneActivityC != null && MilestoneActivityC.size() > 0) { %>
+							         <button type="button" id="btn_B_<%=ActivityB[0]%>" class="btn btn-sm btn-primary py-0 px-2 mt-1" onclick="toggleChildren('children_B_<%=ActivityB[0]%>', this)"><i class="fa fa-plus" aria-hidden="true"></i></button>
+							    <% } %>
+							</div>
 						    <div class="col-md-5 " ><br>
                     		 <textarea rows="1" cols="50" class="form-control mp2" <%if(RevisionCount>0){ %>  <%} %> name="ActivityName" id="ActivityName"    maxlength="1000" required="required"><%=ActivityB[4]!=null?ActivityB[4].toString(): " - " %></textarea> 
                         	</div>
@@ -539,8 +651,14 @@ if(MilestoneActivityB!=null&&MilestoneActivityB.size()>0){
                         	<div class="col-md-1 "><br>
                         	                            <%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].toString(),ActivityA[13].toString(),ActivityA[15].toString() ).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A")  ){ %>
                         	
-                        	  <button type="button"  class="btn btn-sm edit" onclick="weightage_sum('<%=ActivityA[0] %>','<%=ActivityB[0] %>','B','2');"> <i class="fa fa-edit" aria-hidden="true"></i> </button>
+                        	  <button type="button"  class="btn btn-sm edit" onclick="weightage_sum('<%=ActivityA[0] %>','<%=ActivityB[0] %>','B','2',['A_<%=ActivityA[0]%>'],'row_B_<%=ActivityB[0]%>');"> <i class="fa fa-edit" aria-hidden="true"></i> </button>
                         	 
+                        	 <%if((ActivityB[5] == null || Long.parseLong(ActivityB[5].toString()) <= 0) && (ActivityB[6] == null || Long.parseLong(ActivityB[6].toString()) <= 0)  && (ActivityB[9] == null || Long.parseLong(ActivityB[9].toString()) < 2)){ %>
+                        	  <button type="button" class="btn btn-sm delete" onclick="deletSubMilestones('<%=ActivityA[0] %>','<%=ActivityB[0] %>','B','2');" >
+                        	  	<i class="fa fa-trash" aria-hidden="true"></i>
+                        	  </button>
+	                       	<%} %>
+	                        	  
                         	  <input type="submit" hidden="hidden" id="<%=ActivityA[0] %>B<%=ActivityB[0] %>sub"/> 
                               <input type="hidden" name="RevId"	value="<%=RevisionCount %>" /> 
                               <input type="hidden" name="MilestoneActivityId"	value="<%=getMA[0] %>" /> 
@@ -548,6 +666,8 @@ if(MilestoneActivityB!=null&&MilestoneActivityB.size()>0){
                               <input type="hidden" name="ActivityType"	value="B" /> 
                               <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
                               <input type="hidden" name="projectDirector" value ="<%=projectDirector%>">
+                              <input type="hidden" name="chainId" value="['A_<%=ActivityA[0]%>']" />
+                              <input type="hidden" name="targetRowId" value="row_B_<%=ActivityB[0]%>" />
                                                 
                                             <%} %>    
                                                   	</div>
@@ -670,6 +790,7 @@ $( document ).ready(function() {
 						 
 						<!-- B end -->
 						
+                      <div id="children_B_<%=ActivityB[0]%>" style="display:none; border-left: 2px dashed #ccc; margin-left: 15px;">
 							<%
 
 
@@ -686,10 +807,15 @@ if(MilestoneActivityC!=null&&MilestoneActivityC.size()>0){
 
 					
 						<form   method="POST" action="MilestoneActivityEditSubmit.htm" id="form<%=ActivityB[0] %>C<%=ActivityC[0] %>">
-                            <div class="row container-fluid" >
-                             <div class="col-md-1 " ><br> <label class="control-label"></label><b class="ml-2">C-<%=countC %></b>
+                            <div class="row container-fluid" id="row_C_<%=ActivityC[0]%>">
+                             <%-- <div class="col-md-1 " ><br> <label class="control-label"></label><b class="ml-2">C-<%=countC %></b>
                     		
-                        	</div>
+                        	</div> --%>
+                        	<div class="col-md-1 " ><label class="control-label ml-1" ></label><br> <b class="ml-1">C-<%=countC %></b><br>
+							    <% if(MilestoneActivityD != null && MilestoneActivityD.size() > 0) { %>
+							         <button type="button" id="btn_C_<%=ActivityC[0]%>" class="btn btn-sm btn-primary py-0 px-2 mt-1" onclick="toggleChildren('children_C_<%=ActivityC[0]%>', this)"><i class="fa fa-plus" aria-hidden="true"></i></button>
+							    <% } %>
+							</div>
                         	
 						    <div class="col-md-5 " ><br>
                     		 <textarea rows="1" cols="50" class="form-control mp2 " <%if(RevisionCount>0){ %>  <%} %> name="ActivityName" id="ActivityName"    maxlength="1000" required="required"><%=ActivityC[4]!=null?ActivityC[4].toString(): " - " %></textarea> 
@@ -718,7 +844,14 @@ if(MilestoneActivityC!=null&&MilestoneActivityC.size()>0){
                         	</div>
                         	<div class="col-md-1 "><br>
                           <%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].toString(),ActivityA[13].toString(),ActivityA[15].toString(),ActivityB[13].toString(),ActivityB[15].toString() ).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A")  ){ %>
-                        	  <button type="button"  class="btn btn-sm edit" onclick="weightage_sum('<%=ActivityB[0] %>','<%=ActivityC[0] %>','C','3');"> <i class="fa fa-edit" aria-hidden="true"></i> </button>
+                        	  <button type="button"  class="btn btn-sm edit" onclick="weightage_sum('<%=ActivityB[0] %>','<%=ActivityC[0] %>','C','3',['A_<%=ActivityA[0]%>','B_<%=ActivityB[0]%>'],'row_C_<%=ActivityC[0]%>');"> <i class="fa fa-edit" aria-hidden="true"></i> </button>
+                        	  
+                        	  <%if((ActivityC[5] == null || Long.parseLong(ActivityC[5].toString()) <= 0) && (ActivityC[6] == null || Long.parseLong(ActivityC[6].toString()) <= 0)  && (ActivityC[9] == null || Long.parseLong(ActivityC[9].toString()) < 2)){ %>
+                        	  <button type="button" class="btn btn-sm delete" onclick="deletSubMilestones('<%=ActivityB[0] %>','<%=ActivityC[0] %>','C','3');" >
+                        	  	<i class="fa fa-trash" aria-hidden="true"></i>
+                        	  </button>
+                        	  <%} %>
+                        	  
                         	  <input type="submit" hidden="hidden" id="<%=ActivityB[0] %>C<%=ActivityC[0] %>sub"/> 
                         	  
                               <input type="hidden" name="RevId"	value="<%=RevisionCount %>" /> 
@@ -727,6 +860,8 @@ if(MilestoneActivityC!=null&&MilestoneActivityC.size()>0){
                               <input type="hidden" name="ActivityType"	value="C" /> 
                                    <input type="hidden" name="projectDirector" value ="<%=projectDirector%>">
                               <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
+	                              <input type="hidden" name="chainId" value="['A_<%=ActivityA[0]%>','B_<%=ActivityB[0]%>']" />
+	                              <input type="hidden" name="targetRowId" value="row_C_<%=ActivityC[0]%>" />
                                  <%} %>                   	
                                </div>
                                                     	 
@@ -847,6 +982,7 @@ $( document ).ready(function() {
 	    
 	</script> 	     
 	
+                      <div id="children_C_<%=ActivityC[0]%>" style="display:none; border-left: 2px dashed #ccc; margin-left: 15px;">
 								<%
 
 
@@ -860,10 +996,15 @@ if(MilestoneActivityD!=null&&MilestoneActivityD.size()>0){
 
 	                              <form  method="POST" action="MilestoneActivityEditSubmit.htm" id="form<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>">
 		
-						    <div class="row container-fluid" >
-						     <div class="col-md-1 " ><br> <label class="control-label"></label><b class="ml-2">D-<%=countD %></b>
+						    <div class="row container-fluid" id="row_D_<%=ActivityD[0]%>">
+						     <%-- <div class="col-md-1 " ><br> <label class="control-label"></label><b class="ml-2">D-<%=countD %></b>
                     		
-                        	</div>
+                        	</div> --%>
+                        	<div class="col-md-1 " ><label class="control-label ml-1" ></label><br> <b class="ml-1">D-<%=countD %></b><br>
+							    <% if(MilestoneActivityE != null && MilestoneActivityE.size() > 0) { %>
+							         <button type="button" id="btn_D_<%=ActivityD[0]%>" class="btn btn-sm btn-primary py-0 px-2 mt-1" onclick="toggleChildren('children_D_<%=ActivityD[0]%>', this)"><i class="fa fa-plus" aria-hidden="true"></i></button>
+							    <% } %>
+							</div>
 						    <div class="col-md-5 " ><br>
                     		 <textarea rows="1" cols="50" class="form-control mp2" <%if(RevisionCount>0){ %>  <%} %> name="ActivityName" id="ActivityName"    maxlength="1000" required="required"><%=ActivityD[4]!=null?ActivityD[4].toString(): " - " %></textarea> 
                         	</div>
@@ -893,13 +1034,21 @@ if(MilestoneActivityD!=null&&MilestoneActivityD.size()>0){
                         	<div class="col-md-1 "><br>
                         	
                        <%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].toString(),ActivityA[13].toString(),ActivityA[15].toString(),ActivityB[13].toString(),ActivityB[15].toString(),ActivityC[13].toString(),ActivityC[15].toString() ).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A")  ){ %>
-                        	  <button type="button"  class="btn btn-sm edit" onclick="weightage_sum('<%=ActivityC[0] %>','<%=ActivityD[0] %>','D','4');"> <i class="fa fa-edit" aria-hidden="true"></i> </button>
+                        	  <button type="button"  class="btn btn-sm edit" onclick="weightage_sum('<%=ActivityC[0] %>','<%=ActivityD[0] %>','D','4',['A_<%=ActivityA[0]%>','B_<%=ActivityB[0]%>','C_<%=ActivityC[0]%>'],'row_D_<%=ActivityD[0]%>');"> <i class="fa fa-edit" aria-hidden="true"></i> </button>
                         	 
+                        	 <%if((ActivityD[5] == null || Long.parseLong(ActivityD[5].toString()) <= 0) && (ActivityD[6] == null || Long.parseLong(ActivityD[6].toString()) <= 0)  && (ActivityD[9] == null || Long.parseLong(ActivityD[9].toString()) < 2)){ %>
+                        	  <button type="button" class="btn btn-sm delete" onclick="deletSubMilestones('<%=ActivityC[0] %>','<%=ActivityD[0] %>','D','4');" >
+                        	  	<i class="fa fa-trash" aria-hidden="true"></i>
+                        	  </button>
+                        	  <%} %>
+                        	  
                         	  <input type="submit" hidden="hidden" id="<%=ActivityC[0] %>D<%=ActivityD[0] %>sub"/> 
                               <input type="hidden" name="RevId"	value="<%=RevisionCount %>" /> 
                               <input type="hidden" name="MilestoneActivityId"	value="<%=getMA[0] %>" /> 
                               <input type="hidden" name="ActivityId"	value="<%=ActivityD[0] %>" /> 
                               <input type="hidden" name="projectDirector" value ="<%=projectDirector%>">
+                              <input type="hidden" name="chainId" value="['A_<%=ActivityA[0]%>','B_<%=ActivityB[0]%>','C_<%=ActivityC[0]%>']" />
+                              <input type="hidden" name="targetRowId" value="row_D_<%=ActivityD[0]%>" />
                                                           
                                                             <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
                               <%} %>
@@ -1020,6 +1169,7 @@ $( document ).ready(function() {
 	    
 	</script> 					 
 						 
+                      <div id="children_D_<%=ActivityD[0]%>" style="display:none; border-left: 2px dashed #ccc; margin-left: 15px;">
 						<!-- B end -->
 						
 							<%
@@ -1037,7 +1187,7 @@ if(MilestoneActivityE!=null&&MilestoneActivityE.size()>0){
 
 					
 						<form   method="POST" action="MilestoneActivityEditSubmit.htm" id="form<%=ActivityD[0] %>E<%=ActivityE[0] %>">
-                            <div class="row container-fluid" >
+                            <div class="row container-fluid" id="row_E_<%=ActivityE[0]%>">
                              <div class="col-md-1 " ><br> <label class="control-label"></label><b class="ml-3">E-<%=countE %></b>
                     		
                         	</div>
@@ -1068,12 +1218,21 @@ if(MilestoneActivityE!=null&&MilestoneActivityE.size()>0){
                         	</div>
                         	<div class="col-md-1 "><br>
                   			<%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].toString(),ActivityA[13].toString(),ActivityA[15].toString(),ActivityB[13].toString(),ActivityB[15].toString(),ActivityC[13].toString(),ActivityC[15].toString(),ActivityD[13].toString(),ActivityD[15].toString() ).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A")  ){ %>
-                        	  <button type="button"  class="btn btn-sm edit" onclick="weightage_sum('<%=ActivityD[0] %>','<%=ActivityE[0] %>','E','5');"> <i class="fa fa-edit" aria-hidden="true"></i> </button>
+                        	  <button type="button"  class="btn btn-sm edit" onclick="weightage_sum('<%=ActivityD[0] %>','<%=ActivityE[0] %>','E','5',['A_<%=ActivityA[0]%>','B_<%=ActivityB[0]%>','C_<%=ActivityC[0]%>','D_<%=ActivityD[0]%>'],'row_E_<%=ActivityE[0]%>');"> <i class="fa fa-edit" aria-hidden="true"></i> </button>
+                        	  
+                        	  <%if((ActivityE[5] == null || Long.parseLong(ActivityE[5].toString()) <= 0) && (ActivityE[6] == null || Long.parseLong(ActivityE[6].toString()) <= 0) && (ActivityE[9] == null || Long.parseLong(ActivityE[9].toString()) < 2)){ %>  
+                        	  <button type="button" class="btn btn-sm delete" onclick="deletSubMilestones('<%=ActivityD[0] %>','<%=ActivityE[0] %>','E','5');" >
+                        	  	<i class="fa fa-trash" aria-hidden="true"></i>
+                        	  </button>
+                        	  <%} %>
+                        	  
                         	  <input type="submit" hidden="hidden" id="<%=ActivityD[0] %>E<%=ActivityE[0] %>sub"/> 
                               <input type="hidden" name="RevId"	value="<%=RevisionCount %>" /> 
                               <input type="hidden" name="MilestoneActivityId"	value="<%=getMA[0] %>" /> 
                               <input type="hidden" name="ActivityId"	value="<%=ActivityE[0] %>" /> 
-                                                            <input type="hidden" name="projectDirector" value ="<%=projectDirector%>">
+                              <input type="hidden" name="projectDirector" value ="<%=projectDirector%>">
+                              <input type="hidden" name="chainId" value="['A_<%=ActivityA[0]%>','B_<%=ActivityB[0]%>','C_<%=ActivityC[0]%>','D_<%=ActivityD[0]%>']" />
+                              <input type="hidden" name="targetRowId" value="row_E_<%=ActivityE[0]%>" />
                               
                               <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
                               <%} %>     
@@ -1197,7 +1356,7 @@ $( document ).ready(function() {
     	});
   });
 	    
-	</script> 	             
+	</script>
 						<!-- C end -->
 									
 									
@@ -1207,6 +1366,8 @@ $( document ).ready(function() {
 				
 	
 <%} %>	
+	
+	</div>			
 									
 									
 									
@@ -1217,6 +1378,8 @@ $( document ).ready(function() {
 	
 <%} %>	        
 						<!-- C end -->
+		
+		</div>
 									
 									
 	
@@ -1225,6 +1388,8 @@ $( document ).ready(function() {
 				
 	
 <%} %>	
+
+</div>
 									
 									
 									
@@ -1241,7 +1406,7 @@ $( document ).ready(function() {
 			
 		
 				
-				
+	</div>
 	               
 <%countA++;}}else{
 	%>
@@ -1268,11 +1433,10 @@ $( document ).ready(function() {
 
 									</div>	
 <script type="text/javascript">
-function weightage_sum(id,activityid,type,levelid){
+function weightage_sum(id,activityid,type,levelid,chain,targetRowId){
 	var sum=Number($('#Weightage'+id+type+activityid).val());
 	event.preventDefault();
-	  $
-		.ajax({
+	  $.ajax({
 
 			type : "GET",
 			url : "WeightageSum.htm",
@@ -1292,16 +1456,17 @@ function weightage_sum(id,activityid,type,levelid){
 				}else{
 					Msg='Activity '+type;
 				}
-				 console.log(sum);
+				 // console.log(sum);
 				 sum+=Number(result);
-				 console.log(result);
-				 console.log(sum);
+				 // console.log(result);
+				 // console.log(sum);
                  if(sum>100){
                 	 
                 	 alert('Total '+Msg+' Weightage='+sum+',Total '+Msg+' Weightage Should not greater  than 100.'); 
                  }else if(sum<=100){
                 	 if(confirm('Total '+Msg+' Weightage='+sum+', Are you sure to Submit ?')){
-                	
+                	/* 
+                			 rememberReopenState(chain, targetRowId); */
                 			 $('#'+id+type+activityid+'sub').click();
                 		
                 		 
@@ -1314,6 +1479,47 @@ function weightage_sum(id,activityid,type,levelid){
 		}); 
 	
 }  
+
+
+function deletSubMilestones(parentid,activityid,type,levelid){
+	event.preventDefault();
+	if(!confirm("Are you sure to delete ?")){
+		return;
+	}	
+
+    const form = document.createElement("form");
+
+    form.method = "POST";
+    form.action = "SubLevelMilestoneDelete.htm";
+
+    // sub Milestone ID
+    const mainIdInput = document.createElement("input");
+    mainIdInput.type = "hidden";
+    mainIdInput.name = "subId";
+    mainIdInput.value = activityid;
+
+    // main Milestone ID
+    const projectIdInput = document.createElement("input");
+    projectIdInput.type = "hidden";
+    projectIdInput.name = "MilestoneActivityId";
+    projectIdInput.value = '<%= getMA[0] %>';
+
+    // CSRF Token
+    const csrfInput = document.createElement("input");
+    csrfInput.type = "hidden";
+    csrfInput.name = "${_csrf.parameterName}";
+    csrfInput.value = "${_csrf.token}";
+
+    form.appendChild(mainIdInput);
+    form.appendChild(projectIdInput);
+    form.appendChild(csrfInput);
+
+    document.body.appendChild(form);
+
+    form.submit();
+	
+	
+}
 
 </script>
 													

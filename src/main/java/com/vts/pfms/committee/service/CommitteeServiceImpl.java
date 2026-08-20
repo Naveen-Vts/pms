@@ -234,7 +234,7 @@ public class CommitteeServiceImpl implements CommitteeService{
 		committeemodel.setIsGlobal(Long.parseLong(committeeDto.getIsGlobal()));
 		committeemodel.setModifiedBy(committeeDto.getModifiedBy());
 		committeemodel.setModifiedDate(sdf1.format(new Date()));
-		committeemodel.setIsBriefing(committeeDto.getIsBriefing());
+		committeemodel.setIsBriefing(committeeDto.getIsBriefing() != null ? committeeDto.getIsBriefing() : "N");
 		return dao.CommitteeEditSubmit(committeemodel);	
 	}	
 	

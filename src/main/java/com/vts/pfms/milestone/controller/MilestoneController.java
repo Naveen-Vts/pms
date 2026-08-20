@@ -799,7 +799,12 @@ public class MilestoneController {
 				redir.addAttribute("resultfail", "Refresh Not Allowed");
 				return "redirect:/MilestoneActivityList.htm";
 			}
-			req.setAttribute("MilestoneActivity", service.MilestoneActivity(MainId).get(0));
+			Object[] first = new Object[25];
+			List<Object[]> list = service.MilestoneActivity(MainId);
+			if(list != null && !list.isEmpty()) {
+				first = list.get(0);
+			}
+			req.setAttribute("MilestoneActivity", first);
 			List<Object[]>  MilestoneActivityA=service.MilestoneActivityLevel(MainId,"1");
 			req.setAttribute("MilestoneActivityA", MilestoneActivityA);
 			for(Object[] obj:MilestoneActivityA) {
@@ -880,6 +885,12 @@ public class MilestoneController {
 		String UserId = (String) ses.getAttribute("Username");
 		logger.info(new Date() +"Inside MilestoneActivityEditSubmit.htm "+UserId);		
 		try {
+
+			String chainId = req.getParameter("chainId");
+			String targetRowId = req.getParameter("targetRowId");
+			
+			redir.addFlashAttribute("chainId",chainId);
+			redir.addFlashAttribute("targetRowId",targetRowId);
 
 			if(InputValidator.isContainsHTMLTags(req.getParameter("ActivityName"))) {
 				redir.addAttribute("ProjectId", req.getParameter("ProjectId"));
@@ -5358,6 +5369,52 @@ private boolean isValidFileType(MultipartFile file) {
 		}
 	}
 	
+	@RequestMapping(value = "DeleteMainMilestone.htm", method = {RequestMethod.GET,RequestMethod.POST})
+	public String deleteMainMilestone(HttpServletRequest req, RedirectAttributes redir) {
+		try {
+			String projectId = req.getParameter("projectId");
+			String mainId = req.getParameter("mainid");
+			
+			redir.addAttribute("ProjectId",projectId);
+			
+			long count = service.deleteMainLevelMilsetone(mainId);
+			if (count > 0) {
+				redir.addAttribute("result", "Milestone Deleted Successfuly.");
+			} else {
+				redir.addAttribute("resultfail", "Milestone Delete Unsuccessful");
+			}	
+
+			return "redirect:/MilestoneActivityList.htm";
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "static/Error";
+		}		
+	}
+	
+	@RequestMapping(value = "SubLevelMilestoneDelete.htm", method = {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE})
+	public String deleteSubLevelMilestone(HttpServletRequest req,HttpSession ses,RedirectAttributes redir) {
+		try {
+			String MilestoneActivityId = req.getParameter("MilestoneActivityId");
+			String subId = req.getParameter("subId");
+			
+			redir.addAttribute("MilestoneActivityId",MilestoneActivityId);
+			
+			long count = service.deleteSubLevelMilsetone(subId);
+			if (count > 0) {
+				redir.addAttribute("result", "Milestone Deleted Successfuly.");
+			} else if(count == -1) {
+				redir.addAttribute("resultfail", "Milestone deletion unsuccessful because the selected milestone or its sub-levels have progress.");
+			} else {
+				redir.addAttribute("resultfail", "Milestone Delete Unsuccessful");
+			} 
+
+			redir.addAttribute("sub","C");
+			return "redirect:/MilestoneActivityDetails.htm";
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "static/Error";
+		}		
+	}
 
 }
 
