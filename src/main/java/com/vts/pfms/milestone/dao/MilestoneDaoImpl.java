@@ -58,6 +58,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 	private static final String MA="SELECT a.milestoneactivityid,b.project_name,a.startdate,a.enddate,a.activityname,a.milestoneno,\r\n"
 			+ "c.emp_name,d.emp_name AS emp,a.oicempid,a.oicempid1,a.projectid,a.progressstatus,a.revisionno,a.acceptedby,\r\n"
 			+ "a.accepteddate,a.activitytype,a.Weightage,e.activitytype AS TYPE, c.lab_code AS 'LabCode1', d.lab_code AS 'LabCode2', (SELECT COALESCE(a.ModifiedDate, a.CreatedDate) > MAX(c.CreatedDate) FROM `milestone_activity_rev` c WHERE c.MilestoneActivityId=:id)AS 'IsChange' \r\n"
+			+ "FROM milestone_activity a,project_master b, employee c,employee d, milestone_activity_type e WHERE a.activitytype=e.activitytypeid AND\r\n"
 			+ "a.projectid=b.project_id AND a.oicempid=c.emp_id AND a.oicempid1=d.emp_id AND a.milestoneactivityid=:id";
 
 	private static final String MILEACTIVITYLEVEL="CALL Pfms_Milestone_Level_List(:id,:levelid)";

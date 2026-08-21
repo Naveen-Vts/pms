@@ -4015,7 +4015,7 @@ public class ProjectDaoImpl implements ProjectDao {
 		List<Object[]>paraDetails=(List<Object[]>)query.getResultList();
 		return paraDetails;
 	}
-	private static final String EMPLISTS1="SELECT a.empid,CONCAT(IFNULL(CONCAT(a.title,' '),''), a.empname) AS 'empname' ,b.designation FROM employee a,employee_desig b WHERE a.isactive='1' AND a.DesigId=b.DesigId AND a.LabCode=:LabCode AND empid NOT IN (SELECT empid FROM pfms_doc_members WHERE TestPlanInitiationId =:TestPlanInitiationId AND SpecsInitiationId=:SpecsInitiationId AND isactive = 1)ORDER BY a.srno=0,a.srno";
+	private static final String EMPLISTS1="SELECT a.emp_id,CONCAT(IFNULL(CONCAT(a.title,' '),''), a.emp_name) AS 'empname' ,b.designation FROM employee a,employee_desig b WHERE a.is_active='1' AND a.Desig_Id=b.Desig_Id AND a.Lab_Code=:LabCode AND a.emp_id NOT IN (SELECT empid FROM pfms_doc_members WHERE TestPlanInitiationId =:TestPlanInitiationId AND SpecsInitiationId=:SpecsInitiationId AND isactive = 1) ORDER BY a.sr_no=0,a.sr_no";
 	@Override
 	public List<Object[]> EmployeeList1(String labCode, String testPlanInitiationId,String SpecsInitiationId) throws Exception {
 		Query query = manager.createNativeQuery(EMPLISTS1);

@@ -147,7 +147,7 @@ SimpleDateFormat time=new SimpleDateFormat("HH:mm");
  			<%if(obj[2]!=null) {%> <%=obj[2].toString() %><%} %> , <%if(obj[3]!=null) {%> <%=obj[3].toString() %><%} %><br>
  			[ <span style="font-size: 13px;">On</span> : 
  			  <span style="color: #0289BF;font-size: 13px;">
- 			  	<%=day.format(obj[4].toString()) %> <%=month.format(obj[4].toString()) %> <%=year.format(obj[4].toString()) %>, <%=time.format(obj[4].toString()) %>
+ 			  	<%=day.format(obj[4]) %> <%=month.format(obj[4]) %> <%=year.format(obj[4]) %>, <%=time.format(obj[4]) %>
  			  </span>
  			 ]
  		</td>

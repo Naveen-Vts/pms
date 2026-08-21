@@ -531,8 +531,7 @@ public class MilestoneController {
 			List<Object[]> list = service.MilestoneActivity(req.getParameter("MilestoneActivityId"));
 			req.setAttribute("MilestoneActivity", list != null && !list.isEmpty() ? list.get(0) : new Object[100]);
 			
-			  Object[] objd= service.MilestoneActivity(req.getParameter("MilestoneActivityId")).stream().findFirst().orElse(new Object[100]);
-			 
+	 
 			List<Object[]>  MilestoneActivityA=service.MilestoneActivityLevel(req.getParameter("MilestoneActivityId"),"1");
 			req.setAttribute("MilestoneActivityA", MilestoneActivityA);
 			for(Object[] obj:MilestoneActivityA) {

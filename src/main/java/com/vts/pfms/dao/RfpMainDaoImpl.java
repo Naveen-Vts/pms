@@ -35,7 +35,7 @@ public class RfpMainDaoImpl implements RfpMainDao {
 	private static final String USERMANAGELIST = "select a.loginid, a.username, b.division_name,c.formrolename  from login a , division_master b , formrole c where a.divisionid=b.division_id and a.formroleid=c.formroleid and a.isactive=1";
 	private static final String LASTLOGINEMPID = "select a.auditstampingid from  auditstamping a where a.auditstampingid=(select max(b.auditstampingid) from auditstamping b WHERE b.loginid=:loginid)";
 	private static final String DESGID="select desig_id from employee where  emp_id=:empid";
-	private static final String LABDETAILS="select labmasterid, labcode, labname, lablogo from lab_master";
+	private static final String LABDETAILS="select lab_master_id, lab_code, lab_name, lab_logo from lab_master";
 	
 	private static final String NOTICEEDITDATA="SELECT * FROM pfms_notice WHERE NoticeId=:NOTICEID AND IsActive=1" ;
 	private static final String SELFACTIONSLIST="SELECT ActionId,EmpId,ActionItem,ActionDate,ActionTime,ActionType FROM pfms_action_self WHERE isactive='1'AND actiondate=CURDATE() AND empid=:empid ORDER BY createddate ASC";	
@@ -663,7 +663,7 @@ public class RfpMainDaoImpl implements RfpMainDao {
 	}
 	
 	
-	private static final String DAILYPENDINGASSIGNEMPDATA="SELECT a.ActionAssignId,a.Assignee,empData.EmpName,empData.Email,empData.MobileNo,b.ActionItem,a.EndDate FROM action_assign a LEFT JOIN employee empData ON empData.EmpId=a.Assignee JOIN action_main b ON a.ActionMainId=b.ActionMainId WHERE a.ActionStatus='A' AND a.IsActive=1";
+	private static final String DAILYPENDINGASSIGNEMPDATA="SELECT a.ActionAssignId,a.Assignee,empData.Emp_Name,empData.Email,empData.Mobile_No,b.ActionItem,a.EndDate FROM action_assign a LEFT JOIN employee empData ON empData.Emp_Id=a.Assignee JOIN action_main b ON a.ActionMainId=b.ActionMainId WHERE a.ActionStatus='A' AND a.IsActive=1";
 	@Override
 	public List<Object[]> GetDailyPendingAssigneeEmpData() throws Exception {
 		logger.info(new Date() + "Inside DAO GetDailyPendingAssigneeEmpData");
@@ -761,7 +761,7 @@ public class RfpMainDaoImpl implements RfpMainDao {
 		}
 	}
 	
-	private static final String DIRECTORDAILYPENDINGASSIGNEMPDATA="SELECT  e.empid,e.mobileno FROM employee e,lab_master b WHERE b.labcode=:Lab AND e.empid=b.LabAuthorityId AND e.isactive='1'";
+	private static final String DIRECTORDAILYPENDINGASSIGNEMPDATA="SELECT  e.emp_id,e.mobile_no FROM employee e,lab_master b WHERE b.labcode=:Lab AND e.empid=b.LabAuthorityId AND e.isactive='1'";
 	@Override
 	public List<Object[]> GetDirectorDailyPendingAssignEmpData(String lab) throws Exception {
 		logger.info(new Date() + "Inside DAO GetDirectorDailyPendingAssignEmpData");
@@ -965,7 +965,7 @@ public class RfpMainDaoImpl implements RfpMainDao {
 	}
 	
 	
-	private static final String SMSREPORTLIST="SELECT e.EmpName,d.Designation,a.ActionItemP,a.ActionItemTP,a.ActionItemDP,a.MilestoneActionP,a.MilestoneActionTP,a.MilestoneActionDP,a.MeetingActionP,a.MeetingActionTP,a.MeetingActionDP,e.MobileNo,a.Message,DATE(a.SmsSentDate) FROM pfms_sms_track_insights a,employee e,employee_desig d WHERE a.EmpId=e.EmpId AND e.DesigId=d.DesigId AND DATE(a.SmsSentDate) BETWEEN :fromDate AND :toDate";
+	private static final String SMSREPORTLIST="SELECT e.Emp_Name,d.Designation,a.ActionItemP,a.ActionItemTP,a.ActionItemDP,a.MilestoneActionP,a.MilestoneActionTP,a.MilestoneActionDP,a.MeetingActionP,a.MeetingActionTP,a.MeetingActionDP,e.Mobile_No,a.Message,DATE(a.SmsSentDate) FROM pfms_sms_track_insights a,employee e,employee_desig d WHERE a.EmpId=e.Emp_Id AND e.Desig_Id=d.Desig_Id AND DATE(a.SmsSentDate) BETWEEN :fromDate AND :toDate";
 	@Override
 	public List<Object[]> SmsReportList(String fromDate, String toDate) throws Exception {
 		logger.info(new Date() +"Inside the SmsReportList");
@@ -982,7 +982,7 @@ public class RfpMainDaoImpl implements RfpMainDao {
 		}
 	}
 	
-	private static final String SMSCOMMITTEREPORTLIST="SELECT e.EmpName,d.Designation,e.MobileNo,a.Message,DATE(a.SmsSentDate) FROM pfms_sms_committe_track_insights a,employee e,employee_desig d WHERE a.EmpId=e.EmpId AND e.DesigId=d.DesigId AND DATE(a.SmsSentDate) BETWEEN :fromDate AND :toDate";
+	private static final String SMSCOMMITTEREPORTLIST="SELECT e.Emp_Name,d.Designation,e.Mobile_No,a.Message,DATE(a.SmsSentDate) FROM pfms_sms_committe_track_insights a,employee e,employee_desig d WHERE a.EmpId=e.Emp_Id AND e.Desig_Id=d.Desig_Id AND DATE(a.SmsSentDate) BETWEEN :fromDate AND :toDate";
 	@Override
 	public List<Object[]> SmsCommitteReportList(String fromDate, String toDate) throws Exception {
 		logger.info(new Date() +"Inside the SmsCommitteReportList dao");

@@ -44,25 +44,25 @@
    int acttotal=0;
   if(Actiontotal!=null && Actiontotal.size()>0){
 	  acttotal=Actiontotal.size();
-	  Actionactive = Actiontotal.stream().filter(e->e[8].toString().equalsIgnoreCase("A")).collect(Collectors.toList()).size();
-	  ActionInprogress  = Actiontotal.stream().filter(e-> !e[8].toString().equalsIgnoreCase("C") && !e[8].toString().equalsIgnoreCase("A")).collect(Collectors.toList()).size();
-	  ActionClose  = Actiontotal.stream().filter(e->e[8].toString().equalsIgnoreCase("C")).collect(Collectors.toList()).size();
+	  Actionactive = Actiontotal.stream().filter(e-> e[8]!=null && e[8].toString().equalsIgnoreCase("A")).collect(Collectors.toList()).size();
+	  ActionInprogress  = Actiontotal.stream().filter(e-> e[8]!=null && !e[8].toString().equalsIgnoreCase("C") && !e[8].toString().equalsIgnoreCase("A")).collect(Collectors.toList()).size();
+	  ActionClose  = Actiontotal.stream().filter(e-> e[8]!=null && e[8].toString().equalsIgnoreCase("C")).collect(Collectors.toList()).size();
   }
   
   int Meetingttl=0;
   if(Meetingtotal!=null && Meetingtotal.size()>0){
 	  Meetingttl=Meetingtotal.size();
-	   Meetingactive = Meetingtotal.stream().filter(e->e[8].toString().equalsIgnoreCase("A")).collect(Collectors.toList()).size();
-	   MeetingInprogress  = Meetingtotal.stream().filter(e-> !e[8].toString().equalsIgnoreCase("C") && !e[8].toString().equalsIgnoreCase("A")).collect(Collectors.toList()).size();
-	   MeetingClose  = Meetingtotal.stream().filter(e->e[8].toString().equalsIgnoreCase("C")).collect(Collectors.toList()).size();
+	   Meetingactive = Meetingtotal.stream().filter(e-> e[8]!=null && e[8].toString().equalsIgnoreCase("A")).collect(Collectors.toList()).size();
+	   MeetingInprogress  = Meetingtotal.stream().filter(e-> e[8]!=null && !e[8].toString().equalsIgnoreCase("C") && !e[8].toString().equalsIgnoreCase("A")).collect(Collectors.toList()).size();
+	   MeetingClose  = Meetingtotal.stream().filter(e-> e[8]!=null && e[8].toString().equalsIgnoreCase("C")).collect(Collectors.toList()).size();
   }
   
   int Miletotal=0;
   if(Milestonestotal!=null && Milestonestotal.size()>0){
 	  Miletotal=Milestonestotal.size();
-	   Milestonesactive = Milestonestotal.stream().filter(e->e[8].toString().equalsIgnoreCase("A")).collect(Collectors.toList()).size();
-	   MilestonesInprogress  = Milestonestotal.stream().filter(e-> !e[8].toString().equalsIgnoreCase("C") && !e[8].toString().equalsIgnoreCase("A")).collect(Collectors.toList()).size();
-	   MilestonesClose  = Milestonestotal.stream().filter(e->e[8].toString().equalsIgnoreCase("C")).collect(Collectors.toList()).size(); 
+	   Milestonesactive = Milestonestotal.stream().filter(e-> e[8]!=null && e[8].toString().equalsIgnoreCase("A")).collect(Collectors.toList()).size();
+	   MilestonesInprogress  = Milestonestotal.stream().filter(e-> e[8]!=null && !e[8].toString().equalsIgnoreCase("C") && !e[8].toString().equalsIgnoreCase("A")).collect(Collectors.toList()).size();
+	   MilestonesClose  = Milestonestotal.stream().filter(e-> e[8]!=null && e[8].toString().equalsIgnoreCase("C")).collect(Collectors.toList()).size(); 
   }
   
   int total = acttotal + Meetingttl + Miletotal;

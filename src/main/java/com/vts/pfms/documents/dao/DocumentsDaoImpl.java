@@ -213,7 +213,7 @@ public class DocumentsDaoImpl implements DocumentsDao{
 		}
 	}
 	
-	private static final String IGIDOCUMENTMEMBERLIST = "SELECT a.empid, CONCAT(IFNULL(CONCAT(a.Title,' '),(IFNULL(CONCAT(a.Salutation, ' '), ''))), a.EmpName) AS 'EmpName',b.Designation,a.LabCode,b.DesigId,c.IGIMemeberId FROM employee a,employee_desig b,pfms_igi_document_members c WHERE a.isactive='1' AND a.DesigId=b.DesigId AND a.EmpId = c.EmpId AND c.DocId =:DocId AND c.DocType=:DocType AND c.IsActive =1 ORDER BY a.SrNo=0, a.SrNo";
+	private static final String IGIDOCUMENTMEMBERLIST = "SELECT a.emp_id, CONCAT(IFNULL(CONCAT(a.Title,' '),(IFNULL(CONCAT(a.Salutation, ' '), ''))), a.Emp_Name) AS 'EmpName',b.Designation,a.Lab_Code,b.Desig_Id,c.IGIMemeberId FROM employee a,employee_desig b,pfms_igi_document_members c WHERE a.is_active='1' AND a.Desig_Id=b.Desig_Id AND a.Emp_Id = c.EmpId AND c.DocId =:DocId AND c.DocType=:DocType AND c.IsActive =1 ORDER BY a.Sr_No=0, a.Sr_No";
 	@Override
 	public List<Object[]> getDocumentMemberList(String docId, String docType) throws Exception {
 		try {
@@ -228,7 +228,7 @@ public class DocumentsDaoImpl implements DocumentsDao{
 		
 	}
 	
-	private static final String DOCEMPLISTBYIGIDOCID="SELECT a.EmpId, CONCAT(IFNULL(CONCAT(a.Title,' '),(IFNULL(CONCAT(a.Salutation, ' '), ''))), a.EmpName) AS 'EmpName', b.Designation FROM employee a,employee_desig b WHERE a.IsActive='1' AND a.DesigId=b.DesigId AND a.LabCode=:LabCode AND EmpId NOT IN (SELECT empid FROM pfms_igi_document_members WHERE DocId =:DocId AND DocType=:DocType AND IsActive = 1)ORDER BY a.SrNo=0,a.SrNo";
+	private static final String DOCEMPLISTBYIGIDOCID="SELECT a.Emp_Id, CONCAT(IFNULL(CONCAT(a.Title,' '),(IFNULL(CONCAT(a.Salutation, ' '), ''))), a.Emp_Name) AS 'EmpName', b.Designation FROM employee a,employee_desig b WHERE a.Is_Active='1' AND a.Desig_Id=b.Desig_Id AND a.Lab_Code=:LabCode AND a.Emp_Id NOT IN (SELECT empid FROM pfms_igi_document_members WHERE DocId =:DocId AND DocType=:DocType AND IsActive = 1) ORDER BY a.Sr_No=0,a.Sr_No";
 	@Override
 	public List<Object[]> getDocmployeeListByDocId(String labCode, String docId, String docType) throws Exception {
 		try {
@@ -519,7 +519,7 @@ public class DocumentsDaoImpl implements DocumentsDao{
 		}
 	}
 
-	private static final String IGIDOCTRANSLIST = "SELECT a.IGITransactionId,c.EmpNo,c.EmpName,d.Designation,a.ActionDate,a.Remarks,b.ReqStatus,b.ReqStatusColor FROM pfms_igi_trans a,pfms_req_approval_status b,employee c,employee_desig d WHERE a.StatusCode = b.ReqStatusCode AND a.ActionBy=c.EmpId AND c.DesigId = d.DesigId AND a.DocId=:DocId AND a.DocType=:DocType ORDER BY a.IGITransactionId";
+	private static final String IGIDOCTRANSLIST = "SELECT a.IGITransactionId,c.Emp_No,c.Emp_Name,d.Designation,a.ActionDate,a.Remarks,b.ReqStatus,b.ReqStatusColor FROM pfms_igi_trans a,pfms_req_approval_status b,employee c,employee_desig d WHERE a.StatusCode = b.ReqStatusCode AND a.ActionBy=c.Emp_Id AND c.Desig_Id = d.Desig_Id AND a.DocId=:DocId AND a.DocType=:DocType ORDER BY a.IGITransactionId";
 	@Override
 	public List<Object[]> igiTransactionList(String docId, String docType) throws Exception {
 

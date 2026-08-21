@@ -186,11 +186,28 @@ String docInitiationId = (String)request.getAttribute("docInitiationId");
 			<article>
 				<div class="inner">
 					<span class="date">
-						<span class="day"><%=day.format(object[4]!=null?StringEscapeUtils.escapeHtml4(object[4].toString()): "") %></span>
-						<span class="month"><%=month.format(object[4]!=null?StringEscapeUtils.escapeHtml4(object[4].toString()): "") %></span>
-						<span class="year"><%=year.format(object[4]!=null?StringEscapeUtils.escapeHtml4(object[4].toString()): "") %></span>
+					<%
+					    Date date = null;
+					
+					    if (object[4] != null) {
+					        String dateString = object[4].toString();
+					        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					        date = inputFormat.parse(dateString);
+					    }
+					%>
+						<span class="day">
+						    <%= date != null ? day.format(date) : "" %>
+						</span>
+						
+						<span class="month">
+						    <%= date != null ? month.format(date) : "" %>
+						</span>
+						
+						<span class="year">
+						    <%= date != null ? year.format(date) : "" %>
+						</span>
 					</span>
-					<h2 style="background-color: <%=object[7]%>;--my-color-var: <%=object[7]%>;" ><%=object[6]!=null?StringEscapeUtils.escapeHtml4(object[6].toString()): "" %> at <%=time.format(object[4]!=null?StringEscapeUtils.escapeHtml4(object[4].toString()): "") %></h2> 
+					<h2 style="background-color: <%=object[7]%>;--my-color-var: <%=object[7]%>;" ><%=object[6]!=null?StringEscapeUtils.escapeHtml4(object[6].toString()): "" %> at <%=time.format(object[4]) %></h2> 
 					<p style="background-color:  #f0f2f5;">
 						<span class="remarks_title">Action By : </span>
 						<%=object[2]!=null?StringEscapeUtils.escapeHtml4(object[2].toString()): "" %>, <%=object[3]!=null?StringEscapeUtils.escapeHtml4(object[3].toString()): "" %><br>

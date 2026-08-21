@@ -1078,7 +1078,7 @@ public class PrintDaoImpl implements PrintDao {
 			List<Object[]> RiskTypes=(List<Object[]> )query.getResultList();
 			return RiskTypes;
 		}
-		private static final String PROJECTSLIDELIST="SELECT a.freezeid , a.reviewby , a.reviewdate , CONCAT(IFNULL(CONCAT(c.title,' '),''), c.empname) as 'empname' FROM pfms_project_slides_freeze a , project_master b , employee c WHERE a.projectid=b.projectid AND a.empid=c.empid AND a.projectid=:projectid ORDER BY  a.freezeid DESC";
+		private static final String PROJECTSLIDELIST="SELECT a.freezeid , a.reviewby , a.reviewdate , CONCAT(IFNULL(CONCAT(c.title,' '),''), c.emp_name) as 'empname' FROM pfms_project_slides_freeze a , project_master b , employee c WHERE a.projectid=b.projectid AND a.empid=c.emp_id AND a.projectid=:projectid ORDER BY  a.freezeid DESC";
 		@Override
 		public List<Object[]> getProjectSlideList(String projectid)throws Exception
 		{
@@ -1218,7 +1218,7 @@ public class PrintDaoImpl implements PrintDao {
 				}
 				return null;
 			}
-			private static final String GETDIRECTORNAME = "SELECT a.EmpId,a.empname FROM employee a,lab_master b WHERE a.labcode=b.labcode AND  b.LabCode=:labCode AND b.LabAuthorityId=a.empid";
+			private static final String GETDIRECTORNAME = "SELECT a.Emp_Id,a.emp_name FROM employee a,lab_master b WHERE a.lab_code=b.lab_code AND  b.Lab_Code=:labCode AND b.Lab_Authority_Id=a.emp_id";
 			@Override
 			public Object[] getDirectorName(String labCode) throws Exception {
 				Query query=manager.createNativeQuery(GETDIRECTORNAME);
@@ -1229,7 +1229,7 @@ public class PrintDaoImpl implements PrintDao {
 			}
 
 			
-			private static final String DORTMDADEMPDATA="SELECT pr.empid ,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.empname) AS 'empname' ,ed.designation ,pr.type  FROM pfms_initiation_approver pr, employee e ,employee_desig ed WHERE pr.empid=e.empid AND e.desigid=ed.desigid AND pr.isactive='1' AND pr.LabCode=:Labcode and pr.type='DO-RTMD'";
+			private static final String DORTMDADEMPDATA="SELECT pr.empid ,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) AS 'empname' ,ed.designation ,pr.type  FROM pfms_initiation_approver pr, employee e ,employee_desig ed WHERE pr.empid=e.emp_id AND e.desig_id=ed.desig_id AND pr.isactive='1' AND pr.LabCode=:Labcode and pr.type='DO-RTMD'";
 			
 			@Override
 			public Object[]  DoRtmdAdEmpData(String Labcode) throws Exception
@@ -1287,7 +1287,7 @@ public class PrintDaoImpl implements PrintDao {
 				}
 				return null;
 			}
-			private static final String GETDHID = "SELECT division_head_id,division_id FROM division_master WHERE division_id IN (SELECT DivisionId FROM employee WHERE EmpId IN(SELECT ProjectDirector FROM  project_master WHERE ProjectId=:projectid))";
+			private static final String GETDHID = "SELECT division_head_id,division_id FROM division_master WHERE division_id IN (SELECT Division_Id FROM employee WHERE Emp_Id IN (SELECT Project_Director FROM  project_master WHERE Project_Id=:projectid))";
 			
 			@Override
 			public Object[] getDHId(String projectid) throws Exception {
@@ -1301,7 +1301,7 @@ public class PrintDaoImpl implements PrintDao {
 					return null;
 				}
 			}
-			private static final String GETGHID = "SELECT group_head_id,group_id FROM division_group WHERE group_id IN(SELECT group_id FROM division_master WHERE division_id IN (SELECT DivisionId FROM employee WHERE EmpId IN(SELECT ProjectDirector FROM  project_master WHERE ProjectId=:projectid)))";
+			private static final String GETGHID = "SELECT group_head_id,group_id FROM division_group WHERE group_id IN(SELECT group_id FROM division_master WHERE division_id IN (SELECT Division_Id FROM employee WHERE Emp_Id IN (SELECT Project_Director FROM  project_master WHERE Project_Id=:projectid)))";
 			@Override
 			public Object getGHId(String projectid) throws Exception {
 				try {
@@ -1377,7 +1377,7 @@ public class PrintDaoImpl implements PrintDao {
 					return  null;
 				}
 			}
-			private static final String GETEMPNAME = "SELECT EmpName FROM employee WHERE EmpId=:empId";
+			private static final String GETEMPNAME = "SELECT Emp_Name FROM employee WHERE Emp_Id=:empId";
 			@Override
 			public String getEmpName(String empId) throws Exception {
 				logger.info(new Date() + "Inside DAO getEmpName");
@@ -1392,7 +1392,7 @@ public class PrintDaoImpl implements PrintDao {
 					return  null;
 				}
 			}
-			private static final String GETBRIEFINGREMARKS = "SELECT CONCAT (e.empname,',' ,c.designation) AS emp,t.Remarks,t.ActionDate FROM pfms_briefing_transaction t,employee e,employee_desig c WHERE t.ScheduleId=:sheduleId AND t.BriefingStatus IN('RDH','RGH','RPD','RBD') AND t.EmpId=e.EmpId AND e.desigid=c.desigid";
+			private static final String GETBRIEFINGREMARKS = "SELECT CONCAT (e.emp_name,',' ,c.designation) AS emp,t.Remarks,t.ActionDate FROM pfms_briefing_transaction t,employee e,employee_desig c WHERE t.ScheduleId=:sheduleId AND t.BriefingStatus IN('RDH','RGH','RPD','RBD') AND t.EmpId=e.Emp_Id AND e.desig_id=c.desig_id";
 
 			@Override
 			public List<Object[]> getBriefingRemarks(String sheduleId) throws Exception {
@@ -1545,8 +1545,8 @@ public class PrintDaoImpl implements PrintDao {
 		}
 		
 		private static final String MILESTONEOPENACTIONLISTBYPROJECT ="SELECT  a.ActionAssignId, a.ActionMainId, a.ActionNo, a.EndDate, a.PDCOrg, a.AssignorLabCode, a.Assignor, a.AssigneeLabCode, a.Assignee, a.Remarks, a.ActionStatus, a.ClosedDate, a.Progress, a.ProgressDate, a.ProgressRemark, b.ActionDate, b.ActionItem, b.ActivityId, \r\n"
-				+ "b.Type, b.ActionType, b.ProjectId, CONCAT(IFNULL(CONCAT(c.Title,' '),(IFNULL(CONCAT(c.Salutation, ' '), ''))), c.EmpName) AS 'EmpName', d.Designation, (SELECT  MAX(s.progressdate) FROM action_sub s  WHERE s.actionassignid=a.ActionAssignId) AS 'lastdate'\r\n"
-				+ "FROM action_assign a  LEFT JOIN action_main b ON a.ActionMainId=b.ActionMainId LEFT JOIN employee c ON a.Assignee=c.EmpId LEFT JOIN employee_desig d ON c.DesigId=d.DesigId\r\n"
+				+ "b.Type, b.ActionType, b.ProjectId, CONCAT(IFNULL(CONCAT(c.Title,' '),(IFNULL(CONCAT(c.Salutation, ' '), ''))), c.Emp_Name) AS 'EmpName', d.Designation, (SELECT  MAX(s.progressdate) FROM action_sub s  WHERE s.actionassignid=a.ActionAssignId) AS 'lastdate'\r\n"
+				+ "FROM action_assign a  LEFT JOIN action_main b ON a.ActionMainId=b.ActionMainId LEFT JOIN employee c ON a.Assignee=c.Emp_Id LEFT JOIN employee_desig d ON c.Desig_Id=d.Desig_Id\r\n"
 				+ "WHERE a.IsActive=1 AND b.IsActive=1 AND b.ActivityId<>0 AND b.ActionType IN ('A', 'B', 'C', 'D', 'E') AND a.ActionStatus<>'C' AND b.ProjectId=:ProjectId";
 		@Override
 		public List<Object[]> getMilestoneOpenActionListByProjectId(String projectId) throws Exception 
@@ -1563,9 +1563,9 @@ public class PrintDaoImpl implements PrintDao {
 		}
 		
 		
-		private static final String PROJECTMEETING = "SELECT p.projectid,p.projectcode,p.ProjectName,c.scheduledate,c.ScheduleId, MONTH(c.scheduledate)AS'schedulemonth',YEAR(c.scheduledate)AS'scheduleyear' ,c.ScheduleFlag  FROM  project_master p ,committee_schedule c WHERE c.projectid = p.projectid AND \r\n"
+		private static final String PROJECTMEETING = "SELECT p.project_id,p.project_code,p.Project_Name,c.scheduledate,c.ScheduleId, MONTH(c.scheduledate)AS'schedulemonth',YEAR(c.scheduledate)AS'scheduleyear' ,c.ScheduleFlag  FROM  project_master p ,committee_schedule c WHERE c.projectid = p.project_id AND \r\n"
 				+ "c.CommitteeId = (SELECT committeeId FROM committee WHERE CommitteeShortName = :CommitteeShortName LIMIT 1) \r\n"
-				+ "AND c.isactive='1' ORDER BY p.projectid";
+				+ "AND c.isactive='1' ORDER BY p.project_id";
 		
 		@Override
 		public List<Object[]> getProjectMeetings(String CommitteeShortName) throws Exception {
@@ -1576,10 +1576,10 @@ public class PrintDaoImpl implements PrintDao {
 			return (List<Object[]>)query.getResultList();
 		}
 		
-		private static final String PROJECTS = "SELECT p.projectid, p.projectname, p.projectcode,\r\n"
-				+ "CONCAT(IFNULL(CONCAT(e.title,' '),IFNULL(CONCAT(e.salutation,' '),'')), e.empname) AS 'empname' ,b.ProjectTypeShort,\r\n"
-				+ "p.ProjectDirector , e.MobileNo,e.DronaEmail,e.InternetEmail,d.designation FROM project_master p , employee e, project_type b,employee_desig d, project_main pm\r\n"
-				+ "WHERE e.empid = p.ProjectDirector AND b.ProjectTypeId=p.ProjectType AND e.desigid=d.desigid AND pm.ProjectMainId=p.ProjectMainId ORDER BY p.ProjectDirector";
+		private static final String PROJECTS = "SELECT p.project_id, p.project_name, p.project_code,\r\n"
+				+ "CONCAT(IFNULL(CONCAT(e.title,' '),IFNULL(CONCAT(e.salutation,' '),'')), e.emp_name) AS 'empname' ,b.Project_Type_Short,\r\n"
+				+ "p.Project_Director , e.Mobile_No,e.Drona_Email,e.Internet_Email,d.designation FROM project_master p , employee e, project_type b,employee_desig d, project_main pm\r\n"
+				+ "WHERE e.emp_id = p.Project_Director AND b.Project_Type_Id=p.Project_Type AND e.desig_id=d.desig_id AND pm.Project_Main_Id=p.Project_Main_Id ORDER BY p.Project_Director";
 		
 		@Override
 		public List<Object[]> getprojectListProjectDirectorWise() throws Exception {
@@ -1589,8 +1589,8 @@ public class PrintDaoImpl implements PrintDao {
 			return (List<Object[]>)query.getResultList();
 		}
 		
-		private static final String CLOSUREREPORT ="SELECT p.projectid,p.projectname,p.projectcode,c.ClosureId,c.ClosureStatusCode,t.TechnicalClosureId,t.StatusCode,c.ClosureCategory,p.pdc\r\n"
-				+ "FROM project_master p LEFT JOIN pfms_closure c ON p.projectid =c.projectid \r\n"
+		private static final String CLOSUREREPORT ="SELECT p.project_id,p.project_name,p.project_code,c.ClosureId,c.ClosureStatusCode,t.TechnicalClosureId,t.StatusCode,c.ClosureCategory,p.pdc\r\n"
+				+ "FROM project_master p LEFT JOIN pfms_closure c ON p.project_id =c.projectid \r\n"
 				+ "LEFT JOIN pfms_closure_technical t ON c.ClosureId=t.ClosureId";
 		@Override
 		public List<Object[]> getProjectClosureReport() throws Exception {
