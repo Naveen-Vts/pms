@@ -3165,7 +3165,7 @@ function editcheck1(editfileid)
 		    ],
 
 		    // removed wrong Specialchar from here
-		    removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles',
+		    removeButtons: 'Underline,Strike,Anchor,Styles',
 
 		    customConfig: '',
 		    disallowedContent: 'img{width,height,float}',

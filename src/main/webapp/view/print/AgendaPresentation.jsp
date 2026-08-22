@@ -406,7 +406,7 @@
 						<b class="agp-19"><%=ProjectCode!=null?StringEscapeUtils.escapeHtml4(ProjectCode): " - " %></b>
 					</div>
 					<div class="col-md-8">
-						<h3>Agenda</h3>
+						<h3>Previous Meetings</h3>
 					</div>
 					<div class="col-md-1 pt-2" align="right" >
 						<b class="agp-19"><%=MeetingNo!=null?StringEscapeUtils.escapeHtml4(MeetingNo): " - " %></b>
@@ -521,7 +521,7 @@
 						<b class="agp-19"><%=ProjectCode!=null?StringEscapeUtils.escapeHtml4(ProjectCode): " - " %></b>
 					</div>
 					<div class="col-md-8">
-						<h3>Agenda</h3>
+						<h3>Open Action Points</h3>
 					</div>
 					<div class="col-md-1 pt-2" align="right" >
 						<b class="agp-19"><%=MeetingNo!=null?StringEscapeUtils.escapeHtml4(MeetingNo): " - " %></b>
@@ -1051,7 +1051,7 @@
 						<b class="agp-19"><%=ProjectCode!=null?StringEscapeUtils.escapeHtml4(ProjectCode): " - " %></b>
 					</div>
 					<div class="col-md-8">
-						<h3>Agenda</h3>
+						<h3>Close Action Points</h3>
 					</div>
 					<div class="col-md-1 pt-2" align="right" >
 						<b class="agp-19"><%=MeetingNo!=null?StringEscapeUtils.escapeHtml4(MeetingNo): " - " %></b>
@@ -1160,7 +1160,7 @@
 						<b class="agp-19"><%=ProjectCode!=null?StringEscapeUtils.escapeHtml4(ProjectCode): " - " %></b>
 					</div>
 					<div class="col-md-8">
-						<h3>Agenda</h3>
+						<h3>All Action Points</h3>
 					</div>
 					<div class="col-md-1 pt-2" align="right" >
 						<b class="agp-19"><%=MeetingNo!=null?StringEscapeUtils.escapeHtml4(MeetingNo): " - " %></b>
@@ -1279,7 +1279,7 @@
 						<b class="agp-19"><%=ProjectCode!=null?StringEscapeUtils.escapeHtml4(ProjectCode): " - " %></b>
 					</div>
 					<div class="col-md-8">
-						<h3>Agenda</h3>
+						<h3>All Recommendation Points</h3>
 					</div>
 					<div class="col-md-1 pt-2" align="right" >
 						<b class="agp-19"><%=MeetingNo!=null?StringEscapeUtils.escapeHtml4(MeetingNo): " - " %></b>
@@ -1398,7 +1398,7 @@
 						<b class="agp-19"><%=ProjectCode!=null?StringEscapeUtils.escapeHtml4(ProjectCode): " - " %></b>
 					</div>
 					<div class="col-md-8">
-						<h3>Agenda</h3>
+						<h3>All Decisions</h3>
 					</div>
 					<div class="col-md-1 pt-2" align="right" >
 						<b class="agp-19"><%=MeetingNo!=null?StringEscapeUtils.escapeHtml4(MeetingNo): " - " %></b>
