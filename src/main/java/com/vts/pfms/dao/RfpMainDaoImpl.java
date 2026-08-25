@@ -851,7 +851,7 @@ public class RfpMainDaoImpl implements RfpMainDao {
 		}
 	}
 	
-	private static final String GETCOMMITTEDATA="SELECT a.CommitteeScheduleId,b.ProjectId,c.CommitteeShortName,e.EmpName,e.MobileNo,b.ScheduleDate,b.ScheduleStartTime,c.ProjectApplicable FROM committee_schedules_invitation a,committee_schedule b,committee c,employee e WHERE a.CommitteeScheduleId=b.ScheduleId AND b.CommitteeId=c.CommitteeId AND b.ScheduleDate=CURDATE() AND a.EmpId=e.EmpId AND a.EmpId=:empId AND b.IsActive='1'";
+	private static final String GETCOMMITTEDATA="SELECT a.CommitteeScheduleId,b.ProjectId,GetCommitteeShortName(b.scheduledate,c.committeeshortname) AS committeeshortname,e.EmpName,e.MobileNo,b.ScheduleDate,b.ScheduleStartTime,c.ProjectApplicable FROM committee_schedules_invitation a,committee_schedule b,committee c,employee e WHERE a.CommitteeScheduleId=b.ScheduleId AND b.CommitteeId=c.CommitteeId AND b.ScheduleDate=CURDATE() AND a.EmpId=e.EmpId AND a.EmpId=:empId AND b.IsActive='1'";
 	@Override
 	public List<Object[]> getCommittedata(long empId) throws Exception {
 		try {

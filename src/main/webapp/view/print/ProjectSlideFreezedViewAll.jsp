@@ -605,7 +605,7 @@ String labcode = (String) session.getAttribute("labcode");
 																	<div class="col p-0" >
 																	
 																	<p class="mb-0"><span class="clx-34">
-																				<u>Current Status</u> :</span> &nbsp; &nbsp; &nbsp; &nbsp; <span><a href="BriefingPresentation.htm?projectid=<%=projects.get(i)[0]%>&committeeid=<%="1"%>" target="_blank">PMRC </a></span>  &nbsp; &nbsp; <span><a href="BriefingPresentation.htm?projectid=<%=projects.get(i)[0]%>&committeeid=<%="2"%>" target="_blank">EB </a></span>
+																				<u>Current Status</u> :</span> &nbsp; &nbsp; &nbsp; &nbsp; <span><a href="BriefingPresentation.htm?projectid=<%=projects.get(i)[0]%>&committeeid=<%="1"%>" target="_blank">PMRB </a></span>  &nbsp; &nbsp; <span><a href="BriefingPresentation.htm?projectid=<%=projects.get(i)[0]%>&committeeid=<%="2"%>" target="_blank">EB </a></span>
 														<%
 														Path attachmentPath1 = Paths.get(filePath,labcode,"ProjectSlide",projects.get(i)[27]+"");
 														File specificfile1 = attachmentPath1.toFile();
@@ -812,7 +812,7 @@ String labcode = (String) session.getAttribute("labcode");
 																		<div class="col pl-0" >
 																			<span class="clx-34">
 																				<u>Current Status</u> :  
-																			</span>&nbsp; &nbsp; &nbsp;&nbsp; <span><a href="BriefingPresentation.htm?projectid=<%=projects.get(i)[0]%>&committeeid=<%="1"%>" target="_blank">PMRC </a></span>  &nbsp; &nbsp; <span><a href="BriefingPresentation.htm?projectid=<%=projects.get(i)[0]%>&committeeid=<%="2"%>" target="_blank">EB </a></span>
+																			</span>&nbsp; &nbsp; &nbsp;&nbsp; <span><a href="BriefingPresentation.htm?projectid=<%=projects.get(i)[0]%>&committeeid=<%="1"%>" target="_blank">PMRB </a></span>  &nbsp; &nbsp; <span><a href="BriefingPresentation.htm?projectid=<%=projects.get(i)[0]%>&committeeid=<%="2"%>" target="_blank">EB </a></span>
 														
 																<%
 														Path attachmentPath1 = Paths.get(filePath,labcode,"ProjectSlide",projects.get(i)[27]+"");
@@ -1032,7 +1032,7 @@ String labcode = (String) session.getAttribute("labcode");
 															<div class="row">
 															<div class="col pl-0" >
 															<h4 class="clx-34">
-																		<u>Current Status </u>: &nbsp; &nbsp;&nbsp; &nbsp; <span><a href="BriefingPresentation.htm?projectid=<%=projects.get(i)[0]%>&committeeid=<%="1"%>" target="_blank">PMRC </a></span>  &nbsp; &nbsp; <span><a href="BriefingPresentation.htm?projectid=<%=projects.get(i)[0]%>&committeeid=<%="2"%>" target="_blank">EB </a></span>
+																		<u>Current Status </u>: &nbsp; &nbsp;&nbsp; &nbsp; <span><a href="BriefingPresentation.htm?projectid=<%=projects.get(i)[0]%>&committeeid=<%="1"%>" target="_blank">PMRB </a></span>  &nbsp; &nbsp; <span><a href="BriefingPresentation.htm?projectid=<%=projects.get(i)[0]%>&committeeid=<%="2"%>" target="_blank">EB </a></span>
 																	</h4>
 															</div>
 															<div class="col">

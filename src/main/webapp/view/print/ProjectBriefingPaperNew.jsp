@@ -543,11 +543,11 @@ String labcode = (String) session.getAttribute("labcode");
 											<b>Project : <%=ProjectDetail.get(z)[1] %> 	<%if(z!=0){ %>(SUB)<%} %>	</b>
 										</div>	
 									<%} %>	
-								   <div align="left" class="margin-left15">(a) <%if(committee.getCommitteeShortName().trim().equalsIgnoreCase("PMRC")){ %>
+								   <div align="left" class="margin-left15">(a) <%if(committee.getCommitteeShortName().trim().equalsIgnoreCase("PMRC") || committee.getCommitteeShortName().trim().equalsIgnoreCase("PMRB")){ %>
 															   						Approval 
 															   						<%}else { %>
 															   						Ratification
-															   						<%} %>  of <b>recommendations</b> of last PMRC / <%=committee.getCommitteeShortName().trim().toUpperCase() %> Meeting (if any)</div>
+															   						<%} %>  of <b>recommendations</b> of last PMRB / <%=committee.getCommitteeShortName().trim().toUpperCase() %> Meeting (if any)</div>
 															   						
 							
 			<table class="subtables table-subtables" >
@@ -725,7 +725,21 @@ String labcode = (String) session.getAttribute("labcode");
 								<tr>
 									<td  class="text-center"><%=i %></td>
 									<td>
-										<%if(obj[17]!=null && Long.parseLong(obj[17].toString())>0){ %>
+										<%
+										String committeeCode = committee.getCommitteeShortName().trim().toUpperCase();
+										String splCommittee = committeeCode;
+										if("PMRC".equalsIgnoreCase(committeeCode)|| "PMRB".equalsIgnoreCase(committeeCode)){
+											LocalDate scheduleDate = obj[20] != null ? LocalDate.parse(obj[20].toString()) : null;
+											LocalDate PMRB_EFFECTIVE_DATE = LocalDate.of(2026, 4, 1);
+											if(scheduleDate.isBefore(PMRB_EFFECTIVE_DATE)){
+												splCommittee = "PMRC";
+											}else {
+												splCommittee = committeeCode;
+											}
+										}
+										
+										
+										if(obj[17]!=null && Long.parseLong(obj[17].toString())>0){ %>
 								<span class="font-weight-bold">
 								<%for (Map.Entry<Integer, String> entry : committeeWiseMap.entrySet()) {
 									String actionNo = obj[1].toString();
@@ -735,7 +749,7 @@ String labcode = (String) session.getAttribute("labcode");
 										 key=entry.getKey().toString();
 									 } }%>
 								
-								<%=committee.getCommitteeShortName().trim().toUpperCase()+"-"+key+"/"+obj[1].toString().split("/")[4] %>
+								<%=splCommittee+"-"+key+"/"+obj[1].toString().split("/")[4] %>
 								</span> 
 								<%}%>
 									</td>
@@ -826,7 +840,7 @@ String labcode = (String) session.getAttribute("labcode");
 												for(Object[] obj : entry.getValue()){ %>
 													<tr>
 														<td >
-															<button class="btn btn-link p-0 m-0"  name="committeescheduleid" value="<%=obj[0]%>"> <%=entry.getKey()%> #<%=++i %></button>
+															<button class="btn btn-link p-0 m-0"  name="committeescheduleid" value="<%=obj[0]%>"> <%=obj[1]%> #<%=++i %></button>
 														</td>												
 														<td class="text-center" ><%= fc.sdfTordf(obj[3].toString())%></td>
 													</tr>				
@@ -2728,7 +2742,7 @@ String labcode = (String) session.getAttribute("labcode");
 									Apex Board (refer Chapter 5 on Project Monitoring and Review).
 								<br>
 								4) Detailed technical discussions on each sub systems to be deliberated and
-									recorded during PMRC. Ratification points from the higher monitoring body to
+									recorded during PMRB. Ratification points from the higher monitoring body to
 									be clearly mentioned in the minutes.
 								<br>
 								5) For PDC extension cases, the defendable reason why PDC could not be

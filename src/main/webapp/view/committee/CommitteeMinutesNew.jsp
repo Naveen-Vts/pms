@@ -308,7 +308,7 @@ p{
 			<tr style="margin-top: 10px">
 				<td  style="text-align: left; width: 650px;font-size: 20px; padding-left: 15px;"> Record/ File no __________dated___________  </td></tr><tr>
 				<th  style="text-align: center;  width: 650px;font-size: 20px;padding-top: 10px; ">
-					Minutes of  Apex Board/ Executive Board/ PMRC Meeting for Project titled 
+					Minutes of  Apex Board/ Executive Board/ PMRB Meeting for Project titled 
 				"<span style=" text-decoration: underline;"><%=projectdetails[1] %>  (<%=projectdetails[4]%>)</span>" held on <%=sdf.format(sdf1.parse(committeescheduleeditdata[2].toString()))%> at  <% if(committeescheduleeditdata[12]!=null){ %><%=committeescheduleeditdata[12] %> <%}else{ %> - <%} %>
 				</th>				
 			</tr>
@@ -319,7 +319,7 @@ p{
 
 <%if(invitedlist.size()>0){ %>
 <% ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","CW","CO","CH"));
-membertypes.addAll(repCodes);
+if(repCodes != null) membertypes.addAll(repCodes);
 
 int memPresent=0,memAbscent=0,ParPresent=0,parAbscent=0;
 int j=0;
@@ -930,15 +930,27 @@ for( Object[]obj:specialMembers){ %>
 									<td  class="std"  align="center"><%=i %></td>
 									<td class="std"  align="center">
 								<!--newly added on 13th sept  -->	
-								<%if(obj[17]!=null && Long.parseLong(obj[17].toString())>0){ %>
-								<%if(committeescheduleeditdata[8].toString().equalsIgnoreCase("pmrc")){ %>
-								<%for (Map.Entry<Integer, String> entry : mappmrc.entrySet()) {
+								<%if(obj[17]!=null && Long.parseLong(obj[17].toString())>0){
+									
+									String committeeCode = committeescheduleeditdata[8]!=null?committeescheduleeditdata[8].toString().toUpperCase():" - ";
+									String splCommitee = committeeCode;
+									
+									if(committeeCode.equalsIgnoreCase("PMRC") || committeeCode.equalsIgnoreCase("PMRB")){
+									LocalDate scheduleDate = obj[20] != null ? LocalDate.parse(obj[20].toString()) : null;
+									LocalDate PMRB_EFFECTIVE_DATE = LocalDate.of(2026, 4, 1);
+									if(scheduleDate.isBefore(PMRB_EFFECTIVE_DATE)){
+										splCommitee = "PMRC";
+									}else {
+										splCommitee = committeeCode;
+									}
+									
+									for (Map.Entry<Integer, String> entry : mappmrc.entrySet()) {
 									Date date = inputFormat.parse(obj[1].toString().split("/")[3]);
 									 String formattedDate = outputFormat.format(date);
 									 if(entry.getValue().equalsIgnoreCase(formattedDate)){
 										 key=entry.getKey().toString();
-									 } }}else{%>
-									 <%
+									 } }
+								}else{ 
 									 for (Map.Entry<Integer, String> entry : mapEB.entrySet()) {
 											Date date = inputFormat.parse(obj[1].toString().split("/")[3]);
 											 String formattedDate = outputFormat.format(date);
@@ -946,9 +958,8 @@ for( Object[]obj:specialMembers){ %>
 												 key=entry.getKey().toString();
 											 }
 									 }
-									 %>
-									 <%} %>
-							<span style="font-size: 14px;">	<%=committeescheduleeditdata[8]!=null?committeescheduleeditdata[8].toString().toUpperCase():" - "%> <%=key%>/<%=obj[1]!=null?obj[1].toString().split("/")[4]:" - " %></span>
+									  } %>
+							<span style="font-size: 14px;">	<%=splCommitee %> <%=key%>/<%=obj[1]!=null?obj[1].toString().split("/")[4]:" - " %></span>
 								<%}%> 
 								</td>
 								<%if(j++==1){ %><td rowspan="<%=rowSpan%>" class="std" style="text-align: left;"> <%=obj[2].toString()%> </td> <%} %>

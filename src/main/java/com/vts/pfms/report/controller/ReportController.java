@@ -532,7 +532,7 @@ XWPFParagraph reviewHeld = document.createParagraph();
 
        // Adding the PMRC value on another new line
        reviewHeldsValueRun.addBreak();
-       reviewHeldsValueRun.setText("PMRC: " + reviewHeldValuePMRC);
+       reviewHeldsValueRun.setText("PMRB: " + reviewHeldValuePMRC);
        reviewHeldsValueRun.setBold(false);
        reviewHeldsValueRun.setFontSize(12);
         

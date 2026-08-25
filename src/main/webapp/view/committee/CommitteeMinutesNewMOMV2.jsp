@@ -293,7 +293,7 @@ for(Object[] temp : invitedlist){
 
 
 <div style="align : center;">
-<h3>MINUTES OF (<%if(meetingcount>0){ %>#<%=meetingcount %><%} %>) PMRC FOR</h3>
+<h3>MINUTES OF (<%if(meetingcount>0){ %>#<%=meetingcount %><%} %>) PMRB FOR</h3>
 <%if(Integer.parseInt(projectid)>0){ %>					
 <!-- <h3 style="margin-top: 5px; margin-bottom: 5px">For</h3> -->	  
    <h3 style="margin-top: 3px">Project  : &nbsp;<%=projectdetails[1]!=null?projectdetails[1].toString(): " - " %>  (<%=projectdetails[4]!=null?projectdetails[4].toString(): " - "%>) held on: <%=sdf3.format(sdf1.parse(committeescheduleeditdata[2].toString()))%></h3>
@@ -652,7 +652,7 @@ for( Object[]obj:specialMembers){ %>
 									<td class="std"  align="center">
 								<!--newly added on 13th sept  -->	
 								<%if(obj[17]!=null && Long.parseLong(obj[17].toString())>0){ %>
-								<%if(committeescheduleeditdata[8].toString().equalsIgnoreCase("pmrc")){ %>
+								<%if(committeescheduleeditdata[8].toString().equalsIgnoreCase("PMRB") || committeescheduleeditdata[8].toString().equalsIgnoreCase("PMRC")){ %>
 								<%for (Map.Entry<Integer, String> entry : mappmrc.entrySet()) {
 									Date date = inputFormat.parse(obj[1].toString().split("/")[3]);
 									 String formattedDate = outputFormat.format(date);
@@ -839,7 +839,7 @@ for( Object[]obj:specialMembers){ %>
 					<table style="margin-top: 0px; margin-left: 10px; width: 650px; font-size: 16px; border-collapse: collapse;">
 						<tr>
 							<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=++index %>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%>.</th>
- 							<%-- <th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=++index %>.&nbsp;&nbsp;&nbsp;Milestones achieved prior to this PMRC period.</th> --%>
+ 							<%-- <th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=++index %>.&nbsp;&nbsp;&nbsp;Milestones achieved prior to this PMRB period.</th> --%>
 						</tr>
 					</table>	
 					<br>
@@ -956,7 +956,7 @@ for( Object[]obj:specialMembers){ %>
 					
 					<table style="margin-top: 0px; margin-left: 10px; width: 650px; font-size: 16px; border-collapse: collapse;">
 						<tr>
-							<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=++index %>.&nbsp;&nbsp;&nbsp; Details of work and current status of sub system with major milestones (since last PMRC).</th>
+							<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=++index %>.&nbsp;&nbsp;&nbsp; Details of work and current status of sub system with major milestones (since last PMRB).</th>
 						</tr>
 					</table>	
 					<br>

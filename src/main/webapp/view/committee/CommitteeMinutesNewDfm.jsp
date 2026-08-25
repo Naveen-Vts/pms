@@ -302,7 +302,7 @@
 			<tr style="margin-top: 10px">
 				<td  style="text-align: left; width: 650px;font-size: 20px; padding-left: 15px;"> Record/ File no __________dated___________  </td></tr><tr>
 				<th  style="text-align: center;  width: 650px;font-size: 20px;padding-top: 10px; ">
-					Minutes of  Apex Board/ Executive Board/ PMRC Meeting for Project titled 
+					Minutes of  Apex Board/ Executive Board/ PMRB Meeting for Project titled 
 				"<span style=" text-decoration: underline;"><%=projectdetails[1] %>  (<%=projectdetails[4]%>)</span>" held on <%=sdf.format(sdf1.parse(committeescheduleeditdata[2].toString()))%> at  <% if(committeescheduleeditdata[12]!=null){ %><%=committeescheduleeditdata[12] %> <%}else{ %> - <%} %>
 				</th>				
 			</tr>
@@ -314,7 +314,7 @@
 <%if(invitedlist.size()>0){ %>
 <% ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","CW","CO"));
 //ArrayList<String> addlmembertypes=new ArrayList<String>(Arrays.asList("W","E","I","P")); %>
-membertypes.addAll(repCodes);
+if(repCodes != null) membertypes.addAll(repCodes);
 <% 
 int memPresent=0,memAbscent=0,ParPresent=0,parAbscent=0;
 int j=0;

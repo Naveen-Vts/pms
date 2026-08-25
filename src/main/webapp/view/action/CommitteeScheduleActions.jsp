@@ -42,7 +42,7 @@ MinutesBack=(String)request.getAttribute("minutesback");
 if(MinutesBack==null){
 	MinutesBack="NO";
 }
-List<String>committees=Arrays.asList("PMRC","EB");
+List<String>committees=Arrays.asList("PMRC","PMRB","EB");
 
 //Prudhvi - 13/03/2024
 String rodflag=(String)request.getAttribute("rodflag");

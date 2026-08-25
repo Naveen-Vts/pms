@@ -282,7 +282,7 @@ th, td
 <%-- <div align="center" style="margin-top:20px;font-weight: bold;font-size: 18px;">(Annexure - A)</div>				
 	<% for(int z=0 ; z<1;z++) {   %>
 		<div align="left" style="margin-left: 10px;"><b class="sub-title"> Particulars of Meeting</b></div><br>
-		<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(a) <%if(CommitteeCode.equalsIgnoreCase("PMRC")){ %>
+		<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(a) <%if(CommitteeCode.equalsIgnoreCase("PMRB")){ %>
 															   						Approval 
 															   						<%}else { %>
 															   						Ratification

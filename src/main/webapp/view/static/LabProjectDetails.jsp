@@ -574,11 +574,11 @@ SimpleDateFormat sdf2=new SimpleDateFormat("yy-MM-dd");
 			            <div class="h4 font-weight-bold" id="pmrcprogress" ><%=(ProjectHealthTotalData[29]!=null?StringEscapeUtils.escapeHtml4(ProjectHealthTotalData[29].toString()): " - " )%>%</div>
 			          </div>
 			        </div>
-			        <!-- <div><h6 style="margin-bottom: 5px">PMRC</h6></div> -->
+			        <!-- <div><h6 style="margin-bottom: 5px">PMRB</h6></div> -->
 			        <hr style="margin: 5px !important">
 			        <table class="countstable" style="margin: 0px auto">
 			        	<tr>
-			        		<th style="font-size: 14px">PMRC</th>
+			        		<th style="font-size: 14px">PMRB</th>
 			        	</tr>
 				        <tr>
 			        		<td style="font-size: 14px;cursor: pointer;" id="meetingsvaluepmrc"  data-toggle="tooltip" title="Held / To be Held / Total to be Held" >
@@ -922,7 +922,7 @@ SimpleDateFormat sdf2=new SimpleDateFormat("yy-MM-dd");
 												<td style="width:6%"><span style="font-size :15px;font-weight: bold; ">PDC</span></td>
 												<td style="padding: 0px !important"><span style="font-size :15px;font-weight: bold;">AB </span></td>
 												<td style="padding: 0px !important"><span style="font-size :15px;font-weight: bold;">EB / PMB </span></td>
-												<td style="padding: 0px !important"><span style="font-size :15px;font-weight: bold;">PMRC / PJB </span></td>
+												<td style="padding: 0px !important"><span style="font-size :15px;font-weight: bold;">PMRB / PJB </span></td>
 												<td ><span style="font-size :15px;font-weight: bold;  ">Milestone </span></td>
 												<td ><span style="font-size :15px;font-weight: bold;  ">Action</span></td>
 												<td ><span style="font-size :15px;font-weight: bold;  ">Risk</span></td>
@@ -1034,7 +1034,7 @@ SimpleDateFormat sdf2=new SimpleDateFormat("yy-MM-dd");
 														
 														<div class="row">
 															<div class="col-md-11">
-															    <div class="progress" data-toggle="tooltip" data-html="true" title="PMRC Held : <%=obj[4]%> <br> PMRC To Be Held : <%=obj[8] %><br> Total PMRC To Be Held : <%=obj[48] %>"  >
+															    <div class="progress" data-toggle="tooltip" data-html="true" title="PMRB Held : <%=obj[4]%> <br> PMRB To Be Held : <%=obj[8] %><br> Total PMRB To Be Held : <%=obj[48] %>"  >
 																  <div class="progress-bar progress-bar-striped bg-success" onclick="overallmeetingredirect('<%=obj[2]%>','1', 'B')" style="width:<%=obj[5]%>%;" ></div>
 																  <div class="progress-bar progress-bar-striped bg-primary" onclick="overallmeetingredirect('<%=obj[2]%>','1', 'C' )" style="width:<%=obj[7]%>%;" ></div>
 																</div>
@@ -1431,7 +1431,7 @@ function charts(value){
 					        text: ''
 					    },
 					    xAxis: {
-					        categories: ['PMRC', 'EB'],
+					        categories: ['PMRB', 'EB'],
 					        title: {
 					            text: null
 					        },

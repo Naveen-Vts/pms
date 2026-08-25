@@ -204,8 +204,30 @@ console.log(replacementWord+" version: "+"<%= request.getAttribute("versionint")
 													</div>
 													
 													<div class="form-group col-12 position-relative">
-														<input name="password" type="password" placeholder="Password" data-placeholder="PASSWORD" id="password" class="form-control" autocomplete="new-password">
-														<i class="fa fa-lock fa-lg position-absolute"></i>	
+													    <input
+													        name="password"
+													        type="password"
+													        placeholder="Password"
+													        data-placeholder="PASSWORD"
+													        id="password"
+													        class="form-control pe-5"
+													        autocomplete="new-password"
+													    >
+													
+													    <!-- Lock icon -->
+													    <!-- <i class="fa fa-lock fa-lg position-absolute"
+													       style="left: 15px; top: 50%; transform: translateY(-50%);">
+													    </i> -->
+													
+													    <!-- Eye button -->
+													    <button
+													        type="button"
+													        class="btn position-absolute p-0 border-0 bg-transparent"
+													        onclick="togglePassword()"
+													        style="right: 15px; top: 50%; transform: translateY(-50%);"
+													    >
+													        <i id="passwordEye" class="fa fa-eye"></i>
+													    </button>
 													</div>
 														
 													<%-- <span style="font-family: 'Lato', sans-serif;font-size: 15px;color:red;margin-bottom: 10px;" id="error-alert">${error}</span>
@@ -339,6 +361,21 @@ $("#success-alert") .fadeTo(3000, 1000).slideUp(1000, function ( ) {
 $("#error-alert") .fadeTo(3000, 1000).slideUp(1000, function ( ) {
     $("#error-alert").slideUp(1000);
 });
+
+function togglePassword() {
+    const passwordInput = document.getElementById("password");
+    const passwordEye = document.getElementById("passwordEye");
+
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        passwordEye.classList.remove("fa-eye");
+        passwordEye.classList.add("fa-eye-slash");
+    } else {
+        passwordInput.type = "password";
+        passwordEye.classList.remove("fa-eye-slash");
+        passwordEye.classList.add("fa-eye");
+    }
+}
 
 </script>
 

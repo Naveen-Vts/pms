@@ -501,7 +501,7 @@ for(Object[]obj:projects){
 </table>
 <br>
 <h1 class="break"></h1>
-<div class="subjectDiv">6.  &nbsp; &nbsp;PMRC Details </div>
+<div class="subjectDiv">6.  &nbsp; &nbsp;PMRB Details </div>
 <table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px; border-collapse:collapse;" >
 <thead>
 <tr>

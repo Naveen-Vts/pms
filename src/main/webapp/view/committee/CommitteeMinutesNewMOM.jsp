@@ -342,7 +342,7 @@ table{
 			<tr style="margin-top: 10px">
 				<td  style="text-align: left; width: 650px;font-size: 20px; padding-left: 15px;"> Record/ File no __________dated___________  </td></tr><tr>
 				<th  style="text-align: center;  width: 650px;font-size: 20px;padding-top: 10px; ">
-					Minutes of  Apex Board/ Executive Board/ PMRC Meeting for Project titled 
+					Minutes of  Apex Board/ Executive Board/ PMRB Meeting for Project titled 
 				"<span style=" text-decoration: underline;"><%=projectdetails[1] %>  (<%=projectdetails[4]%>)</span>" held on <%=sdf.format(sdf1.parse(committeescheduleeditdata[2].toString()))%> at  <% if(committeescheduleeditdata[12]!=null){ %><%=committeescheduleeditdata[12] %> <%}else{ %> - <%} %>
 				</th>				
 			</tr>
@@ -970,7 +970,7 @@ for( Object[]obj:specialMembers){ %>
 									<td class="std"  align="center">
 								<!--newly added on 13th sept  -->	
 								<%if(obj[17]!=null && Long.parseLong(obj[17].toString())>0){ %>
-								<%if(committeescheduleeditdata[8].toString().equalsIgnoreCase("pmrc")){ %>
+								<%if(committeescheduleeditdata[8].toString().equalsIgnoreCase("PMRB") || committeescheduleeditdata[8].toString().equalsIgnoreCase("PMRC")){ %>
 								<%for (Map.Entry<Integer, String> entry : mappmrc.entrySet()) {
 									Date date = inputFormat.parse(obj[1].toString().split("/")[3]);
 									 String formattedDate = outputFormat.format(date);
@@ -1157,7 +1157,7 @@ for( Object[]obj:specialMembers){ %>
 					<table style="margin-top: 0px; margin-left: 10px; width: 650px; font-size: 16px; border-collapse: collapse;">
 						<tr>
 							<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=indexNew++ %>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%>.</th>
- 							<%-- <th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=index++ %>.&nbsp;&nbsp;&nbsp;Milestones achieved prior to this PMRC period.</th> --%>
+ 							<%-- <th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=index++ %>.&nbsp;&nbsp;&nbsp;Milestones achieved prior to this PMRB period.</th> --%>
 						</tr>
 					</table>	
 					<br>
@@ -1274,7 +1274,7 @@ for( Object[]obj:specialMembers){ %>
 					
 					<table style="margin-top: 0px; margin-left: 10px; width: 650px; font-size: 16px; border-collapse: collapse;">
 						<tr>
-							<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=indexNew++ %>.&nbsp;&nbsp;&nbsp; Details of work and current status of sub system with major milestones (since last PMRC).</th>
+							<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=indexNew++ %>.&nbsp;&nbsp;&nbsp; Details of work and current status of sub system with major milestones (since last PMRB).</th>
 						</tr>
 					</table>	
 					<br>

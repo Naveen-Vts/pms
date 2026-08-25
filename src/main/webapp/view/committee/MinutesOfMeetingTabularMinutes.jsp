@@ -28,7 +28,7 @@
 		int addcount=0; 
 		List<String> repCodes = (List<String> )request.getAttribute("repCodes");
 		ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","CW","CO","CH"));
-		membertypes.addAll(repCodes);
+		if(repCodes != null) membertypes.addAll(repCodes);
 		int meetingcount= (int) request.getAttribute("meetingcount");
 		
 		String[] no=committeescheduleeditdata[11].toString().split("/");
