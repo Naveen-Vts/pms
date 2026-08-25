@@ -85,13 +85,13 @@
                                 </tr>
                                 <tr>
                                     <td>9</td>
-                                    <td class="text-left">Briefing Paper PMRC / EB / Apex / PJB / PMB</td>
+                                    <td class="text-left">Briefing Paper PMRB / EB / Apex / PJB / PMB</td>
                                     <td>SHEET_09</td>
                                     <td><a href="##"><i class="fa fa-eye" aria-hidden="true"></i></a></td>
                                 </tr>
                                 <tr>
                                     <td>10</td>
-                                    <td class="text-left">Minutes of Meeting PMRC / EB / Apex / PJB / PMB</td>
+                                    <td class="text-left">Minutes of Meeting PMRB / EB / Apex / PJB / PMB</td>
                                     <td>SHEET_10</td>
                                     <td><a href="##"><i class="fa fa-eye" aria-hidden="true"></i></a></td>
                                 </tr>

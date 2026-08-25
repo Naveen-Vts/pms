@@ -465,7 +465,7 @@ IsDG = IsDG != null ? IsDG: "";
 													<br>
 													<h6>Sanction Date : </h6>
 													<h6>PDC : </h6>
-													<h6>PMRC Due On : </h6>
+													<h6>PMRB Due On : </h6>
 													<h6>EB Due On : </h6>
 													<%}}else{ %>
 														<br><br><br><br><br><br><br>
@@ -1467,7 +1467,7 @@ IsDG = IsDG != null ? IsDG: "";
 														<td><button type="button" onclick="CommitteeForm('<%=obj2[9] %>',2,'C');" 	class="btn btn-sm bg1-4" ><%=obj2[2]!=null?StringEscapeUtils.escapeHtml4(obj2[2].toString()): " - "  %></button></td>
 													</tr>
 													<tr>
-														<td class="p505">PMRC</td>
+														<td class="p505">PMRB</td>
 														<td><button type="button" onclick="CommitteeForm('<%=obj2[9] %>',1,'all');" class="btn btn-sm bg1-5" ><%=obj2[3]!=null?StringEscapeUtils.escapeHtml4(obj2[3].toString()): " - "  %></button></td>
 														<td><button type="button" onclick="CommitteeForm('<%=obj2[9] %>',1,'B');" 	class="btn btn-sm bg1-7" ><%=obj2[4]!=null?StringEscapeUtils.escapeHtml4(obj2[4].toString()): " - "  %></button></td>
 														<td><button type="button" onclick="CommitteeForm('<%=obj2[9] %>',1,'C');" 	class="btn btn-sm bg1-4" ><%=obj2[5]!=null?StringEscapeUtils.escapeHtml4(obj2[5].toString()): " - "  %></button></td>
@@ -1600,7 +1600,7 @@ IsDG = IsDG != null ? IsDG: "";
 												<td class="width-6"><span class="fw-15">PDC</span></td>
 												
 												<td ><span class="fw-15">EB / PMB </span></td>
-												<td ><span class="fw-15">PMRC / PJB </span></td>
+												<td ><span class="fw-15">PMRB / PJB </span></td>
 												<td ><span class="fw-15">Milestone </span></td>
 												<td ><span class="fw-15">Action</span></td>
 												<td ><span class="fw-15">Risk</span></td>
@@ -1715,7 +1715,7 @@ IsDG = IsDG != null ? IsDG: "";
 														
 														<div class="row">
 															<div class="col-md-11">
-															    <div class="progress" data-toggle="tooltip" title="PMRC Held : <%=obj[4]%> <br> PMRC To Be Held : <%=obj[8] %><br> Total PMRC To Be Held : <%=obj[48] %>"  >
+															    <div class="progress" data-toggle="tooltip" title="PMRB Held : <%=obj[4]%> <br> PMRB To Be Held : <%=obj[8] %><br> Total PMRB To Be Held : <%=obj[48] %>"  >
 																  <div class="progress-bar progress-bar-striped bg-success width-<%=obj[5]%>" onclick="overallmeetingredirect('<%=obj[2]%>','1', 'B')"  ></div>
 																  <div class="progress-bar progress-bar-striped bg-primary width-<%=obj[7]%>" onclick="overallmeetingredirect('<%=obj[2]%>','1', 'C' )"  ></div>
 																</div>
@@ -2120,7 +2120,7 @@ IsDG = IsDG != null ? IsDG: "";
 												<td class="width-4"><span class="j-2">Lab</span></td>
 												<!-- <td style="padding: 0px !important"><span style="font-size :15px;font-weight: bold;">AB</span></td> -->
 												<td class="pl-0"><span class="j-2">EB / PMB</span></td>
-												<td class="pl-0"><span class="j-2">PMRC / PJB</span></td>
+												<td class="pl-0"><span class="j-2">PMRB / PJB</span></td>
 												<td ><span class="j-2">Milestone</span></td>
 												<td ><span class="j-2">Action</span></td>
 												<td ><span class="j-2">Risk</span></td>
@@ -2193,7 +2193,7 @@ IsDG = IsDG != null ? IsDG: "";
 													<%if(Integer.parseInt(obj[2].toString())>0){ %>
 														<div class="row">
 															<div class="col-md-11">
-															    <div class="progress" data-toggle="tooltip" title="PMRC Held : <%=obj[0]%> <br> PMRC To Be Held : <%=obj[2]%><br> Total PMRC To Be Held : <%=obj[46] %>" >
+															    <div class="progress" data-toggle="tooltip" title="PMRB Held : <%=obj[0]%> <br> PMRB To Be Held : <%=obj[2]%><br> Total PMRB To Be Held : <%=obj[46] %>" >
 																  <div class="progress-bar progress-bar-striped bg-success width-<%=obj[29]%>" onclick="overallmeetingredirectdg('<%=obj[2]%>','1', 'B')"   ></div>
 																  <div class="progress-bar progress-bar-striped bg-primary width-<%=obj[30]%>" onclick="overallmeetingredirectdg('<%=obj[2]%>','1', 'C' )" ></div>
 																</div>
@@ -3154,7 +3154,7 @@ $projectid=value;
 				        text: ''
 				    },
 				    xAxis: {
-				        categories: ['PMRC', 'EB'],
+				        categories: ['PMRB', 'EB'],
 				        title: {
 				            text: null
 				        },

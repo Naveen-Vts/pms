@@ -163,7 +163,7 @@ String pearlimg=  (String)request.getAttribute("pearlimg");
 										    </td>
 										</tr>
 										<tr>
-											<td><label><b>7. Last PMRC Date </b> </label> <input
+											<td><label><b>7. Last PMRB Date </b> </label> <input
 												type="text" data-date-format="dd/mm/yyyy" id="pmrc-date"
 												name="pmrcdate" class="form-control form-control"></td>
 											<td><label><b>8. Last EB Date </b> </label> <input

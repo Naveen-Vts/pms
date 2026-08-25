@@ -2023,7 +2023,8 @@ public class CommitteeController {
 			req.setAttribute("committeecons", committeecons); 
 			req.setAttribute("AgendaDocList",service.AgendaLinkedDocList(CommitteeScheduleId));
 			List<Object[]> specialCommitteesList = printservice.SpecialCommitteesList(LabCode);
-			req.setAttribute("SplCommitteeCodes", specialCommitteesList.stream().map(e -> e[1].toString()).collect(Collectors.toList()));
+			List<String> splCommittees = specialCommitteesList.stream().map(e -> e[1].toString()).collect(Collectors.toList());
+			req.setAttribute("SplCommitteeCodes", splCommittees);
 
 			int useraccess=service.ScheduleCommitteeEmpCheck
 					(new EmpAccessCheckDto(Logintype,CommitteeScheduleId,EmpId,
@@ -7715,7 +7716,7 @@ private boolean isValidFileType(MultipartFile file) {
 				List<List<Object[]>> ReviewMeetingList = new ArrayList<List<Object[]>>();
 				List<List<Object[]>> ReviewMeetingListPMRC = new ArrayList<List<Object[]>>();
 				ReviewMeetingList.add(printservice.ReviewMeetingList(projectid, "EB"));
-				ReviewMeetingListPMRC.add(printservice.ReviewMeetingList(projectid, "PMRC")); 
+				ReviewMeetingListPMRC.add(printservice.ReviewMeetingList(projectid, "PMRB")); 
 				Map<Integer,String> mappmrc = new HashMap<>();
 				Map<Integer,String> mapEB = new HashMap<>();
 				int pmrccount=0;
@@ -8090,7 +8091,7 @@ private boolean isValidFileType(MultipartFile file) {
 				List<List<Object[]>> ReviewMeetingList = new ArrayList<List<Object[]>>();
 				List<List<Object[]>> ReviewMeetingListPMRC = new ArrayList<List<Object[]>>();
 				ReviewMeetingList.add(printservice.ReviewMeetingList(projectid, "EB"));
-				ReviewMeetingListPMRC.add(printservice.ReviewMeetingList(projectid, "PMRC")); 
+				ReviewMeetingListPMRC.add(printservice.ReviewMeetingList(projectid, "PMRB")); 
 				Map<Integer,String> mappmrc = new HashMap<>();
 				Map<Integer,String> mapEB = new HashMap<>();
 				int pmrccount=0;
@@ -8800,7 +8801,7 @@ private boolean isValidFileType(MultipartFile file) {
 			List<List<Object[]>> ReviewMeetingList = new ArrayList<List<Object[]>>();
 			List<List<Object[]>> ReviewMeetingListPMRC = new ArrayList<List<Object[]>>();
 			ReviewMeetingList.add(printservice.ReviewMeetingList(projectid, "EB"));
-			ReviewMeetingListPMRC.add(printservice.ReviewMeetingList(projectid, "PMRC")); 
+			ReviewMeetingListPMRC.add(printservice.ReviewMeetingList(projectid, "PMRB")); 
 			Map<Integer,String> mappmrc = new HashMap<>();
 			int pmrccount=0;
 
@@ -9912,7 +9913,7 @@ private boolean isValidFileType(MultipartFile file) {
 			List<List<Object[]>> ReviewMeetingList = new ArrayList<List<Object[]>>();
 			List<List<Object[]>> ReviewMeetingListPMRC = new ArrayList<List<Object[]>>();
 			ReviewMeetingList.add(printservice.ReviewMeetingList(projectid, "EB"));
-			ReviewMeetingListPMRC.add(printservice.ReviewMeetingList(projectid, "PMRC")); 
+			ReviewMeetingListPMRC.add(printservice.ReviewMeetingList(projectid, "PMRB")); 
 			Map<Integer,String> mappmrc = new HashMap<>();
 			Map<Integer,String> mapEB = new HashMap<>();
 			int pmrccount=0;
@@ -10159,7 +10160,7 @@ private boolean isValidFileType(MultipartFile file) {
 				List<List<Object[]>> ReviewMeetingList = new ArrayList<List<Object[]>>();
 				List<List<Object[]>> ReviewMeetingListPMRC = new ArrayList<List<Object[]>>();
 				ReviewMeetingList.add(printservice.ReviewMeetingList(projectid, "EB"));
-				ReviewMeetingListPMRC.add(printservice.ReviewMeetingList(projectid, "PMRC")); 
+				ReviewMeetingListPMRC.add(printservice.ReviewMeetingList(projectid, "PMRB")); 
 				Map<Integer,String> mappmrc = new HashMap<>();
 				Map<Integer,String> mapEB = new HashMap<>();
 				int pmrccount=0;
@@ -12136,7 +12137,7 @@ private boolean isValidFileType(MultipartFile file) {
 				List<List<Object[]>> ReviewMeetingList = new ArrayList<List<Object[]>>();
 				List<List<Object[]>> ReviewMeetingListPMRC = new ArrayList<List<Object[]>>();
 				ReviewMeetingList.add(printservice.ReviewMeetingList(projectid, "EB"));
-				ReviewMeetingListPMRC.add(printservice.ReviewMeetingList(projectid, "PMRC")); 
+				ReviewMeetingListPMRC.add(printservice.ReviewMeetingList(projectid, "PMRB")); 
 				Map<Integer,String> mappmrc = new HashMap<>();
 				Map<Integer,String> mapEB = new HashMap<>();
 				int pmrccount=0;
@@ -12628,7 +12629,7 @@ private boolean isValidFileType(MultipartFile file) {
 				List<List<Object[]>> ReviewMeetingList = new ArrayList<List<Object[]>>();
 				List<List<Object[]>> ReviewMeetingListPMRC = new ArrayList<List<Object[]>>();
 				ReviewMeetingList.add(printservice.ReviewMeetingList(projectid, "EB"));
-				ReviewMeetingListPMRC.add(printservice.ReviewMeetingList(projectid, "PMRC")); 
+				ReviewMeetingListPMRC.add(printservice.ReviewMeetingList(projectid, "PMRB")); 
 				Map<Integer,String> mappmrc = new HashMap<>();
 				Map<Integer,String> mapEB = new HashMap<>();
 				int pmrccount=0;

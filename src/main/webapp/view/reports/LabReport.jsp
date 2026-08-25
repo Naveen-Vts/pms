@@ -248,10 +248,10 @@ if(proList!=null && proList.size()>0){
             <div class="attribute mt-3">
                 <h5 class="labParticipatingHeading">Details of Review held till <%=currentYear%></h5>
                 <p class="labParticipatingClass"><b>EB:</b> <%=ProjectEditData[16]!=null?StringEscapeUtils.escapeHtml4(ProjectEditData[16].toString()):" - " %></p>
-                <p class="labParticipatingClass"><b>PMRC:</b> <%=ProjectEditData[15]!=null?StringEscapeUtils.escapeHtml4(ProjectEditData[15].toString()):" - " %></p>
+                <p class="labParticipatingClass"><b>PMRB:</b> <%=ProjectEditData[15]!=null?StringEscapeUtils.escapeHtml4(ProjectEditData[15].toString()):" - " %></p>
               <%--   <table>
                 <tr><td><b>EB:</b> <%=ProjectEditData[16] %></td>
-                <td><b>PMRC:</b> <%=ProjectEditData[15] %></td>
+                <td><b>PMRB:</b> <%=ProjectEditData[15] %></td>
                 </table> --%>
             </div>
 

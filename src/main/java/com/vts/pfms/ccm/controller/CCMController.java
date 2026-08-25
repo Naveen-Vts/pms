@@ -753,7 +753,7 @@ public class CCMController {
     		
     		/* ----------------------- PMRC Calendar Start -------------------------- */
 			if(slideNames.contains("PMRC Calendar")) { 
-				req.setAttribute("pmrcCalendarData", service.getEBPMRCCalendarData(scheduleDate.withDayOfMonth(1).toString(), "PMRC", clusterid));
+				req.setAttribute("pmrcCalendarData", service.getEBPMRCCalendarData(scheduleDate.withDayOfMonth(1).toString(), "PMRB", clusterid));
 			}
     		/* ----------------------- PMRC Calendar End -------------------------- */
 
@@ -891,7 +891,7 @@ public class CCMController {
     		/* ----------------------- PMRC Calendar Start -------------------------- */
     		else if(tabName.equalsIgnoreCase("PMRC Calendar")) {
     			LocalDate now = LocalDate.now();
-    			req.setAttribute("pmrcCalendarData", service.getEBPMRCCalendarData(now.withDayOfMonth(1).toString(), "PMRC", clusterid));
+    			req.setAttribute("pmrcCalendarData", service.getEBPMRCCalendarData(now.withDayOfMonth(1).toString(), "PMRB", clusterid));
     			req.setAttribute("previousMonth", now.minusMonths(1).getMonth().toString());
     			req.setAttribute("currentMonth", now.getMonth().toString());
     			req.setAttribute("year", now.getYear());
@@ -1760,7 +1760,7 @@ public class CCMController {
     		
     		/* ----------------------- PMRC Calendar Start -------------------------- */
 			if(slideNames.contains("PMRC Calendar")) { 
-				req.setAttribute("pmrcCalendarData", service.getEBPMRCCalendarData(scheduleDate.withDayOfMonth(1).toString(), "PMRC", clusterid));
+				req.setAttribute("pmrcCalendarData", service.getEBPMRCCalendarData(scheduleDate.withDayOfMonth(1).toString(), "PMRB", clusterid));
 			}
     		/* ----------------------- PMRC Calendar End -------------------------- */
 

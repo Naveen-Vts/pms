@@ -237,10 +237,10 @@ top: 6px;
 												<%if(commiteeName!=null ){
 												if(commiteeName.equalsIgnoreCase("EB")){
 													%>
-													<option value="PMRC" >PMRC</option>
+													<option value="PMRB" >PMRB</option>
 												<option selected value="EB" >EB</option>
 												<%}}else{ %>
-												<option <%if(committeecode!=null && committeecode.equalsIgnoreCase("PMRC")) { %>selected <%} %>value="PMRC" >PMRC</option>
+												<option <%if(committeecode!=null && committeecode.equalsIgnoreCase("PMRB")) { %>selected <%} %>value="PMRB" >PMRB</option>
 												<option <%if(committeecode!=null && committeecode.equalsIgnoreCase("EB")) { %>selected <%} %>value="EB" >EB</option>
 												<%} %>
 											</select>
@@ -1168,11 +1168,11 @@ $('#pills-second-property-tab,#pills-mov-property-tab').click(function () {
 	$('#projectid').find('option').remove();
 	$('#committeecode').find('option').remove();
 if(commiteeName == "EB"){
-	$("#committeecode").append('<option value="PMRC" ' + (commiteeName != null && commiteeName.toUpperCase() === "PMRC" ? 'selected' : '') + '>PMRC</option>');
+	$("#committeecode").append('<option value="PMRB" ' + (commiteeName != null && commiteeName.toUpperCase() === "PMRB" ? 'selected' : '') + '>PMRB</option>');
 	
 	$("#committeecode").append('<option value="EB" ' + (commiteeName != null && commiteeName.toUpperCase() === "EB" ? 'selected' : '') + '>EB</option>');
 }else{
-	$("#committeecode").append('<option value="PMRC" ' + (committeecode != null && committeecode.toUpperCase() === "PMRC" ? 'selected' : '') + '>PMRC</option>');
+	$("#committeecode").append('<option value="PMRB" ' + (committeecode != null && committeecode.toUpperCase() === "PMRB" ? 'selected' : '') + '>PMRB</option>');
 	
 	$("#committeecode").append('<option value="EB" ' + (committeecode != null && committeecode.toUpperCase() === "EB" ? 'selected' : '') + '>EB</option>');
 }

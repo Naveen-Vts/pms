@@ -565,11 +565,11 @@ List<BriefingFinance> briefingFinanceDetials = (List<BriefingFinance>)request.ge
 											<b>Project : <%=ProjectDetail.get(z)[1] %> 	<%if(z!=0){ %>(SUB)<%} %>	</b>
 										</div>	
 									<%} %>	
-								   <div align="left" class="margin-left15">(a) <%if(committee.getCommitteeShortName().trim().equalsIgnoreCase("PMRC")){ %>
+								   <div align="left" class="margin-left15">(a) <%if(committee.getCommitteeShortName().trim().equalsIgnoreCase("PMRC") || committee.getCommitteeShortName().trim().equalsIgnoreCase("PMRB")){ %>
 															   						Approval 
 															   						<%}else { %>
 															   						Ratification
-															   						<%} %>  of <b>recommendations</b> of last PMRC / <%=committee.getCommitteeShortName().trim().toUpperCase() %> Meeting (if any)</div>
+															   						<%} %>  of <b>recommendations</b> of last PMRB / <%=committee.getCommitteeShortName().trim().toUpperCase() %> Meeting (if any)</div>
 															   						
 							
 			<table class="subtables table-subtables" >
@@ -3262,7 +3262,7 @@ List<BriefingFinance> briefingFinanceDetials = (List<BriefingFinance>)request.ge
 									Apex Board (refer Chapter 5 on Project Monitoring and Review).
 								<br>
 								4) Detailed technical discussions on each sub systems to be deliberated and
-									recorded during PMRC. Ratification points from the higher monitoring body to
+									recorded during PMRB. Ratification points from the higher monitoring body to
 									be clearly mentioned in the minutes.
 								<br>
 								5) For PDC extension cases, the defendable reason why PDC could not be

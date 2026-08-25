@@ -81,7 +81,7 @@ List<Object[]> subsystemList = (List<Object[]>)request.getAttribute("subsystemLi
 
 List<Object[]> committeescheduledata=(List<Object[]>)request.getAttribute("committeescheduledata");
 List<String> SplCommitteeCodes=(List<String>)request.getAttribute("SplCommitteeCodes");
-
+SplCommitteeCodes.add("PMRC");
 Object[]MomAttachment=(Object[])request.getAttribute("MomAttachment");
 Long empId = (Long)session.getAttribute("EmpId");
 String formname=(String)request.getAttribute("formname");

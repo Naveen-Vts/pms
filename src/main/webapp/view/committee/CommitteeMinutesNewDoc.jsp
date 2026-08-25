@@ -152,7 +152,7 @@
 
 <%if(invitedlist.size()>0){ %>
 <% ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","CW","CO","CH"));
-membertypes.addAll(repCodes);
+if(repCodes != null) membertypes.addAll(repCodes);
 int memPresent=0,memAbscent=0,ParPresent=0,parAbscent=0;
 int j=0;
 for(Object[] temp : invitedlist){

@@ -1360,7 +1360,7 @@
 																secretary and Chair person </strong>is mandatory when
 															constituting a
 															committee.</li>
-														<li class="list-group-item"><strong>PMRC</strong> and
+														<li class="list-group-item"><strong>PMRB</strong> and
 															<strong>EB</strong>
 															committees are default pre-approved.
 														</li>

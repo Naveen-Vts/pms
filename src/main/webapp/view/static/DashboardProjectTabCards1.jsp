@@ -575,11 +575,11 @@ SimpleDateFormat sdf2=new SimpleDateFormat("yy-MM-dd");
 			            <div class="h4 font-weight-bold" id="pmrcprogress" ><%=(ProjectHealthTotalData[29]!=null?StringEscapeUtils.escapeHtml4(ProjectHealthTotalData[29].toString()): " - " )%>%</div>
 			          </div>
 			        </div>
-			        <!-- <div><h6 style="margin-bottom: 5px">PMRC</h6></div> -->
+			        <!-- <div><h6 style="margin-bottom: 5px">PMRB</h6></div> -->
 			        <hr style="margin: 5px !important">
 			        <table class="countstable" style="margin: 0px auto">
 			        	<tr>
-			        		<th style="font-size: 14px">PMRC </th>
+			        		<th style="font-size: 14px">PMRB </th>
 			        	</tr>
 				        <tr>
 			        		<td style="font-size: 14px;cursor: pointer;" id="meetingsvaluepmrc"  data-toggle="tooltip" title="Held / To be Held / Total to be Held" >
@@ -903,7 +903,7 @@ SimpleDateFormat sdf2=new SimpleDateFormat("yy-MM-dd");
 													<a  data-toggle="modal"  class="fa faa-pulse animated " data-target="#exampleModal1" data-whatever="@mdo" style="padding: 0px 1.5rem;cursor:pointer" ><i class="fa fa-info-circle " style="font-size: 1.3rem;color: " aria-hidden="true"></i> </a>
 												</td>
 												<td style="width:15%"><span style="font-size :15px;font-weight: bold; ">Project</span></td>
-												<td style="padding: 0px !important"><span style="font-size :15px;font-weight: bold;">PMRC </span></td>
+												<td style="padding: 0px !important"><span style="font-size :15px;font-weight: bold;">PMRB </span></td>
 												<td style="padding: 0px !important"><span style="font-size :15px;font-weight: bold;">EB </span></td>
 												<td ><span style="font-size :15px;font-weight: bold;  ">Milestone </span></td>
 												<td ><span style="font-size :15px;font-weight: bold;  ">Action</span></td>
@@ -955,8 +955,8 @@ SimpleDateFormat sdf2=new SimpleDateFormat("yy-MM-dd");
 														<div class="row">
 															<div class="col-md-10">
 															    <div class="progress"  >
-																  <div class="progress-bar progress-bar-striped bg-success" onclick="overallmeetingredirect('<%=obj[2]%>','1', 'B')" style="width:<%=obj[5]%>%;" data-toggle="tooltip" title="PMRC Held : <%=obj[4]%> / <%=obj[8] %>" ></div>
-																  <div class="progress-bar progress-bar-striped bg-primary" onclick="overallmeetingredirect('<%=obj[2]%>','1', 'C' )" style="width:<%=obj[7]%>%;" data-toggle="tooltip" title="PMRC Pending : <%=obj[6]%> / <%=obj[8] %>" ></div>
+																  <div class="progress-bar progress-bar-striped bg-success" onclick="overallmeetingredirect('<%=obj[2]%>','1', 'B')" style="width:<%=obj[5]%>%;" data-toggle="tooltip" title="PMRB Held : <%=obj[4]%> / <%=obj[8] %>" ></div>
+																  <div class="progress-bar progress-bar-striped bg-primary" onclick="overallmeetingredirect('<%=obj[2]%>','1', 'C' )" style="width:<%=obj[7]%>%;" data-toggle="tooltip" title="PMRB Pending : <%=obj[6]%> / <%=obj[8] %>" ></div>
 																</div>
 														  	</div>
 															<div class="col-md-2" style="padding-left: 0px !important">
@@ -1193,7 +1193,7 @@ SimpleDateFormat sdf2=new SimpleDateFormat("yy-MM-dd");
 													<td style="width:2%"><div data-toggle="tooltip" title="View All"><a style="cursor: pointer;" href="GetAllProjectSlide.htm" target="_blank"  ><img src="view/images/silde.png" style="width: 25px;"/></a></div></td>
 													<td style="width:6%"><span style="font-size :15px;font-weight: bold; ">DoS</span></td>
 													<td style="width:6%"><span style="font-size :15px;font-weight: bold; ">PDC</span></td>
-													<td style="padding: 0px !important"><span style="font-size :15px;font-weight: bold;">PMRC </span></td>
+													<td style="padding: 0px !important"><span style="font-size :15px;font-weight: bold;">PMRB </span></td>
 													<td style="padding: 0px !important"><span style="font-size :15px;font-weight: bold;">EB </span></td>
 													<td ><span style="font-size :15px;font-weight: bold;  ">Milestone </span></td>
 													<td ><span style="font-size :15px;font-weight: bold;  ">Action</span></td>
@@ -1250,7 +1250,7 @@ SimpleDateFormat sdf2=new SimpleDateFormat("yy-MM-dd");
 															
 															<div class="row">
 																<div class="col-md-11">
-																    <div class="progress" data-toggle="tooltip" title="PMRC Held : <%=obj[4]%> <br> PMRC To Be Held : <%=obj[8] %><br> Total PMRC To Be Held : <%=obj[48] %>"  >
+																    <div class="progress" data-toggle="tooltip" title="PMRB Held : <%=obj[4]%> <br> PMRB To Be Held : <%=obj[8] %><br> Total PMRB To Be Held : <%=obj[48] %>"  >
 																	  <div class="progress-bar progress-bar-striped bg-success" onclick="overallmeetingredirect('<%=obj[2]%>','1', 'B')" style="width:<%=obj[5]%>%;" ></div>
 																	  <div class="progress-bar progress-bar-striped bg-primary" onclick="overallmeetingredirect('<%=obj[2]%>','1', 'C' )" style="width:<%=obj[7]%>%;" ></div>
 																	</div>
@@ -1458,7 +1458,7 @@ SimpleDateFormat sdf2=new SimpleDateFormat("yy-MM-dd");
 													<a  data-toggle="modal"  class="fa faa-pulse animated " data-target="#exampleModal1" data-whatever="@mdo" style="padding: 0px 1.5rem;cursor:pointer" ><i class="fa fa-info-circle " style="font-size: 1.3rem;color: " aria-hidden="true"></i> </a>
 												</td>
 												<td style="width:5%"><span style="font-size :15px;font-weight: bold; ">Lab</span></td>
-												<td style="padding: 0px !important"><span style="font-size :15px;font-weight: bold;">PMRC </span></td>
+												<td style="padding: 0px !important"><span style="font-size :15px;font-weight: bold;">PMRB </span></td>
 												<td style="padding: 0px !important"><span style="font-size :15px;font-weight: bold;">EB </span></td>
 												<td ><span style="font-size :15px;font-weight: bold;  ">Milestone </span></td>
 												<td ><span style="font-size :15px;font-weight: bold;  ">Action</span></td>
@@ -1481,8 +1481,8 @@ SimpleDateFormat sdf2=new SimpleDateFormat("yy-MM-dd");
 														<div class="row">
 															<div class="col-md-11">
 															    <div class="progress"  >
-																  <div class="progress-bar progress-bar-striped bg-success" onclick="overallmeetingredirectdg('<%=obj[2]%>','1', 'B')" style="width:<%=obj[29]%>%;" data-toggle="tooltip" title="PMRC Held : <%=obj[0]%> / <%=obj[2] %>" ></div>
-																  <div class="progress-bar progress-bar-striped bg-primary" onclick="overallmeetingredirectdg('<%=obj[2]%>','1', 'C' )" style="width:<%=obj[30]%>%;" data-toggle="tooltip" title="PMRC Pending : <%=obj[1]%> / <%=obj[2] %>" ></div>
+																  <div class="progress-bar progress-bar-striped bg-success" onclick="overallmeetingredirectdg('<%=obj[2]%>','1', 'B')" style="width:<%=obj[29]%>%;" data-toggle="tooltip" title="PMRB Held : <%=obj[0]%> / <%=obj[2] %>" ></div>
+																  <div class="progress-bar progress-bar-striped bg-primary" onclick="overallmeetingredirectdg('<%=obj[2]%>','1', 'C' )" style="width:<%=obj[30]%>%;" data-toggle="tooltip" title="PMRB Pending : <%=obj[1]%> / <%=obj[2] %>" ></div>
 																</div>
 														  	</div>
 															<div class="col-md-1" style="padding-left: 0px !important">
@@ -1901,7 +1901,7 @@ function charts(value){
 					        text: ''
 					    },
 					    xAxis: {
-					        categories: ['PMRC', 'EB'],
+					        categories: ['PMRB', 'EB'],
 					        title: {
 					            text: null
 					        },

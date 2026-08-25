@@ -603,7 +603,7 @@ String baseUrl = scheme + "://" + serverName
 					</div>
 					<div class="col-md-8">
 						<h3>
-							4 (a) <% if (committee.getCommitteeShortName().trim().equalsIgnoreCase("PMRC")) { %> Approval
+							4 (a) <% if (committee.getCommitteeShortName().trim().equalsIgnoreCase("PMRC") || committee.getCommitteeShortName().trim().equalsIgnoreCase("PMRB")) { %> Approval
 							<% } else { %> Ratification <% } %> of <b>Recommendations</b> of last <%=committee.getCommitteeShortName().trim().toUpperCase()%> Meeting
 						</h3>
 					</div>
@@ -806,7 +806,22 @@ String baseUrl = scheme + "://" + serverName
 							<tr>
 								<td class="text-center"><%=i%></td>
 								<td class="text-center">
-								<%if(obj[17]!=null && Long.parseLong(obj[17].toString())>0){ %>
+								<%
+
+								String committeeCode = committee.getCommitteeShortName().trim().toUpperCase();
+								String splCommittee = committeeCode;
+								if("PMRC".equalsIgnoreCase(committeeCode)|| "PMRB".equalsIgnoreCase(committeeCode)){
+									LocalDate scheduleDate = obj[20] != null ? LocalDate.parse(obj[20].toString()) : null;
+									LocalDate PMRB_EFFECTIVE_DATE = LocalDate.of(2026, 4, 1);
+									if(scheduleDate.isBefore(PMRB_EFFECTIVE_DATE)){
+										splCommittee = "PMRC";
+									}else {
+										splCommittee = committeeCode;
+									}
+								}
+								
+								
+								if(obj[17]!=null && Long.parseLong(obj[17].toString())>0){ %>
 								<button type="button" class="btn btn-sm font-weight-bold"  onclick="ActionDetails( <%=obj[17] %>);" data-toggle="tooltip" data-placement="top" title="Action Details" >
 								<%for (Map.Entry<Integer, String> entry : committeeWiseMap.entrySet()) {
 									Date date = inputFormat.parse(obj[1].toString().split("/")[3]);
@@ -815,7 +830,7 @@ String baseUrl = scheme + "://" + serverName
 										 key=entry.getKey().toString();
 									 } }%>
 								
-								<%=committee.getCommitteeShortName().trim().toUpperCase()+"-"+key+"/"+obj[1].toString().split("/")[4] %>
+								<%=splCommittee+"-"+key+"/"+obj[1].toString().split("/")[4] %>
 								</button>
 								<%}%> 
 								<!--  -->
@@ -932,7 +947,7 @@ String baseUrl = scheme + "://" + serverName
 												for(Object[] obj : entry.getValue()){ %>
 													<tr>
 														<td >
-															<button class="btn btn-link p-0 m-0"  name="committeescheduleid" value="<%=obj[0]%>"> <%=entry.getKey()%> #<%=++i %></button>
+															<button class="btn btn-link p-0 m-0"  name="committeescheduleid" value="<%=obj[0]%>"> <%=obj[1]%> #<%=++i %></button>
 														</td>												
 														<td class="text-center" ><%= fc.sdfTordf(obj[3].toString())%></td>
 													</tr>				
@@ -2926,7 +2941,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="2 (a) System Configuration"><b>2 (a) </b></li>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="2 (b) System Specifications"><b>2 (b) </b></li>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="3. Overall Product tree/WBS"><b>3</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title='4 (a) <%if (committee.getCommitteeShortName().trim().equalsIgnoreCase("PMRC")) {%> Approval <%} else {%> Ratification <%}%>  of recommendations of last <%=committee.getCommitteeShortName().trim().toUpperCase()%> Meeting'><b>4(a)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title='4 (a) <%if (committee.getCommitteeShortName().trim().equalsIgnoreCase("PMRC") || committee.getCommitteeShortName().trim().equalsIgnoreCase("PMRB")) {%> Approval <%} else {%> Ratification <%}%>  of recommendations of last <%=committee.getCommitteeShortName().trim().toUpperCase()%> Meeting'><b>4(a)</b></li>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="4 (b) Last <%=committee.getCommitteeShortName().trim().toUpperCase()%> Meeting action points with Probable Date of completion (PDC), Actual Date of Completion (ADC) and status"><b>4(b)</b></li>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="4 (c) Details of Technical/ User Reviews"><b>4 (c)</b></li>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="5. Milestones achieved prior to this Meeting"><b>5</b></li>

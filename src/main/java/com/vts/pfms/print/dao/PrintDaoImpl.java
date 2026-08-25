@@ -452,7 +452,7 @@ public class PrintDaoImpl implements PrintDao {
 	
 	//private static final String REVIEWMEETINGLIST = "SELECT scheduleid, committeeshortname, committeename,scheduledate,meetingid FROM committee_schedule cs, committee c, committee_meeting_status cms WHERE (cs.scheduledate BETWEEN (SELECT MAX(cs.scheduledate) FROM committee_schedule cs, committee_meeting_status cms WHERE cs.committeeid=:committeeid AND cs.projectid=:projectid AND cs.scheduledate < CURDATE() AND cs.scheduleflag=cms.meetingstatus AND meetingstatusid > 6)   AND CURDATE() )  AND cs.committeeid=c.committeeid AND cs.scheduleflag=cms.meetingstatus AND cms.meetingstatusid > 6 AND cs.projectid=:projectid AND cs.committeeid <> :committeeid ";
 	
-	private static final String REVIEWMEETINGLIST ="SELECT cs.scheduleid, c.committeeshortname, c.committeename, cs.scheduledate, cs.meetingid\r\n"
+	private static final String REVIEWMEETINGLIST ="SELECT cs.scheduleid,  GetCommitteeShortName(cs.scheduledate,c.committeeshortname) AS committeeshortname, GetCommitteeName(cs.scheduledate,c.committeeshortname,c.committeename) AS committeename, cs.scheduledate, cs.meetingid\r\n"
 			+ "FROM committee_schedule cs JOIN committee c ON cs.committeeid = c.committeeid JOIN committee_meeting_status cms ON cs.scheduleflag = cms.meetingstatus\r\n"
 			+ "WHERE cms.meetingstatusid > 6 AND c.committeeShortName = :committeecode AND cs.scheduledate <= CURDATE()\r\n"
 			+ "    AND ( cs.projectid = :projectid OR cs.programmeid IN (SELECT pp.programmeid FROM pfms_programme_projects pp WHERE pp.projectid = :projectid AND pp.IsActive=1))\r\n"
@@ -493,7 +493,7 @@ public class PrintDaoImpl implements PrintDao {
 		return (List<Object[]>)query.getResultList();
 	}
 
-	private static final String SCHEDULELIST="SELECT cs.scheduledate,cs.scheduleflag,cms.meetingstatusid,cs.meetingid,cs.scheduledate<DATE(SYSDATE()),(SELECT COUNT(*)+1 FROM  committee_schedule css ,committee_meeting_status mss WHERE css.committeeid=c.committeeid AND css.projectid=cs.projectid AND css.isactive=1 AND  mss.meetingstatus=css.scheduleflag AND mss.meetingstatusid > 6 AND css.scheduledate<cs.scheduledate) AS countid,cs.scheduleid FROM committee_schedule cs, committee c,committee_meeting_status cms WHERE c.committeeid=cs.committeeid  AND c.committeeShortName IN ('PMRC','EB') AND cs.scheduleflag=cms.meetingstatus AND cs.projectid=:ProjectId AND YEAR(cs.scheduledate)=:InYear AND MONTH(cs.scheduledate)=:InMonth AND cms.meetingstatusid > 6";
+	private static final String SCHEDULELIST="SELECT cs.scheduledate,cs.scheduleflag,cms.meetingstatusid,cs.meetingid,cs.scheduledate<DATE(SYSDATE()),(SELECT COUNT(*)+1 FROM  committee_schedule css ,committee_meeting_status mss WHERE css.committeeid=c.committeeid AND css.projectid=cs.projectid AND css.isactive=1 AND  mss.meetingstatus=css.scheduleflag AND mss.meetingstatusid > 6 AND css.scheduledate<cs.scheduledate) AS countid,cs.scheduleid FROM committee_schedule cs, committee c,committee_meeting_status cms WHERE c.committeeid=cs.committeeid  AND c.committeeShortName IN ('PMRB','EB') AND cs.scheduleflag=cms.meetingstatus AND cs.projectid=:ProjectId AND YEAR(cs.scheduledate)=:InYear AND MONTH(cs.scheduledate)=:InMonth AND cms.meetingstatusid > 6";
 	
 	@Override
 	public List<Object[]> getMeetingSchedules(String ProjectId, String Month, String Year) throws Exception {
@@ -504,7 +504,7 @@ public class PrintDaoImpl implements PrintDao {
 		return (List<Object[]>)query.getResultList();
 	}
 	
-	private static final String COMMITTEESCHEDULEEDITDATA="SELECT a.committeeid,a.committeemainid,a.scheduledate,a.schedulestarttime,a.scheduleflag,a.schedulesub,a.scheduleid,b.committeename,b.committeeshortname,a.projectid,c.meetingstatusid,a.meetingid,a.meetingvenue,a.confidential,a.Reference,d.classification ,a.divisionid  ,a.initiationid ,a.pmrcdecisions,a.kickoffotp ,(SELECT minutesattachmentid FROM committee_minutes_attachment WHERE scheduleid=a.scheduleid) AS 'attachid', b.periodicNon,a.MinutesFrozen,a.briefingpaperfrozen,a.labcode, a.ProgrammeId, a.ScheduleType FROM committee_schedule a,committee b ,committee_meeting_status c, pfms_security_classification d WHERE a.scheduleflag=c.MeetingStatus AND a.scheduleid=:committeescheduleid AND a.committeeid=b.committeeid AND a.confidential=d.classificationid";
+	private static final String COMMITTEESCHEDULEEDITDATA="SELECT a.committeeid,a.committeemainid,a.scheduledate,a.schedulestarttime,a.scheduleflag,a.schedulesub,a.scheduleid,GetCommitteeName(a.scheduledate,b.committeeshortname,b.committeename) AS committeename,GetCommitteeShortName(a.scheduledate,b.committeeshortname) AS committeeshortname,a.projectid,c.meetingstatusid,a.meetingid,a.meetingvenue,a.confidential,a.Reference,d.classification ,a.divisionid  ,a.initiationid ,a.pmrcdecisions,a.kickoffotp ,(SELECT minutesattachmentid FROM committee_minutes_attachment WHERE scheduleid=a.scheduleid) AS 'attachid', b.periodicNon,a.MinutesFrozen,a.briefingpaperfrozen,a.labcode, a.ProgrammeId, a.ScheduleType FROM committee_schedule a,committee b ,committee_meeting_status c, pfms_security_classification d WHERE a.scheduleflag=c.MeetingStatus AND a.scheduleid=:committeescheduleid AND a.committeeid=b.committeeid AND a.confidential=d.classificationid";
 
 	
 	@Override
@@ -1538,7 +1538,7 @@ public class PrintDaoImpl implements PrintDao {
 			return (List<Object[]>)query.getResultList();
 		}
 		
-		private static final String OTHERMEETINGLIST="SELECT a.ScheduleId,a.ScheduleDate,b.CommitteeShortName,b.CommitteeName FROM committee_schedule a, committee b WHERE  a.CommitteeId= b.CommitteeId AND a.projectid=:projectid AND b.CommitteeId NOT IN (1,2)  AND a.ScheduleFlag IN ('MKV','MMR','MMF','MMS','MMA')   ORDER BY b.CommitteeShortName,a.ScheduleDate DESC";
+		private static final String OTHERMEETINGLIST="SELECT a.ScheduleId,a.ScheduleDate,GetCommitteeShortName(a.scheduledate,b.committeeshortname) AS committeeshortname,GetCommitteeName(a.scheduledate,b.committeeshortname,b.committeename) AS committeename FROM committee_schedule a, committee b WHERE  a.CommitteeId= b.CommitteeId AND a.projectid=:projectid AND b.CommitteeId NOT IN (1,2)  AND a.ScheduleFlag IN ('MKV','MMR','MMF','MMS','MMA')   ORDER BY b.CommitteeShortName,a.ScheduleDate DESC";
 		@Override
 		public List<Object[]> otherMeetingList(String projectid) throws Exception {
 			
