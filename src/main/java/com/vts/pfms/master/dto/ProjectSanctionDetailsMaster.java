@@ -11,7 +11,7 @@ public class ProjectSanctionDetailsMaster {
 	private Double osComAmt;
 	private Double dipl;
 	private Double balAmt;
-	private int projectid;
+	private int projectId;
 	private String asOnDate;
 	public int getSno() {
 		return sno;
@@ -67,11 +67,11 @@ public class ProjectSanctionDetailsMaster {
 	public void setBalAmt(Double balAmt) {
 		this.balAmt = balAmt;
 	}
-	public int getProjectid() {
-		return projectid;
+	public int getProjectId() {
+		return projectId;
 	}
-	public void setProjectid(int projectid) {
-		this.projectid = projectid;
+	public void setProjectId(int projectId) {
+		this.projectId = projectId;
 	}
 	public String getAsOnDate() {
 		return asOnDate;
