@@ -1987,7 +1987,7 @@ function DownloadDocPDF(){
 															.findFirst().orElse(null);
 										
 									
-										System.out.println(tp.getTestSetUpId());
+										//System.out.println(tp.getTestSetUpId());
 										%> 
 										
 										[

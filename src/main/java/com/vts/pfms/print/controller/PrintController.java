@@ -793,7 +793,7 @@ public class PrintController {
 	            if (objData != null) {
 	                try {
 	                    String No2 = null;
-	                    if (CommitteeCode.equalsIgnoreCase("PMRC")) {
+	                    if (CommitteeCode.equalsIgnoreCase("PMRB")) {
 	                        No2 = "P" + (Long.parseLong(ebandpmrccount.get(0).get(0)[1].toString()) + 1);
 	                    } else if (CommitteeCode.equalsIgnoreCase("EB")) {
 	                        No2 = "E" + (Long.parseLong(ebandpmrccount.get(0).get(1)[1].toString()) + 1);
@@ -873,7 +873,7 @@ public class PrintController {
 	                    }
 	                    zip.unpack(techPath.toString(), path, TechWorkDataList.get(z)[9].toString());
 
-	                    String anchor = "Technical Images";
+	                    String anchor = "Technical Work Carried";
 	                    insertPdfAtAnchor(destDoc, anchor,
 	                            path + File.separator + TechWorkDataList.get(z)[8].toString(), path, filename,
 	                            leftLogo, rightLogo, objData[12] + " :- Technical Work Carried");
@@ -1126,7 +1126,7 @@ public class PrintController {
 	        	
 	        	try {
 	        		String No2=null;
-	        		if(CommitteeCode.equalsIgnoreCase("PMRC")){ 
+	        		if(CommitteeCode.equalsIgnoreCase("PMRB")){ 
 	        		No2="P"+(Long.parseLong(ebandpmrccount.get(0).get(0)[1].toString())+1);
 	        		}else if(CommitteeCode.equalsIgnoreCase("EB")){
 	        			No2="E"+(Long.parseLong(ebandpmrccount.get(0).get(1)[1].toString())+1);
@@ -1561,7 +1561,7 @@ public class PrintController {
 	    		actionplanthreemonths.add(service.ActionPlanSixMonths(proid,committeeid));
 	    		projectdatadetails.add(service.ProjectDataDetails(proid));
 	    		ReviewMeetingListEB.add(service.ReviewMeetingList(projectid, "EB"));
-	    		ReviewMeetingListPMRC.add(service.ReviewMeetingList(projectid, "PMRC"));
+	    		ReviewMeetingListPMRC.add(service.ReviewMeetingList(projectid, "PMRB"));
 	    		TechWorkDataList.add(service.TechWorkData(proid));
 		    	milestonesubsystemsnew.add(service.BreifingMilestoneDetails(proid,committeeid));
 	    		ProjectRevList.add(service.ProjectRevList(proid));
@@ -1841,7 +1841,7 @@ public class PrintController {
 				        	
 				        	try {
 				        		String No2=null;
-				        		if(CommitteeCode.equalsIgnoreCase("PMRC")){ 
+				        		if(CommitteeCode.equalsIgnoreCase("PMRB")){ 
 				        		No2="P"+(Long.parseLong(ebandpmrccount.get(0).get(0)[1].toString())+1);
 				        		}else if(CommitteeCode.equalsIgnoreCase("EB")){
 				        			No2="E"+(Long.parseLong(ebandpmrccount.get(0).get(1)[1].toString())+1);
@@ -2376,10 +2376,10 @@ public class PrintController {
 	    	String projectid=req.getParameter("projectid");
 	    	String committeeid = req.getParameter("committeeid");
 	    	if(committeeid==null  ) {
-	    		committeeid="PMRC";
+	    		committeeid="PMRB";
 	    	}else if( Long.parseLong(committeeid)==0)
 	    	{
-	    		committeeid="PMRC";
+	    		committeeid="PMRB";
 	    	}
 
 	    	String EmpId = ((Long) ses.getAttribute("EmpId")).toString();
@@ -2607,7 +2607,7 @@ public class PrintController {
 //	    	{
 //	    		
 //	    		for(Object[] committee : SpecialCommitteesList) {
-//	    			if(committee[1].toString().equalsIgnoreCase("PMRC")) {
+//	    			if(committee[1].toString().equalsIgnoreCase("PMRB")) {
 //	    				
 //	    				committeeid=committee[0].toString();
 //	    	    		tempid=committee[0].toString();
@@ -2620,7 +2620,7 @@ public class PrintController {
 //	    	else if(Long.parseLong(committeeid)==0)
 //	    	{
 //	    		for(Object[] committee : SpecialCommitteesList) {
-//	    			if(committee[1].toString().equalsIgnoreCase("PMRC")) 
+//	    			if(committee[1].toString().equalsIgnoreCase("PMRB")) 
 //	    			{
 //	    				committeeid=committee[0].toString();
 //	    	    		break;
@@ -2688,7 +2688,7 @@ public class PrintController {
 //				actionplanthreemonths.add(service.ActionPlanSixMonths(proid,committeeid)); /* CALL Pfms_Milestone_PDC_New(:projectid, :interval) */
 //	    		TechWorkDataList.add(service.TechWorkData(proid)); 
 //	    		ReviewMeetingList.add(service.ReviewMeetingList(projectid, "EB"));
-//	    		ReviewMeetingListPMRC.add(service.ReviewMeetingList(projectid, "PMRC"));
+//	    		ReviewMeetingListPMRC.add(service.ReviewMeetingList(projectid, "PMRB"));
 //	    		ProjectRevList.add(service.ProjectRevList(proid));
 //				milestonesubsystemsnew.add(service.BreifingMilestoneDetails(proid, committeeid)); /* */	    	 	
 //	    		Object[] prodetails=service.ProjectDataDetails(proid);
@@ -3930,7 +3930,7 @@ public class PrintController {
 	    	    		actionplanthreemonths.add(service.ActionPlanSixMonths(proid,committeeid));
 	    	    		projectdatadetails.add(service.ProjectDataDetails(proid));
 	    	    		ReviewMeetingListEB.add(service.ReviewMeetingList(projectid, "EB"));
-	    	    		ReviewMeetingListPMRC.add(service.ReviewMeetingList(projectid, "PMRC"));
+	    	    		ReviewMeetingListPMRC.add(service.ReviewMeetingList(projectid, "PMRB"));
 	    	    		TechWorkDataList.add(service.TechWorkData(proid));
 	    		    	milestonesubsystemsnew.add(service.BreifingMilestoneDetails(proid,committeeid));
 	    	    		ProjectRevList.add(service.ProjectRevList(proid));
@@ -4740,7 +4740,7 @@ public class PrintController {
 		    	}
 				if(projectid==null) {
 					projectid  = projectslist.get(0)[0].toString();
-					committeecode = "PMRC";
+					committeecode = "PMRB";
 				}
 				List<Object[]> BriefingScheduleList =new ArrayList<Object[]>();
 				List<Object[]> BriefingScheduleFwdList =new ArrayList<Object[]>();
@@ -7232,7 +7232,7 @@ public class PrintController {
 
 		};
 
-		List<Object[]>projectPMRCMeetings = service.getProjectMeetings("PMRC");
+		List<Object[]>projectPMRCMeetings = service.getProjectMeetings("PMRB");
 		List<Object[]>ebPMRCMeetings = service.getProjectMeetings("EB");
 		List<Object[]>projectSPRCMeetings = service.getProjectMeetings("SPRC");
 
@@ -7368,7 +7368,7 @@ public class PrintController {
 
 		};
 
-		List<Object[]>projectPMRCMeetings = service.getProjectMeetings("PMRC");
+		List<Object[]>projectPMRCMeetings = service.getProjectMeetings("PMRB");
 		List<Object[]>ebPMRCMeetings = service.getProjectMeetings("EB");
 		List<Object[]>projectSPRCMeetings = service.getProjectMeetings("SPRC");
 
@@ -7544,7 +7544,7 @@ public class PrintController {
 
 	                    String No2 = null;
 
-	                    if (CommitteeCode.equalsIgnoreCase("PMRC")) {
+	                    if (CommitteeCode.equalsIgnoreCase("PMRB")) {
 	                        No2 = "P" + (Long.parseLong(ebandpmrccount.get(0).get(0)[1].toString()) + 1);
 	                    } 
 	                    else if (CommitteeCode.equalsIgnoreCase("EB")) {
@@ -8643,7 +8643,7 @@ public class PrintController {
 
 	                    String No2 = null;
 
-	                    if (CommitteeCode.equalsIgnoreCase("PMRC")) {
+	                    if (CommitteeCode.equalsIgnoreCase("PMRB")) {
 	                        No2 = "P" + (Long.parseLong(ebandpmrccount.get(0).get(0)[1].toString()) + 1);
 	                    } 
 	                    else if (CommitteeCode.equalsIgnoreCase("EB")) {

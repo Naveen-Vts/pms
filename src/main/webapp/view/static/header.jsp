@@ -114,6 +114,15 @@
 <% String Logintype= (String)session.getAttribute("LoginType");
 String labcode= (String)session.getAttribute("labcode");
 
+String amsurl=(String)session.getAttribute("amsurl");
+String tmdsurl=(String)session.getAttribute("tmdsurl");
+String dmsurl=(String)session.getAttribute("dmsurl");
+String pftsurl=(String)session.getAttribute("pftsurl");
+String emsurl=(String)session.getAttribute("emsurl");
+String ibasurl=(String)session.getAttribute("ibasurl");
+String hrmsurl=(String)session.getAttribute("hrmsurl");
+String sisurl=(String)session.getAttribute("sisurl");
+
 //int ProjectInitSize = (Integer) session.getAttribute("ProjectInitiationList");
 
 %>
@@ -205,39 +214,39 @@ String labcode= (String)session.getAttribute("labcode");
         <i class="fa fa-th" aria-hidden="true" style="font-size: 22px; color: white !important;"></i>
     </a>
     
-    <div class="dropdown-menu dropdown-menu-right pms-grid-dropdown-menu" aria-labelledby="appGridMenu">
+   <div class="dropdown-menu dropdown-menu-right pms-grid-dropdown-menu" aria-labelledby="appGridMenu">
         <div class="pms-grid-container">
-            <a class="pms-grid-item" onclick="openAMS()" data-toggle="tooltip" title="Audit Management System" >
+            <a class="pms-grid-item" onclick="openApplication('AMS','<%=amsurl%>','/dashboard?ams=true')" data-toggle="tooltip" title="Audit Management System" >
                 <i class="fa fa-tasks" style="color: #e74c3c !important;"></i>
                 <span>AMS</span>
             </a>
-            <a class="pms-grid-item" onclick="openTMDS()" data-toggle="tooltip" title="TMDS">
+            <a class="pms-grid-item" onclick="openApplication('TMDS','<%=tmdsurl%>','/maindashboard?tmds=true')" data-toggle="tooltip" title="TMDS">
                 <i class="fa fa-file-code-o" style="color: #3498db !important;"></i>
                 <span>TMDS</span>
             </a>
-            <a class="pms-grid-item" onclick="openDMS()" data-toggle="tooltip" title="DAK Management System">
+            <a class="pms-grid-item" onclick="openApplication('DMS','<%=dmsurl%>','/dashboard?dms=true')" data-toggle="tooltip" title="DAK Management System">
                 <i class="fa fa-envelope-open" style="color: #9b59b6 !important;"></i>
                 <span>DMS</span>
             </a>
-            <a class="pms-grid-item" onclick="openPFTS()" data-toggle="tooltip" title="PFTS">
+            <a class="pms-grid-item"  onclick="openApplication('PFTS','<%=pftsurl%>','/dashboard?pfts=true')" data-toggle="tooltip" title="PFTS">
                 <i class="fa fa-file-text" style="color: #f1c40f !important;"></i>
                 <span>PFTS</span>
             </a>
-            <a class="pms-grid-item" onclick="openEMS()" data-toggle="tooltip" title="Employee Management System">
+            <a class="pms-grid-item" onclick="openApplication('EMS','<%=emsurl%>','/dashboard?ems=true')" data-toggle="tooltip" title="Employee Management System">
                 <i class="fa fa-user-circle" style="color: #7f8c8d !important;"></i>
                 <span>EMS</span>
             </a>
-            <a class="pms-grid-item" onclick="openIBAS()" data-toggle="tooltip" title="DAK Management System">
+            <a class="pms-grid-item" onclick="openApplication('IBAS','<%=ibasurl%>','/dashboard?ibas=true')" data-toggle="tooltip" title="Integrated Budget Accounting System">
                 <i class="fa fa-rupee" style="color: #27ae60 !important;"></i>
                 <span>IBAS</span>
             </a>
-            <a class="pms-grid-item" onclick="openHRMS()" data-toggle="tooltip" title="Human Resource Management System">
+            <a class="pms-grid-item" onclick="openApplication('HRMS','<%=hrmsurl%>','/dashboard?hrms=true', true)" data-toggle="tooltip" title="Human Resource Management System">
                 <i class="fa fa-users" style="color: #16a085 !important;"></i>
                 <span>HRMS</span>
             </a>
-             <a class="pms-grid-item"  data-toggle="tooltip" target="_blank" title="STORES INVENTORY SYSTEM" href="http://192.168.1.87:8898/Inventory/TMDS?api_key=VTS_<%=encryptedUser %>">
-                <i class="fa fa-shopping-cart" style="color:Orange !important;"></i>
-                <span>SIS</span>
+            <a class="pms-grid-item" href="<%=sisurl%>/TMDS?api_key=VTS_<%=encryptedUser %>" target="_blank">
+            <i class="fa fa-book" style="color: #7f8c8d !important;" aria-hidden="true"></i>
+             <span>SIS</span>
             </a>
         </div>
     </div>
@@ -903,304 +912,120 @@ function changed() {
 				      localStorage.setItem('user', JSON.stringify(sessionUser));
 				  }
 
-				  /**
-				   * 2. The openAMS Function
-				   */
-				   const openAMS = async () => { // Added 'async' here
+				  const openApplication = async (appName, targetOrigin, dashboardPath, showLoader = false) => {
 					    const userData = localStorage.getItem("user");
-					    
+
 					    if (!userData || userData === '{"token":"","username":""}') {
 					        console.error("No session data found. Please log in.");
-					        return;
-					    }
-					    
-					    try {
-					        // 'await' waits until the AJAX success function would have fired
-					        // and assigns the actual 'result' to the variable 'exist'
-					        const exist = await checkAccess("AMS");
-
-					        if (exist) {
-					            const targetOrigin = "http://192.168.1.150:3000";
-					            const amsWindow = window.open(targetOrigin + "/dashboard?ams=true", "_blank");
-
-					            let count = 0;
-					            const checkInterval = setInterval(() => {
-					                if (amsWindow && count < 5) { 
-					                    amsWindow.postMessage(
-					                        { type: "LOGIN_SUCCESS", user: JSON.parse(userData) },
-					                        targetOrigin
-					                    );
-					                    count++;
-					                } else {
-					                    clearInterval(checkInterval);
-					                }
-					            }, 1000); 
-					        } else {
-					            alert("You don't have access to AMS");
-					        }
-					    } catch (error) {
-					        console.error("Request failed", error);
-					    }
-					};
-					
-					
-					const openTMDS = async () => { // Added async
-					    const userData = localStorage.getItem("user");
-					    
-					    // 1. Validation: Session Check
-					    if (!userData || userData === '{"token":"","username":""}') {
-					        console.error("No session data found. Please log in.");
+					        alert("Session invalid or expired. Please log in again.");
 					        return;
 					    }
 
-					    try {
-					        // 2. Wait for access verification
-					        const exist = await checkAccess("TMDS");
-
-					        if (exist) {
-					            const targetOrigin = "http://192.168.1.20:3001";
-					            const tmdsWindow = window.open(targetOrigin + "/maindashboard?tmds=true", "_blank");
-
-					            let count = 0;
-					            const checkInterval = setInterval(() => {
-					                // 3. Send message to the new window
-					                if (tmdsWindow && count < 5) { 
-					                    tmdsWindow.postMessage(
-					                        { type: "LOGIN_SUCCESS", user: JSON.parse(userData) },
-					                        targetOrigin
-					                    );
-					                    count++;
-					                } else {
-					                    clearInterval(checkInterval);
-					                }
-					            }, 1000); // 1 second is usually safer for cross-origin window loading
-					        } else {
-					            // 4. Handle no access
-					            alert("You don't have access to TMDS");
-					        }
-					    } catch (error) {
-					        console.error("Error verifying TMDS access:", error);
-					        alert("An error occurred while checking system permissions.");
-					    }
-					};
-					  
-					const openDMS = async () => { // Marked as async
-					    const userData = localStorage.getItem("user");
-					    
-					    // 1. Validation: Session Check
-					    if (!userData || userData === '{"token":"","username":""}') {
-					        console.error("No session data found. Please log in.");
-					        return;
-					    }
-
-					    try {
-					        // 2. Wait for the access check to complete
-					        const exist = await checkAccess("DMS");
-
-					        if (exist) {
-					            const targetOrigin = "http://192.168.1.26:3002";
-					            const dmsWindow = window.open(targetOrigin + "/dashboard?dms=true", "_blank");
-
-					            let count = 0;
-					            const checkInterval = setInterval(() => {
-					                // 3. Message passing logic
-					                if (dmsWindow && count < 5) { 
-					                    dmsWindow.postMessage(
-					                        { type: "LOGIN_SUCCESS", user: JSON.parse(userData) },
-					                        targetOrigin
-					                    );
-					                    count++;
-					                } else {
-					                    clearInterval(checkInterval);
-					                }
-					            }, 1000); 
-					        } else {
-					            // 4. Permission denied handling
-					            alert("You don't have access to DMS");
-					        }
-					    } catch (error) {
-					        console.error("Error verifying DMS access:", error);
-					        alert("An error occurred while verifying system permissions.");
-					    }
-					};
-					
-						  
-					const openPFTS = async () => { // Marked as async
-					    const userData = localStorage.getItem("user");
-					    
-					    // 1. Validation: Session Check
-					    if (!userData || userData === '{"token":"","username":""}') {
-					        console.error("No session data found. Please log in.");
-					        return;
-					    }
-
-					    try {
-					        // 2. Perform the asynchronous access check for PFTS
-					        const exist = await checkAccess("PFTS");
-
-					        if (exist) {
-					            const targetOrigin = "http://192.168.1.26:3000";
-					            const pftsWindow = window.open(targetOrigin + "/dashboard?pfts=true", "_blank");
-
-					            let count = 0;
-					            const checkInterval = setInterval(() => {
-					                // 3. Message passing to the new window
-					                if (pftsWindow && count < 5) { 
-					                    pftsWindow.postMessage(
-					                        { type: "LOGIN_SUCCESS", user: JSON.parse(userData) },
-					                        targetOrigin
-					                    );
-					                    count++;
-					                } else {
-					                    clearInterval(checkInterval);
-					                }
-					            }, 1000); 
-					        } else {
-					            // 4. Alert user if access is denied
-					            alert("You don't have access to PFTS");
-					        }
-					    } catch (error) {
-					        console.error("Error verifying PFTS access:", error);
-					        alert("An error occurred while verifying system permissions.");
-					    }
-					};
-					
-					
-					const openEMS = async () => { // Marked as async
-					    const userData = localStorage.getItem("user");
-					    
-					    // 1. Validation: Session Check
-					    if (!userData || userData === '{"token":"","username":""}') {
-					        console.error("No session data found. Please log in.");
-					        return;
-					    }
-
-					    try {
-					        // 2. Wait for the access check to complete for EMS
-					        const exist = await checkAccess("EMS");
-
-					        if (exist) {
-					            const targetOrigin = "http://192.168.1.26:3003";
-					            const emsWindow = window.open(targetOrigin + "/dashboard?ems=true", "_blank");
-
-					            let count = 0;
-					            const checkInterval = setInterval(() => {
-					                // 3. Message passing logic
-					                if (emsWindow && count < 5) { 
-					                    emsWindow.postMessage(
-					                        { type: "LOGIN_SUCCESS", user: JSON.parse(userData) },
-					                        targetOrigin
-					                    );
-					                    count++;
-					                } else {
-					                    clearInterval(checkInterval);
-					                }
-					            }, 1000); 
-					        } else {
-					            // 4. Permission denied handling
-					            alert("You don't have access to EMS");
-					        }
-					    } catch (error) {
-					        console.error("Error verifying EMS access:", error);
-					        alert("An error occurred while verifying system permissions.");
-					    }
-					};
-								  
-					const openIBAS = async () => {
-					    const userData = localStorage.getItem("user");
-					    
-					    // Validation: Don't open if no user data exists
-					    if (!userData || userData === '{"token":"","username":""}') {
-					        console.error("No session data found. Please log in.");
-					        return;
-					    }
-
-					    try {
-					        // Wait for verification
-					        const exist = await checkAccess("IBAS");
-
-					        if (exist) {
-					            const targetOrigin = "http://192.168.1.62:3000";
-					            const ibasWindow = window.open(targetOrigin + "/dashboard?ibas=true", "_blank");
-
-					            let count = 0;
-					            const checkInterval = setInterval(() => {
-					                if (ibasWindow && count < 5) { 
-					                    ibasWindow.postMessage(
-					                        { type: "LOGIN_SUCCESS", user: JSON.parse(userData) },
-					                        targetOrigin
-					                    );
-					                    count++;
-					                } else {
-					                    clearInterval(checkInterval);
-					                }
-					            }, 1000); 
-					        } else {
-					            alert("You don't have access to IBAS");
-					        }
-					    } catch (error) {
-					        console.error("Error verifying IBAS access:", error);
-					        alert("An error occurred while verifying system permissions.");
-					    }
-					};
-					
-					const openHRMS = async () => {
-					    const userData = localStorage.getItem("user");
 					    const $loader = $('#global-loader');
-					    // Validation: Don't open if no user data exists
-					    if (!userData || userData === '{"token":"","username":""}') {
-					        console.error("No session data found. Please log in.");
-					        return;
-					    }
 
 					    try {
-					        // Wait for verification
-					        $loader.css('display', 'flex'); // Show Loader
-					        const exist = await checkAccess("HRMS");
-
-					        if (exist) {
-					            const targetOrigin = "http://192.168.1.150:3000";
-					            const hrmsWindow = window.open(targetOrigin + "/dashboard?hrms=true", "_blank");
-
-					            let count = 0;
-					            const checkInterval = setInterval(() => {
-					                if (hrmsWindow && count < 5) { 
-					                    hrmsWindow.postMessage(
-					                        { type: "LOGIN_SUCCESS", user: JSON.parse(userData) },
-					                        targetOrigin
-					                    );
-					                    count++;
-					                } else {
-					                    clearInterval(checkInterval);
-					                }
-					            }, 1000); 
-					        } else {
-					            alert("You don't have access to HRMS");
+					        if (showLoader) {
+					            $loader.css('display', 'flex');
 					        }
+
+					        // Uncomment if access check is required
+					        // const exist = await checkAccess(appName);
+					        // if (!exist) {
+					        //     alert(`You don't have access to ${appName}`);
+					        //     return;
+					        // }
+
+					        // Open child window synchronously to avoid popup blockers
+					        const appWindow = window.open(targetOrigin + dashboardPath, "_blank");
+
+					        if (!appWindow) {
+					            alert("Popup blocked! Please allow popups for this site.");
+					            return;
+					        }
+
+					        // Handshake state variables
+					        let delivered = false;
+					        let attempts = 0;
+					        const maxAttempts = appName === "EMS" ? 10 : 5;
+					        let interval = null;
+
+					        // 1. Listen for the child application's acknowledgment
+					        const onAck = (event) => {
+					            // Security: Strictly check event origin matches target application origin
+					            if (event.origin !== new URL(targetOrigin).origin) return;
+
+					            if (event.data?.type === "LOGIN_ACK") {
+					                delivered = true;
+					                clearInterval(interval);
+					                window.removeEventListener("message", onAck);
+					            }
+					        };
+
+					        window.addEventListener("message", onAck);
+
+					        // Helper to send login payload safely
+					        const sendLogin = () => {
+					            if (delivered || !appWindow || appWindow.closed) return;
+					            try {
+					                appWindow.postMessage(
+					                    {
+					                        type: "LOGIN_SUCCESS",
+					                        user: JSON.parse(userData)
+					                    },
+					                    targetOrigin
+					                );
+					            } catch (e) {
+					                // Window may have closed or navigated during posting
+					            }
+					        };
+
+					        // Send first message immediately
+					        sendLogin();
+
+					        // 2. Poll every 1 second until acknowledged or max attempts reached
+					        interval = setInterval(() => {
+					            attempts++;
+
+					            if (delivered || attempts >= maxAttempts || !appWindow || appWindow.closed) {
+					                clearInterval(interval);
+					                window.removeEventListener("message", onAck);
+
+					                if (!delivered && attempts >= maxAttempts) {
+					                    console.error(`Handshake timed out for ${appName}`);
+					                    alert(`Could not complete sign-in to ${appName}. Please try again.`);
+					                }
+					                return;
+					            }
+
+					            sendLogin();
+					        }, 1000);
+
 					    } catch (error) {
-					        console.error("Error verifying HRMS access:", error);
-					        alert("An error occurred while verifying system permissions.");
-					    }
-					    finally {
-					        $loader.hide(); // Hide Loader
+					        console.error(`Error opening ${appName}:`, error);
+					        alert(`An error occurred while opening ${appName}.`);
+					    } finally {
+					        if (showLoader) {
+					            $loader.hide();
+					        }
 					    }
 					};
-										  function checkAccess(app) {
-											    console.log("Checking access for: " + app);
-											    
-											    // Return the promise created by $.ajax
-											    return $.ajax({
-											        type: 'GET',
-											        url: 'user-login-app-access',
-											        dataType: 'json',
-											        data: {
-											            projectCode: app
-											        },
-											        error: function(err) {
-											            console.error("Access check failed", err);
-											        }
-											    });
-											}	  
+
+				  function checkAccess(app) {
+					    console.log("Checking access for: " + app);
+					    
+					    // Return the promise created by $.ajax
+					    return $.ajax({
+					        type: 'GET',
+					        url: 'user-login-app-access',
+					        dataType: 'json',
+					        data: {
+					            projectCode: app
+					        },
+					        error: function(err) {
+					            console.error("Access check failed", err);
+					        }
+					    });
+					}	  
 </script>
 
 

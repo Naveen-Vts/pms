@@ -242,6 +242,14 @@
 														                      </div>
 														                     </div>
 														                  </button>
+														                   <button type="button" class="editable-click" name="sub" value="C" onclick="deleteMainMilestone(<%= obj[0]%>)">
+																			<div class="cc-rockmenu">
+																			 <div class="rolling">	
+														                        <figure class="rolling_icon"><img src="view/images/delete.png" ></figure>
+														                        <span>Delete</span>
+														                      </div>
+														                     </div>
+														                  </button> 
 														                  <%} %>
 			                                                              <%}else if("Y".equalsIgnoreCase(obj[10].toString())){ %>
 <%-- 			                                                              <%if("A".equalsIgnoreCase(LoginType) || projectDirector.equals(empId) || Long.parseLong(obj[17].toString())==(empId)) { %>
@@ -504,7 +512,7 @@
 															</div> <%} %>
 															</td>
 															<td>
-														 	                                                   <%if("A".equalsIgnoreCase(LoginType) || projectDirector.equals(empId) || Long.parseLong(objB[13].toString())==(empId)) { %>
+																 <%if("A".equalsIgnoreCase(LoginType) || projectDirector.equals(empId) || Long.parseLong(objB[13].toString())==(empId)) { %>
 	                                                         	
 	                                                         
 			                                                        <div class="maindivInput">
@@ -1153,7 +1161,7 @@ function ChangeButton(id) {
 		}
 	});
 	
-	
+	/* 
 	function updateBpPoints(ele){
 		var a=ele.value;
 		var value1=a.split("/")[0];
@@ -1177,6 +1185,30 @@ function ChangeButton(id) {
 		}else{
 			ele.value=value1+"/Y/"+value3
 		}
+	} */
+	
+	function updateBpPoints(ele){
+
+	    var arr = ele.value.split("/");
+
+	    var activityId = arr[0];
+	    var point = arr[2];
+
+	    var status = !ele.checked ? "Y" : "N";
+
+	    $.ajax({
+	        type: "GET",
+	        url: "BriefingPointsUpdate.htm",
+	        dataType: "json",
+	        data: {
+	            ActivityId: activityId,
+	            point: point,
+	            status: status
+	        },
+	        success: function() {
+	            ele.value = activityId + "/" + status + "/" + point;
+	        }
+	    });
 	}
 	
 	// Milestone No Check
@@ -1282,6 +1314,44 @@ function ChangeButton(id) {
 		$('[data-toggle="tooltip"]').tooltip()
 	})
 	
+	
+	function deleteMainMilestone(mainid) {
+
+    if (!confirm("Are you sure to Delete?")) {
+        return;
+    }
+
+    const form = document.createElement("form");
+
+    form.method = "POST";
+    form.action = "DeleteMainMilestone.htm";
+
+    // Main Milestone ID
+    const mainIdInput = document.createElement("input");
+    mainIdInput.type = "hidden";
+    mainIdInput.name = "mainid";
+    mainIdInput.value = mainid;
+
+    // Project ID
+    const projectIdInput = document.createElement("input");
+    projectIdInput.type = "hidden";
+    projectIdInput.name = "projectId";
+    projectIdInput.value = '<%=ProjectId%>';
+
+    // CSRF Token
+    const csrfInput = document.createElement("input");
+    csrfInput.type = "hidden";
+    csrfInput.name = "${_csrf.parameterName}";
+    csrfInput.value = "${_csrf.token}";
+
+    form.appendChild(mainIdInput);
+    form.appendChild(projectIdInput);
+    form.appendChild(csrfInput);
+
+    document.body.appendChild(form);
+
+    form.submit();
+}
 	
 </script>  
 

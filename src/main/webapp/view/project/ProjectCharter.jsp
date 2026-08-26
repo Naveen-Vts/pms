@@ -71,7 +71,7 @@ List<Object[]> MilestoneActivityList=(List<Object[]>)request.getAttribute("Miles
 											<i class="fa fa-lg fa-file-pdf-o" aria-hidden="true"></i>
 										</button>
 									</div>	
-									<div class="col-md-2"></div>
+									
 								</div>
 								<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 							</form>				

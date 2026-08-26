@@ -87,7 +87,7 @@ List<Object[]> DashboardFinance= (List<Object[]>)request.getAttribute("Dashboard
 								            <div class="h4 font-weight-bold" id="pmrcprogress" ><%=(ProjectHealthTotalData[29]!=null?StringEscapeUtils.escapeHtml4(ProjectHealthTotalData[29].toString()): " - " )%>%</div>
 								          </div>
 								        </div>
-								        <div><h6 class="mb-2" >PMRC</h6></div>
+								        <div><h6 class="mb-2" >PMRB</h6></div>
 								        <hr class="m-2" >
 								        <table class="countstable mx-auto"  >
 								        	<tr>
@@ -379,7 +379,7 @@ List<Object[]> DashboardFinance= (List<Object[]>)request.getAttribute("Dashboard
 													<a  data-toggle="modal"  class="fa faa-pulse animated cursor-pointer px-4" data-target="#exampleModal1" data-whatever="@mdo" ><i class="fa fa-info-circle f-rem"  aria-hidden="true"></i> </a>
 												</td>
 												<td class="w-15"><span class="span-font">Project</span></td>
-												<td class="p-0"><span class="span-font">PMRC </span></td>
+												<td class="p-0"><span class="span-font">PMRB </span></td>
 												<td class="p-0"><span class="span-font">EB </span></td>
 												<td ><span class="span-font">Milestone </span></td>
 												<td ><span class="span-font">Action</span></td>
@@ -431,8 +431,8 @@ List<Object[]> DashboardFinance= (List<Object[]>)request.getAttribute("Dashboard
 														<div class="row">
 															<div class="col-md-10">
 															    <div class="progress"  >
-																  <div class="progress-bar progress-bar-striped bg-success" onclick="overallmeetingredirect('<%=obj[2]%>','1', 'B')" style="width:<%=obj[5]%>%;" data-toggle="tooltip" title="PMRC Held : <%=obj[4]!=null?StringEscapeUtils.escapeHtml4(obj[4].toString()): " - "%> / <%=obj[8]!=null?StringEscapeUtils.escapeHtml4(obj[8].toString()): " - " %>" ></div>
-																  <div class="progress-bar progress-bar-striped bg-primary" onclick="overallmeetingredirect('<%=obj[2]%>','1', 'C' )" style="width:<%=obj[7]%>%;" data-toggle="tooltip" title="PMRC Pending : <%=obj[6]!=null?StringEscapeUtils.escapeHtml4(obj[6].toString()): " - "%> / <%=obj[8]!=null?StringEscapeUtils.escapeHtml4(obj[8].toString()): " - " %>" ></div>
+																  <div class="progress-bar progress-bar-striped bg-success" onclick="overallmeetingredirect('<%=obj[2]%>','1', 'B')" style="width:<%=obj[5]%>%;" data-toggle="tooltip" title="PMRB Held : <%=obj[4]!=null?StringEscapeUtils.escapeHtml4(obj[4].toString()): " - "%> / <%=obj[8]!=null?StringEscapeUtils.escapeHtml4(obj[8].toString()): " - " %>" ></div>
+																  <div class="progress-bar progress-bar-striped bg-primary" onclick="overallmeetingredirect('<%=obj[2]%>','1', 'C' )" style="width:<%=obj[7]%>%;" data-toggle="tooltip" title="PMRB Pending : <%=obj[6]!=null?StringEscapeUtils.escapeHtml4(obj[6].toString()): " - "%> / <%=obj[8]!=null?StringEscapeUtils.escapeHtml4(obj[8].toString()): " - " %>" ></div>
 																</div>
 														  	</div>
 															<div class="col-md-2" style="padding-left: 0px !important">
@@ -682,7 +682,7 @@ List<Object[]> DashboardFinance= (List<Object[]>)request.getAttribute("Dashboard
 													<a  data-toggle="modal"  class="fa faa-pulse animated " data-target="#exampleModal1" data-whatever="@mdo" style="padding: 0px 1.5rem;cursor:pointer" ><i class="fa fa-info-circle " style="font-size: 1.3rem;color: " aria-hidden="true"></i> </a>
 												</td>
 												<td style="width:5%"><span style="font-size :15px;font-weight: bold; ">Lab</span></td>
-												<td class="p-0"><span class="span-font">PMRC </span></td>
+												<td class="p-0"><span class="span-font">PMRB </span></td>
 												<td class="p-0"><span class="span-font">EB </span></td>
 												<td ><span class="span-font">Milestone </span></td>
 												<td ><span class="span-font">Action</span></td>
@@ -705,8 +705,8 @@ List<Object[]> DashboardFinance= (List<Object[]>)request.getAttribute("Dashboard
 														<div class="row">
 															<div class="col-md-11">
 															    <div class="progress"  >
-																  <div class="progress-bar progress-bar-striped bg-success" onclick="overallmeetingredirectdg('<%=obj[2]%>','1', 'B')" style="width:<%=obj[29]%>%;" data-toggle="tooltip" title="PMRC Held : <%=obj[0]!=null?StringEscapeUtils.escapeHtml4(obj[0].toString()): " - "%> / <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()): " - " %>" ></div>
-																  <div class="progress-bar progress-bar-striped bg-primary" onclick="overallmeetingredirectdg('<%=obj[2]%>','1', 'C' )" style="width:<%=obj[30]%>%;" data-toggle="tooltip" title="PMRC Pending : <%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - "%> / <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()): " - " %>" ></div>
+																  <div class="progress-bar progress-bar-striped bg-success" onclick="overallmeetingredirectdg('<%=obj[2]%>','1', 'B')" style="width:<%=obj[29]%>%;" data-toggle="tooltip" title="PMRB Held : <%=obj[0]!=null?StringEscapeUtils.escapeHtml4(obj[0].toString()): " - "%> / <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()): " - " %>" ></div>
+																  <div class="progress-bar progress-bar-striped bg-primary" onclick="overallmeetingredirectdg('<%=obj[2]%>','1', 'C' )" style="width:<%=obj[30]%>%;" data-toggle="tooltip" title="PMRB Pending : <%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - "%> / <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()): " - " %>" ></div>
 																</div>
 														  	</div>
 															<div class="col-md-1" style="padding-left: 0px !important">
@@ -1125,7 +1125,7 @@ function charts(value){
 					        text: ''
 					    },
 					    xAxis: {
-					        categories: ['PMRC', 'EB'],
+					        categories: ['PMRB', 'EB'],
 					        title: {
 					            text: null
 					        },

@@ -457,7 +457,7 @@ public class RfpMainServiceImpl implements RfpMainService {
 		
 		long count1 =0 ;
 		try {
-		long count = dao.ProjectHoaDelete(LabDetails.get(0).getLabCode());
+		// long count = dao.ProjectHoaDelete(LabDetails.get(0).getLabCode());
 		for(ProjectHoa obj : hoa) {
 			obj.setCreatedBy(Username);
 			obj.setCreatedDate(sdf1.format(new Date()));

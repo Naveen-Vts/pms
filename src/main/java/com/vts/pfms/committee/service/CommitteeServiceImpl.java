@@ -234,7 +234,7 @@ public class CommitteeServiceImpl implements CommitteeService{
 		committeemodel.setIsGlobal(Long.parseLong(committeeDto.getIsGlobal()));
 		committeemodel.setModifiedBy(committeeDto.getModifiedBy());
 		committeemodel.setModifiedDate(sdf1.format(new Date()));
-		committeemodel.setIsBriefing(committeeDto.getIsBriefing());
+		committeemodel.setIsBriefing(committeeDto.getIsBriefing() != null ? committeeDto.getIsBriefing() : "N");
 		return dao.CommitteeEditSubmit(committeemodel);	
 	}	
 	
@@ -856,7 +856,7 @@ public class CommitteeServiceImpl implements CommitteeService{
 				.append(" on "+scheduleDate.split("-")[2] + "-"+ scheduleDate.split("-")[1] + "-"+ scheduleDate.split("-")[0]+" has been rescheduled on "+committeescheduledto.getScheduleDate()+ " at "+newTime);
 	
 			
-		List<Object[]>list = 	dao.CommitteeAtendance(schedule.getScheduleId()+"");
+		List<Object[]>list = 	dao.CommitteeAtendance(schedule.getScheduleId()+"","0");
 		
 		ArrayList<String> emails= new ArrayList<String>();
 		ArrayList<String> emps= new ArrayList<String>();
@@ -1200,9 +1200,9 @@ public class CommitteeServiceImpl implements CommitteeService{
 
 
 	@Override
-	public List<Object[]> CommitteeAtendance(String committeescheduleid) throws Exception
+	public List<Object[]> CommitteeAtendance(String committeescheduleid,String revisionNo) throws Exception
 	{
-		return dao.CommitteeAtendance(committeescheduleid);
+		return dao.CommitteeAtendance(committeescheduleid,revisionNo);
 	}
 	
 	
@@ -1225,9 +1225,9 @@ public class CommitteeServiceImpl implements CommitteeService{
 	}
 	
 	@Override
-	public Long CommitteeInvitationCreate(CommitteeInvitationDto committeeinvitationdto) throws Exception 
-	{
+	public Long CommitteeInvitationCreate(CommitteeInvitationDto committeeinvitationdto) throws Exception {
 		logger.info(new Date() +"Inside SERVICE CommitteeInvitationCreate ");
+		
 		long ret=0;
 		long slno=1;
 		Object[] maxslno=dao.InvitationMaxSerialNo(committeeinvitationdto.getCommitteeScheduleId());
@@ -1235,9 +1235,10 @@ public class CommitteeServiceImpl implements CommitteeService{
 		{
 			slno=Long.parseLong(maxslno[1].toString());
 		}
-	
-		for(int i=0;i<committeeinvitationdto.getEmpIdList().size();i++) 
-		{
+
+		Long scheduleId = committeeinvitationdto.getCommitteeScheduleId() != null && !committeeinvitationdto.getCommitteeScheduleId().isBlank() ? Long.parseLong(committeeinvitationdto.getCommitteeScheduleId()) : 0;
+		
+		for(int i=0;i<committeeinvitationdto.getEmpIdList().size();i++) {
 			
 			CommitteeInvitation committeeinvitation= new CommitteeInvitation();
 			
@@ -1248,9 +1249,12 @@ public class CommitteeServiceImpl implements CommitteeService{
 			committeeinvitation.setAttendance("P");
 			committeeinvitation.setCreatedDate(sdf1.format(new Date()));
 			committeeinvitation.setEmpId(Long.parseLong(MemberType[0]));
+			committeeinvitation.setRevisionNo(committeeinvitationdto.getRevisionNo());
+			committeeinvitation.setParentInvitationId(0L);
+			committeeinvitation.setIsActive(1L);
 			if(committeeinvitationdto.getReptype()!= null && !committeeinvitationdto.getReptype().equals("0")) 
 			{
-				committeeinvitation.setMemberType(committeeinvitationdto.getReptype());
+				committeeinvitation.setMemberType(committeeinvitationdto.getReptype()+"_NORMAL");
 			}
 			else 
 			{
@@ -1276,7 +1280,6 @@ public class CommitteeServiceImpl implements CommitteeService{
 						committeeinvitation.setSerialNo(committeeinvitationdto.getEmpIdList().size());
 					}else {
 						committeeinvitation.setSerialNo(MemberType.length>3 && Integer.parseInt(MemberType[3])>0?Integer.parseInt(MemberType[3]):++slno);
-						
 					}
 				}else {
 					committeeinvitation.setSerialNo(++slno);
@@ -1288,9 +1291,26 @@ public class CommitteeServiceImpl implements CommitteeService{
 			}
 			
 		}
+		updateInvitationBasedonScheduleId(scheduleId,committeeinvitationdto.getEmpIdList().size()+1);		
 		
 		return ret; 
 	}
+	
+	public void updateInvitationBasedonScheduleId(Long scheduleId,long srno) {
+		try {
+			List<CommitteeInvitation> invitation = dao.getCommitteeInvitationList(scheduleId);
+			
+			for(CommitteeInvitation invite: invitation) {
+				invite.setSerialNo(srno++);
+				invite.setIsActive(1L);
+				
+				dao.CommitteeInvitationCreate(invite);
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	};
 
 	@Override
 	public Long CommitteeInvitationDelete(String committeeinvitationid) throws Exception
@@ -2112,6 +2132,15 @@ public class CommitteeServiceImpl implements CommitteeService{
 			emplist.addAll(Arrays.asList(dto.getIndustrialPartnerRepIds()));
 		}
 		/* ------------------ end ----------------------- */
+		if (dto.getRepIds() != null) {
+			
+			for(int i=0;i<dto.getRepIds().length;i++) {
+				
+				lablist.add("@REP");
+				membertype.add("CIR");
+			}
+			emplist.addAll(Arrays.asList(dto.getRepIds()));
+		}
 		
 		for(int i=0;i< emplist.size();i++)
 		{
@@ -3985,7 +4014,7 @@ public Long UpdateMomAttach(Long scheduleId) throws Exception {
 		        subemps.addAll(filteredList);
 		    }
 			if(subemps.size()==0) {
-				if(role[i]!=null && role[i].length()>0) {
+				if(role[i]!=null) {
 				PfmsEmpRoles pf = new PfmsEmpRoles();
 				pf.setEmpNo(empNo[i]);
 				pf.setOrganization(labCode[i]);
@@ -3996,7 +4025,7 @@ public Long UpdateMomAttach(Long scheduleId) throws Exception {
 				masterDao.addPfmsEmpRoles(pf);
 				}
 			}
-			if(role[i]!=null && role[i].length()>0) {
+			if(role[i]!=null) {
 				dao.InvitationRoleoUpdate(role[i],invitationid[i]);
 			}
 		}
@@ -4227,11 +4256,72 @@ public Long UpdateMomAttach(Long scheduleId) throws Exception {
 	public List<Object[]> CommitteeScheduleMinutesMom(String committeescheduleid) throws Exception {
 		return dao.CommitteeScheduleMinutesMom(committeescheduleid);
 	}
-	
+
+	@Override
+	public long changeRepresentative(CommitteeInvitationDto dto) throws Exception {
+
+		CommitteeInvitation invitation = dao.getcommitteeInvitation(dto.getInvitationId());
+		
+		
+		CommitteeInvitation invite = new CommitteeInvitation();
+		Long empId = dto.getEmpId() != null && !dto.getEmpId().isBlank() ? Long.parseLong(dto.getEmpId()) : 0;
+		
+		invite.setCommitteeScheduleId(invitation.getCommitteeScheduleId());
+		invite.setLabCode(dto.getEmpLabCode());
+		invite.setEmpId(empId);
+		invite.setMemberType(invitation.getMemberType());
+		invite.setDesigId(dto.getDesignationId());
+		invite.setSerialNo(invitation.getSerialNo());
+		invite.setAttendance(invitation.getAttendance());
+		invite.setEmpMeetingRole(invitation.getEmpMeetingRole());
+		invite.setIsOnlineAttendence(invitation.getIsOnlineAttendence());
+		invite.setCreatedBy(dto.getCreatedBy());
+		invite.setCreatedDate(sdf1.format(new Date()));
+		invite.setRevisionNo(invitation.getRevisionNo() + 1);
+		invite.setParentInvitationId(invitation.getParentInvitationId());
+		invite.setIsActive(1L);
+		
+//		return dao.changeRepresentative(dto);
+		return dao.CommitteeInvitationCreate(invite);
+	}
+
+	@Override
+	public List<Object[]> getCommitteeRepIsActiveList(String committeescheduleid) throws Exception {
+		return dao.getCommitteeRepIsActiveList(committeescheduleid);
+	}
+
+	@Override
+	public long addRepresentative(CommitteeInvitationDto dto) throws Exception {
+		CommitteeInvitation invite = new CommitteeInvitation();
+		
+		Long empId = dto.getEmpId() != null && !dto.getEmpId().isBlank() ? Long.parseLong(dto.getEmpId()) : 0;
+		Long scheduleId = dto.getCommitteeScheduleId() != null && !dto.getCommitteeScheduleId().isBlank() ? Long.parseLong(dto.getCommitteeScheduleId()) : 0;
+		
+		invite.setCommitteeScheduleId(scheduleId);
+		invite.setLabCode(dto.getEmpLabCode());
+		invite.setEmpId(empId);
+		invite.setMemberType(dto.getRepCode());
+		invite.setDesigId(dto.getDesignationId());
+		invite.setSerialNo(0);
+		invite.setAttendance("P");
+		invite.setEmpMeetingRole(null);
+		invite.setIsOnlineAttendence(null);
+		invite.setCreatedBy(dto.getCreatedBy());
+		invite.setCreatedDate(sdf1.format(new Date()));
+		invite.setRevisionNo(0L);
+		invite.setIsActive(0L);
+		
+		return dao.CommitteeInvitationCreate(invite);
+	}
+
 	@Override
 	public void CommitteeOnlineAttendanceToggle(String invitationid, String isOnlineAttendenc) throws Exception {
-		dao.CommitteeOnlineAttendanceToggle(invitationid,isOnlineAttendenc);
-		
+		dao.CommitteeOnlineAttendanceToggle(invitationid,isOnlineAttendenc);		
+	}
+
+	@Override
+	public List<Object[]> getCommitteeMainRepList(String committeeMainId) {
+		return dao.getCommitteeMainRepList(committeeMainId);
 	}
 	
 }

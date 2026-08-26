@@ -19,7 +19,7 @@
 <% 
 SimpleDateFormat sdf1=new SimpleDateFormat("dd-MM-yyyy");
 SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
-Object[] committeedata= request.getAttribute("committeedata") !=null ? (Object[])request.getAttribute("committeedata") : new Object[100];
+Object[] committeedata= (Object[])request.getAttribute("committeedata");
 Object[] startdate=(Object[])request.getAttribute("startdate");
 List<Object[]> CommitteeAutoScheduleList=(List<Object[]>)request.getAttribute("CommitteeAutoScheduleList");
 String Dashboard= (String)request.getAttribute("dashboard");
@@ -60,7 +60,7 @@ String committeeid=(String)request.getAttribute("committeeid");
 					<div class="row">
 					
 						<div class="col-md-4">	
-							<h3 class="control-label" > <%=committeedata[1]!=null?StringEscapeUtils.escapeHtml4(committeedata[1].toString()): " - " %> Auto Schedule </h3> 
+							<h3 class="control-label" > <%=committeedata != null ? ( committeedata[1]!=null?StringEscapeUtils.escapeHtml4(committeedata[1].toString()): " - ") : "" %> Auto Schedule </h3> 
 						</div>
 						
 						<div class="col-md-5">	</div>
@@ -99,7 +99,7 @@ String committeeid=(String)request.getAttribute("committeeid");
 								</div>
 
 							</div>
-							<input type="hidden" name="committeeid" value="<%=committeedata[0]%>"/>												
+							<input type="hidden" name="committeeid" value="<%=committeedata != null ? committeedata[0] : ""%>"/>												
 							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />					
 					</div> 
 					
@@ -148,7 +148,7 @@ String committeeid=(String)request.getAttribute("committeeid");
 						
 						<%if(!Dashboard.equalsIgnoreCase("nondashboard")){ %>	
 						
-						<h3 class="col-md-7">General Schedules List <%if(!committeeid.equals("A")){ %> (<%=committeedata[1]!=null?StringEscapeUtils.escapeHtml4(committeedata[1].toString()): " - " %> )  <%} %></h3>
+						<h3 class="col-md-7">General Schedules List <%if(!committeeid.equals("A")){ %> (<%=committeedata != null ? ( committeedata[1]!=null?StringEscapeUtils.escapeHtml4(committeedata[1].toString()): " - ") : "" %> )  <%} %></h3>
 					
 						<%} %>
 					

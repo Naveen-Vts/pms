@@ -524,14 +524,14 @@ for(Object[]obj:projects){
 <br>
 <div class="col-md-12">
   <a class="badge badge-light headerclass" data-toggle="collapse" href="#collapseExample6" role="button" aria-expanded="false" aria-controls="collapseExample6">
-  6.  &nbsp; &nbsp;PMRC Details
+  6.  &nbsp; &nbsp;PMRB Details
   </a>
 
 </div>
 <div class="col-md-12 collapse show" id="collapseExample6">
 <table class="subtables table table-bordered table-stripped" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px; border-collapse:collapse;width: 100%" id="table6">
 <thead>
-<tr class="subjectDiv"> <td colspan="14">6.  &nbsp; &nbsp;PMRC Details</td> </tr>
+<tr class="subjectDiv"> <td colspan="14">6.  &nbsp; &nbsp;PMRB Details</td> </tr>
 
 <tr>
 <th style="text-align: center" rowspan="2">SN</th>
@@ -1054,7 +1054,7 @@ function exportMultipleTablesToExcel() {
 	      { id: "table3", name: "PD list" },
 	      { id: "table4", name: "Expired Projects" },
 	      { id: "table5", name: "Closure Status" },
-	      { id: "table6", name: "PMRC Details" },
+	      { id: "table6", name: "PMRB Details" },
 	      { id: "table7", name: "EB Details" },
 	      { id: "table8", name: "SPRC Details" }
 	    ];

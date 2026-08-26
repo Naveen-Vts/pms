@@ -8,7 +8,7 @@ font-weight: bold;
 }
 body{
 background-color: #f2edfa;
-overflow-x:hidden !important; 
+overflow-x: auto!important;  
 }
 h6{
 	text-decoration: none !important;
@@ -28,7 +28,7 @@ h6{
 .flex-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 75vh;
 }
 
 .m-minus{

@@ -32,7 +32,7 @@
 						 var msprogress = "border-danger"
 						 var actionprogress = "border-danger"
 						 var riskprogress = "border-danger"
-						 /* PMRC progress */
+						 /* PMRB progress */
 
 							 if(Number(ajaxresult[29])>25 && Number(ajaxresult[29])<=50){
 				 				 pmrcprogress = "border-orange";
@@ -87,7 +87,7 @@
 			            '<div class="h4 font-weight-bold" id="pmrcprogress" >'+ajaxresult[29]+'%</div></div></div><hr class="clx-59">'+
 			        	'<table class="countstable clx-60">'+
 			        	'<tr>'+
-			        	'<th class="clx-61">PMRC </th>	</tr>'+
+			        	'<th class="clx-61">PMRB </th>	</tr>'+
 				        '<tr><td class="clx-62" id="meetingsvaluepmrc"  data-toggle="tooltip" title="Held / To be Held / Total to be Held" >'+
 			        	'<span>'+ajaxresult[0]+'/'+ajaxresult[2]+'/'+ajaxresult[46]+'</span></td></tr></table></div>'+
 		      			'<div class="col-md-6 circular-progress">'+

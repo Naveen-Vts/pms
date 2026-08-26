@@ -72,7 +72,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 	private static final String ACTIVITYLEVELFULLEDIT="UPDATE milestone_activity_level SET activityname=:name,Weightage=:Weightage,activitytype=:type,oicempid=:empid,oicempid1=:empid1,startdate=:from,enddate=:to,orgstartdate=:orgfrom,orgenddate=:orgto,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE activityid=:id";
 	private static final String MILEACTIVITYUPDATE="UPDATE milestone_activity  SET activityname=:name, startdate=:from,enddate=:to,Weightage=:Weightage,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE milestoneactivityid=:id";
     private static final String MILELEVELCOMPARE="CALL Pfms_Milestone_Level_Compare(:id,:rev,:rev1,:levelid)";
-	private static final String MILECOMPAREMAIN="SELECT a.milestoneactivityid,b.project_name,e.startdate,e.enddate,e.activityname,e.progressstatus as ps,c.emp_name,d.emp_name AS emp,e.revisionno,e.progressstatus as ps1,e.progressstatus as ps2,a.progressstatus as ps3,DATEDIFF(e.enddate,e.startdate) AS actual,(SELECT DATEDIFF(f.enddate,f.startdate) FROM milestone_activity_rev f WHERE  f.milestoneactivityid=:id  AND f.revisionno=:rev1) AS diff,a.dateofcompletion,g.activitystatus  FROM milestone_activity a,project_master b, employee c,employee d,milestone_activity_rev e,milestone_activity_status g WHERE a.activitystatusid=g.activitystatusid and a.projectid=b.project_id AND a.oicempid=c.emp_id AND a.oicempid1=d.emp_id AND a.milestoneactivityid=e.milestoneactivityid   AND a.milestoneactivityid=:id AND e.revisionno=:rev";
+	private static final String MILECOMPAREMAIN="SELECT a.milestoneactivityid,b.project_name,e.startdate,e.enddate,e.activityname,e.progressstatus as ps,c.emp_name,d.emp_name AS emp,e.revisionno,e.progressstatus as ps1,e.progressstatus as ps2,a.progressstatus as ps3,DATEDIFF(e.enddate,e.startdate) AS actual,(SELECT DATEDIFF(f.enddate,f.startdate) FROM milestone_activity_rev f WHERE  f.milestoneactivityid=:id  AND f.revisionno=:rev1 LIMIT 1) AS diff,a.dateofcompletion,g.activitystatus  FROM milestone_activity a,project_master b, employee c,employee d,milestone_activity_rev e,milestone_activity_status g WHERE a.activitystatusid=g.activitystatusid and a.projectid=b.project_id AND a.oicempid=c.emp_id AND a.oicempid1=d.emp_id AND a.milestoneactivityid=e.milestoneactivityid   AND a.milestoneactivityid=:id AND e.revisionno=:rev";
 	private static final String MAEMPLIST="select a.milestoneactivityid,b.project_name,a.startdate,a.enddate,a.activityname,a.milestoneno,c.emp_name,d.emp_name as emp,(SELECT MAX(e.revisionno) FROM milestone_activity_rev e WHERE a.milestoneactivityid=e.milestoneactivityid) AS rev from milestone_activity a,project_master b, employee c,employee d,milestone_activity_rev e where  a.revisionno=e.revisionno  AND a.milestoneactivityid=e.milestoneactivityid and a.projectid=b.project_id and a.oicempid=c.emp_id and a.oicempid1=d.emp_id and (a.oicempid1=:EmpId or a.oicempid=:EmpId)";
 	private static final String STATUSLIST="select a.activitystatusid,a.activitystatus FROM milestone_activity_status a ";
 	private static final String PROACTIVITYUPDATE="UPDATE milestone_activity SET dateofcompletion=:doc,activitystatusid=:status,progressstatus=:progress,statusremarks=:remarks,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE milestoneactivityid=:id";
@@ -81,7 +81,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
     private static final String SUBLIST="SELECT a.activitysubid,a.progress,a.progressdate,a.remarks,a.attachname,\r\n"
     		+ "	(SELECT CONCAT(IFNULL(CONCAT(e.title,' '),IFNULL(CONCAT(e.salutation,' '),'')), e.emp_name) AS 'empname' FROM employee e WHERE e.emp_id =\r\n"
     		+ "	(SELECT l.empid FROM login l WHERE l.username = a.createdby)) AS 'EmpName'\r\n"
-    		+ "	 FROM milestone_activity_sub a WHERE a.activityid=:id";
+    		+ "	 FROM milestone_activity_sub a WHERE a.activityid=:id AND a.isactive = 1";
     private static final String SUBDATA="FROM MilestoneActivitySub WHERE ActivitySubId=:id"; 
 	private static final String PROJECTDETAILS="SELECT a.project_id,a.project_code,a.project_name,a.project_short_name FROM project_master a WHERE a.project_id=:projectid";
 	private static final String MAASSIGNEELIST="CALL Pfms_Milestone_Oic_List(:ProjectId,:empid)";
@@ -1049,7 +1049,8 @@ public class MilestoneDaoImpl implements MilestoneDao {
 		}
 	}
 	
-	private static final String MILESTONEACTIVITYLISTNEW = "SELECT a.milestoneactivityid AS obid,0 AS 'parentactivityid',a.startdate,a.enddate,a.activityname,a.progressstatus,a.Weightage,a.dateofcompletion, b.activitystatus,a.activitystatusid,a.revisionno AS 'rev' ,d.activitytypeid, d.activitytype ,a.oicempid,e.emp_name,a.oicempid1,0 AS 'activitylevelid' FROM milestone_activity a,milestone_activity_status b, milestone_activity_type d ,employee e WHERE a.activitystatusid=b.activitystatusid AND a.activitytype=d.activitytypeid AND a.oicempid=e.emp_id AND a.projectid=:projectid";
+
+	private static final String MILESTONEACTIVITYLISTNEW = "SELECT a.milestoneactivityid AS obid,0 AS 'parentactivityid',a.startdate,a.enddate,a.activityname,a.progressstatus,a.Weightage,a.dateofcompletion, b.activitystatus,a.activitystatusid,a.revisionno AS 'rev' ,d.activitytypeid, d.activitytype ,a.oicempid,e.empname,a.oicempid1,0 AS 'activitylevelid' FROM milestone_activity a,milestone_activity_status b, milestone_activity_type d ,employee e WHERE a.activitystatusid=b.activitystatusid AND a.isactive = 1 AND a.activitytype=d.activitytypeid AND a.oicempid=e.empid AND a.projectid=:projectid";
 	@Override
 	public List<Object[]> MilestoneActivityListNew(String ProjectId) throws Exception 
 	{
@@ -1944,4 +1945,91 @@ public class MilestoneDaoImpl implements MilestoneDao {
 		}
 		return null;
 	}
+
+	private static final String MAINMILEDELETE = "UPDATE milestone_activity SET isactive = 0 WHERE MilestoneActivityId = :mainId";
+	@Override
+	public long deleteMainLevelMilsetone(String mainId) throws Exception {
+		try {
+			Query query = manager.createNativeQuery(MAINMILEDELETE);
+			query.setParameter("mainId",mainId);
+			return query.executeUpdate();
+		}catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	private static final String MILESTONEPROGRESSCHECK = """
+			SELECT EXISTS (
+				    SELECT 1
+				    FROM milestone_activity_level l1
+				
+				    LEFT JOIN milestone_activity_level l2 ON l2.ParentActivityId = l1.ActivityId AND l2.ActivityLevelId = l1.ActivityLevelId + 1
+				    
+				    LEFT JOIN milestone_activity_level l3 ON l3.ParentActivityId = l2.ActivityId AND l3.ActivityLevelId = l2.ActivityLevelId + 1
+				
+				    LEFT JOIN milestone_activity_level l4 ON l4.ParentActivityId = l3.ActivityId AND l4.ActivityLevelId = l3.ActivityLevelId + 1
+				
+				    LEFT JOIN milestone_activity_level l5 ON l5.ParentActivityId = l4.ActivityId AND l5.ActivityLevelId = l4.ActivityLevelId + 1
+				
+				    WHERE l1.ActivityId = :activityId AND l1.ActivityLevelId = :levelId
+				      AND (
+				          l1.ProgressStatus > 0
+				          OR l1.ActivityStatusId > 1
+				          OR l1.Weightage > 0
+				
+				          OR l2.ProgressStatus > 0
+				          OR l2.ActivityStatusId > 1
+				          OR l2.Weightage > 0
+				
+				          OR l3.ProgressStatus > 0
+				          OR l3.ActivityStatusId > 1
+				          OR l3.Weightage > 0
+				
+				          OR l4.ProgressStatus > 0
+				          OR l4.ActivityStatusId > 1
+				          OR l4.Weightage > 0
+				
+				          OR l5.ProgressStatus > 0
+				          OR l5.ActivityStatusId > 1
+				          OR l5.Weightage > 0
+				      )
+				) AS hasDeletionRestriction
+			""";
+		@Override
+		public long deleteSubLevelMilsetone(String subId) throws Exception {
+			try {
+	
+			 Long activityId = Long.valueOf(subId);
+
+			    // Get the level of the activity
+			    Integer levelId = ((Number) manager.createNativeQuery("""
+			                SELECT ActivityLevelId
+			                FROM milestone_activity_level
+			                WHERE ActivityId = :activityId
+			                """)
+			            .setParameter("activityId", activityId)
+			            .getSingleResult())
+			            .intValue();
+
+			    Long hasRestriction = (Long) manager
+			            .createNativeQuery(MILESTONEPROGRESSCHECK)
+			            .setParameter("activityId", activityId)
+			            .setParameter("levelId", levelId)
+			            .getSingleResult();
+
+			    if (hasRestriction == 1) {
+			        return -1;
+			    }
+			    
+			    String deleteQuerry = "DELETE FROM milestone_activity_level WHERE ActivityId = :activityId";
+
+			    return manager.createNativeQuery(deleteQuerry)
+			    	    .setParameter("activityId", activityId)
+			    	    .executeUpdate();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return 0;
+			}
+		}
 }

@@ -470,10 +470,12 @@ public class PrintServiceImpl implements PrintService {
 
 	private List<Object[]> filterMilestones(String projectId, String committeeId, boolean isMilestone) throws Exception {
 	    List<Object[]> milestones = dao.Milestones(projectId, committeeId);
+	    	    
 	    if (milestones.isEmpty()) return Collections.emptyList();
 
 	    LocalDate today = LocalDate.parse(todayDate); // Parse only once
 
+	    
 	    return milestones.stream().filter(i -> {
 	        String levelId = String.valueOf(i[21]);
 	        int progress = Integer.parseInt(String.valueOf(i[17]));

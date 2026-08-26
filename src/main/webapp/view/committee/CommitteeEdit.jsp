@@ -100,7 +100,7 @@ Object[] projectdetails=(Object[])request.getAttribute("projectdetails");
 						 <div class="col-md-2">
 								<div class="form-group">
 									<label class="control-label">Project Applicable</label>
-									<select class="custom-select mt-n5" id="secretary" required="required" name="projectapplicable">
+									<select class="custom-select mt-n5" id="projectapplicable" required="required" name="projectapplicable">
 										<%if(committeedetails[4].toString().equalsIgnoreCase("P")){ %>
 										<option selected value="P">Project</option>
 										<option   value="N">Non-Project</option>
@@ -428,6 +428,16 @@ var editor_config = {
 	CKEDITOR.replace('Editordescription', editor_config);
 	CKEDITOR.replace('EditorReference', editor_config);
 
+	
+	document.getElementById('projectapplicable').addEventListener('change', function() {
+	    var isBriefing = document.getElementById('IsBriefing');
+	    if (this.value === "N") {
+	        isBriefing.disabled = true;
+	        isBriefing.value = "N";
+	    } else if (this.value === "P") {
+	        isBriefing.disabled = false;
+	    }
+	});
 </script>		
 	
 		

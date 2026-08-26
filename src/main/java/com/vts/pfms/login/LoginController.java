@@ -110,6 +110,30 @@ public class LoginController {
 	@Autowired
 	MasterService masterService;
 	
+
+	@Value("${ams.target.origin}")
+	private String amsurl;
+	
+	@Value("${tmds.target.origin}")
+	private String tmdsurl;
+	
+	@Value("${dms.target.origin}")
+	private String dmsurl;
+	
+	@Value("${pfts.target.origin}")
+	private String pftsurl;
+	
+	@Value("${ems.target.origin}")
+	private String emsurl;
+	
+	@Value("${ibas.target.origin}")
+	private String ibasurl;
+	
+	@Value("${hrms.target.origin}")
+	private String hrmsurl;
+
+	@Value("${sis.target.origin}")
+	private String sisurl;
 	
 	@Autowired
     private Environment env;
@@ -436,6 +460,16 @@ public class LoginController {
 		    long LoginId=Repository.findByUsername(req.getUserPrincipal().getName()).getLoginId();
 		    Object[] empdetails = headerservice.EmployeeDetailes(String.valueOf(LoginId)).get(0);
 
+	    	
+	    	ses.setAttribute("amsurl", amsurl);
+	    	ses.setAttribute("tmdsurl", tmdsurl);
+	    	ses.setAttribute("dmsurl", dmsurl);
+	    	ses.setAttribute("pftsurl", pftsurl);
+	    	ses.setAttribute("emsurl", emsurl);
+	    	ses.setAttribute("ibasurl", ibasurl);
+	    	ses.setAttribute("hrmsurl", hrmsurl);
+	    	ses.setAttribute("sisurl", sisurl);
+	    	
 		    ses.setAttribute("Username",req.getUserPrincipal().getName());
 		    ses.setAttribute("LoginId",LoginId ); 	
 		    ses.setAttribute("Division", Repository.findByUsername(req.getUserPrincipal().getName()).getDivisionId()); 	
@@ -832,6 +866,16 @@ public class LoginController {
     	String token=(String)ses.getAttribute("token");
     	String auToken = "Bearer "+token;
 
+    	
+    	ses.setAttribute("amsurl", amsurl);
+    	ses.setAttribute("tmdsurl", tmdsurl);
+    	ses.setAttribute("dmsurl", dmsurl);
+    	ses.setAttribute("pftsurl", pftsurl);
+    	ses.setAttribute("emsurl", emsurl);
+    	ses.setAttribute("ibasurl", ibasurl);
+    	ses.setAttribute("hrmsurl", hrmsurl);
+    	ses.setAttribute("sisurl", sisurl);
+    	
 		//check if it is project director or qioc
 		if (LoginType.equals("Q") || LoginType.equals("P")) {
 

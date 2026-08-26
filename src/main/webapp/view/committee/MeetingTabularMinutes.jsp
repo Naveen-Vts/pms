@@ -37,7 +37,7 @@
 	String lablogo=(String)request.getAttribute("lablogo");
 	Object[] membersec=null; 
 	LabMaster labInfo=(LabMaster)request.getAttribute("labInfo");
-	
+	List<String> repCodes = (List<String> )request.getAttribute("repCodes");
 	String ccmFlag = (String)request.getAttribute("ccmFlag");
 	%>
 <style type="text/css">
@@ -198,6 +198,7 @@ p{
 <!-- ------------------------------------------------------- members --------------------------------- -->
 <%if(invitedlist.size()>0){ %>
 <% ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","CW","CO","CH"));
+if(repCodes != null) membertypes.addAll(repCodes);
 
 int memPresent=0,memAbscent=0,ParPresent=0,parAbscent=0;
 int j=0;
@@ -370,7 +371,19 @@ for(Object[] temp : invitedlist){
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("CIP") )    {%>Industry Partner<%}
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("IP") )    {%>Addl. Industry Partner<%}
 					// Prudhvi - 27/03/2024 end
-					else {%> REP_<%=invitedlist.get(i)[3]!=null?invitedlist.get(i)[3].toString(): " - "%>&nbsp; (<%=invitedlist.get(i)[11]!=null?invitedlist.get(i)[11].toString(): " - " %>)  <%}
+					else {
+						String repCode = invitedlist.get(i)[3]!=null ? invitedlist.get(i)[3].toString() : "";
+						boolean isCommitteRep = !repCode.endsWith("_NORMAL");
+						
+						if(!isCommitteRep){
+							String[] reps = repCode.split("_");
+							repCode = "REP_"+reps[0];
+						}else{
+							repCode = "REP_"+repCode;
+						}
+						
+					
+					%> <%= repCode %> <%}
 				%>
 	 		</td>	
 	 		</tr>
@@ -423,7 +436,19 @@ for(Object[] temp : invitedlist){
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("CIP") )    {%>Industry Partner<%}
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("IP") )    {%>Addl. Industry Partner<%}
 					// Prudhvi - 27/03/2024 end
-					else {%> REP_<%=invitedlist.get(i)[3]!=null?invitedlist.get(i)[3].toString(): " - "%><%-- &nbsp; (<%=invitedlist.get(i)[11] %>) --%>  <%}
+					else {
+						String repCode = invitedlist.get(i)[3]!=null ? invitedlist.get(i)[3].toString() : "";
+						boolean isCommitteRep = !repCode.endsWith("_NORMAL");
+						
+						if(!isCommitteRep){
+							String[] reps = repCode.split("_");
+							repCode = "REP_"+reps[0];
+						}else{
+							repCode = "REP_"+repCode;
+						}
+						
+					
+					%> <%= repCode %> <%}
 				%>
 	 		</td>	
 	 	</tr>

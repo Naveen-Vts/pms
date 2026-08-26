@@ -306,6 +306,32 @@ public class PfmsMainController {
 		out.flush();
 		out.close();
 	}
+	
+	@RequestMapping(value = "LoginPage/DPFMDoc2026.htm", method = RequestMethod.GET)
+	public void DPFMDoc2026Handbook(HttpServletRequest req, HttpSession ses, HttpServletResponse res)
+			throws Exception {
+
+		String UserId = (String) ses.getAttribute("Username");
+		logger.info(new Date() +"Inside LoginPage/DPFMDoc2026.htm "+UserId);	
+		String path = req.getServletContext().getRealPath("/PurchaseManuals/" + "DPFM-2026.pdf");
+
+		res.setContentType("application/pdf");
+		res.setHeader("Content-Disposition", String.format("inline; filename=DPFM-2026.pdf"));
+
+		File my_file = new File(path);
+
+		OutputStream out = res.getOutputStream();
+		FileInputStream in = new FileInputStream(my_file);
+		byte[] buffer = new byte[4096];
+		int length;
+		while ((length = in.read(buffer)) > 0) {
+			out.write(buffer, 0, length);
+		}
+		in.close();
+		out.flush();
+		out.close();
+	}
+
 
 	
 	@RequestMapping(value = "SmsReportList.htm", method = {RequestMethod.GET,RequestMethod.POST})

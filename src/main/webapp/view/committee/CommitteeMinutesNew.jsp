@@ -68,7 +68,7 @@
 	Map<Integer,String> mappmrc=(Map<Integer,String>)request.getAttribute("mappmrc");
 	Map<Integer,String> mapEB=(Map<Integer,String>)request.getAttribute("mapEB");
 	List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envisagedDemandlist");
-	
+	List<String> repCodes = (List<String> )request.getAttribute("repCodes");
 	
 	String labcode =(String) session.getAttribute("labcode");
 	// new
@@ -308,7 +308,7 @@ p{
 			<tr style="margin-top: 10px">
 				<td  style="text-align: left; width: 650px;font-size: 20px; padding-left: 15px;"> Record/ File no __________dated___________  </td></tr><tr>
 				<th  style="text-align: center;  width: 650px;font-size: 20px;padding-top: 10px; ">
-					Minutes of  Apex Board/ Executive Board/ PMRC Meeting for Project titled 
+					Minutes of  Apex Board/ Executive Board/ PMRB Meeting for Project titled 
 				"<span style=" text-decoration: underline;"><%=projectdetails[1] %>  (<%=projectdetails[4]%>)</span>" held on <%=sdf.format(sdf1.parse(committeescheduleeditdata[2].toString()))%> at  <% if(committeescheduleeditdata[12]!=null){ %><%=committeescheduleeditdata[12] %> <%}else{ %> - <%} %>
 				</th>				
 			</tr>
@@ -319,6 +319,7 @@ p{
 
 <%if(invitedlist.size()>0){ %>
 <% ArrayList<String> membertypes=new ArrayList<String>(Arrays.asList("CC","CS","PS","CI","CW","CO","CH"));
+if(repCodes != null) membertypes.addAll(repCodes);
 
 int memPresent=0,memAbscent=0,ParPresent=0,parAbscent=0;
 int j=0;
@@ -392,7 +393,7 @@ for( Object[]obj:specialMembers){ %>
 		 	</td>
 		 	<td style="border: 1px solid black; padding: 5px;text-align: left;">  
 	 	  	
-	 			<%=invitedlist.get(i)[7]!=null?invitedlist.get(i)[7].toString(): " - " %> , <%=invitedlist.get(i)[15]!=null ?invitedlist.get(i)[15].toString()+", ":(invitedlist.get(i)[14]!=null ?invitedlist.get(i)[14].toString()+", ": "")  %> <%= invitedlist.get(i)[11]!=null?invitedlist.get(i)[11].toString(): " - "%>  
+	 			<%=invitedlist.get(i)[7]!=null?invitedlist.get(i)[7].toString(): " - " %>, <%=invitedlist.get(i)[15]!=null && !invitedlist.get(i)[15].toString().isBlank() ?(invitedlist.get(i)[15].toString()+", "):(invitedlist.get(i)[14]!=null && !invitedlist.get(i)[14].toString().isBlank() ? (invitedlist.get(i)[14].toString()+", "): "")  %> <%= invitedlist.get(i)[11]!=null?invitedlist.get(i)[11].toString(): " - "%>  
 		 	</td>	
 		 	<td style="border: 1px solid black;padding: 5px ;text-align: left">
 		 		<%  if(invitedlist.get(i)[3].toString().equalsIgnoreCase("CC")) {		 %>Chairperson<%}
@@ -510,7 +511,19 @@ for( Object[]obj:specialMembers){ %>
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("CIP") )    {%>Industry Partner<%}
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("IP") )    {%>Addl. Industry Partner<%}
 					// Prudhvi - 27/03/2024 end
-					else {%> REP_<%=invitedlist.get(i)[3]!=null?invitedlist.get(i)[3].toString(): " - "%>&nbsp; (<%=invitedlist.get(i)[11]!=null?invitedlist.get(i)[11].toString(): " - " %>)  <%}
+					else {
+						String repCode = invitedlist.get(i)[3]!=null ? invitedlist.get(i)[3].toString() : "";
+						boolean isCommitteRep = !repCode.endsWith("_NORMAL");
+						
+						if(!isCommitteRep){
+							String[] reps = repCode.split("_");
+							repCode = "REP_"+reps[0];
+						}else{
+							repCode = "REP_"+repCode;
+						}
+						
+					
+					%> <%= repCode %> <%}
 				%>
 	 		</td>	
 	 		</tr>
@@ -563,7 +576,19 @@ for( Object[]obj:specialMembers){ %>
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("CIP") )    {%>Industry Partner<%}
 					else if(invitedlist.get(i)[3].toString().equalsIgnoreCase("IP") )    {%>Addl. Industry Partner<%}
 					// Prudhvi - 27/03/2024 end
-					else {%> REP_<%=invitedlist.get(i)[3]!=null?invitedlist.get(i)[3].toString(): " - "%><%-- &nbsp; (<%=invitedlist.get(i)[11] %>) --%>  <%}
+					else {
+						String repCode = invitedlist.get(i)[3]!=null ? invitedlist.get(i)[3].toString() : "";
+						boolean isCommitteRep = !repCode.endsWith("_NORMAL");
+						
+						if(!isCommitteRep){
+							String[] reps = repCode.split("_");
+							repCode = "REP_"+reps[0];
+						}else{
+							repCode = "REP_"+repCode;
+						}
+						
+					
+					%> <%= repCode %> <%}
 				%>
 	 		</td>	
 	 	</tr>
@@ -876,13 +901,16 @@ for( Object[]obj:specialMembers){ %>
 										
 										<th class="std"  style="width: 155px;" >Responsibility</th>
 										<!-- <th class="std"  style="width: 40px;"  >Status(DD)</th>			 -->
+										<%if("ADE".equalsIgnoreCase(labcode)){ %>
+											<th class="std"  style="width: 155px;" >Remarks</th>
+										<%} %>
 									</tr>
 								</thead>
 								
 								
 								<tbody>
 											<%if(lastpmrcactions.size()==0){ %>
-								<tr><td colspan="7"  style="text-align: center;" > Nil</td></tr>
+								<tr><td colspan="<%= "ADE".equalsIgnoreCase(labcode) ? "8" : "7" %>"  style="text-align: center;" > Nil</td></tr>
 								<%}
 								else if(lastpmrcactions.size()>0){
 								Map<String,List<Object[]>> list = lastpmrcactions!=null ? lastpmrcactions.stream()
@@ -893,20 +921,36 @@ for( Object[]obj:specialMembers){ %>
 								List<Object[]> values = map.getValue();
 								int rowSpan = values.size();
 								for (Object[] obj : values) {
+									
+									if(obj[9] != null && "C".equalsIgnoreCase(obj[9].toString())){
+										continue;
+									}
 								%>
 								<tr>
 									<td  class="std"  align="center"><%=i %></td>
 									<td class="std"  align="center">
 								<!--newly added on 13th sept  -->	
-								<%if(obj[17]!=null && Long.parseLong(obj[17].toString())>0){ %>
-								<%if(committeescheduleeditdata[8].toString().equalsIgnoreCase("pmrc")){ %>
-								<%for (Map.Entry<Integer, String> entry : mappmrc.entrySet()) {
+								<%if(obj[17]!=null && Long.parseLong(obj[17].toString())>0){
+									
+									String committeeCode = committeescheduleeditdata[8]!=null?committeescheduleeditdata[8].toString().toUpperCase():" - ";
+									String splCommitee = committeeCode;
+									
+									if(committeeCode.equalsIgnoreCase("PMRC") || committeeCode.equalsIgnoreCase("PMRB")){
+									LocalDate scheduleDate = obj[20] != null ? LocalDate.parse(obj[20].toString()) : null;
+									LocalDate PMRB_EFFECTIVE_DATE = LocalDate.of(2026, 4, 1);
+									if(scheduleDate.isBefore(PMRB_EFFECTIVE_DATE)){
+										splCommitee = "PMRC";
+									}else {
+										splCommitee = committeeCode;
+									}
+									
+									for (Map.Entry<Integer, String> entry : mappmrc.entrySet()) {
 									Date date = inputFormat.parse(obj[1].toString().split("/")[3]);
 									 String formattedDate = outputFormat.format(date);
 									 if(entry.getValue().equalsIgnoreCase(formattedDate)){
 										 key=entry.getKey().toString();
-									 } }}else{%>
-									 <%
+									 } }
+								}else{ 
 									 for (Map.Entry<Integer, String> entry : mapEB.entrySet()) {
 											Date date = inputFormat.parse(obj[1].toString().split("/")[3]);
 											 String formattedDate = outputFormat.format(date);
@@ -914,9 +958,8 @@ for( Object[]obj:specialMembers){ %>
 												 key=entry.getKey().toString();
 											 }
 									 }
-									 %>
-									 <%} %>
-							<span style="font-size: 14px;">	<%=committeescheduleeditdata[8]!=null?committeescheduleeditdata[8].toString().toUpperCase():" - "%> <%=key%>/<%=obj[1]!=null?obj[1].toString().split("/")[4]:" - " %></span>
+									  } %>
+							<span style="font-size: 14px;">	<%=splCommitee %> <%=key%>/<%=obj[1]!=null?obj[1].toString().split("/")[4]:" - " %></span>
 								<%}%> 
 								</td>
 								<%if(j++==1){ %><td rowspan="<%=rowSpan%>" class="std" style="text-align: left;"> <%=obj[2].toString()%> </td> <%} %>
@@ -951,7 +994,11 @@ for( Object[]obj:specialMembers){ %>
 												
 												
 									<td class="std"> <%=obj[11]!=null?obj[11].toString(): " - " %>, <%=obj[12]!=null?obj[12].toString(): " - " %> </td>
-	
+			 					
+			 					<%if("ADE".equalsIgnoreCase(labcode)){ %>
+									<td class="std"> <%=obj[16]!=null?obj[16].toString(): " - " %></td>
+								<%}%>
+								
 								</tr>			
 							<%i++;
 							}}} %>

@@ -90,7 +90,7 @@ public class CustomJavaMailSender {
 			List<Object[]>empAtendance= new ArrayList<>();
 			if(todayMeetings.size()>0) {
 			for(Object[]obj:todayMeetings) {
-				empAtendance=committeeService.CommitteeAtendance(obj[0].toString()).stream()
+				empAtendance=committeeService.CommitteeAtendance(obj[0].toString(),"0").stream()
 						.filter(e ->membertypes.contains(e[3].toString())).collect(Collectors.toList());
 				for(Object[]obj1:empAtendance) {//Merge the data in MeetingMailDto
 					MeetingMailDto m= new MeetingMailDto();

@@ -108,7 +108,7 @@ public class RequirementDaoImpl implements RequirementDao {
 
 		return r.getMemeberId();
 	}
-	private static final String DOCMEMLIST = " SELECT a.empid,CONCAT(IFNULL(CONCAT(a.title,' '),''), a.empname) AS 'empname' ,b.designation,a.labcode,b.desigid,c.MemeberId FROM employee a,employee_desig b,pfms_doc_members c WHERE a.isactive='1' AND a.DesigId=b.DesigId AND  a.empid = c.empid AND c.TestPlanInitiationId =:TestPlanInitiationId AND c.SpecsInitiationId=:SpecsInitiationId AND c.isactive =1 ORDER BY b.desigid ASC";
+	private static final String DOCMEMLIST = " SELECT a.emp_id,CONCAT(IFNULL(CONCAT(a.title,' '),''), a.emp_name) AS 'empname' ,b.designation,a.lab_code,b.desig_id,c.MemeberId FROM employee a,employee_desig b,pfms_doc_members c WHERE a.is_active='1' AND a.Desig_Id=b.Desig_Id AND  a.emp_id = c.empid AND c.TestPlanInitiationId =:TestPlanInitiationId AND c.SpecsInitiationId=:SpecsInitiationId AND c.isactive =1 ORDER BY b.desig_id ASC";
 
 	@Override
 	public List<Object[]> DocMemberList(String testPlanInitiationId, String specsInitiationId) throws Exception {
@@ -198,7 +198,7 @@ public class RequirementDaoImpl implements RequirementDao {
 
 		return query.executeUpdate();
 	}
-	private static final String DOCSUM="SELECT a.AdditionalInformation,a.Abstract,a.Keywords,a.Distribution,a.reviewer,a.approver,(SELECT CONCAT(CONCAT(IFNULL(CONCAT(e.title,' '),''), e.empname),', ', d.designation)FROM employee e,employee_desig d WHERE  e.desigid=d.desigid AND e.empid=a.approver  ) AS 'Approver1',(SELECT CONCAT(CONCAT(IFNULL(CONCAT(e.title,' '),''), e.empname),',', d.designation)FROM employee e,employee_desig d WHERE  e.desigid=d.desigid AND e.empid=a.reviewer) AS 'Reviewer1',a.summaryid,a.preparedby,(SELECT CONCAT(CONCAT(IFNULL(CONCAT(e.title,' '),''), e.empname),',', d.designation)FROM employee e,employee_desig d WHERE  e.desigid=d.desigid AND e.empid=a.PreparedBy) AS 'PreparedBy1',a.ReleaseDate,a.DocumentNo FROM pfms_test_plan_summary a WHERE a.TestPlanInitiationId =:TestPlanInitiationId AND a.SpecsInitiationId=:SpecsInitiationId AND a.isactive='1'";
+	private static final String DOCSUM="SELECT a.AdditionalInformation,a.Abstract,a.Keywords,a.Distribution,a.reviewer,a.approver,(SELECT CONCAT(CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name),', ', d.designation) FROM employee e,employee_desig d WHERE  e.desig_id=d.desig_id AND e.emp_id=a.approver  ) AS 'Approver1',(SELECT CONCAT(CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name),',', d.designation) FROM employee e,employee_desig d WHERE  e.desig_id=d.desig_id AND e.emp_id=a.reviewer) AS 'Reviewer1',a.summaryid,a.preparedby,(SELECT CONCAT(CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name),',', d.designation) FROM employee e,employee_desig d WHERE  e.desig_id=d.desig_id AND e.emp_id=a.PreparedBy) AS 'PreparedBy1',a.ReleaseDate,a.DocumentNo FROM pfms_test_plan_summary a WHERE a.TestPlanInitiationId =:TestPlanInitiationId AND a.SpecsInitiationId=:SpecsInitiationId AND a.isactive='1'";
 	@Override
 	public List<Object[]> getTestandSpecsDocumentSummary(String testPlanInitiationId, String specsInitiationId) throws Exception {
 
@@ -588,7 +588,7 @@ public class RequirementDaoImpl implements RequirementDao {
 		}
 	}
 
-	private static final String ROADMAPTRANSLIST = "SELECT a.DocInitiationTransId,c.EmpNo,c.EmpName,d.Designation,a.ActionDate,a.Remarks,b.ReqStatus,b.ReqStatusColor FROM pfms_doc_trans a,pfms_req_approval_status b,employee c,employee_desig d WHERE  a.ReqStatusCode = b.ReqStatusCode AND a.ActionBy=c.EmpId AND c.DesigId = d.DesigId AND a.DocInitiationId=:DocInitiationId AND a.DocType=:DocType ORDER BY a.DocInitiationTransId ";
+	private static final String ROADMAPTRANSLIST = "SELECT a.DocInitiationTransId,c.Emp_No,c.Emp_Name,d.Designation,a.ActionDate,a.Remarks,b.ReqStatus,b.ReqStatusColor FROM pfms_doc_trans a,pfms_req_approval_status b,employee c,employee_desig d WHERE  a.ReqStatusCode = b.ReqStatusCode AND a.ActionBy=c.Emp_Id AND c.Desig_Id = d.Desig_Id AND a.DocInitiationId=:DocInitiationId AND a.DocType=:DocType ORDER BY a.DocInitiationTransId ";
 	@Override
 	public List<Object[]> projectDocTransList(String docInitiationId, String docType) throws Exception {
 
@@ -752,7 +752,7 @@ public class RequirementDaoImpl implements RequirementDao {
 		return testType;
 	}
 
-	private static final String TESTDOCSUM="SELECT a.AdditionalInformation,a.Abstract,a.Keywords,a.Distribution,a.reviewer,a.approver,(SELECT CONCAT(IFNULL(CONCAT(e.title,' '),''), e.empname)FROM employee e WHERE e.empid=a.approver ) AS 'Approver1',(SELECT CONCAT(IFNULL(CONCAT(e.title,' '),''), e.empname)FROM employee e WHERE e.empid=a.reviewer) AS 'Reviewer1',a.summaryid FROM pfms_test_plan_summary a WHERE a.TestPlanInitiationId =:TestPlanInitiationId AND a.isactive='1'";
+	private static final String TESTDOCSUM="SELECT a.AdditionalInformation,a.Abstract,a.Keywords,a.Distribution,a.reviewer,a.approver,(SELECT CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) FROM employee e WHERE e.emp_id=a.approver ) AS 'Approver1',(SELECT CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) FROM employee e WHERE e.emp_id=a.reviewer) AS 'Reviewer1',a.summaryid FROM pfms_test_plan_summary a WHERE a.TestPlanInitiationId =:TestPlanInitiationId AND a.isactive='1'";
 	@Override
 	public List<Object[]> getDocumentSummary(String testPlanInitiationId) throws Exception {
 

@@ -2334,22 +2334,22 @@ public class MilestoneServiceImpl implements MilestoneService {
 			ProjectTechnicalWorkData workData = dao.getProjectTechnicalWorkDataById(Long.parseLong(techDataId));
 			workData.setModifiedBy(userId);
 			workData.setModifiedDate(sdtf.format(new Date()));
-			workData.setIsActive(0);
-			projectDao.TechnicalWorkDataAdd(workData);
-			
+			workData.setAttachmentId(0L);
+			workData.setIsActive(1);
+			return projectDao.TechnicalWorkDataAdd(workData);
 			
 			// Add new row of data if Relative Points points are not empty
-			if(relativePoints!=null && !relativePoints.isEmpty()) {
-				ProjectTechnicalWorkData workData2 = new ProjectTechnicalWorkData();
-				workData2.setProjectId(Long.parseLong(projectId));
-				workData2.setRelatedPoints(workData.getRelatedPoints());
-				workData2.setAttachmentId(0L);
-				workData2.setCreatedBy(userId);
-				workData2.setCreatedDate(sdtf.format(new Date()));
-				workData2.setIsActive(1);
-				projectDao.TechnicalWorkDataAdd(workData2);
-			}
-			return 1;
+//			if(relativePoints!=null && !relativePoints.isEmpty()) {
+//				ProjectTechnicalWorkData workData2 = new ProjectTechnicalWorkData();
+//				workData2.setProjectId(Long.parseLong(projectId));
+//				workData2.setRelatedPoints(relativePoints);
+//				workData2.setAttachmentId(0L);
+//				workData2.setCreatedBy(userId);
+//				workData2.setCreatedDate(sdtf.format(new Date()));
+//				workData2.setIsActive(1);
+//				projectDao.TechnicalWorkDataAdd(workData2);
+//			}
+//			return 1;
 		}catch (Exception e) {
 			e.printStackTrace();
 			return 0;
@@ -2830,5 +2830,15 @@ public class MilestoneServiceImpl implements MilestoneService {
 	@Override
 	public Object[] getMilestoneActivityBriefingById(String milestoneid) throws Exception  {
 		return dao.getMilestoneActivityBriefingById(milestoneid);
+	}
+
+	@Override
+	public long deleteMainLevelMilsetone(String mainId) throws Exception {
+		return dao.deleteMainLevelMilsetone(mainId);
+	}
+
+	@Override
+	public long deleteSubLevelMilsetone(String subId) throws Exception {
+		return dao.deleteSubLevelMilsetone(subId);
 	}
 }

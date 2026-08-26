@@ -14,6 +14,9 @@
 </head>
 <%SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
 Object[] getMA=(Object[])request.getAttribute("MilestoneActivity");
+if(getMA == null){
+	getMA = new Object[100];
+}
 String rev=(String)request.getAttribute("P");
 int revno=(Integer)request.getAttribute("Count");
 	%>
@@ -68,7 +71,7 @@ int revno=(Integer)request.getAttribute("Count");
                         	</div>
                         	<div class="col-md-2 " align="center" ><br>
                     		<label class="control-label">Progress  </label><br>
-                    		<%if(!getMA[11].toString().equalsIgnoreCase("0")){ %>
+                    		<%if(getMA[11] != null  && !getMA[11].toString().equalsIgnoreCase("0")){ %>
 															<div class="progress class3" >
 															<div class="progress-bar progress-bar-striped width-<%=getMA[11] %>" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" >
 															<%=getMA[11]!=null?StringEscapeUtils.escapeHtml4(getMA[11].toString()): " - " %>
@@ -92,6 +95,9 @@ int revno=(Integer)request.getAttribute("Count");
 </div>
 <%
 Object[] getMA1=(Object[])request.getAttribute("MilestoneActivity1");
+if(getMA1 == null){
+	getMA1 = new Object[100];
+}
 	%>
 <div class="col-md-6">
 <div  class="panel-group" ><h5 class="text-white class2" ><%=getMA[1] %> Milestone Activity Details ( Base Line <%=getMA1[8] %> )</h5>  

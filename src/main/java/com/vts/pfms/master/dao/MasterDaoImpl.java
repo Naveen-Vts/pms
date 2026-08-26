@@ -68,7 +68,7 @@ public class MasterDaoImpl implements MasterDao {
 	private static final String GROUPDATA = "SELECT dg.group_id,dg.group_code,dg.group_name,dg.group_head_id,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) AS 'empname',ed.designation,dg.is_active,dg.td_id,e.lab_code AS 'Group Head Labcode' FROM division_group dg,employee e, employee_desig ed WHERE e.is_active=1 AND dg.group_head_id=e.emp_id AND e.desig_id=ed.desig_id AND  dg.group_id=:groupid";
 
 	private static final String LABLIST="select labmasterid,labcode,labname,labunitcode,labaddress,labcity,labpin FROM lab_master";
-	private static final String EMPLOYEELIST="SELECT empid, CONCAT(IFNULL(CONCAT(title,' '),''), empname) AS 'empname' FROM employee WHERE isactive=1 ORDER BY srno ";
+	private static final String EMPLOYEELIST="SELECT emp_id, CONCAT(IFNULL(CONCAT(title,' '),''), emp_name) AS 'empname', lab_code, desig_id FROM employee WHERE is_active=1 ORDER BY sr_no ";
 	private static final String LABMASTEREDITDATA="select labmasterid,labcode,labname,labunitcode,labaddress,labcity,labpin,labtelno,labfaxno,labemail,labauthority,labauthorityid,labrfpemail,lablogo,labid from lab_master where labmasterid= :labmasterid";
 	private static final String LABSLIST="SELECT lab_id,cluster_id,lab_name,lab_code FROM cluster_lab";
 	private static final String EMPNOCHECKAJAX="SELECT emp_id, CONCAT(IFNULL(CONCAT(title,' '),''), emp_name) AS 'empname' , emp_no FROM employee WHERE emp_no=:empno"; 
@@ -674,7 +674,7 @@ public class MasterDaoImpl implements MasterDao {
 	}
 	
 	private static final String ALERTTDMASTER="SELECT dt.tdcode,dg.is_active,dg.group_name  FROM division_group dg,employee e, employee_desig ed, division_td dt \r\n"
-			+ "WHERE dg.group_head_id=e.empid AND e.desigid=ed.desigid AND dg.td_id=dt.tdid AND dg.is_active=1 AND dt.tdcode=:tdCode ORDER BY dg.group_id DESC";
+			+ "WHERE dg.group_head_id=e.emp_id AND e.desig_id=ed.desig_id AND dg.td_id=dt.tdid AND dg.is_active=1 AND dt.tdcode=:tdCode ORDER BY dg.group_id DESC";
 	@Override
 	public List<Object[]> CheckGroupMasterCode(String TdCode) throws Exception {
 		
@@ -971,10 +971,10 @@ public class MasterDaoImpl implements MasterDao {
 			return employee.getEmpId();
 		}
 
-		private static final String EMPWITHROLES ="SELECT b.emp_id AS'Empid',a.Roleid,b.lab_code AS 'Organization', CONCAT(IFNULL(CONCAT(b.title,' '),IFNULL(CONCAT(b.salutation,' '),'')), b.emp_name) AS 'empname' ,a.EmpRole,b.emp_no AS 'empno'  ,'I' AS 'emptype'\r\n"
+		private static final String EMPWITHROLES ="SELECT b.emp_id AS'Empid',a.Roleid,b.lab_code AS 'Organization', CONCAT(IFNULL(CONCAT(b.title,' '),IFNULL(CONCAT(b.salutation,' '),'')), b.emp_name) AS 'empname' ,a.EmpRole,b.emp_no AS 'empno'  ,'I' AS 'emptype', b.desig_id \r\n"
 				+ "FROM  employee b  LEFT JOIN pfms_emp_roles a ON b.emp_no = a.empno\r\n"
 				+ "UNION \r\n"
-				+ "SELECT b.ExpertId AS'Empid',a.Roleid,b.Organization AS 'Organization', CONCAT(IFNULL(CONCAT(b.title,' '),IFNULL(CONCAT(b.salutation,' '),'')), b.expertname) AS 'empname' ,a.EmpRole,b.ExpertNo AS 'empno'  ,'E' AS 'emptype'\r\n"
+				+ "SELECT b.ExpertId AS'Empid',a.Roleid,b.Organization AS 'Organization', CONCAT(IFNULL(CONCAT(b.title,' '),IFNULL(CONCAT(b.salutation,' '),'')), b.expertname) AS 'empname' ,a.EmpRole,b.ExpertNo AS 'empno'  ,'E' AS 'emptype', b.desigId "
 				+ "FROM  expert b  LEFT JOIN pfms_emp_roles a ON b.ExpertNo = a.empno ORDER BY Empid;";
 		@Override
 		public List<Object[]> getEmployees() throws Exception {

@@ -135,7 +135,7 @@ String year=(String)request.getAttribute("year");
    <form name="myfrm" action="AnnualMeetingSchedules.htm" method="GET">
                  <div class="row">
                      <div class="col-md-10" align="left">
-                     <h5>Annual Meeting Schedules (PMRC/EB)</h5>
+                     <h5>Annual Meeting Schedules (PMRB/EB)</h5>
                      </div>
                  <div class="col-md-1" >
                  <input class="form-control  form-control" type="text" id="year" value="<%=year %>"  name="year" style="width: 70px; height: 100%;">

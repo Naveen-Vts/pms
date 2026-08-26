@@ -790,7 +790,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 <!-- ----------------------------------------------4.Details of work------------------------------------------------- -->			
 		<% for(int z=0 ; z<1;z++) {   %>
 		<div align="left" style="margin-left: 10px;"><b class="sub-title">4. Particulars of Meeting</b></div><br>
-		<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(a) <%if(CommitteeCode.equalsIgnoreCase("PMRC")){ %>
+		<div align="left" style="margin-left: 15px;"><b class="mainsubtitle">(a) <%if(CommitteeCode.equalsIgnoreCase("PMRC") || CommitteeCode.equalsIgnoreCase("PMRB")){ %>
 															   						Approval 
 															   						<%}else { %>
 															   						Ratification
@@ -837,19 +837,16 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 									 if(entry.getValue().equalsIgnoreCase(formattedDate)){
 										 key2=entry.getKey().toString();
 									 } }%>
-								
-								<%=committee.getCommitteeShortName()!=null?(committee.getCommitteeShortName()).trim().toUpperCase():" - "+"-"+key2!=null?(key2):" - "+"/"+obj[5]!=null?(obj[5].toString()).split("/")[4]:" - " %>
-								
-			
+								<%=committee.getCommitteeShortName().trim().toUpperCase()+"-"+key2+"/"+obj[5].toString().split("/")[4] %>
+
 								</span>	
 									
-									
+
 								<%}%>
 							
 							
 							
 							</td>
-
 							<td  style="text-align: justify; "><%=obj[2]!=null?obj[2].toString(): " - " %></td>
 					
 							<td style="text-align: center;">
@@ -950,16 +947,32 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 									<td  style="text-align: center;"><%=i %></td>
 									<td <%if(text!=null && text.equalsIgnoreCase("p")) {%>style="font-weight: bold;"<%} %>>	
 								<!--newly added on 13th sept  -->	
-								<span style="font-size: 12px;"><%if(obj[17]!=null && Long.parseLong(obj[17].toString())>0){ %>
+								<span style="font-size: 12px;"><%
+								
+								String committeeCode = committee.getCommitteeShortName().trim().toUpperCase();
+								String splCommittee = committeeCode;
+								if("PMRC".equalsIgnoreCase(committeeCode)|| "PMRB".equalsIgnoreCase(committeeCode)){
+									LocalDate scheduleDate = obj[20] != null ? LocalDate.parse(obj[20].toString()) : null;
+									LocalDate PMRB_EFFECTIVE_DATE = LocalDate.of(2026, 4, 1);
+									if(scheduleDate.isBefore(PMRB_EFFECTIVE_DATE)){
+										splCommittee = "PMRC";
+									}else {
+										splCommittee = committeeCode;
+									}
+								}
+								
+								
+								
+								if(obj[17]!=null && Long.parseLong(obj[17].toString())>0){ %>
 								<%for (Map.Entry<Integer, String> entry : committeeWiseMap.entrySet()) {
 									Date date = inputFormat.parse(obj[1].toString().split("/")[3]);
 									 String formattedDate = outputFormat.format(date);
 									 if(entry.getValue().equalsIgnoreCase(formattedDate)){
 										 key=entry.getKey().toString();
-									 } } %>
-								<%=committee.getCommitteeShortName()!=null?(committee.getCommitteeShortName()).trim().toUpperCase():" - "+"-"+key!=null?(key):" - "+"/"+obj[1]!=null?(obj[1].toString()).split("/")[4]:" - " %>
-
-								<%}%> </span>
+									 } }%>
+								
+ 								<%=splCommittee+"-"+key+"/"+obj[1].toString().split("/")[4] %>
+ 								<%}%> </span>
 								</td>
 									<%if(j++==1){ %><td rowspan="<%=rowSpan%>" class="text-justify"> <%=obj[2].toString()%> </td> <%} %>
 					
@@ -1044,7 +1057,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 												for(Object[] obj : entry.getValue()){ %>
 													<tr>
 														<td >
-															<%=entry.getKey()!=null?(entry.getKey()): " - "%> #<%=++i %>
+															<%=obj[1]!=null?obj[1].toString(): " - "%> #<%=++i %>
 														</td>												
 														<td style="text-align: center; " ><%= fc.sdfTordf(obj[3].toString())%></td>
 													</tr>				
@@ -2362,11 +2375,9 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 											<td ><%=obj[24]!=null?(obj[24].toString()): " - " %><%-- (<%=obj[25] %>) --%></td>
 											
 											<%} %>
-
 											<%if(!session.getAttribute("labcode").toString().equalsIgnoreCase("DLRL")) {%>
 											<td style="text-align: center"><%=obj[16]!=null?(obj[16].toString()): " - " %>%</td>
 											<%} %>		
-
 											<% 
 												LocalDate StartDate = LocalDate.parse(obj[7].toString());
 												LocalDate EndDate = LocalDate.parse(obj[8].toString());
