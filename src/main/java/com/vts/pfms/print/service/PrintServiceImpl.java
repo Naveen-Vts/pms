@@ -1345,4 +1345,38 @@ public long previouseHeadingAdd(String scheduleidto, String scheduleidfrom, Stri
 	public int updateRemarks(long activityId, String remarks, String userId) throws Exception {
 		return dao.updateRemarks(activityId,remarks,userId);
 	}
+
+
+	@Override
+	public List<Object[]> SunSetMilestones(String projectId) throws Exception {
+		try {
+			List<Object[]> milestones = dao.Milestones(projectId, "0");
+    	    
+		    if (milestones.isEmpty()) return Collections.emptyList();
+
+		    LocalDate today = LocalDate.parse(todayDate); // Parse only once
+
+		    
+		    return milestones.stream().filter(i -> {
+		        String levelId = String.valueOf(i[21]);
+//		        int progress = Integer.parseInt(String.valueOf(i[17]));
+//		        String dateStr = i[26]!=null?i[26].toString():null;
+//		        LocalDate date = dateStr != null ? LocalDate.parse(dateStr) : null;
+//		        LocalDate compareDate = LocalDate.parse(i[27] != null ? i[27].toString() : i[7].toString());
+//
+//		        if (date == null || !date.isAfter(compareDate)) return false;
+//		        if (!(date.isEqual(today) || date.isBefore(today))) return false;
+
+		        
+		            // For Milestones() method
+	            if (levelId.equals("0") && "Y".equalsIgnoreCase(String.valueOf(i[31]))) {
+	                return true;
+	            } else return !levelId.equals("0") && "Y".equalsIgnoreCase(String.valueOf(i[31]));
+		        
+		    }).collect(Collectors.toList());
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
+	}
 }

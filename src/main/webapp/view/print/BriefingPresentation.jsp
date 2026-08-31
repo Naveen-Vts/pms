@@ -120,6 +120,9 @@
 	Map<Integer,String> treeMapLevOne =(Map<Integer,String>)request.getAttribute("treeMapLevOne");
 	Map<Integer,String> treeMapLevTwo =(Map<Integer,String>)request.getAttribute("treeMapLevTwo");
 	List<Object[]> envisagedDemandlist = (List<Object[]>)request.getAttribute("envisagedDemandlist");
+	
+
+	List<List<Object[]>> sunsetmilestones = (List<List<Object[]>>) request.getAttribute("sunsetmilestones");
 	%>
 	
 		<%
@@ -1203,7 +1206,8 @@ String baseUrl = scheme + "://" + serverName
 				</div>
 			</div>
 			<!-- ----------------------------------------  Milestones achieved prior Div ----------------------------------------------------- -->
-			<!-- ---------------------------------------- P-6a Div ----------------------------------------------------- -->
+			<!-- ----------------------------------------  SunSet Milestones Div ----------------------------------------------------- -->
+			
 			<div class="carousel-item ">
 					<div class="content-header row ">
 					<div class="col-md-1" ><img class="bp-18"   <%if(Drdologo!=null ){ %> src="data:image/*;base64,<%=Drdologo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> ></div>
@@ -1211,7 +1215,251 @@ String baseUrl = scheme + "://" + serverName
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-						<h3>6 (a) Work Carried Out, Achievements, Test Result etc.</h3>
+						<h3> 6. Review of SunSetMilestones</h3>
+					</div>
+					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
+					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
+					</div>
+					</div>
+				
+				
+				<div class="content">
+
+					<% for (int z = 0; z < 1; z++) { %>
+					<% if (ProjectDetail.size() > 1) { %>
+					<div>
+						<b>Project : <%=ProjectDetail.get(z)[1]%> <% if (z != 0) {  %>(SUB)<% }  %> </b>
+					</div>
+					<%
+					}
+					%>
+					<form action="MilestoneActivityList.htm" target="_blank" class="bp-51">
+						<button class="btn btn-sm bp-53" data-toggle="tooltip" data-placement="bottom" title="Milestone Data">
+							<i class="fa fa-info-circle bp-54"  aria-hidden="true"></i>
+						</button>
+						<input type="hidden" name="ProjectId" value="<%=projectid%>">
+						<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+					</form>
+
+					<!-- CALL Pfms_Milestone_Level_Prior(:projectid) -->
+					<table class="subtables bp-55" >
+						<thead>
+							<tr>
+								<td colspan="10" class="border-0">
+									<p class="bp-49">
+										<span class="notassign">NA</span> : Not Assigned &nbsp;&nbsp;
+										<span class="assigned">AA</span> : Activity Assigned &nbsp;&nbsp; 
+										<span class="ongoing">OG</span> : On Going &nbsp;&nbsp; 
+										<span class="delay">DO</span> : Delay - On Going &nbsp;&nbsp; 
+										<span class="ongoing">RC</span> : Review & Close &nbsp;&nbsp; 
+										<span class="delay">FD</span> : Forwarded With Delay &nbsp;&nbsp; 
+										<span class="completed">CO</span> :Completed &nbsp;&nbsp; 
+										<span class="completeddelay">CD</span> : Completed with Delay &nbsp;&nbsp; 
+										<span class="inactive">IA</span> : InActive &nbsp;&nbsp; 
+										<span class="delaydays">DD</span> : Delayed days &nbsp;&nbsp;
+									</p>
+								</td>
+							</tr>
+
+							<tr>
+								<th class="width20">SN</th>
+								<th class="width20">MS</th>
+								<th class="width70">L</th>
+								<th class="width350">System/ Subsystem/ Activities</th>
+								<th class="width100" >Start Date</th>
+								<th class="width100">ADC<br>PDC</th>
+								<!-- <th style="width: 150px;">ADC</th> -->
+								<th class="width70">Progress</th>
+								<th class="width70">Status(DD)</th>
+								<th class="width350">Remarks</th>
+								<th class="width30">Info</th>
+							</tr>
+						</thead>
+						<%
+						if (sunsetmilestones.get(z).size() > 0) {
+							long count1 = 1;
+							int milcountA = 1;
+							int milcountB = 1;
+							int milcountC = 1;
+							int milcountD = 1;
+							int milcountE = 1;
+						%>
+						<%
+						int serial = 1;int milestonecount=0;// to remember milestonecount
+						for (Object[] obj : sunsetmilestones.get(z)) {
+						if(obj[21].toString().equals("1")){
+						}
+					if(Integer.parseInt(obj[21].toString())<= Integer.parseInt(levelid)  ){
+							%>
+						<tr class="<% if("0".equals(obj[21].toString()) && "Y".equalsIgnoreCase(obj[31].toString())){ %> bg-sunset <%}%>">
+							<td class="text-center"><%=serial%></td>
+							<td>M<%=obj[0]%></td>
+
+							<td class="text-center">
+								<%
+								if (obj[21].toString().equals("0")) {
+								%> <!-- L --> <%
+								 milcountA = 1;
+								 milcountB = 1;
+								 milcountC = 1;
+								 milcountD = 1;
+								 milcountE = 1;
+								 } else if (obj[21].toString().equals("1")) {
+										for(Map.Entry<Integer,String>entry:treeMapLevOne.entrySet()){
+											if(entry.getKey().toString().equalsIgnoreCase(obj[2].toString())){%>
+												<%=entry.getValue() %>
+										<%}} 
+									 
+								 %>
+								<%
+					
+								} else if (obj[21].toString().equals("2")) {
+									for(Map.Entry<Integer,String>entry:treeMapLevTwo.entrySet()){
+										if(entry.getKey().toString().equalsIgnoreCase(obj[3].toString())){%>
+											<%=entry.getValue() %>
+									<%}}	
+									
+								%> <%-- B-<%=milcountB%> --%>
+								<%
+						
+								} else if (obj[21].toString().equals("3")) {
+								%> C-<%=milcountC%>
+								<%
+								milcountC += 1;
+								milcountD = 1;
+								milcountE = 1;
+								} else if (obj[21].toString().equals("4")) {
+								%> D-<%=milcountD%>
+								<%
+								milcountD += 1;
+								milcountE = 1;
+								} else if (obj[21].toString().equals("5")) {
+								%> E-<%=milcountE%>
+								<%
+								milcountE++;
+								}
+								%>
+							</td>
+
+							<td
+								class="<%if (obj[21].toString().equals("0")) {%>font-weight-bold<%}%>">
+								<%
+								if (obj[21].toString().equals("0")) {
+								%> <%=StringEscapeUtils.escapeHtml4( obj[10].toString() )%> <%
+									 } else if (obj[21].toString().equals("1")) {
+									 %>
+																	&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4( obj[11].toString() )%> <%
+									 } else if (obj[21].toString().equals("2")) {
+									 %>
+																	&nbsp;&nbsp;<%= StringEscapeUtils.escapeHtml4(obj[12].toString()) %> <%
+									 } else if (obj[21].toString().equals("3")) {
+									 %>
+																	&nbsp;&nbsp;<%= StringEscapeUtils.escapeHtml4(obj[13].toString())%> <%
+									 } else if (obj[21].toString().equals("4")) {
+									 %>
+																	&nbsp;&nbsp;<%= StringEscapeUtils.escapeHtml4(obj[14].toString())%> <% } else if (obj[21].toString().equals("5")) { %>
+																	&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[15].toString())%> <% } %>
+							</td>
+							<td class="text-center" ><%= obj[7]!=null? sdf.format(sdf1.parse(obj[7].toString())) : " - " %></td>
+							<td class="text-center">
+
+								
+								<% 
+								LocalDate StartDate = LocalDate.parse(obj[7].toString());
+								LocalDate EndDate = LocalDate.parse(obj[8].toString());
+								LocalDate OrgEndDate = LocalDate.parse(obj[9].toString());
+								int Progess = Integer.parseInt(obj[17].toString());
+								LocalDate CompletionDate =obj[24]!=null ? LocalDate.parse(obj[24].toString()) : null;
+								LocalDate Today = LocalDate.now();
+								%>
+								<% if ((obj[19].toString().equalsIgnoreCase("3") || obj[19].toString().equalsIgnoreCase("5")) && obj[24] != null) { %>	
+									<span 
+										<%if(Progess==0){ %>
+											class="assigned"
+										<%} else if(Progess>0 && Progess<100 && (OrgEndDate.isAfter(Today) || OrgEndDate.isEqual(Today) )){ %>
+											class="ongoing"
+										<%} else if( Progess>0 && Progess<100 && (OrgEndDate.isBefore(Today) )){ %>
+											class="delay"
+										<%} else if((CompletionDate!=null && ( CompletionDate.isBefore(OrgEndDate) ||  CompletionDate.isEqual(OrgEndDate)))){ %>
+											class="completed"
+										<%} else if((CompletionDate!=null && CompletionDate.isAfter(OrgEndDate) )){ %>
+											class="completeddelay"
+										<%}else if(CompletionDate!=null && Progess==0 &&  ( EndDate.isAfter(Today) ||  EndDate.isEqual(Today)) ){ %>
+											class="inactive"
+										<%}else{ %>
+											class="assigned"
+										<%} %>
+										> <%=sdf.format(sdf1.parse(obj[24].toString()))%> </span>
+									
+								 <% } else {  %> <span>- </span><% } %>
+								<br>
+								<% if (!LocalDate.parse(obj[8].toString()).isEqual(LocalDate.parse(obj[9].toString()))) {
+									boolean incident=true;
+									%>
+								<span class="font-weight-bold"><%=sdf.format(sdf1.parse(obj[8].toString()))%></span><br> 
+								<%}%> 
+								<span  class="font-weight-bold"><%=sdf.format(sdf1.parse(obj[9].toString()))%></span>
+								
+							</td>
+					
+							<td class="text-center"><%=obj[17]%>%</td>
+							
+							
+							<td class="text-center">	
+								
+									<%if(Progess==0){ %>
+										<span class="assigned"> AA </span>
+									<%} else if(Progess>0 && Progess<100 && (OrgEndDate.isAfter(Today) || OrgEndDate.isEqual(Today) )){ %>
+										<span class="ongoing"> OG </span>
+									<%} else if( Progess>0 && Progess<100 && (OrgEndDate.isBefore(Today) )){ %>
+										<span class="delay"> DO (<%=ChronoUnit.DAYS.between(OrgEndDate, LocalDate.now())%>)</span>
+									<%} else if((CompletionDate!=null && ( CompletionDate.isBefore(OrgEndDate) ||  CompletionDate.isEqual(OrgEndDate)))){ %>
+										<span class="completed"> CO</span>
+									<%} else if((CompletionDate!=null && CompletionDate.isAfter(OrgEndDate) )){ %>
+										<span class="completeddelay">CD (<%=ChronoUnit.DAYS.between(OrgEndDate, CompletionDate)%>)</span>
+									<%}else if(CompletionDate!=null && Progess==0 &&  ( EndDate.isAfter(Today) ||  EndDate.isEqual(Today)) ){ %>
+										<span class="inactive">IA</span>
+									<%}else{ %>
+										<span class="assigned">AA</span>
+									<%} %>
+								
+							</td>
+							
+							<td class="bp-56">
+								<% if (obj[23] != null) { %><%= StringEscapeUtils.escapeHtml4(obj[23].toString()) %> <% } %>
+							</td>
+							<td class="text-center">
+							<%if (obj[21].toString().equals("0")) {%>
+								<a data-toggle="modal" data-target="#exampleModal1" data-id="milestonemodal<%=obj[0]%>" class="milestonemodal" data-whatever="@mdo" class="bp-57"> 
+									<i class="fa fa-info-circle fa-lg bp-3" aria-hidden="true"></i>
+								</a>
+								<%} %>
+							</td>
+						</tr>
+						<%
+						count1++;serial++;}}
+						%>
+						<% } else { %>
+						<tr><td colspan="10" class="text-center">Nil</td></tr>
+						<% } %>
+					</table>
+					<div id="milestoneactivitychange"></div>
+					<% } %>
+				</div>
+			</div>
+			
+			<!-- ----------------------------------------  SunSet Milestones Div ----------------------------------------------------- -->			
+			
+			
+			<!-- ---------------------------------------- P-7a Div ----------------------------------------------------- -->
+			<div class="carousel-item ">
+					<div class="content-header row ">
+					<div class="col-md-1" ><img class="bp-18"   <%if(Drdologo!=null ){ %> src="data:image/*;base64,<%=Drdologo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> ></div>
+					<div class="col-md-1 bp-19" align="left"  ><b class="bp-20"><%=ProjectCode %></b>
+					<h6 class="bp-21"><%=pdc %></h6>
+					</div>
+					<div class="col-md-8">
+						<h3>7 (a) Work Carried Out, Achievements, Test Result etc.</h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -1419,9 +1667,9 @@ String baseUrl = scheme + "://" + serverName
 
 			</div>
 
-			<!-- ----------------------------------------   P-6a Div ----------------------------------------------------- -->
+			<!-- ----------------------------------------   P-7a Div ----------------------------------------------------- -->
 
-			<!-- ---------------------------------------- P-6b Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-7b Div ----------------------------------------------------- -->
 
 			<div class="carousel-item ">
 					<div class="content-header row ">
@@ -1430,7 +1678,7 @@ String baseUrl = scheme + "://" + serverName
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-					<h4>6 (b) TRL Table with TRL at Sanction stage and Current stage Indicating Overall PRI</h4>
+					<h4>7 (b) TRL Table with TRL at Sanction stage and Current stage Indicating Overall PRI</h4>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -1490,9 +1738,9 @@ String baseUrl = scheme + "://" + serverName
 
 			</div>
 
-			<!-- ----------------------------------------   P-6b Div ----------------------------------------------------- -->
+			<!-- ----------------------------------------   P-7b Div ----------------------------------------------------- -->
 
-			<!-- ---------------------------------------- P-6c Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-7c Div ----------------------------------------------------- -->
 
 			<div class="carousel-item ">
 					<div class="content-header row ">
@@ -1501,7 +1749,7 @@ String baseUrl = scheme + "://" + serverName
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-					<h3>6 (c) Risk Matrix/Management Plan/Status</h3>
+					<h3>7 (c) Risk Matrix/Management Plan/Status</h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -1675,9 +1923,9 @@ String baseUrl = scheme + "://" + serverName
 					<% } %>
 				</div>
 			</div>
-			<!-- ----------------------------------------   P-6c Div ----------------------------------------------------- -->
+			<!-- ----------------------------------------   P-7c Div ----------------------------------------------------- -->
 
-			<!-- ---------------------------------------- P-7a  Details of Procurement Plan Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-8a  Details of Procurement Plan Div ----------------------------------------------------- -->
 <% int chapter=1;int chapter2=1;
 for (int z = 0; z < projectidlist.size(); z++){  %>
 			<div class="carousel-item ">
@@ -1688,7 +1936,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-						<h3>7 (a<%if(projectidlist.size()>1) {%><%="."+chapter++%><%} %>) Details of Procurement Plan (Major Items) (<%=ProjectDetail.get(z)[1]%>)</h3>
+						<h3>8 (a<%if(projectidlist.size()>1) {%><%="."+chapter++%><%} %>) Details of Procurement Plan (Major Items) (<%=ProjectDetail.get(z)[1]%>)</h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -1938,7 +2186,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 
 			<!-- ----------------------------------------  Details of Procurement Plan Div ----------------------------------------------------- -->
 			
-			<!-- ---------------------------------------- P-7b  Procurement status Report Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-8b  Procurement status Report Div ----------------------------------------------------- -->
 
  <%--for (int z = 0; z < projectidlist.size(); z++) { %> --%>
 			<div class="carousel-item ">
@@ -1951,7 +2199,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-						<h3>7 (b<%if(projectidlist.size()>1) {%><%="."+(chapter2++)%><%} %>) Procurement Status <%if(projectidlist.size()>1) {%> (<%=ProjectDetail.get(z)[1]%> ) <%} %></h3>
+						<h3>8 (b<%if(projectidlist.size()>1) {%><%="."+(chapter2++)%><%} %>) Procurement Status <%if(projectidlist.size()>1) {%> (<%=ProjectDetail.get(z)[1]%> ) <%} %></h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -2123,7 +2371,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					</div></div><% } %>
 			<!-- ---------------------------------------- Procurement status Report Div ----------------------------------------------------- -->
 
-			<!-- ---------------------------------------- P-8  Overall Financial Status Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-9  Overall Financial Status Div ----------------------------------------------------- -->
 	<% char fch='a'; for (int z = 0; z < projectidlist.size(); z++) {%>
 			<div class="carousel-item ">
 
@@ -2133,7 +2381,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-					<h3>8<%if(projectidlist.size()>1) {%> (<%=(fch++) %>) <%} %>.  Overall Financial Status</h3>
+					<h3>9<%if(projectidlist.size()>1) {%> (<%=(fch++) %>) <%} %>.  Overall Financial Status</h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -2332,7 +2580,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 			<% } %>
 			<!-- ----------------------------------------  Overall Financial Status Div ----------------------------------------------------- -->
 
-			<!-- ---------------------------------------- P-9  Action Plan for Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-10  Action Plan for Div ----------------------------------------------------- -->
 
 			<div class="carousel-item ">
 					<div class="content-header row ">
@@ -2343,9 +2591,9 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<div class="col-md-8">
 					<h3>
 							<% if (CommitteeCode.equalsIgnoreCase("EB")) { %>
-								9. Action Plan for Next Six Months
+								10. Action Plan for Next Six Months
 							<% } else { %>
-								9. Action Plan for Next Three Months
+								10. Action Plan for Next Three Months
 							<% } %>
 						</h3>
 					</div>
@@ -2545,7 +2793,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 			</div>
 			<!-- ---------------------------------------- Action Plan for Div ----------------------------------------------------- -->
 
-			<!-- ---------------------------------------- P-10  GANTT chart of overall project Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-13  GANTT chart of overall project Div ----------------------------------------------------- -->
 
 			<div class="carousel-item ">
 
@@ -2557,7 +2805,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-					<h3>10. GANTT Chart of Overall Project Schedule</h3>
+					<h3>13. GANTT Chart of Overall Project Schedule</h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -2570,7 +2818,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 				</div>
 			</div>
 			<!-- ---------------------------------------- GANTT chart of overall project Div ----------------------------------------------------- -->
-			<!-- ---------------------------------------- P-11 Issues Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-14 Issues Div ----------------------------------------------------- -->
 			<div class="carousel-item ">
 					<div class="content-header row ">
 					<div class="col-md-1" ><img class="bp-18"   <%if(Drdologo!=null ){ %> src="data:image/*;base64,<%=Drdologo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> ></div>
@@ -2578,7 +2826,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-						<h3>11. Issues</h3>
+						<h3>14. Issues</h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -2713,7 +2961,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 				</div>
 
 			</div>
-			<!-- ---------------------------------------- P-12a  Other Relevant Points Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-15a  Other Relevant Points Div ----------------------------------------------------- -->
 
 			<div class="carousel-item ">
 				   <div class="content-header row ">
@@ -2722,7 +2970,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-						<h3>12 (a) Other Relevant Points</h3>
+						<h3>15 (a) Other Relevant Points</h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -2750,9 +2998,9 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 			</div>
 
 
-			<!-- ----------------------------------------p-12a Other Relevant Points Div ----------------------------------------------------- -->
+			<!-- ----------------------------------------p-15a Other Relevant Points Div ----------------------------------------------------- -->
 
-			<!-- ---------------------------------------- P-12b Technical Work Carried Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-15b Technical Work Carried Div ----------------------------------------------------- -->
 
 			<div class="carousel-item ">
 
@@ -2764,9 +3012,9 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<div class="col-md-8">
 						<h3>
 							<% if (CommitteeCode.equalsIgnoreCase("EB")) { %>
-								12 (b) Technical Work Carried Out For Last Six Months
+								15 (b) Technical Work Carried Out For Last Six Months
 							<% } else { %>
-								12 (b) Technical Work Carried Out For Last Three Months
+								15 (b) Technical Work Carried Out For Last Three Months
 							<% } %>
 						</h3>
 					</div>
@@ -2832,9 +3080,9 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 							</div>
 					<% } %>
 				</div></div>
-			<!-- ---------------------------------------- p-12b Technical Work Carried Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- p-15b Technical Work Carried Div ----------------------------------------------------- -->
 
-			<!-- ---------------------------------------- P-12c  Technical Images Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-15c  Technical Images Div ----------------------------------------------------- -->
 			<div class="carousel-item ">
 					<div class="content-header row ">
 					<div class="col-md-1" ><img class="bp-18"   <%if(Drdologo!=null ){ %> src="data:image/*;base64,<%=Drdologo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> ></div>
@@ -2842,7 +3090,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-							<h3>12 (c) Technical Images</h3>
+							<h3>15 (c) Technical Images</h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -2868,10 +3116,10 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 				</div>
 			</div>
 
-		<!-- ---------------------------------------- p-12c Technical Images Div ----------------------------------------------------- -->
+		<!-- ---------------------------------------- p-15c Technical Images Div ----------------------------------------------------- -->
 		
 			<!-- ---------------------------------------- Issues Div ----------------------------------------------------- -->
-			<!-- ---------------------------------------- P-13 Decision/Recommendations sought Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-16 Decision/Recommendations sought Div ----------------------------------------------------- -->
 			<div class="carousel-item ">
 	
 					<div class="content-header row ">
@@ -2880,7 +3128,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-						<h3> 13. Decision/Recommendations Sought from <%=CommitteeCode%> </h3>
+						<h3> 16. Decision/Recommendations Sought from <%=CommitteeCode%> </h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -2907,7 +3155,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 			</div>
 			<!-- ---------------------------------------- Decision/Recommendations sought Div ----------------------------------------------------- -->
 			
-		<!-- ---------------------------------------- P-14  Thank you Div ----------------------------------------------------- -->
+		<!-- ---------------------------------------- P-17  Thank you Div ----------------------------------------------------- -->
 
 			<div class="carousel-item ">
 				<div class="content bp-81">
@@ -2925,7 +3173,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 				</div>
 				</div>
 			</div>
-		<!-- ---------------------------------------- P-14  Thank you Div ----------------------------------------------------- -->
+		<!-- ---------------------------------------- P-17  Thank you Div ----------------------------------------------------- -->
 		</div>
 		<a class="carousel-control-prev bp-84" href="#presentation-slides" role="button" data-slide="prev" > <span aria-hidden="true">
 			<i class="fa fa-chevron-left fa-2x bp-86"  aria-hidden="true"></i></span> <span class="sr-only">Previous</span>
@@ -2945,24 +3193,25 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="4 (b) Last <%=committee.getCommitteeShortName().trim().toUpperCase()%> Meeting action points with Probable Date of completion (PDC), Actual Date of Completion (ADC) and status"><b>4(b)</b></li>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="4 (c) Details of Technical/ User Reviews"><b>4 (c)</b></li>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="5. Milestones achieved prior to this Meeting"><b>5</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="6 (a) Work carried out, Achievements, test result etc"><b>6(a)</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="6 (b) TRL table with TRL at sanction stage and current stage indicating overall PRI"><b>6(b)</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="6 (c) Risk Matrix/Management Plan/Status."><b>6 (c)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="6. Review of SunSet MileStones"><b>6</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="7 (a) Work carried out, Achievements, test result etc"><b>7(a)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="7 (b) TRL table with TRL at sanction stage and current stage indicating overall PRI"><b>7(b)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="7 (c) Risk Matrix/Management Plan/Status."><b>7 (c)</b></li>
 			<%int chapter7a=1 ; int chapter7b=1;for (int z = 0; z < projectidlist.size(); z++) {%>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="7 (a<%if(projectidlist.size()>1) {%><%="."+chapter7a%><%} %>) Details of Procurement Plan (<%=ProjectDetail.get(z)[1]%>)"><b>7(a<%if(projectidlist.size()>1) {%><%="."+chapter7a++%><%} %>)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="8 (a<%if(projectidlist.size()>1) {%><%="."+chapter7a%><%} %>) Details of Procurement Plan (<%=ProjectDetail.get(z)[1]%>)"><b>8(a<%if(projectidlist.size()>1) {%><%="."+chapter7a++%><%} %>)</b></li>
 			
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="7 (b<%if(projectidlist.size()>1) {%><%="."+chapter7b%><%} %>) Procurement Status (<%=ProjectDetail.get(z)[1]%>)"><b>7(b<%if(projectidlist.size()>1) {%><%="."+chapter7b++%><%} %>)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="8 (b<%if(projectidlist.size()>1) {%><%="."+chapter7b%><%} %>) Procurement Status (<%=ProjectDetail.get(z)[1]%>)"><b>8(b<%if(projectidlist.size()>1) {%><%="."+chapter7b++%><%} %>)</b></li>
 			<%} %>
 				<%char ch6='a';for (int z = 0; z < projectidlist.size(); z++) {%>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="8. (<%=(char)(ch6) %>)  Overall Financial Status <%if(projectidlist.size()>1) {%>(<%=ProjectDetail.get(z)[1]%>) <%}%>"><b>8<%if(projectidlist.size()>1) {%>(<%=(char)(ch6++)%>)<%} %></b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="9. (<%=(char)(ch6) %>)  Overall Financial Status <%if(projectidlist.size()>1) {%>(<%=ProjectDetail.get(z)[1]%>) <%}%>"><b>9<%if(projectidlist.size()>1) {%>(<%=(char)(ch6++)%>)<%} %></b></li>
 			<%} %>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="9. Action Plan"><b>9</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="10. GANTT chart of overall project schedule"><b>10</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="11. Issues"><b>11</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="12 (a) Other Relevant Points"><b>12 (a)</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="12 (b) Technical Work Carried out"><b>12 (b)</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="12 (c) Technical Images"><b>12 (c)</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="13. Decision/Recommendations"><b>13</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="10. Action Plan"><b>10</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="13. GANTT chart of overall project schedule"><b>13</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="14. Issues"><b>14</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="15 (a) Other Relevant Points"><b>15 (a)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="15 (b) Technical Work Carried out"><b>15 (b)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="15 (c) Technical Images"><b>15 (c)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="16. Decision/Recommendations"><b>16</b></li>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="Thank You"><b>End</b></li>
 			<li data-slide-to="21"  class="carousel-indicator content_full_screen bp-87" data-toggle="tooltip" data-placement="top" title="Full Screen Mode"><b><i class="fa fa-expand fa-lg" aria-hidden="true"></i></b></li>
 			<li data-slide-to="21"  class="carousel-indicator content_reg_screen bp-87" data-toggle="tooltip" data-placement="top" title="Exit Full Screen Mode"><b><i class="fa fa-compress fa-lg" aria-hidden="true"></i></b></li>

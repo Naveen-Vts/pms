@@ -5409,6 +5409,45 @@ private boolean isValidFileType(MultipartFile file) {
 			return "static/Error";
 		}		
 	}
+	
+	@RequestMapping(value = "UpdateMilestoneSunSet.htm",method = {RequestMethod.POST})
+	public String updateSunSet(HttpServletRequest req,RedirectAttributes redir) {
+	    try {
+	    	String milestoneActivityId = req.getParameter("milestoneActivityId");
+	    	String levelId = req.getParameter("levelId");
+	    	String isSunSet = req.getParameter("isSunSet");
+	        long count = service.updateSunSet(milestoneActivityId,levelId,isSunSet);
+	        // if(count > 0)
+	        //else 
+	        String projectId = req.getParameter("projectId");
+			
+			redir.addAttribute("ProjectId",projectId);
+			
+			if (count > 0) {
+
+			    redir.addAttribute(
+			        "result",
+			        "N".equalsIgnoreCase(isSunSet)
+			            ? "SunSet Milestone marked successfully."
+			            : "SunSet Milestone designation removed successfully."
+			    );
+
+			} else {
+
+			    redir.addAttribute(
+			        "resultfail",
+			        "N".equalsIgnoreCase(isSunSet)
+			            ? "Failed to mark the milestone as a SunSet Milestone."
+			            : "Failed to remove the SunSet Milestone designation."
+			    );
+			}	
+
+	        return "redirect:/MilestoneActivityList.htm";
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "static/Error";
+	    }
+	}
 
 }
 

@@ -43,6 +43,7 @@ public class MilestoneActivityLevel {
 	private String point9;
 	private Long LinkedMilestonId;
 	private String IsMasterData;
+	private String IsSunSet;
 	
 	
     

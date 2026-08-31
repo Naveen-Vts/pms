@@ -321,7 +321,7 @@ Kindly note that only the Project Director, the Admin, and the OICs of the Paren
 	                              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> 
 	                              <input type="hidden" name="chainId" value="[]" />
 	                              <input type="hidden" name="targetRowId" value="row_M" />
-                             
+
 
                         	  <%-- 
 	                        	  <button type="button" class="btn btn-sm delete" onclick="deletSubMilestones('<%=getMA[0] %>','<%=getMA[10] %>','M',undefined,[],'row_M');" >

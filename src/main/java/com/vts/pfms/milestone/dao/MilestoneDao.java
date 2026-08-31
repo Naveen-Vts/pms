@@ -2,6 +2,7 @@ package com.vts.pfms.milestone.dao;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.vts.pfms.committee.model.PfmsNotification;
 import com.vts.pfms.milestone.dto.MileEditDto;
@@ -186,5 +187,8 @@ public interface MilestoneDao {
 	public Object[] getMilestoneActivityBriefingById(String milestoneid)throws Exception;
 	public long deleteMainLevelMilsetone(String mainId) throws Exception;
 	public long deleteSubLevelMilsetone(String subId) throws Exception;
+	public long updateMainMileStoneSunSet(Long milestoneActivityId, String isSunSet) throws Exception;
+	public long updateSubMileStoneSunSet(Long activityId, String isSunSet) throws Exception;
+	public Set<Long> getSubMilestonesId(String milestoneActivityId) throws Exception;
 
 }

@@ -3239,6 +3239,9 @@ public class PrintController {
 		List<List<Object[]>> ProjectRevList = new ArrayList<>();
 		List<List<TechImages>> TechImages = new ArrayList<>();
 		List<List<Object[]>> overallfinance = new ArrayList<>();
+		
+
+		List<List<Object[]>> sunsetmilestones = new ArrayList<>();
 
 		try {
 
@@ -3261,6 +3264,8 @@ public class PrintController {
 				TechWorkDataList.add(service.TechWorkData(proid));
 				ProjectRevList.add(service.ProjectRevList(proid));
 				milestonesubsystemsnew.add(service.BreifingMilestoneDetails(proid, committeeid));
+				
+				sunsetmilestones.add(service.SunSetMilestones(proid));
 
 				Object[] prodetails = service.ProjectDataDetails(proid);
 				projectdatadetails.add(prodetails);
@@ -3330,6 +3335,8 @@ public class PrintController {
 			req.setAttribute("overallfinance", overallfinance);
 			req.setAttribute("projectidlist", Pmainlist);
 
+			req.setAttribute("sunsetmilestones", sunsetmilestones);
+			
 			return 1;
 		} catch (Exception e) {
 			e.printStackTrace();

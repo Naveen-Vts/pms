@@ -3,8 +3,10 @@
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,13 +50,13 @@ public class MilestoneDaoImpl implements MilestoneDao {
 			+ "CONCAT(IFNULL(CONCAT(c.Title,' '),(IFNULL(CONCAT(c.Salutation, ' '), ''))), c.EmpName, ', ', e.Designation) AS 'OicEmpId1Name', \r\n"
 			+ "CONCAT(IFNULL(CONCAT(d.Title,' '),(IFNULL(CONCAT(d.Salutation, ' '), ''))), d.EmpName, ', ', f.Designation) AS 'OicEmpId2Name',\r\n"
 			+ "(SELECT MAX(e.revisionno) FROM milestone_activity_rev e WHERE a.milestoneactivityid=e.milestoneactivityid) AS rev,\r\n"
-			+ "a.acceptedby,a.isaccepted,a.statusremarks,a.progressstatus,a.Weightage,a.activitystatusid,b.projectid,a.dateofcompletion, a.OICEmpId, a.financialOutlay,a.oicempid1 \r\n"
+			+ "a.acceptedby,a.isaccepted,a.statusremarks,a.progressstatus,a.Weightage,a.activitystatusid,b.projectid,a.dateofcompletion, a.OICEmpId, a.financialOutlay,a.oicempid1, a.IsSunSet \r\n"
 			+ "FROM milestone_activity a,project_master b, employee c,employee d, employee_desig e, employee_desig f \r\n"
 			+ "WHERE a.projectid=b.projectid AND a.isactive = 1 AND a.oicempid=c.empid AND a.oicempid1=d.empid AND c.DesigId = e.DesigId AND d.DesigId = f.DesigId AND a.projectid=:ProjectId ORDER BY a.MilestoneNo";
 	private static final String PROJECTMASTER="SELECT a.ProjectId, a.ProjectCode, a.ProjectName, a.ProjectShortName FROM project_master a WHERE a.IsActive='1'";
 	private static final String EMPLOYEELISTALL="select a.empid,a.empname,b.designation,a.Title,a.Salutation FROM employee a,employee_desig b WHERE a.isactive='1' AND a.DesigId=b.DesigId ORDER BY a.srno=0,a.srno";
     private static final String MILESTONECOUNT="Select count(*) from milestone_activity where isactive='1' and projectid=:ProjectId";
-	private static final String MA="select a.milestoneactivityid,b.projectname,a.startdate,a.enddate,a.activityname,a.milestoneno,c.empname,d.empname as emp,a.oicempid,a.oicempid1,a.projectid,a.progressstatus,a.revisionno,a.acceptedby,a.accepteddate,a.activitytype,a.Weightage,e.activitytype as type, c.LabCode AS 'LabCode1', d.LabCode AS 'LabCode2',(SELECT COALESCE(a.ModifiedDate, a.CreatedDate) > MAX(c.CreatedDate) FROM `milestone_activity_rev` c WHERE c.MilestoneActivityId=:id)AS 'IsChange' from milestone_activity a,project_master b, employee c,employee d, milestone_activity_type e where a.activitytype=e.activitytypeid and a.projectid=b.projectid and a.oicempid=c.empid and a.oicempid1=d.empid and a.milestoneactivityid=:id";
+	private static final String MA="select a.milestoneactivityid,b.projectname,a.startdate,a.enddate,a.activityname,a.milestoneno,c.empname,d.empname as emp,a.oicempid,a.oicempid1,a.projectid,a.progressstatus,a.revisionno,a.acceptedby,a.accepteddate,a.activitytype,a.Weightage,e.activitytype as type, c.LabCode AS 'LabCode1', d.LabCode AS 'LabCode2',(SELECT COALESCE(a.ModifiedDate, a.CreatedDate) > MAX(c.CreatedDate) FROM `milestone_activity_rev` c WHERE c.MilestoneActivityId=:id)AS 'IsChange', a.IsSunSet from milestone_activity a,project_master b, employee c,employee d, milestone_activity_type e where a.activitytype=e.activitytypeid and a.projectid=b.projectid and a.oicempid=c.empid and a.oicempid1=d.empid and a.milestoneactivityid=:id";
 	private static final String MILEACTIVITYLEVEL="CALL Pfms_Milestone_Level_List(:id,:levelid)";
     private static final String MAREVISION="SELECT MAX(revisionno) FROM milestone_activity_rev WHERE milestoneactivityid=:id ";
 	private static final String MADETAILS="FROM MilestoneActivity WHERE MilestoneActivityId=:Id";
@@ -2026,4 +2028,107 @@ public class MilestoneDaoImpl implements MilestoneDao {
 				return 0;
 			}
 		}
+		
+		private static final String SUNSETMILEUPDATE = "UPDATE milestone_activity SET IsSunSet = :isSunSet WHERE MilestoneActivityId = :mainId";
+		private static final String SUNSETSUBMILEUPDATE = "UPDATE milestone_activity_level SET IsSunSet = :isSunSet WHERE ActivityId IN :subId";
+		@Override
+		@Transactional
+		public long updateMainMileStoneSunSet(Long milestoneActivityId, String isSunSet) {
+		    try {
+		        MilestoneActivity activity = manager.find(MilestoneActivity.class, milestoneActivityId);
+		        if (activity == null) {
+		            return 0; // nothing to update
+		        }
+
+		        Set<Long> subIds = getSubMilestonesId(String.valueOf(milestoneActivityId));
+
+		        // toggle based on current state
+		        String newSunSetValue = "Y".equalsIgnoreCase(activity.getIsSunSet()) ? "N" : "Y";
+
+		        long count = 0;
+
+		        Query query = manager.createNativeQuery(SUNSETMILEUPDATE);
+		        query.setParameter("mainId", milestoneActivityId);
+		        query.setParameter("isSunSet", newSunSetValue);
+		        count += query.executeUpdate();
+
+		        if (subIds != null && !subIds.isEmpty()) {
+		        	
+		        	System.out.println(subIds);
+		            Query subQuery = manager.createNativeQuery(SUNSETSUBMILEUPDATE);
+		            subQuery.setParameter("subId", subIds);
+		            subQuery.setParameter("isSunSet", newSunSetValue);
+		            count += subQuery.executeUpdate();
+		        }
+
+		        return count;
+
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        return 0;
+		    }
+		}
+
+		@Override
+		public long updateSubMileStoneSunSet(Long activityId, String isSunSet) {
+			try {
+				MilestoneActivityLevel activity = manager.find(MilestoneActivityLevel.class, activityId);
+				
+				isSunSet = "Y".equalsIgnoreCase(activity.getIsSunSet()) ? "N" : "Y";
+				Query query = manager.createNativeQuery(SUNSETSUBMILEUPDATE);
+				query.setParameter("subId",activityId);
+				query.setParameter("isSunSet",isSunSet);
+				return query.executeUpdate();
+			}catch (Exception e) {
+				e.printStackTrace();
+				return 0;
+			}
+		}
+
+		private static final String MILESTONESUBLEVELIDS = """				
+					WITH levels AS (
+					    SELECT 
+					        a.ActivityId AS level1,
+					        b.ActivityId AS level2,
+					        c.ActivityId AS level3,
+					        d.ActivityId AS level4,
+					        e.ActivityId AS level5
+					    FROM milestone_activity main 
+					    LEFT JOIN milestone_activity_level a ON a.ParentActivityId = main.MilestoneActivityId AND a.ActivityLevelId = 1
+					    LEFT JOIN milestone_activity_level b ON b.ParentActivityId = a.ActivityId AND b.ActivityLevelId = 2
+					    LEFT JOIN milestone_activity_level c ON c.ParentActivityId = b.ActivityId AND c.ActivityLevelId = 3
+					    LEFT JOIN milestone_activity_level d ON d.ParentActivityId = c.ActivityId AND d.ActivityLevelId = 4
+					    LEFT JOIN milestone_activity_level e ON e.ParentActivityId = d.ActivityId AND e.ActivityLevelId = 5
+					    WHERE main.MilestoneActivityId = :mainId
+					)
+					SELECT level1 AS SubLevelId FROM levels WHERE level1 IS NOT NULL
+					UNION
+					SELECT level2 FROM levels WHERE level2 IS NOT NULL
+					UNION
+					SELECT level3 FROM levels WHERE level3 IS NOT NULL
+					UNION
+					SELECT level4 FROM levels WHERE level4 IS NOT NULL
+					UNION
+					SELECT level5 FROM levels WHERE level5 IS NOT NULL;
+				""";
+		@Override
+		public Set<Long> getSubMilestonesId(String milestoneActivityId) throws Exception {
+
+		    Query query = manager.createNativeQuery(MILESTONESUBLEVELIDS);
+		    query.setParameter("mainId", Long.parseLong(milestoneActivityId));
+
+		    @SuppressWarnings("unchecked")
+		    List<Object> results = query.getResultList();
+
+		    Set<Long> subLevelIds = new LinkedHashSet<>();
+		    for (Object result : results) {
+		        // native queries often return BigInteger/BigDecimal instead of Long
+		        if (result != null) {
+		            subLevelIds.add(((Number) result).longValue());
+		        }
+		    }
+
+		    return subLevelIds;
+		}
+		
 }

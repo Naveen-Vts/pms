@@ -98,6 +98,7 @@ List<List<TechImages>> TechImages = (List<List<TechImages>>)request.getAttribute
 
 List<Object[]> SpecialCommitteesList = (List<Object[]>)request.getAttribute("SpecialCommitteesList");
 
+List<List<Object[]>> sunsetmilestones = (List<List<Object[]>>)request.getAttribute("sunsetmilestones");
 
 long ProjectCost = (long)request.getAttribute("ProjectCost"); 
 String levelid= (String) request.getAttribute("levelid");
@@ -933,7 +934,7 @@ String labcode = (String) session.getAttribute("labcode");
 											
 											if(Integer.parseInt(obj[21].toString())<= Integer.parseInt(levelid)){
 											%>
-											<tr>
+											<tr class="<% if("0".equals(obj[21].toString()) && "Y".equalsIgnoreCase(obj[31].toString())){ %> bg-sunset <%}%>">
 												<td class="text-center"><%=serial%></td>
 												<td>M<%=obj[0] %></td>
 												
@@ -1078,11 +1079,215 @@ String labcode = (String) session.getAttribute("labcode");
 							<%} %>
 						</div>
 				</details>
+<!--  -------------------------------------------------- Review of SunSet Milestone   -------------------------------------------------------------------------------------------  -->
+ 				
+ 				<details>
+ 				<summary role="button" tabindex="0" id="leveltab"><b>6. Review of Sunset milestone.</b>  </summary>
+ 					<div class="content">
+				
+								<%for(int z=0;z<1;z++){ %>
+									<%if(ProjectDetail.size()>1){ %>
+										<div>
+											<b>Project : <%=ProjectDetail.get(z)[1] %> 	<%if(z!=0){ %>(SUB)<%} %>	</b>
+										</div>	
+									<%} %>	
+				
+							<table  class="subtables table-subtables" >
+								<thead>
+								<tr>
+									<td colspan="10" class="border-0">
+										<p class="font-size10 text-center"> 
+											 <span class="notassign">NA</span> : Not Assigned &nbsp;&nbsp;
+											 <span class="assigned">AA</span> : Activity Assigned &nbsp;&nbsp; 
+											 <span class="ongoing">OG</span> : On Going &nbsp;&nbsp; 
+											 <span class="delay">DO</span> : Delay - On Going &nbsp;&nbsp; 
+											 <span class="ongoing">RC</span> : Review & Close &nbsp;&nbsp;
+											 <span class="delay">FD</span> : Forwarded With Delay &nbsp;&nbsp;
+											 <span class="completed">CO</span> : Completed &nbsp;&nbsp; 
+											 <span class="completeddelay">CD</span> : Completed with Delay &nbsp;&nbsp; 
+											 <span class="inactive">IA</span> : InActive &nbsp;&nbsp;
+											 <span class="delaydays">DD</span> : Delayed days &nbsp;&nbsp; 
+										 </p>
+									</td>									
+								</tr>
+								
+									<tr>
+										<th  class="width20">SN</th>
+										<th  class="width30">MS</th>
+										<th  class="width60">L</th>
+										<th  class="width350">System/ Subsystem/ Activities</th>
+										<th class="width120" >Start Date</th>
+										<th  class="width120">ADC<br> PDC</th>
+										<th  class="width60"> Progress</th>
+										<th  class="width50"> Status(DD)</th>
+									 	<th  class="width26"> Remarks</th>
+									 	<th  class="max-width30"> Info </th>
+									</tr>
+								</thead>
+									<% if( sunsetmilestones.get(z).size()>0){
+										long count1=1;
+										int milcountA=1;
+										int milcountB=1;
+										int milcountC=1;
+										int milcountD=1;
+										int milcountE=1;
+										
+										%>
+										<%int serial=1;for(Object[] obj:sunsetmilestones.get(z)){
+											
+											if(Integer.parseInt(obj[21].toString())<= Integer.parseInt(levelid)){
+											%>
+											<tr class="<% if( "0".equals(obj[21].toString()) && "Y".equalsIgnoreCase(obj[31].toString())){ %> bg-sunset <%}%>">
+												<td class="text-center"><%=serial%></td>
+												<td>M<%=obj[0] %></td>
+												
+												<td class="text-center">
+													<%
+													
+													if(obj[21].toString().equals("0")) {%>
+														<!-- L -->
+													<%	milcountA=1;
+														milcountB=1;
+														milcountC=1;
+														milcountD=1;
+														milcountE=1;
+													}else if(obj[21].toString().equals("1")) {
+														for(Map.Entry<Integer,String>entry:treeMapLevOne.entrySet()){
+															if(entry.getKey().toString().equalsIgnoreCase(obj[2].toString())){%>
+																<%=entry.getValue() %>
+														<%}} 
+														%>
+													<%
+													}else if(obj[21].toString().equals("2")) {
+														for(Map.Entry<Integer,String>entry:treeMapLevTwo.entrySet()){
+															if(entry.getKey().toString().equalsIgnoreCase(obj[3].toString())){%>
+																<%=entry.getValue() %>
+														<%}}	
+														%>
+													<%
+													}else if(obj[21].toString().equals("3")) { %>
+														C-<%=milcountC %>
+													<%milcountC+=1;
+													milcountD=1;
+													milcountE=1;
+													}else if(obj[21].toString().equals("4")) { %>
+														D-<%=milcountD %>
+													<%
+													milcountD+=1;
+													milcountE=1;
+													}else if(obj[21].toString().equals("5")) { %>
+														E-<%=milcountE %>
+													<%milcountE++;
+													} %>
+												</td>
+	
+												<td class="<%if(obj[21].toString().equals("0")) {%>font-weight-bold<%}%>">
+													<%if(obj[21].toString().equals("0")) {%>
+														<%=StringEscapeUtils.escapeHtml4(obj[10].toString()) %>
+													<%}else if(obj[21].toString().equals("1")) { %>
+														&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[11].toString()) %>
+													<%}else if(obj[21].toString().equals("2")) { %>
+														&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[12].toString()) %>
+													<%}else if(obj[21].toString().equals("3")) { %>
+														&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[13].toString()) %>
+													<%}else if(obj[21].toString().equals("4")) { %>
+														&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[14].toString()) %>
+													<%}else if(obj[21].toString().equals("5")) { %>
+														&nbsp;&nbsp;<%=StringEscapeUtils.escapeHtml4(obj[15].toString()) %>
+													<%} %>
+												</td>
+												<% 
+													LocalDate StartDate = LocalDate.parse(obj[7].toString());
+													LocalDate EndDate = LocalDate.parse(obj[8].toString());
+													LocalDate OrgEndDate = LocalDate.parse(obj[9].toString());
+													int Progess = Integer.parseInt(obj[17].toString());
+													LocalDate CompletionDate =obj[24]!=null ? LocalDate.parse(obj[24].toString()) : null;
+													
+													LocalDate Today = LocalDate.now();
+													
+												%>
+												<td class="text-center" ><%= obj[7]!=null? sdf.format(sdf1.parse(obj[7].toString())) : " - " %></td>
+												<td class="text-center">
+												<!-- ADC  -->
+												
+												<% if ((obj[19].toString().equalsIgnoreCase("3") || obj[19].toString().equalsIgnoreCase("5")) && obj[24] != null) { %>	
+															<span 
+																<%if(Progess==0){ %>
+																	class="assigned"
+																<%} else if(Progess>0 && Progess<100 && (OrgEndDate.isAfter(Today) || OrgEndDate.isEqual(Today) )){ %>
+																	class="ongoing"
+																<%} else if( Progess>0 && Progess<100 && (OrgEndDate.isBefore(Today) )){ %>
+																	class="delay"
+																<%} else if((CompletionDate!=null && ( CompletionDate.isBefore(OrgEndDate) ||  CompletionDate.isEqual(OrgEndDate)))){ %>
+																	class="completed"
+																<%} else if((CompletionDate!=null && CompletionDate.isAfter(OrgEndDate) )){ %>
+																	class="completeddelay"
+																<%}else if(CompletionDate!=null && Progess==0 &&  ( EndDate.isAfter(Today) ||  EndDate.isEqual(Today)) ){ %>
+																	class="inactive"
+																<%}else{ %>
+																	class="assigned"
+																<%} %>
+																> <%=sdf.format(sdf1.parse(obj[24].toString()))%> </span>
+															
+														 <% } else {  %> - <% } %>
+												
+												<br>
+													<%if(! LocalDate.parse(obj[8].toString()).isEqual(LocalDate.parse(obj[9].toString())) ){ %> 
+														<%= sdf.format(sdf1.parse(obj[8].toString()))%><br> 
+													<%}%>
+													<%=sdf.format(sdf1.parse(obj[9].toString())) %>
+												</td>
+												
+
+												<td class="text-center"><%=obj[17] %>%</td>											
+
+												
+												<td class="text-center">	
+								
+														<%if(Progess==0){ %>
+															<span class="assigned"> AA </span>
+														<%} else if(Progess>0 && Progess<100 && (OrgEndDate.isAfter(Today) || OrgEndDate.isEqual(Today) )){ %>
+															<span class="ongoing"> OG </span>
+														<%} else if( Progess>0 && Progess<100 && (OrgEndDate.isBefore(Today) )){ %>
+															<span class="delay"> DO (<%=ChronoUnit.DAYS.between(OrgEndDate, LocalDate.now())%>)</span>
+														<%} else if((CompletionDate!=null && ( CompletionDate.isBefore(OrgEndDate) ||  CompletionDate.isEqual(OrgEndDate)))){ %>
+															<span class="completed"> CO</span>
+														<%} else if((CompletionDate!=null && CompletionDate.isAfter(OrgEndDate) )){ %>
+															<span class="completeddelay">CD (<%=ChronoUnit.DAYS.between(OrgEndDate, CompletionDate)%>)</span>
+														<%}else if(CompletionDate!=null && Progess==0 &&  ( EndDate.isAfter(Today) ||  EndDate.isEqual(Today)) ){ %>
+															<span class="inactive">IA</span>
+														<%}else{ %>
+															<span class="assigned">AA</span>
+														<%} %>
+													
+												</td>
+												<td class="overflowWrap"><%if(obj[23]!=null){%><%=StringEscapeUtils.escapeHtml4(obj[23].toString()) %><%} %></td>
+	                                            <td >
+													<a  data-toggle="modal" data-target="#exampleModal1" data-id="milestonemodal<%=obj[0] %>" class="milestonemodal m-modal" data-whatever="@mdo" >
+														<i class="fa fa-info-circle circle-font"  aria-hidden="true"></i> 
+													</a>
+												</td>
+											</tr>
+										<%count1++;serial++;}} %>
+									<%} else{ %>
+									<tr><td colspan="10" class="text-center" > Nil</td></tr>
+									
+									
+									<%} %>
+							</table>
+			
+			
+								<div id="milestoneactivitychange" ></div>
+								
+							<%} %>
+						</div>
+ 				
+ 				</details>
  				
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
 				 	
 						<details>
-   						<summary role="button" tabindex="0" id="leveltab"><b>6. Details of work and current status of sub system with major milestones (since last <%=committee.getCommitteeShortName().trim().toUpperCase()%>)</b>  </summary>
+   						<summary role="button" tabindex="0" id="leveltab"><b>7. Details of work and current status of sub system with major milestones (since last <%=committee.getCommitteeShortName().trim().toUpperCase()%>)</b>  </summary>
 						<div class="content">
 							
 							<%for(int z=0;z<1;z++){ %>
@@ -1450,7 +1655,7 @@ String labcode = (String) session.getAttribute("labcode");
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
 				 
 						<details>
-   						<summary role="button" tabindex="0"><b>7. Details of Procurement</b>  </summary>
+   						<summary role="button" tabindex="0"><b>8. Details of Procurement</b>  </summary>
 						<div class="content">
 							<%for(int z=0;z<projectidlist.size();z++){ %>
 								<%if(ProjectDetail.size()>1){ %>
@@ -1888,7 +2093,7 @@ String labcode = (String) session.getAttribute("labcode");
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->						
 				 	
 						<details>
-   						<summary role="button" tabindex="0"><b>8. Overall Financial Status  <i class="text-underline">(&#8377; Lakhs)</i> </b> </summary>
+   						<summary role="button" tabindex="0"><b>9. Overall Financial Status  <i class="text-underline">(&#8377; Lakhs)</i> </b> </summary>
    						
 											  	<div class="content">
 						  	<%for(int z=0;z<projectidlist.size();z++){ 
@@ -2093,9 +2298,9 @@ String labcode = (String) session.getAttribute("labcode");
 						
 					<details>
 						<%if(committee.getCommitteeShortName().trim().equalsIgnoreCase("EB")){ %>
-   							<summary role="button" tabindex="0"><b>9. Action Plan for Next Six months </b>    </summary>
+   							<summary role="button" tabindex="0"><b>10. Action Plan for Next Six months </b>    </summary>
 						<%}else { %>
-							<summary role="button" tabindex="0"><b>9. Action Plan for Next Three months </b>    </summary>
+							<summary role="button" tabindex="0"><b>10. Action Plan for Next Three months </b>    </summary>
 						<%} %>
 						
 						<div class="content">
@@ -2315,9 +2520,37 @@ String labcode = (String) session.getAttribute("labcode");
 					</details>
 
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->						
+
+					<details >
+   						<summary role="button" tabindex="0"><b> 11. Valuation of Technologies</b>    </summary>
+   					</details>
+
+
+
+
+
+
+
+
+
+<!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->						
+
+					<details >
+   						<summary role="button" tabindex="0"><b> 12. Economic Impact of Project</b>    </summary>
+   					</details>
+
+
+
+
+
+
+
+
+
+<!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->						
 						
 					<details >
-   						<summary role="button" tabindex="0"><b> 10. GANTT chart of overall project schedule [<span class="text-underline">Original </span>(as per Project sanction / Latest PDC extension) and <span class="text-underline">Current</span>]</b>    </summary>
+   						<summary role="button" tabindex="0"><b> 13. GANTT chart of overall project schedule [<span class="text-underline">Original </span>(as per Project sanction / Latest PDC extension) and <span class="text-underline">Current</span>]</b>    </summary>
    						
 						    <div class="content">
 							    <%for(int z=0;z<1;z++){ %>
@@ -2378,7 +2611,7 @@ String labcode = (String) session.getAttribute("labcode");
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
  						
 					<details>
-   						<summary role="button" tabindex="0"><b>11. Issues</b></summary>
+   						<summary role="button" tabindex="0"><b>14. Issues</b></summary>
    						
 						   <div class="content">
 						   			<%for(int z=0;z<1;z++){ %>		
@@ -2513,7 +2746,7 @@ String labcode = (String) session.getAttribute("labcode");
 
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->						
 					<details>
-   						<summary role="button" tabindex="0"><b> 12. Other Relevant Points (if any) 
+   						<summary role="button" tabindex="0"><b> 15. Other Relevant Points (if any) 
    							<%if(committee.getCommitteeShortName().trim().equalsIgnoreCase("EB")){ %>
    								and Technical Work Carried Out For Last Six Months
 							<%}else { %>
@@ -2637,7 +2870,7 @@ String labcode = (String) session.getAttribute("labcode");
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
  
 					<details>
-   						<summary role="button" tabindex="0"><b>13. Decision/Recommendations sought from <%=committee.getCommitteeShortName().trim().toUpperCase() %></b>     </summary>
+   						<summary role="button" tabindex="0"><b>16. Decision/Recommendations sought from <%=committee.getCommitteeShortName().trim().toUpperCase() %></b>     </summary>
    						
 						  <div class="content">
 						  
@@ -2728,24 +2961,25 @@ String labcode = (String) session.getAttribute("labcode");
    						<summary role="button" tabindex="0"><b>Note</b></summary>
 						  <div class="content">
 							
-								1) Agenda mentioned in Chapter 5 on Project Monitoring and Review be
-									referred while making briefing papers.
+								1) Agenda mentioned in Chapter 6 on Project Monitoring and Review be referred while making briefing papers. 
+								
 								<br>	
-								2) Action plan as mentioned at SN. 9 should mandatorily form part of EB
-									minutes which should be released within two weeks of meeting. If the minutes
-									of meeting to be vetted by outside offices cut off dates should be given beyond
-									which minutes would be assumed to be approved.
+								2) Action plan and Impact on Overall PDC (if any), as mentioned at S. No. 9 should 
+								   mandatorily form part of AB/ PMB/ EB minutes which should be released within 10 days 
+								   of meeting.  If the minutes of meeting to be vetted by outside offices cut off dates should 
+								   be given beyond which minutes would be assumed to be approved. 
+								
 								<br>
-								3) Apex Board format may be similar to EB format modified to cover Agenda of
-									Apex Board (refer Chapter 5 on Project Monitoring and Review).
+								3) Format for Apex Board, Programme Management Board or Executive Board may be 
+								   chosen based on the review being scheduled for a project.
 								<br>
-								4) Detailed technical discussions on each sub systems to be deliberated and
-									recorded during PMRB. Ratification points from the higher monitoring body to
-									be clearly mentioned in the minutes.
+								4) Detailed technical discussions on each sub systems to be deliberated and recorded 
+								   during PMB/ EB / PMRB. Ratification points from the higher review committee to be 
+								   clearly mentioned in the minutes. 
 								<br>
-								5) For PDC extension cases, the defendable reason why PDC could not be
-									adhered & remedial steps to be taken to avoid further PDC extension may also
-									be presented as per the table given below & recorded in minutes.
+								5) For PDC extension cases, the defendable reason why PDC could not be adhered & 
+								   remedial steps to be taken to avoid further PDC extension may also be presented as per 
+								   the table given below & recorded in minutes. 
 						  </div>	
 					</details>
 				
