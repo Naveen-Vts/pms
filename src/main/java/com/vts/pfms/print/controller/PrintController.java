@@ -684,7 +684,7 @@ public class PrintController {
 	        req.setAttribute("levelid", mileStoneLevelId != null ? mileStoneLevelId[0].toString() : "2");
 
 	        // Project Data
-	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected);
+	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
 
 	        List<Object[]> projectdatadetails = (List<Object[]>) req.getAttribute("projectdatadetails");
 	        List<List<Object[]>> ebandpmrccount = (List<List<Object[]>>) req.getAttribute("ebandpmrccount");
@@ -1015,7 +1015,7 @@ public class PrintController {
 			req.setAttribute("levelid", mileStoneLevelId != null ? mileStoneLevelId[0].toString() : "2");
 
 			// Project Data
-			processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected);
+			processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
 
 			List<Object[]> projectdatadetails = (List<Object[]>) req.getAttribute("projectdatadetails");
 			List<List<Object[]>> ebandpmrccount = (List<List<Object[]>>) req.getAttribute("ebandpmrccount");
@@ -3167,7 +3167,7 @@ public class PrintController {
 			req.setAttribute("committeeMetingsCount", service.ProjectCommitteeMeetingsCount(projectid, "0", "0", "0",
 					"0", committee.getCommitteeShortName().trim()));
 
-			processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected);
+			processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
 
 			Map<String, List<Object[]>> reviewMeetingListMap = new HashMap<String, List<Object[]>>();
 			for (Object[] obj : SpecialCommitteesList) {
@@ -3217,8 +3217,8 @@ public class PrintController {
 		}
 	}
 
-	public int processProjectData(HttpServletRequest req, String projectid, String committeeid, String uri,
-			String LabCode, String UserId, String IsIbasConnected) throws Exception {
+	public int processProjectData(HttpServletRequest req, String projectid, String committeeid, String uri, String LabCode, String UserId, String IsIbasConnected,HttpSession ses) throws Exception {
+
 		List<Object[]> projectattributes = new ArrayList<>();
 		List<List<Object[]>> ebandpmrccount = new ArrayList<>();
 		List<List<Object[]>> milestonesubsystemsnew = new ArrayList<>();
@@ -7468,7 +7468,7 @@ public class PrintController {
 	        Object[] mileStoneLevelId = service.MileStoneLevelId(projectid, committeeid);
 	        req.setAttribute("levelid", mileStoneLevelId != null ? mileStoneLevelId[0].toString() : "2");
 
-	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected);
+	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
 
 	        List<Object[]> projectdatadetails = (List<Object[]>) req.getAttribute("projectdatadetails");
 	        List<List<Object[]>> ebandpmrccount = (List<List<Object[]>>) req.getAttribute("ebandpmrccount");
@@ -8566,7 +8566,7 @@ public class PrintController {
 	        Object[] mileStoneLevelId = service.MileStoneLevelId(projectid, committeeid);
 	        req.setAttribute("levelid", mileStoneLevelId != null ? mileStoneLevelId[0].toString() : "2");
 
-	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected);
+	        processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
 
 	        List<Object[]> projectdatadetails = (List<Object[]>) req.getAttribute("projectdatadetails");
 	        List<List<Object[]>> ebandpmrccount = (List<List<Object[]>>) req.getAttribute("ebandpmrccount");
