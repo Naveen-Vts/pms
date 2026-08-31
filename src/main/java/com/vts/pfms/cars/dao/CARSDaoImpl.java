@@ -316,7 +316,7 @@ public class CARSDaoImpl implements CARSDao{
 		}		
 	}
 
-	private static final String GETEMPDATA="FROM Employee WHERE empId=:EmpId";
+	private static final String GETEMPDATA="FROM Employee WHERE empId=:EmpId AND empStatus IN ('P','R','T')";
 	@Override
 	public Employee getEmpData(String EmpId)throws Exception
 	{
@@ -346,7 +346,7 @@ public class CARSDaoImpl implements CARSDao{
 		}
 	}
 
-	private static final String GETEMPDETAILS  ="SELECT a.emp_id,a.emp_name,b.designation,c.division_name,a.title,a.salutation,c.division_code FROM employee a,employee_desig b,division_master c WHERE a.emp_id=:EmpId AND a.desig_id=b.desig_id AND a.division_id=c.division_id";
+	private static final String GETEMPDETAILS  ="SELECT a.emp_id,a.emp_name,b.designation,c.division_name,a.title,a.salutation,c.division_code FROM employee a,employee_desig b,division_master c WHERE a.emp_id=:EmpId AND a.emp_status IN ('P','R','T') AND a.desig_id=b.desig_id AND a.division_id=c.division_id";
 	@Override
 	public Object[] getEmpDetailsByEmpId(String empId) throws Exception
 	{
@@ -427,7 +427,7 @@ public class CARSDaoImpl implements CARSDao{
 		}
 	}
 
-	private static final String GETDPANDCEMPID  ="SELECT a.emp_id,a.emp_no,a.emp_name,a.title,c.Designation FROM employee a,login b,employee_desig c WHERE a.emp_id=b.EmpId AND a.desig_id=c.desig_id AND b.LoginType=:LoginType LIMIT 1";
+	private static final String GETDPANDCEMPID  ="SELECT a.emp_id,a.emp_no,a.emp_name,a.title,c.Designation FROM employee a,login b,employee_desig c WHERE a.emp_id=b.EmpId AND a.emp_status IN ('P','R','T') AND a.desig_id=c.desig_id AND b.LoginType=:LoginType LIMIT 1";
 	@Override
 	public Object[] getEmpDataByLoginType(String loginType) throws Exception
 	{
@@ -627,7 +627,7 @@ public class CARSDaoImpl implements CARSDao{
 
 	}
 
-	private static final String LABDIRECTORDATA = "SELECT a.emp_id,a.emp_name,b.Designation FROM employee a,employee_desig b WHERE a.desig_id=b.desig_id AND a.emp_id =(SELECT lab_authority_id FROM lab_master c WHERE c.lab_code=:LabCode LIMIT 1) AND a.is_active=1";
+	private static final String LABDIRECTORDATA = "SELECT a.emp_id,a.emp_name,b.Designation FROM employee a,employee_desig b WHERE a.desig_id=b.desig_id AND a.emp_status IN ('P','R','T') AND a.emp_id =(SELECT lab_authority_id FROM lab_master c WHERE c.lab_code=:LabCode LIMIT 1) AND a.is_active=1";
 	@Override
 	public Object[] getLabDirectorData(String labcode) throws Exception {
 		try {
@@ -780,7 +780,7 @@ public class CARSDaoImpl implements CARSDao{
 		}
 	}
 
-	private static final String EMPLOYEELISTBYLABCODE="SELECT e.emp_id, CONCAT(IFNULL(CONCAT(e.title,' '),(IFNULL(CONCAT(e.salutation, ' '), ''))), e.emp_name) AS 'EmpName',e.emp_no,d.Designation FROM employee e,employee_desig d WHERE e.desig_id=d.desig_id AND e.is_active='1' AND e.lab_code=:LabCode ORDER BY sr_no=0, sr_no";
+	private static final String EMPLOYEELISTBYLABCODE="SELECT e.emp_id, CONCAT(IFNULL(CONCAT(e.title,' '),(IFNULL(CONCAT(e.salutation, ' '), ''))), e.emp_name) AS 'EmpName',e.emp_no,d.Designation FROM employee e,employee_desig d WHERE e.desig_id=d.desig_id AND e.emp_status IN ('P','R','T') AND e.is_active='1' AND e.lab_code=:LabCode ORDER BY sr_no=0, sr_no";
 	@Override
 	public List<Object[]> getEmployeeListByLabCode(String labCode) throws Exception {
 		try {

@@ -27,7 +27,7 @@ public class FracasDaoImpl implements FracasDao {
 	@PersistenceContext EntityManager manager;
 	
 	private static final String LABDETAILS = "SELECT lab_master_id, lab_code, lab_name, lab_unit_code, lab_address, lab_city, lab_pin, lab_tel_no, lab_fax_no, lab_email, lab_authority, lab_authority_id, lab_rfp_email, lab_id, cluster_id, lab_logo FROM lab_master";
-	private static final String EMPLOYEELIST="select a.emp_id,CONCAT(IFNULL(CONCAT(a.title,' '),''), a.emp_name) 'empname' ,b.designation FROM employee a,employee_desig b WHERE a.is_active='1' AND a.desig_id=b.desig_id and lab_code=:LabCode ORDER BY a.sr_no=0,a.sr_no";
+	private static final String EMPLOYEELIST="select a.emp_id,CONCAT(IFNULL(CONCAT(a.title,' '),''), a.emp_name) 'empname' ,b.designation FROM employee a,employee_desig b WHERE a.is_active='1' AND a.emp_status IN ('P','R','T') AND a.desig_id=b.desig_id and lab_code=:LabCode ORDER BY a.sr_no=0,a.sr_no";
 	private final static String PROJECTSLIST="SELECT project_id,project_code,project_name FROM project_master";
 	private static final String PROJECTSDATA="SELECT project_id,project_code,project_name FROM project_master WHERE project_id=:projectid";
 	private final static String FRACASTYPELIST="SELECT fracastypeid, fracastype FROM pfms_fracas_type ";

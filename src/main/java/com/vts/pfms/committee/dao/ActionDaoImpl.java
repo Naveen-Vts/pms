@@ -796,7 +796,7 @@ public class ActionDaoImpl implements ActionDao{
 		return LabInfoClusterLab;
 	}
 	
-	private static final String LABEMPLOYEELIST="SELECT a.emp_id,CONCAT(IFNULL(CONCAT(a.title,' '),''), a.emp_name) as 'empname',a.emp_no,b.designation FROM employee a,employee_desig b WHERE a.is_active=1 AND a.desig_id=b.desig_id AND a.lab_code=:labcode ORDER BY a.sr_no;";
+	private static final String LABEMPLOYEELIST="SELECT a.emp_id,CONCAT(IFNULL(CONCAT(a.title,' '),''), a.emp_name) as 'empname',a.emp_no,b.designation FROM employee a,employee_desig b WHERE a.is_active=1 AND a.emp_status IN ('P') AND a.desig_id=b.desig_id AND a.lab_code=:labcode ORDER BY a.sr_no;";
 	@Override
 	public List<Object[]> LabEmployeeList(String LabCode) throws Exception 
 	{
@@ -805,7 +805,7 @@ public class ActionDaoImpl implements ActionDao{
 		List<Object[]> ChairpersonEmployeeListFormation=(List<Object[]>)query.getResultList();
 		return ChairpersonEmployeeListFormation;
 	}
-	private static final String LABEMPFILTERFORACTION="SELECT a.emp_id,CONCAT(IFNULL(CONCAT(a.title,' '),''), a.emp_name) as 'empname',a.emp_no,b.designation FROM employee a,employee_desig b WHERE a.is_active=1 AND a.desig_id=b.desig_id AND a.emp_id NOT IN (SELECT b.assignee FROM  action_main a, action_assign b WHERE a.actionmainid=b.actionmainid AND b.assigneelabcode=:labcode AND (a.mainid=:mainid OR a.actionmainid=:mainid)) AND a.lab_code=:labcode";
+	private static final String LABEMPFILTERFORACTION="SELECT a.emp_id,CONCAT(IFNULL(CONCAT(a.title,' '),''), a.emp_name) as 'empname',a.emp_no,b.designation FROM employee a,employee_desig b WHERE a.is_active=1 AND a.desig_id=b.desig_id AND a.emp_status IN ('P') AND a.emp_id NOT IN (SELECT b.assignee FROM  action_main a, action_assign b WHERE a.actionmainid=b.actionmainid AND b.assigneelabcode=:labcode AND (a.mainid=:mainid OR a.actionmainid=:mainid)) AND a.lab_code=:labcode";
 	@Override
 	public List<Object[]> LabEmpListFilterForAction(String LabCode , String MainId) throws Exception
 	{

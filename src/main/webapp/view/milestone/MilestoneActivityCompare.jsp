@@ -110,7 +110,7 @@ if(getMA1 == null){
                         	</div>
                         	<div class="col-md-2 " align="center" ><br>
                     		<label class="control-label">Progress  </label><br>
-                    		<%if(!getMA1[11].toString().equalsIgnoreCase("0")){ %>
+                    		<%if(getMA1[11] != null && !getMA1[11].toString().equalsIgnoreCase("0")){ %>
 															<div class="progress class3" >
 															<div class="progress-bar progress-bar-striped width-<%=getMA1[11] %> %>" role="progressbar"  aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" >
 															<%=getMA1[11]!=null?StringEscapeUtils.escapeHtml4(getMA1[11].toString()): " - " %>
