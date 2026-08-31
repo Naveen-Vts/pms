@@ -34,6 +34,7 @@
   List<String> actionAllowedFor =  Arrays.asList("A", "P");
   Long projectDirector = 0L;
   String selectedProject = "";
+	int sunsetCount = 0;
   Long empId = (Long)session.getAttribute("EmpId");
  %>
 
@@ -132,7 +133,7 @@
 															<th>Expand</th>
 															<th>SN</th>
 															<th>Mil-No</th>
-														<!-- 	<th style="text-align: left;">Project Name</th> -->
+														<!-- <th style="text-align: left;">Project Name</th> -->
 															<th>Milestone Activity</th>
 															<th >Start Date</th>
 															<th >End Date</th>	
@@ -153,7 +154,7 @@
 															
 														 	if(MilestoneList!=null&&MilestoneList.size()>0){
 															for(Object[] obj: MilestoneList){ %>
-														<tr>
+														<tr class="<% if("Y".equalsIgnoreCase(obj[20].toString())){ sunsetCount++; %> bg-sunset <%}%>">
 															<td  class="center width-2">
 																<span class="clickable" data-toggle="collapse" id="row<%=obj[0] %>" data-target=".row<%=obj[0]  %>">
 																	<button class="btn btn-sm btn-success" id="btn<%=obj[0]  %>"  onclick="ChangeButton('<%=obj[0]  %>')">
@@ -263,6 +264,16 @@
 														                  </button>    
 														                 <%--  <%} %> --%>
 			                                                               <%} %>
+			                                                            <button
+																		    class="btn mb-3"
+																		    type="button"
+																		    data-toggle="tooltip"
+																		    data-placement="top"
+																		    title="SunSet Milestone"
+																		    onclick="handleSunSet(<%= obj[0] %>,1,'<%=obj[20] %>')"
+																		>
+																		    <i class="fa fa-sun-o" aria-hidden="true"></i>
+																		</button>
 			                                                            <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
 																	    <input type="hidden" name="MilestoneActivityId" value="<%=obj[0]%>"/>
 																	    <input type="hidden" name="projectid" value="<%=ProjectId%>"/>
@@ -795,7 +806,7 @@
 										       
 												<%} %>
 												<%
-												if(!Arrays.asList(obj[obj.length-1].toString(),obj[obj.length-3].toString()).contains(empId+"")){
+												if(!Arrays.asList(obj[19].toString(),obj[17].toString()).contains(empId+"")){
 												%>
 												<script>
 												 var empListJs = [<%= empList.stream().map(e -> "\"" + e + "\"").collect(java.util.stream.Collectors.joining(",")) %>];
@@ -850,6 +861,11 @@
 
 
 											</div>
+
+							<div class="sunset-info-note">
+							    <span class="info-icon"><i class="fa fas fa-info-circle"></i></span>
+							    <span class="info-text">Note: A maximum of <strong>3 milestones</strong> can be marked as sunset for a project.</span>
+							</div>
 							
 						</div>
 
@@ -1353,6 +1369,99 @@ function ChangeButton(id) {
     form.submit();
 }
 	
+	
+
+function handleSunSet(milestoneActivityId, levelId, isSunSet) {
+
+	const sunsetCount = <%= sunsetCount %>;
+	/* 
+    $.ajax({
+        type: "POST",
+        url: "UpdateMilestoneSunSet.htm",
+
+        data: {
+            milestoneActivityId: milestoneActivityId,
+            levelId: levelId,
+            isSunSet: isSunSet,
+            "${_csrf.parameterName}": "${_csrf.token}"
+        },
+
+        success: function(response) {
+            console.log("Sunset updated successfully:", response);
+        },
+
+        error: function(xhr, status, error) {
+            console.error("Status:", xhr.status);
+            console.error("Error:", error);
+            console.error("Response:", xhr.responseText);
+        }
+    });
+}
+
+	function handleSunSet(milestoneActivityId, levelId, isSunSet) {
+
+		 */
+		 
+		 if(isSunSet === "N" && sunsetCount > 2){
+			alert("More than Three Milestones cannot be marked as SunSet Milestone!");
+			return;
+		 }
+		 
+		 const isConfirm = confirm(
+				    isSunSet === "N"
+				        ? "Are you sure you want to Mark this as a SunSet Milestone?"
+				        : "Are you sure you want to remove the SunSet Milestone designation?"
+				);
+
+		if (!isConfirm) {
+		    return;
+		}
+		 
+	    const form = document.createElement("form");
+
+	    form.method = "POST";
+	    form.action = "UpdateMilestoneSunSet.htm";
+
+	    // Milestone Activity ID
+	    const activityInput = document.createElement("input");
+	    activityInput.type = "hidden";
+	    activityInput.name = "milestoneActivityId";
+	    activityInput.value = milestoneActivityId;
+	    form.appendChild(activityInput);
+
+	    // Level ID
+	    const levelInput = document.createElement("input");
+	    levelInput.type = "hidden";
+	    levelInput.name = "levelId";
+	    levelInput.value = levelId;
+	    form.appendChild(levelInput);
+
+	    // Sunset value
+	    const sunsetInput = document.createElement("input");
+	    sunsetInput.type = "hidden";
+	    sunsetInput.name = "isSunSet";
+	    sunsetInput.value = isSunSet;
+	    form.appendChild(sunsetInput);
+
+	    // CSRF
+	    const csrfInput = document.createElement("input");
+	    csrfInput.type = "hidden";
+	    csrfInput.name = "${_csrf.parameterName}";
+	    csrfInput.value = "${_csrf.token}";
+	    form.appendChild(csrfInput);
+
+	    // Project ID
+	    const projectId = document.createElement("input");
+	    projectId.type = "hidden";
+	    projectId.name = "projectId";
+	    projectId.value = "<%= ProjectId %>";
+	    form.appendChild(projectId);
+	    
+	    
+	    document.body.appendChild(form);
+
+	    form.submit();
+	}
 </script>  
 
 

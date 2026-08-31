@@ -25,7 +25,7 @@ public class MilestoneActivityDto {
 	private String ModifiedBy;
 	private String ModifiedDate;
 	private int IsActive;
-	
+	private String IsSunSet;
 	
 	
 	public Double getFinancaOutlay() {
@@ -171,6 +171,12 @@ public class MilestoneActivityDto {
 	}
 	public void setIsActive(int isActive) {
 		IsActive = isActive;
+	}
+	public String getIsSunSet() {
+		return IsSunSet;
+	}
+	public void setIsSunSet(String isSunSet) {
+		IsSunSet = isSunSet;
 	}
 	
 }

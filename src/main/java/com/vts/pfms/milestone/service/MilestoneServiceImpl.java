@@ -2841,4 +2841,13 @@ public class MilestoneServiceImpl implements MilestoneService {
 	public long deleteSubLevelMilsetone(String subId) throws Exception {
 		return dao.deleteSubLevelMilsetone(subId);
 	}
+
+	@Override
+	public long updateSunSet(String milestoneActivityId, String levelId, String isSunSet) throws Exception {
+		Long id = milestoneActivityId != null && !milestoneActivityId.isBlank() ? Long.parseLong(milestoneActivityId) : 0L;
+//		if("1".equals(levelId)) {
+			return dao.updateMainMileStoneSunSet(id, "Y".equalsIgnoreCase(isSunSet) ? "N" : "Y");
+//		}
+//		return dao.updateSubMileStoneSunSet(id,"Y".equalsIgnoreCase(isSunSet) ? "N" : "Y");
+	}
 }

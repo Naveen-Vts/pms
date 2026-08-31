@@ -39,6 +39,7 @@ public class MilestoneActivity {
 	private String ModifiedDate;
 	private int IsActive;
 	private String DateOfCompletion;
+	private String IsSunSet;
 	
 	
 }

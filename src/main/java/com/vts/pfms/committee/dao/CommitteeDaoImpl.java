@@ -3336,7 +3336,7 @@ public class CommitteeDaoImpl  implements CommitteeDao {
 	
 	
 	//prakarsh
-	private static final String MeettingList="SELECT cs.ScheduleId,cs.MeetingId,cs.ScheduleDate,cs.ScheduleStartTime,cs.MeetingVenue,c.CommitteeShortName AS committee_short_name,e.emp_name,csi.EmpId,csi.MemberType FROM committee_schedule cs JOIN committee c ON cs.CommitteeId = c.CommitteeId,committee_schedules_invitation csi, employee e WHERE cs.ProjectId =:projectId AND cs.isactive=1 AND cs.CommitteeId = :committeeId AND csi.MemberType='P' AND csi.EmpId=e.emp_id AND cs.ScheduleId= csi.CommitteeScheduleId  ORDER BY cs.scheduledate ";
+	private static final String MeettingList="SELECT cs.ScheduleId,cs.MeetingId,cs.ScheduleDate,cs.ScheduleStartTime,cs.MeetingVenue,GetCommitteeShortName(cs.scheduledate,c.committeeshortname) AS committeeshortname,e.emp_name,csi.EmpId,csi.MemberType FROM committee_schedule cs JOIN committee c ON cs.CommitteeId = c.CommitteeId,committee_schedules_invitation csi, employee e WHERE cs.ProjectId =:projectId AND cs.isactive=1 AND cs.CommitteeId = :committeeId AND csi.MemberType='P' AND csi.EmpId=e.emp_id AND cs.ScheduleId= csi.CommitteeScheduleId  ORDER BY cs.scheduledate ";
 	@Override
 	public List<Object[]> MeettingList(String committeeId, String projectId) throws Exception {
 		try {
@@ -3349,8 +3349,8 @@ public class CommitteeDaoImpl  implements CommitteeDao {
 			return new ArrayList<Object[]>();
 		}
 	}
-	private static final String MeettingResultAll="  SELECT cs.scheduleid,cs.MeetingId,cs.scheduledate,cs.ScheduleStartTime,cs.MeetingVenue, c.committeeshortname,e.emp_name,csi.EmpId,csi.MemberType  FROM committee_schedule cs,committee c,committee_schedules_invitation csi, employee e WHERE  cs.ScheduleId= csi.CommitteeScheduleId AND cs.committeeid=c.committeeid AND cs.isActive=1 AND cs.projectid=:projectId AND csi.MemberType='P' AND csi.EmpId=e.emp_id ORDER BY cs.scheduledate";
 	
+	private static final String MeettingResultAll="  SELECT cs.scheduleid,cs.MeetingId,cs.scheduledate,cs.ScheduleStartTime,cs.MeetingVenue, GetCommitteeShortName(cs.scheduledate,c.committeeshortname) AS committeeshortname,e.emp_name,csi.EmpId,csi.MemberType  FROM committee_schedule cs,committee c,committee_schedules_invitation csi, employee e WHERE  cs.ScheduleId= csi.CommitteeScheduleId AND cs.committeeid=c.committeeid AND cs.isActive=1 AND cs.projectid=:projectId AND csi.MemberType='P' AND csi.EmpId=e.emp_id ORDER BY cs.scheduledate";
 	@Override
 	public List<Object[]> MeettingList(String projectid) {
 		try {

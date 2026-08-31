@@ -1045,11 +1045,12 @@ public class PrintController {
 			
 			// Project Data
 			processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
-			
-			List<Object[]> projectdatadetails = (List<Object[]>)req.getAttribute("projectdatadetails");
-			List<List<Object[]>> ebandpmrccount = (List<List<Object[]>>)req.getAttribute("ebandpmrccount");
-			List<Object[]> TechWorkDataList = (List<Object[]>)req.getAttribute("TechWorkDataList");
-			
+
+
+			List<Object[]> projectdatadetails = (List<Object[]>) req.getAttribute("projectdatadetails");
+			List<List<Object[]>> ebandpmrccount = (List<List<Object[]>>) req.getAttribute("ebandpmrccount");
+			List<Object[]> TechWorkDataList = (List<Object[]>) req.getAttribute("TechWorkDataList");
+
 			// Milestone Data for Committee
 			milestoneLevelDataMap(req, reviewMeetingListMap, projectid, committee.getCommitteeShortName().trim());
 			
@@ -3181,12 +3182,13 @@ public class PrintController {
 			Committee committee = service.getCommitteeData(committeeid);
 			List<Object[]> projectDetails2 = service.ProjectDetails(projectid);
 			String projectLabCode = projectDetails2.get(0)[5].toString();
+
 			
 	    	req.setAttribute("committeeData", committee);
 			req.setAttribute("committeeMetingsCount", service.ProjectCommitteeMeetingsCount(projectid, "0", "0", "0", "0", committee.getCommitteeShortName().trim()) );
 			
 			processProjectData(req, projectid, committeeid, uri, projectLabCode, UserId, IsIbasConnected,ses);
-	    	
+
 			Map<String, List<Object[]>> reviewMeetingListMap = new HashMap<String, List<Object[]>>();
 			for(Object[] obj : SpecialCommitteesList) {
 				reviewMeetingListMap.put(obj[1]+"", service.ReviewMeetingList(projectid, obj[1]+""));
@@ -3263,6 +3265,7 @@ public class PrintController {
 	    List<List<TechImages>> TechImages = new ArrayList<>();
 	    List<List<Object[]>> overallfinance = new ArrayList<>();
 
+		List<List<Object[]>> sunsetmilestones = new ArrayList<>();
 	    try {
 
 	    	List<String> Pmainlist = service.ProjectsubProjectIdList(projectid);
@@ -3284,6 +3287,8 @@ public class PrintController {
 	    		TechWorkDataList.add(service.TechWorkData(proid));
 	    		ProjectRevList.add(service.ProjectRevList(proid));
 	    		milestonesubsystemsnew.add(service.BreifingMilestoneDetails(proid, committeeid));
+	    		
+	    		sunsetmilestones.add(service.SunSetMilestones(proid));
 
 	    		Object[] prodetails = service.ProjectDataDetails(proid);
 	    		projectdatadetails.add(prodetails);
@@ -3298,6 +3303,7 @@ public class PrintController {
 		    		pdffiles.add(pdfs);
 	    		}
 	    		req.setAttribute("envisagedDemandlist", service.getEnvisagedDemandList(projectid));
+
 
 //	    		List<ProjectFinancialDetails> projectDetails = fetchFromApi(
 //	    				uri + "/pfms_serv/financialStatusBriefing?ProjectCode=" + projectattribute[0] + "&rupess=10000000",
@@ -3363,6 +3369,8 @@ public class PrintController {
 	    	req.setAttribute("TechImages", TechImages);   
 	    	req.setAttribute("overallfinance", overallfinance);
 	    	req.setAttribute("projectidlist", Pmainlist);
+
+			req.setAttribute("sunsetmilestones", sunsetmilestones);
 
 	    	return 1;
 	    }catch (Exception e) {

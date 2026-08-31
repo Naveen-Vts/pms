@@ -160,5 +160,5 @@ public interface MilestoneService {
 	public Object[] getMilestoneActivityBriefingById(String recdecid) throws Exception ;
 	public long deleteMainLevelMilsetone(String mainId) throws Exception;
 	public long deleteSubLevelMilsetone(String subId) throws Exception;
-
+	public long updateSunSet(String milestoneActivityId, String levelId, String isSunSet) throws Exception;
 }
