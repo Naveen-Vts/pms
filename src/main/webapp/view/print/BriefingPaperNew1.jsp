@@ -1613,7 +1613,7 @@ List<List<Object[]>> sunsetmilestones= (List<List<Object[]>>)request.getAttribut
 				<%} %>
 				
 				<% for(int z=0 ; z<1;z++) {   %>
-							 <h1 class="break"></h1>
+							 <%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>
 <!-- -------------------------------------------------------------------------------------------- -->
 		<div align="left" style="margin-left: 10px;">
 		
@@ -2587,10 +2587,10 @@ List<List<Object[]>> sunsetmilestones= (List<List<Object[]>>)request.getAttribut
 					
 		<%} %>	
 			<% char fch='a'; for(int z=0 ; z<projectidlist.size();z++) {   %>
-					<!-- ----------------------------------------------8. Overall financial Status------------------------------------------------- -->
+					<!-- ----------------------------------------------9. Overall financial Status------------------------------------------------- -->
 					<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>	
 		 
-   					<div align="left" style="margin-left: 10px;"><b class="sub-title">9 <%if(projectidlist.size()>1) {%> (<%=(fch++) %>) <%} %>. Overall Financial Status </b> 			<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  </b></div><div align="right"><b><span class="currency" >(&#8377; <span>Crore</span>)</span></b></div>
+   					<div align="left" style="margin-left: 10px;"><b class="sub-title">9. <%if(projectidlist.size()>1) {%> (<%=(fch++) %>) <%} %>. Overall Financial Status </b> 			<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  </b></div><div align="right"><b><span class="currency" >(&#8377; <span>Crore</span>)</span></b></div>
 						 
 						  	<table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
 						  	    <thead>
@@ -2941,10 +2941,10 @@ List<List<Object[]>> sunsetmilestones= (List<List<Object[]>>)request.getAttribut
 
 	<% for(int z=0 ; z<1;z++) {   %>
 			<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>
-<!-- ----------------------------------------------8. Action plan for next three------------------------------------------------- -->
-<!-- ----------------------------------------------9.GANTT chart---------------------------------------------------------- -->
+<!-- ----------------------------------------------10. Action plan for next three------------------------------------------------- -->
+<!-- ----------------------------------------------11.GANTT chart---------------------------------------------------------- -->
 			<div align="left" style="margin-left: 15px;">
-					<b class="sub-title">13. PERT/GANTT chart of overall project schedule :
+					<b class="sub-title">11. PERT/GANTT chart of overall project schedule :
 					<!--  [<span style="text-decoration: underline;">Original (as per Project sanction / Latest PDC extension) and Current</span>]: --> 
 				</b>
 			</div>
@@ -2985,7 +2985,7 @@ List<List<Object[]>> sunsetmilestones= (List<List<Object[]>>)request.getAttribut
 	
 		<% for(int z=0 ; z<1;z++) {   %>
 			<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>
-			<div align="left" style="margin-left: 10px;"><b class="sub-title">14. Issues:</b></div>
+			<div align="left" style="margin-left: 10px;"><b class="sub-title">12. Issues:</b></div>
 			
 			<table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;   border-collapse:collapse;" >
 						<thead>
@@ -3068,9 +3068,9 @@ List<List<Object[]>> sunsetmilestones= (List<List<Object[]>>)request.getAttribut
 			<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>	
 			<div align="left" style="margin-left: 10px;"><b class="sub-title"> 
    							<%if(CommitteeCode.equalsIgnoreCase("EB")){ %>
-   								15. Other Relevant Points (if any) and Technical Work Carried Out For Last Six Months
+   								13. Other Relevant Points (if any) and Technical Work Carried Out For Last Six Months
 							<%}else { %>
-								15. Other Relevant Points (if any) and Technical Work Carried Out For Last Three Months
+								13. Other Relevant Points (if any) and Technical Work Carried Out For Last Three Months
 							<%} %>
    						</b></div>
    						
@@ -3130,7 +3130,7 @@ List<List<Object[]>> sunsetmilestones= (List<List<Object[]>>)request.getAttribut
 			<% for(int z=0 ; z<1;z++) {   %>
 											<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>		
 <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------- -->
-						<div align="left" style="margin-left: 10px;"><b class="sub-title">16. Decision/Recommendations sought from <%=CommitteeCode.toUpperCase() %> Meeting :</b></div>
+						<div align="left" style="margin-left: 10px;"><b class="sub-title">14. Decision/Recommendations sought from <%=CommitteeCode.toUpperCase() %> Meeting :</b></div>
 							
 							<table class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;   border-collapse:collapse;" >
 			
