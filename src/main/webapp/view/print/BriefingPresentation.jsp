@@ -2995,12 +2995,8 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 				</div>
 
 			</div>
-<<<<<<< HEAD
 
-			<!-- ---------------------------------------- P-13a  Other Relevant Points Div ----------------------------------------------------- -->
-=======
 			<!-- ---------------------------------------- P-15a  Other Relevant Points Div ----------------------------------------------------- -->
->>>>>>> pgad
 
 			<div class="carousel-item ">
 				   <div class="content-header row ">

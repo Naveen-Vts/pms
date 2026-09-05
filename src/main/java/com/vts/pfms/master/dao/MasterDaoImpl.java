@@ -53,7 +53,7 @@ public class MasterDaoImpl implements MasterDao {
 
 	private static final String DIVISIONLIST="SELECT division_id,division_code,division_name FROM division_master WHERE isactive=1";
 	private static final String DIVISIONEMPLIST="SELECT de.divisionemployeeid,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) AS 'empname',ed.designation,de.divisionid,e.lab_code  FROM division_employee de,employee e, employee_desig ed WHERE de.isactive=1 AND e.is_active=1 AND e.emp_status IN ('P') AND  de.empid=e.emp_id AND e.desig_id=ed.desig_id AND de.divisionid=:divisionid";
-	private static final String DIVISIONNONEMPLIST ="SELECT e.emp_id, CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) AS 'empname',ed.designation,e.lab_code  FROM employee e,employee_desig ed  WHERE e.is_active=1 AND e.emp_status IN ('P') AND e.desig_id=ed.desig_id AND e.emp_id NOT IN  (SELECT de.empid FROM division_employee de WHERE de.isactive=1 AND divisionid=:divisionid) ORDER BY e.sr_no ASC ,ed.desig_sr ASC";
+	private static final String DIVISIONNONEMPLIST ="SELECT e.emp_id, CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) AS 'empname',ed.designation,e.lab_code  FROM employee e,employee_desig ed  WHERE e.is_active=1 AND e.emp_status IN ('P') AND e.desig_id=ed.desig_id AND e.emp_id NOT IN  (SELECT de.empid FROM division_employee de WHERE de.isactive=1 AND divisionid=:divisionid) AND e.emp_status NOT IN ('N') ORDER BY e.sr_no ASC ,ed.desig_sr ASC";
 	private static final String DIVISIONDATA ="SELECT division_id, division_code,division_name FROM division_master WHERE division_id=:divisionid";
 
 
@@ -63,7 +63,7 @@ public class MasterDaoImpl implements MasterDao {
 	private static final String ACTIVITYLIST="SELECT activitytypeid, activitytype, IsTimeSheet, ActivityCode FROM milestone_activity_type WHERE isactive=1";
 	private static final String ACTIVITYNAMECHECK="SELECT COUNT(ActivityTypeId) AS 'count','ActivityType' FROM milestone_activity_type WHERE CASE WHEN ActivityTypeId<>0 THEN ActivityTypeId!=:ActivityTypeId END AND ActivityType=:ActivityType AND IsActive=1";
 	private static final String GROUPLIST = "SELECT dg.group_id,dg.group_code,dg.group_name,dg.group_head_id,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) AS 'empname',ed.designation ,dg.lab_code,dt.tdcode FROM division_group dg,employee e, employee_desig ed, division_td dt WHERE e.is_active=1 AND dg.group_head_id=e.emp_id AND e.desig_id=ed.desig_id AND dg.td_id=dt.tdid  AND dg.is_active=1 AND dg.lab_code=:labcode ORDER BY dg.group_id DESC";
-	private static final String GROUPHEADLIST ="SELECT e.emp_id,CONCAT(IFNULL(e.title,''), e.emp_name)AS 'empname',ed.designation FROM employee e, employee_desig ed WHERE  e.desig_id=ed.desig_id AND e.is_active=1 AND e.lab_code=:labcode ORDER BY e.sr_no";
+	private static final String GROUPHEADLIST ="SELECT e.emp_id,CONCAT(IFNULL(e.title,''), e.emp_name)AS 'empname',ed.designation FROM employee e, employee_desig ed WHERE  e.desig_id=ed.desig_id AND e.is_active=1 AND e.lab_code=:labcode AND e.emp_status NOT IN ('N') ORDER BY e.sr_no=0, e.sr_no";
 	private static final String GROUPADDCHECK ="SELECT SUM(IF(group_code =:gcode,1,0))   AS 'dCode','0' AS 'codecount'FROM division_group WHERE is_active=1 ";
 	private static final String GROUPDATA = "SELECT dg.group_id,dg.group_code,dg.group_name,dg.group_head_id,CONCAT(IFNULL(CONCAT(e.title,' '),''), e.emp_name) AS 'empname',ed.designation,dg.is_active,dg.td_id,e.lab_code AS 'Group Head Labcode' FROM division_group dg,employee e, employee_desig ed WHERE e.is_active=1 AND dg.group_head_id=e.emp_id AND e.desig_id=ed.desig_id AND  dg.group_id=:groupid";
 
@@ -636,7 +636,7 @@ public class MasterDaoImpl implements MasterDao {
 		return TDList;
 	}
 
-	private static final String TDHEADLIST="SELECT e.emp_id,CONCAT(IFNULL(e.title,''), e.emp_name)AS 'empname',ed.designation FROM employee e, employee_desig ed WHERE  e.desig_id=ed.desig_id AND e.is_active=1 AND e.lab_code=:labcode ORDER BY e.sr_no";
+	private static final String TDHEADLIST="SELECT e.emp_id,CONCAT(IFNULL(e.title,''), e.emp_name)AS 'empname',ed.designation FROM employee e, employee_desig ed WHERE  e.desig_id=ed.desig_id AND e.is_active=1 AND e.lab_code=:labcode AND e.emp_status NOT IN ('N') ORDER BY e.sr_no=0, e.sr_no";
 	@Override
 	public List<Object[]> TDHeadList(String LabCode) throws Exception 
 	{		

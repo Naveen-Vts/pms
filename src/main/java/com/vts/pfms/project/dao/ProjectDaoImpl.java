@@ -4532,7 +4532,7 @@ public class ProjectDaoImpl implements ProjectDao {
 		return (List<Object[]>)query.getResultList();
 	}
 
-	private static final String PROJECTTEAMLISTBYLABCODE="SELECT a.emp_id, CONCAT(IFNULL(CONCAT(a.title,' '),(IFNULL(CONCAT(a.salutation, ' '), ''))), a.emp_name) AS 'EmpName', b.Designation FROM employee a LEFT JOIN employee_desig b ON a.desig_id=b.desig_id WHERE a.is_active=1 AND a.lab_code=:LabCode AND a.emp_id NOT IN (SELECT c.EmpId FROM project_employee c WHERE c.ProjectId=:ProjectId AND c.IsActive=1)"; 
+	private static final String PROJECTTEAMLISTBYLABCODE="SELECT a.emp_id, CONCAT(IFNULL(CONCAT(a.title,' '),(IFNULL(CONCAT(a.salutation, ' '), ''))), a.emp_name) AS 'EmpName', b.Designation FROM employee a LEFT JOIN employee_desig b ON a.desig_id=b.desig_id WHERE a.is_active=1 AND a.lab_code=:LabCode AND a.emp_id NOT IN (SELECT c.EmpId FROM project_employee c WHERE c.ProjectId=:ProjectId AND c.IsActive=1) AND a.emp_status NOT IN ('N') ORDER BY a.sr_no=0,a.sr_no"; 
 	@Override
 	public List<Object[]> getProjectTeamListByLabCode(String labCode, String projectId) {
 		try {

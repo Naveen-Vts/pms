@@ -202,9 +202,7 @@ public class PrintController {
 	private  SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
 	
 	@RequestMapping(value="PfmsPrint.htm", method = RequestMethod.POST)
-	public String PfmsPrint(HttpServletRequest req, HttpSession ses, RedirectAttributes redir,HttpServletResponse res)
-
-			throws Exception {
+	public String PfmsPrint(HttpServletRequest req, HttpSession ses, RedirectAttributes redir,HttpServletResponse res) throws Exception {
 		String UserId = (String) ses.getAttribute("Username");
 //		String LabCode =(String) ses.getAttribute("labcode");
 		logger.info(new Date() +"Inside PfmsPrint.htm "+UserId);		
@@ -3273,7 +3271,6 @@ public class PrintController {
 		List<List<ProjectEconomicImpact>> econmicImpact  = new ArrayList<>();
 
 	    try {
-
 
 	    	List<String> Pmainlist = service.ProjectsubProjectIdList(projectid);
 

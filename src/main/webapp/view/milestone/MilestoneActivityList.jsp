@@ -251,6 +251,9 @@
 														                      </div>
 														                     </div>
 														                  </button> 
+														                  <button class="btn mb-3" type="button" data-toggle="tooltip" data-placement="top" title="SunSet Milestone" onclick="handleSunSet(<%= obj[0] %>,1,'<%=obj[20] %>')" >
+																		    <i class="fa fa-sun-o" aria-hidden="true"></i>
+																		</button>
 														                  <%} %>
 			                                                              <%}else if("Y".equalsIgnoreCase(obj[10].toString())){ %>
 <%-- 			                                                              <%if("A".equalsIgnoreCase(LoginType) || projectDirector.equals(empId) || Long.parseLong(obj[17].toString())==(empId)) { %>
@@ -264,16 +267,7 @@
 														                  </button>    
 														                 <%--  <%} %> --%>
 			                                                               <%} %>
-			                                                            <button
-																		    class="btn mb-3"
-																		    type="button"
-																		    data-toggle="tooltip"
-																		    data-placement="top"
-																		    title="SunSet Milestone"
-																		    onclick="handleSunSet(<%= obj[0] %>,1,'<%=obj[20] %>')"
-																		>
-																		    <i class="fa fa-sun-o" aria-hidden="true"></i>
-																		</button>
+			                                                            
 			                                                            <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
 																	    <input type="hidden" name="MilestoneActivityId" value="<%=obj[0]%>"/>
 																	    <input type="hidden" name="projectid" value="<%=ProjectId%>"/>
