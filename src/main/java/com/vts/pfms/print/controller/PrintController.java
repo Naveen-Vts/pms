@@ -1,15 +1,14 @@
 package com.vts.pfms.print.controller;
 
+import com.vts.pfms.milestone.service.MilestoneServiceImpl;
 import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.net.http.HttpRequest;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -93,7 +92,6 @@ import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.geom.Rectangle;
@@ -105,7 +103,6 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
 import com.itextpdf.kernel.utils.PdfMerger;
-import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
@@ -120,6 +117,8 @@ import com.vts.pfms.committee.service.CommitteeService;
 import com.vts.pfms.header.service.HeaderService;
 import com.vts.pfms.master.dto.ProjectFinancialDetails;
 import com.vts.pfms.milestone.dto.MilestoneActivityLevelConfigurationDto;
+import com.vts.pfms.milestone.dto.ProjectUtilizationBriefingDto;
+import com.vts.pfms.milestone.model.ProjectEconomicImpact;
 import com.vts.pfms.milestone.service.MilestoneService;
 import com.vts.pfms.model.BriefingFinance;
 import com.vts.pfms.model.BriefingHeading;
@@ -142,7 +141,6 @@ import com.vts.pfms.project.service.ProjectService;
 import com.vts.pfms.utils.InputValidator;
 import com.vts.pfms.utils.PMSLogoUtil;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -150,6 +148,8 @@ import jakarta.servlet.http.Part;
 
 @Controller
 public class PrintController {
+
+	private final MilestoneServiceImpl milestoneServiceImpl;
 
 	@Autowired
 	PrintService service;
@@ -194,6 +194,10 @@ public class PrintController {
 
 	private SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+	PrintController(MilestoneServiceImpl milestoneServiceImpl) {
+		this.milestoneServiceImpl = milestoneServiceImpl;
+	}
 
 	@RequestMapping(value = "PfmsPrint.htm", method = RequestMethod.POST)
 	public String PfmsPrint(HttpServletRequest req, HttpSession ses, RedirectAttributes redir, HttpServletResponse res)
@@ -3242,6 +3246,10 @@ public class PrintController {
 		
 
 		List<List<Object[]>> sunsetmilestones = new ArrayList<>();
+		List<List<ProjectUtilizationBriefingDto>> manpower = new ArrayList<>();
+		List<List<ProjectUtilizationBriefingDto>> infrastructure = new ArrayList<>();
+		List<List<ProjectUtilizationBriefingDto>> training = new ArrayList<>();
+		List<List<ProjectEconomicImpact>> econmicImpact  = new ArrayList<>();
 
 		try {
 
@@ -3266,6 +3274,10 @@ public class PrintController {
 				milestonesubsystemsnew.add(service.BreifingMilestoneDetails(proid, committeeid));
 				
 				sunsetmilestones.add(service.SunSetMilestones(proid));
+				manpower.add(milestoneServiceImpl.getManPowerDetailsForBriefing(proid));
+				infrastructure.add(milestoneServiceImpl.getInfrastructureDetailsForBriefing(proid));
+				training.add(milestoneServiceImpl.getTrainingDetailsForBriefing(proid));
+				econmicImpact.add(milestoneServiceImpl.getEconomicImpactForBriefing(proid));
 
 				Object[] prodetails = service.ProjectDataDetails(proid);
 				projectdatadetails.add(prodetails);
@@ -3336,6 +3348,10 @@ public class PrintController {
 			req.setAttribute("projectidlist", Pmainlist);
 
 			req.setAttribute("sunsetmilestones", sunsetmilestones);
+			req.setAttribute("manpowerDetails", manpower);
+			req.setAttribute("infrastructureDetails", infrastructure);
+			req.setAttribute("trainingDetails", training);
+			req.setAttribute("econmicImpactDetails", econmicImpact);
 			
 			return 1;
 		} catch (Exception e) {
@@ -3527,9 +3543,7 @@ public class PrintController {
 		}
 	}
 	/*
-	 * ******************************* Briefing Paper Presentation New Changes
-	 * ************************
-	 */
+	 * ******************************* Briefing Paper Presentation New Changes ************************/
 
 	private int setMilestoneDetailsToResponse(Model model, HttpServletRequest req, HttpSession ses,
 			RedirectAttributes redir, HttpServletResponse res) {

@@ -53,7 +53,6 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -75,7 +74,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -83,6 +81,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -92,6 +91,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.google.gson.Gson;
 import com.itextpdf.kernel.geom.PageSize;
@@ -113,7 +113,12 @@ import com.vts.pfms.milestone.dto.FileProjectDocDto;
 import com.vts.pfms.milestone.dto.FileUploadDto;
 import com.vts.pfms.milestone.dto.MileEditDto;
 import com.vts.pfms.milestone.dto.MilestoneActivityDto;
-import com.vts.pfms.milestone.dto.MilestoneScheduleDto;
+import com.vts.pfms.milestone.dto.ProjectEconomicImpactDto;
+import com.vts.pfms.milestone.dto.ProjectInfrastructureUtilizationDto;
+import com.vts.pfms.milestone.dto.ProjectManPowerUtilizationDto;
+import com.vts.pfms.milestone.dto.ProjectTrainingUtilizationDto;
+import com.vts.pfms.milestone.dto.RevisionItemDto;
+import com.vts.pfms.milestone.dto.RevisionSummaryDto;
 import com.vts.pfms.milestone.model.FileDocMaster;
 import com.vts.pfms.milestone.model.FileRepMaster;
 import com.vts.pfms.milestone.model.FileRepMasterPreProject;
@@ -126,6 +131,10 @@ import com.vts.pfms.milestone.model.MilestoneActivityLevel;
 import com.vts.pfms.milestone.model.MilestoneActivityLevelRemarks;
 import com.vts.pfms.milestone.model.MilestoneActivityPredecessor;
 import com.vts.pfms.milestone.model.MilestoneActivitySub;
+import com.vts.pfms.milestone.model.ProjectEconomicImpact;
+import com.vts.pfms.milestone.model.ProjectEconomicImpactRev;
+import com.vts.pfms.milestone.model.ProjectInfrastructureUtilization;
+import com.vts.pfms.milestone.model.ProjectTrainingUtilization;
 import com.vts.pfms.milestone.service.MilestoneService;
 import com.vts.pfms.print.service.PrintService;
 import com.vts.pfms.requirements.service.RequirementService;
@@ -5447,6 +5456,547 @@ private boolean isValidFileType(MultipartFile file) {
 	        e.printStackTrace();
 	        return "static/Error";
 	    }
+	}
+	
+	@RequestMapping(value = "ValuationOfTechnologies.htm" , method = {RequestMethod.GET, RequestMethod.POST})
+	public String valuationOfTechnical(HttpServletRequest req,HttpSession ses,RedirectAttributes redir) {
+		
+		String UserId = (String) ses.getAttribute("Username");
+		String Logintype= (String)ses.getAttribute("LoginType");
+		String EmpId = ((Long) ses.getAttribute("EmpId")).toString();
+		String LabCode = (String)ses.getAttribute("labcode");
+		
+		try {
+	        Map<String, ?> flash = RequestContextUtils.getInputFlashMap(req);
+			String projectId  = req.getParameter("projectId");
+			String finYear = req.getParameter("finYear");
+			String quarter = req.getParameter("quarter");
+			String activeTab = req.getParameter("activeTab");
+			
+			 if (flash != null) {
+	            if (projectId == null) projectId = (String) flash.get("projectId");
+	            if (finYear == null) finYear = (String) flash.get("finYear");
+	            if (quarter == null) quarter = (String) flash.get("quarter");
+	            if (activeTab == null) activeTab = (String) flash.get("activeTab");
+	        }
+			List<Object[] > projlist= service.LoginProjectDetailsList(EmpId,Logintype,LabCode);
+	
+			if(projlist == null || projlist.isEmpty()) {				
+				redir.addAttribute("resultfail", "No Project is Assigned to you.");
+				return "redirect:/MainDashBoard.htm";
+			}
+			
+			if(projectId == null) {
+				Object[] project = projlist.get(0);
+				if(project != null && project.length > 0) {
+					projectId  = project[0]!= null ? project[0].toString() : null;
+					String pdc = project[9] != null ? project[9].toString() : null;
+					String sanctionDate  = project[12] != null ? project[12].toString() : null;
+					finYear = service.getFinancialYear(pdc,sanctionDate);
+				}
+			}
+			
+			Object[] projectDetails = service.getprojectDetails(projectId);
+			
+			List<String> finYearList = new ArrayList<String>();
+			List<String> quarters = new ArrayList<String>();
+			
+			if(projectDetails != null) {
+				String pdcDate = projectDetails[17] != null ? projectDetails[17].toString() : null;
+				String sanctionDate  = projectDetails[13] != null ? projectDetails[13].toString() : null;
+				
+				finYearList = service.getFinancialYearBasedOnProject(pdcDate,sanctionDate);	
+				quarters = service.getQuartersBasedOnProject(sanctionDate, pdcDate, finYear);
+//				finYear = service.getFinancialYear(pdcDate,sanctionDate);
+			}
+			
+			if (quarter == null) {
+
+			    int month = LocalDate.now().getMonthValue();
+
+			    if (month >= 4 && month <= 6) {
+			        quarter = "Q1";
+			    } else if (month >= 7 && month <= 9) {
+			        quarter = "Q2";
+			    } else if (month >= 10 && month <= 12) {
+			        quarter = "Q3";
+			    } else {
+			        quarter = "Q4";
+			    }
+			}	
+			
+			Object[] manpowerData = service.getManPowerUtilizationCounts(projectId, finYear, quarter);
+			List<Object[]> infrastructureItems = service.getInfrastructureItems(projectId, finYear, quarter);
+			List<Object[]> trainingItems = service.getTrainingItems(projectId, finYear, quarter);
+
+			
+			String infraMode = service.getInfrastructureMode(Long.parseLong(projectId), finYear, quarter);
+			req.setAttribute("infraMode", infraMode);
+
+			String trainMode = service.getTrainingMode(Long.parseLong(projectId), finYear, quarter);
+			req.setAttribute("trainMode", trainMode);
+
+			if (activeTab == null) activeTab = "manpower";
+
+			req.setAttribute("activeTab", activeTab);
+			req.setAttribute("finYear", finYear);
+			req.setAttribute("projectId", projectId);
+			req.setAttribute("quarter", quarter);
+			
+			req.setAttribute("manpowerData", manpowerData);
+			req.setAttribute("infrastructureItems", infrastructureItems);
+			req.setAttribute("trainingItems", trainingItems);
+			
+			req.setAttribute("projectList", projlist);
+			req.setAttribute("finYearList", finYearList);			
+			req.setAttribute("quarters", quarters);			
+			return "milestone/ManPowerUtilization";
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "static/Error";
+		}
+	}
+	
+	@RequestMapping(value = "SaveManpowerUtilization.htm", method = {RequestMethod.GET,RequestMethod.POST})
+	public String saveManpowerUtilization(HttpServletRequest req,RedirectAttributes redir,HttpSession ses) {
+
+		String UserId = (String) ses.getAttribute("Username");
+    	String projectId = req.getParameter("projectId");
+    	String finYear = req.getParameter("finYear");
+    	String quarter = req.getParameter("quarter");
+    	String sciCount = req.getParameter("sciCount");
+    	String techCount = req.getParameter("techCount");
+    	String admCount = req.getParameter("admCount");
+    	String sciDaysCount = req.getParameter("sciDaysCount");
+    	String techDaysCount = req.getParameter("techDaysCount");
+    	String admDaysCount = req.getParameter("admDaysCount");
+
+	    try {
+    	
+	    	ProjectManPowerUtilizationDto dto = new ProjectManPowerUtilizationDto();
+	    	
+	    	dto.setProjectId(projectId);
+	    	dto.setFinancialYear(finYear);
+	    	dto.setQuarter(quarter);
+	    	
+	    	dto.setScientistCount(sciCount);
+	    	dto.setTechnicalCount(techCount);
+	    	dto.setAdminCount(admCount);
+	    	
+	    	dto.setSciDaysCount(sciDaysCount);
+	    	dto.setTechDaysCount(techDaysCount);
+	    	dto.setAdminDaysCount(admDaysCount);
+	    	
+	    	dto.setCreatedDate(LocalDateTime.now());
+	    	dto.setCreatedBy(UserId);
+	    	
+	    	
+	    	long count = service.addManPowerUtilization(dto);
+	        
+	    	if(count > 0) redir.addAttribute("result", "Manpower data saved successfully");
+	    	else redir.addAttribute("resultfail", "Failed to save manpower data");
+	    } catch (Exception e) {
+	    	redir.addAttribute("resultfail", "Failed to save manpower data");
+	    	e.printStackTrace();
+	    }   
+	    
+	    redir.addAttribute("activeTab", "manpower");
+	    redir.addAttribute("projectId", projectId);
+	    redir.addAttribute("finYear", finYear);
+	    redir.addAttribute("quarter", quarter);
+	    return "redirect:/ValuationOfTechnologies.htm";
+	}
+	
+	@RequestMapping(value = "UpdateManPowerUtilization.htm", method = {RequestMethod.POST,RequestMethod.PUT})
+	public String updateManPowerUtilization(HttpServletRequest req,HttpSession ses, RedirectAttributes redir) {
+		String UserId = (String) ses.getAttribute("Username");
+    	String projectId = req.getParameter("projectId");
+    	String finYear = req.getParameter("finYear");
+    	String quarter = req.getParameter("quarter");
+    	String sciCount = req.getParameter("sciCount");
+    	String techCount = req.getParameter("techCount");
+    	String admCount = req.getParameter("admCount");
+    	String sciDaysCount = req.getParameter("sciDaysCount");
+    	String techDaysCount = req.getParameter("techDaysCount");
+    	String admDaysCount = req.getParameter("admDaysCount");
+
+	    try {
+	    	ProjectManPowerUtilizationDto dto = new ProjectManPowerUtilizationDto();
+	    	
+	    	dto.setProjectId(projectId);
+	    	dto.setFinancialYear(finYear);
+	    	dto.setQuarter(quarter);
+	    	
+	    	dto.setScientistCount(sciCount);
+	    	dto.setTechnicalCount(techCount);
+	    	dto.setAdminCount(admCount);
+
+	    	dto.setSciDaysCount(sciDaysCount);
+	    	dto.setTechDaysCount(techDaysCount);
+	    	dto.setAdminDaysCount(admDaysCount);
+	    	
+	    	dto.setCreatedDate(LocalDateTime.now());
+	    	dto.setCreatedBy(UserId);
+	    	
+	    	dto.setAction(req.getParameter("mode"));
+	    	long count = service.updateManPowerUtilization(dto);
+	        
+	    	String action = dto.getAction();
+	    	
+	    	String label = "";
+	    	String errorLabel ="";
+	    	
+	    	if("EDIt".equalsIgnoreCase(action)) {
+	    		label = "Edited";
+	    		errorLabel = "Edit";
+	    	}else {
+	    		label = "Revised";
+	    		errorLabel = "Revise";
+	    	}
+	    	
+	    	if(count > 0) redir.addAttribute("result", "Manpower data " + label + " successfully");
+	    	else redir.addAttribute("resultfail", "Failed to " + errorLabel + " manpower data");
+	    } catch (Exception e) {
+	    	redir.addAttribute("resultfail", "Failed to save manpower data");
+	    	e.printStackTrace();
+	    }
+	    redir.addAttribute("projectId", projectId);
+	    redir.addAttribute("finYear", finYear);
+	    redir.addAttribute("quarter", quarter);
+
+	    return "redirect:/ValuationOfTechnologies.htm";
+	}
+	
+	
+	@RequestMapping(value = "SaveInfrastructureUsed.htm", method = {RequestMethod.GET, RequestMethod.POST})
+	public String saveInfrastructureUsed(@ModelAttribute ProjectInfrastructureUtilizationDto dto,@RequestParam("mode") String mode, HttpSession ses, RedirectAttributes redir) {
+	    dto.setCreatedBy((String) ses.getAttribute("Username"));
+	    dto.setCreatedDate(LocalDateTime.now());
+        String label;
+        String errorLabel;
+	    try {
+	        long count;
+	    	if ("EDIT".equals(mode)) {
+	    		label="Editing";
+	    		errorLabel = "Edit";
+	            count = service.editInfrastructureUtilization(dto);
+	        } else if ("REVISE".equals(mode)) {
+	        	label="Revision";
+	    		errorLabel = "Revise";
+	            count = service.reviseInfrastructureUtilization(dto);
+	        } else {
+	        	label ="Added";
+	    		errorLabel = "Save";
+	            count = service.saveInfrastructureUtilization(dto); // ADD
+	        }
+
+	        if( count > 0) {
+	        	redir.addAttribute("result", "Infrastructure data "+label+" successful");
+	        }else {
+	        	redir.addAttribute("resultfail", "Failed to "+ errorLabel +" infrastructure data");
+	        }
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	        redir.addAttribute("resultfail", "Error Proccessing the Request!");
+	    }
+	    redir.addAttribute("activeTab", "infrastructure");
+	    redir.addAttribute("projectId", dto.getProjectId());
+	    redir.addAttribute("finYear", dto.getFinYear());
+	    redir.addAttribute("quarter", dto.getQuarter());
+	    return "redirect:/ValuationOfTechnologies.htm";
+	}
+	
+	@RequestMapping(value = "SaveTrainingCost.htm", method = {RequestMethod.GET, RequestMethod.POST})
+	public String saveTrainingCost(@ModelAttribute ProjectTrainingUtilizationDto dto, @RequestParam("mode") String mode, HttpSession ses, RedirectAttributes redir) {
+	    dto.setCreatedBy((String) ses.getAttribute("Username"));
+	    dto.setCreatedDate(LocalDateTime.now());
+	    String label;
+	    String errorLabel;
+	    
+	    try {
+	        long count;
+	        if ("EDIT".equals(mode)) {
+	            label = "Editing";
+	            errorLabel = "Edit";
+	            count = service.editTrainingUtilization(dto);
+	        } else if ("REVISE".equals(mode)) {
+	            label = "Revision";
+	            errorLabel = "Revise";
+	            count = service.reviseTrainingUtilization(dto);
+	        } else {
+	            label = "Added";
+	            errorLabel = "Save";
+	            count = service.saveTrainingUtilization(dto); // ADD
+	        }
+
+	        if (count > 0) {
+	            redir.addAttribute("result", "Training cost data " + label + " successful");
+	        } else {
+	            redir.addAttribute("resultfail", "Failed to " + errorLabel + " training cost data");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        redir.addAttribute("resultfail", "Error Processing the Request!");
+	    }
+	    
+	    redir.addAttribute("activeTab", "training");
+	    redir.addAttribute("projectId", dto.getProjectId());
+	    redir.addAttribute("finYear", dto.getFinYear());
+	    redir.addAttribute("quarter", dto.getQuarter());
+	    return "redirect:/ValuationOfTechnologies.htm";
+	}
+	
+	
+	@RequestMapping(value = "EconomicImpact.htm" , method = {RequestMethod.GET, RequestMethod.POST})
+	public String economicImpactOfProject(HttpServletRequest req,HttpSession ses,RedirectAttributes redir) {
+		
+		String UserId = (String) ses.getAttribute("Username");
+		String Logintype= (String)ses.getAttribute("LoginType");
+		String EmpId = ((Long) ses.getAttribute("EmpId")).toString();
+		String LabCode = (String)ses.getAttribute("labcode");
+		String projectId  = req.getParameter("projectId");
+		
+		try {
+			
+			
+			List<Object[] > projlist= service.LoginProjectDetailsList(EmpId,Logintype,LabCode);
+	
+			if(projlist == null || projlist.isEmpty()) {				
+				redir.addAttribute("resultfail", "No Project is Assigned to you.");
+				return "redirect:/MainDashBoard.htm";
+			}
+			
+			if(projectId == null) {
+				Object[] project = projlist.get(0);
+				if(project != null && project.length > 0) {
+					if(project[0]!= null) projectId  = project[0].toString();
+				}
+			}
+
+			final String selectedProjectId = projectId;
+			
+			Object[] selectedProject = projlist.stream()
+			        .filter(obj -> obj != null
+			                && obj.length > 0
+			                && obj[0] != null
+			                && obj[0].toString().equalsIgnoreCase(selectedProjectId))
+			        .findFirst()
+			        .orElse(null);
+			
+			List<ProjectEconomicImpact> economicImpact = service.getEconomicImpact(Long.parseLong(projectId));
+
+			req.setAttribute("projectId", projectId);
+			req.setAttribute("projectDetails", selectedProject);
+			
+			req.setAttribute("projectList", projlist);
+			req.setAttribute("economicImpact", economicImpact);
+			return "milestone/EconomicImpact";
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "static/Error";
+		}
+	}
+	
+	@RequestMapping(value = "SaveEconomicImpact.htm", method = {RequestMethod.POST,RequestMethod.PUT})
+	public String saveEconomicImpactOfProject(HttpServletRequest req, HttpSession ses, RedirectAttributes redir) {
+
+	    String UserId = (String) ses.getAttribute("Username");
+	    String projectId = req.getParameter("projectId");
+	    String label;
+	    String errorLabel;
+	    
+	    try {
+
+	    	ProjectEconomicImpactDto dto = new ProjectEconomicImpactDto();
+	        dto.setProjectId(projectId);
+	        dto.setEconomicImpactId(req.getParameter("economicImpactId"));
+	        dto.setIndigenousContentAndIndigenization(req.getParameter("indigenousContentAndIndigenization"));
+	        dto.setInternationalCollaborationsExecuted(req.getParameter("internationalCollaborationsExecuted"));
+	        dto.setIntellectualPropertyRights(req.getParameter("intellectualPropertyRights"));
+	        dto.setExportPotential(req.getParameter("exportPotential"));
+	        dto.setInfrastructureCreated(req.getParameter("infrastructureCreated"));
+	        dto.setCreatedBy(UserId);
+	    	
+	    	String status = req.getParameter("status");
+	    	long count;
+	        if ("EDIT".equals(status)) {
+	            label = "Editing";
+	            errorLabel = "Edit";
+	            count = service.editEconomicImpact(dto);
+	        } else if ("REVISE".equals(status)) {
+	            label = "Revision";
+	            errorLabel = "Revise";
+	            count = service.reviseEconomicImpact(dto);
+	        } else {
+	            label = "Added";
+	            errorLabel = "Save";
+	            count = service.saveEconomicImpact(dto); // ADD
+	        }
+
+	        redir.addAttribute("projectId", projectId);
+	        if (count > 0) {
+	            redir.addAttribute("result", "Economic Impact " + label + " successful");
+	        } else {
+	            redir.addAttribute("resultfail", "Failed to " + errorLabel + " Economic Impact data");
+	        }
+	        return "redirect:/EconomicImpact.htm";
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "static/Error";
+	    }
+	}
+	
+	@RequestMapping(value = "GetRevisionList.htm", method = RequestMethod.GET)
+	@ResponseBody
+	public List<RevisionSummaryDto> getRevisionList(HttpServletRequest req) throws Exception {
+		try {
+			String projectId = req.getParameter("projectId");
+			String finYear = req.getParameter("finYear");
+			String quarter = req.getParameter("quarter");
+			String type = req.getParameter("type");
+
+		    Long resourceUtilizationId = service.findResourceUtilizationIdRaw(Long.parseLong(projectId), finYear, quarter);
+		    if (resourceUtilizationId == null) return Collections.emptyList();
+	
+		    switch (type) {
+		        case "INFRASTRUCTURE": return service.getInfrastructureRevisionList(resourceUtilizationId);
+		        case "TRAINING":       return service.getTrainingRevisionList(resourceUtilizationId);
+		        case "MANPOWER":       return service.getManpowerRevisionList(resourceUtilizationId);
+		        default:               return Collections.emptyList();
+		    }
+		}catch(Exception e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
+	}
+
+	@RequestMapping(value = "GetRevisionItems.htm", method = RequestMethod.GET)
+	@ResponseBody
+	public List<RevisionItemDto> getRevisionItems(HttpServletRequest req) throws Exception {
+
+		try {
+			String projectId = req.getParameter("projectId");
+			String finYear = req.getParameter("finYear");
+			String quarter = req.getParameter("quarter");
+			String type = req.getParameter("type");
+			String revisionNo = req.getParameter("revisionNo");
+			
+		    Long resourceUtilizationId = service.findResourceUtilizationIdRaw(Long.parseLong(projectId), finYear, quarter);
+		    if (resourceUtilizationId == null) return Collections.emptyList();
+	
+		    switch (type) {
+		        case "INFRASTRUCTURE": return service.getInfrastructureRevisionItems(resourceUtilizationId, revisionNo);
+		        case "TRAINING":       return service.getTrainingRevisionItems(resourceUtilizationId, revisionNo);
+		        case "MANPOWER":       return service.getManpowerRevisionItems(resourceUtilizationId, revisionNo);
+		        default:               return Collections.emptyList();
+		    }
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
+	}
+	
+	@RequestMapping(value = "EconomicImpactHistory.htm", method = RequestMethod.GET)
+	public String economicImpactHistory(HttpServletRequest req,HttpSession ses) throws Exception {
+	    String projectId = req.getParameter("projectId");
+	    String revisionNoParam = req.getParameter("revisionNo");
+	    Long projectIdLong = Long.parseLong(projectId);
+	    
+		String UserId = (String) ses.getAttribute("Username");
+		String Logintype= (String)ses.getAttribute("LoginType");
+		String EmpId = ((Long) ses.getAttribute("EmpId")).toString();
+		String LabCode = (String)ses.getAttribute("labcode");
+	    
+		try {
+			List<Object[] > projlist= service.LoginProjectDetailsList(EmpId,Logintype,LabCode);
+	
+		    List<Object[]> revisionList = service.getEconomicImpactRevisionList(projectIdLong);
+	
+		    Long selectedRevisionNo = null;
+		    if (revisionNoParam != null) {
+		        selectedRevisionNo = Long.parseLong(revisionNoParam);
+		    } else if (!revisionList.isEmpty()) {
+		        selectedRevisionNo = ((Number) revisionList.get(0)[0]).longValue();
+		    }
+	
+		    String indigenousContent = "", internationalCollaboration = "", intellectualProperty = "",
+		           exportPotential = "", infrastructureCreated = "", revisedDate = "", revisedBy = "";
+	
+		    if (selectedRevisionNo != null) {
+		        ProjectEconomicImpactRev rev = service.getEconomicImpactRevisionData(projectIdLong, selectedRevisionNo);
+		        if (rev != null) {
+		            indigenousContent = rev.getIndigenousContentAndIndigenization();
+		            internationalCollaboration = rev.getInternationalCollaborationsExecuted();
+		            intellectualProperty = rev.getIntellectualPropertyRights();
+		            exportPotential = rev.getExportPotential();
+		            infrastructureCreated = rev.getInfrastructureCreated();
+		            revisedDate = rev.getRevisionDate() != null ? rev.getRevisionDate().toString() : "";
+		            revisedBy = rev.getModifiedBy() != null ? rev.getModifiedBy() : rev.getCreatedBy();
+		        }
+		    }
+	
+		    Object[] projectDetails = service.getprojectDetails(projectId);
+	
+		    req.setAttribute("projectId", projectId);
+		    req.setAttribute("projectDetails", projectDetails);
+		    req.setAttribute("revisionList", revisionList);
+		    req.setAttribute("selectedRevisionNo", selectedRevisionNo);
+		    req.setAttribute("indigenousContent", indigenousContent);
+		    req.setAttribute("internationalCollaboration", internationalCollaboration);
+		    req.setAttribute("intellectualProperty", intellectualProperty);
+		    req.setAttribute("exportPotential", exportPotential);
+		    req.setAttribute("infrastructureCreated", infrastructureCreated);
+		    req.setAttribute("revisedDate", revisedDate);
+		    req.setAttribute("revisedBy", revisedBy);
+			req.setAttribute("projectList", projlist);
+	
+		    return "milestone/EconomicImpactHistory";
+	    }catch (Exception e) {
+			e.printStackTrace();
+			return "static/Error";
+		}
+	}
+	
+	@RequestMapping(value = "GetInfrastructureForCopy.htm", method = RequestMethod.GET)
+	@ResponseBody
+	public List<Map<String, Object>> getInfrastructureForCopy(
+	        @RequestParam("projectId") String projectId,
+	        @RequestParam("finYear") String finYear,
+	        @RequestParam("sourceQuarter") String sourceQuarter) throws Exception {
+
+	    Long resourceUtilizationId = service.findResourceUtilizationIdRaw(Long.parseLong(projectId), finYear, sourceQuarter);
+	    if (resourceUtilizationId == null) return Collections.emptyList();
+
+	    List<ProjectInfrastructureUtilization> active = service.getActiveInfrastructure(resourceUtilizationId);
+	    List<Map<String, Object>> result = new ArrayList<>();
+	    for (ProjectInfrastructureUtilization row : active) {
+	        Map<String, Object> m = new HashMap<>();
+	        m.put("infraName", row.getNameOfInfrastructure());
+	        m.put("daysUtilized", row.getDaysUtilized());
+	        result.add(m);
+	    }
+	    return result;
+	}
+	
+	@RequestMapping(value = "GetTrainingForCopy.htm", method = RequestMethod.GET)
+	@ResponseBody
+	public List<Map<String, Object>> getTrainingForCopy(
+	        @RequestParam("projectId") String projectId,
+	        @RequestParam("finYear") String finYear,
+	        @RequestParam("sourceQuarter") String sourceQuarter) throws Exception {
+
+	    Long resourceUtilizationId = service.findResourceUtilizationIdRaw(Long.parseLong(projectId), finYear, sourceQuarter);
+	    if (resourceUtilizationId == null) return Collections.emptyList();
+
+	    List<ProjectTrainingUtilization> active = service.getActiveTraining(resourceUtilizationId);
+	    List<Map<String, Object>> result = new ArrayList<>();
+	    for (ProjectTrainingUtilization row : active) {
+	        Map<String, Object> m = new HashMap<>();
+	        m.put("trainingName", row.getNameOfTraining());
+	        m.put("cost", row.getCost());
+	        result.add(m);
+	    }
+	    return result;
 	}
 
 }

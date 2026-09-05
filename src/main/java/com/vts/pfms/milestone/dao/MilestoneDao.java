@@ -26,6 +26,15 @@ import com.vts.pfms.milestone.model.MilestoneActivityRev;
 import com.vts.pfms.milestone.model.MilestoneActivitySub;
 import com.vts.pfms.milestone.model.MilestoneActivitySubRev;
 import com.vts.pfms.milestone.model.MilestoneSchedule;
+import com.vts.pfms.milestone.model.ProjectEconomicImpact;
+import com.vts.pfms.milestone.model.ProjectEconomicImpactRev;
+import com.vts.pfms.milestone.model.ProjectInfrastructureUtilization;
+import com.vts.pfms.milestone.model.ProjectInfrastructureUtilizationRev;
+import com.vts.pfms.milestone.model.ProjectManPowerUtilization;
+import com.vts.pfms.milestone.model.ProjectManPowerUtilizationRev;
+import com.vts.pfms.milestone.model.ProjectResourceUtilization;
+import com.vts.pfms.milestone.model.ProjectTrainingUtilization;
+import com.vts.pfms.milestone.model.ProjectTrainingUtilizationRev;
 import com.vts.pfms.print.model.ProjectTechnicalWorkData;
 
 public interface MilestoneDao {
@@ -190,5 +199,40 @@ public interface MilestoneDao {
 	public long updateMainMileStoneSunSet(Long milestoneActivityId, String isSunSet) throws Exception;
 	public long updateSubMileStoneSunSet(Long activityId, String isSunSet) throws Exception;
 	public Set<Long> getSubMilestonesId(String milestoneActivityId) throws Exception;
+	public Object[] getManPowerUtilizationCounts(String projectId, String finYear, String quarter) throws Exception;
+	public long addManPowerUtilization(ProjectManPowerUtilization entity) throws Exception;
+	public long saveProjectResourceUtilization(ProjectResourceUtilization entity) throws Exception;
+	public ProjectResourceUtilization findOrCreateResourceUtilization(Long projectId, String finYear, String quarter, String username) throws Exception;
+	public long saveProjectInfrastructureUtilization(ProjectInfrastructureUtilization entity) throws Exception;
+	public List<Object[]> getInfrastructureItems(String projectId, String finYear, String quarter) throws Exception;
+	public ProjectResourceUtilization findResourceUtilizationId(Long projectId, String finYear, String quarter) throws Exception;
+	public List<ProjectInfrastructureUtilization> getActiveInfrastructure(Long resourceUtilizationId) throws Exception;
+	public void deleteProjectInfrastructureUtilization(ProjectInfrastructureUtilization entity) throws Exception;
+	public void updateProjectInfrastructureUtilization(ProjectInfrastructureUtilization entity) throws Exception;
+	public long saveProjectInfrastructureUtilizationRev(ProjectInfrastructureUtilizationRev entity) throws Exception;
+	public List<ProjectManPowerUtilization> getManPowerUtilization(Long resourceUtilizationId) throws Exception;
+	public long addManPowerUtilizationRevision(ProjectManPowerUtilizationRev revision) throws Exception;
+	public long saveProjectTrainingUtilization(ProjectTrainingUtilization entity) throws Exception;
+	public List<Object[]> getTrainingItems(String projectId, String finYear, String quarter) throws Exception;
+	public List<ProjectTrainingUtilization> getActiveTraining(Long resourceUtilizationId) throws Exception;
+	public void deleteProjectTrainingUtilization(ProjectTrainingUtilization entity) throws Exception;
+	public void updateProjectTrainingUtilization(ProjectTrainingUtilization entity) throws Exception;
+	public long saveProjectTrainingUtilizationRev(ProjectTrainingUtilizationRev entity) throws Exception;
+	public long saveProjectEconomicImpact(ProjectEconomicImpact entity) throws Exception;
+	public long saveProjectEconomicImpactRev(ProjectEconomicImpactRev entity) throws Exception;
+	public List<ProjectEconomicImpact> getEconomicImpact(Long projectId) throws Exception;
+	public ProjectEconomicImpact getEconomiImpactById(Long economicImpactId) throws Exception;
+	public List<Object[]> getInfrastructureRevisionList(Long resourceUtilizationId) throws Exception;
+	public List<Object[]> getInfrastructureRevisionItemsList(Long resourceUtilizationId, Long revisionNo) throws Exception;
+	public List<Object[]> getTrainingRevisionList(Long resourceUtilizationId) throws Exception;
+	public List<Object[]> getManpowerRevisionList(Long resourceUtilizationId) throws Exception;
+	public List<Object[]> getTrainingRevisionItemsList(Long resourceUtilizationId, long revisionNo) throws Exception;
+	public Object[] getManpowerRevisionRow(Long resourceUtilizationId, Long revisionNo) throws Exception;
+	public List<Object[]> getEconomicImpactRevisionList(Long projectId) throws Exception;
+	public ProjectEconomicImpactRev getEconomicImpactRevByProjectAndRevision(Long projectId, Long revisionNo) throws Exception;
+	public List<Object[]> getProjectResourceUtilizationByProjectId(Long projectId,String finYear) throws Exception;
+	public Object[] getManPowerTotalCounts(Long projectId) throws Exception;
+	public List<Object[]> getInfrastructures(Long proid,String finYear) throws Exception;
+	public List<Object[]> getTrainings(Long projectId, String financialYear) throws Exception;
 
 }

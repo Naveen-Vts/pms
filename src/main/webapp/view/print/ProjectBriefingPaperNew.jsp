@@ -231,8 +231,8 @@ String labcode = (String) session.getAttribute("labcode");
 						
 				 		
 							 <details>					
-							    <summary role="button" tabindex="0"><b>1. Project Attributes </b>  </summary>
-								<div class="content">
+							    <summary role="button" class="no-arrow" tabindex="0"><b>1. Project Attributes </b>  </summary>
+								<%-- <div class="content">
 									<% 
 									for(int z=0;z<projectidlist.size();z++)
 									{
@@ -389,14 +389,14 @@ String labcode = (String) session.getAttribute("labcode");
 											<div align="center" class="margin25"> Complete Project Data Not Found </div>
 										<%} %>
 									<% } %>
-							</div>
+							</div> --%>
 						</details>
 
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->		
 				 
 						<details>
-	   						<summary role="button" tabindex="0"><b>2. Schematic Configuration</b>   </summary>
-	   						<div class="content">
+	   						<summary role="button" class="no-arrow" tabindex="0"><b>2. Schematic Configuration</b>   </summary>
+	   						<%-- <div class="content">
 	   						<%for(int z=0;z<1;z++){ %>
 	   						<div align="left" class="margin-left15">
 	   							
@@ -483,15 +483,15 @@ String labcode = (String) session.getAttribute("labcode");
 							</table>
 							</div>
 							<%} %>
-							</div>
+							</div> --%>
 						</details>
 				
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
 				 			
 						<details>
-	   						<summary role="button" tabindex="0"><b>3. Overall Product tree/WBS</b> </summary>
+	   						<summary role="button" class="no-arrow" tabindex="0"><b>3. Overall Product tree/WBS</b> </summary>
 							
-							<%for(int z=0;z<1;z++){ %>
+							<%-- <%for(int z=0;z<1;z++){ %>
 							<div>
 								<%if(ProjectDetail.size()>1){ %>
 									<div class="margin-left">
@@ -533,15 +533,15 @@ String labcode = (String) session.getAttribute("labcode");
 									</tr>
 								</table>
 							</div>
-							<%} %>
+							<%} %> --%>
 						</details>
   				
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->		
 				
 						<details>
-   						<summary role="button" tabindex="0"><b>4. Particulars of Meeting </b> </summary>
+   						<summary role="button" class="no-arrow" tabindex="0"><b>4. Particulars of Meeting </b> </summary>
    						
-   						<div class="content">
+   						<%-- <div class="content">
    							<%for(int z=0;z<1;z++){ %>
    								<h1 class="break"></h1>
    								
@@ -609,9 +609,23 @@ String labcode = (String) session.getAttribute("labcode");
 									 String formattedDate = outputFormat.format(date);
 									 if(entry.getValue().equalsIgnoreCase(formattedDate)){
 										 key2=entry.getKey().toString();
-									 } }%>
+									 } }
+									
+									String committeeCode = committee.getCommitteeShortName().trim().toUpperCase();
+									String splCommittee = committeeCode;
+									if("PMRC".equalsIgnoreCase(committeeCode)|| "PMRB".equalsIgnoreCase(committeeCode)){
+										LocalDate scheduleDate = obj[20] != null ? LocalDate.parse(obj[20].toString()) : null;
+										LocalDate PMRB_EFFECTIVE_DATE = LocalDate.of(2026, 4, 1);
+										if(scheduleDate.isBefore(PMRB_EFFECTIVE_DATE)){
+											splCommittee = "PMRC";
+										}else {
+											splCommittee = committeeCode;
+										}
+									}
+									 
+									 %>
 								
-								<%=committee.getCommitteeShortName().trim().toUpperCase()+"-"+key2+"/"+obj[5].toString().split("/")[4] %>
+								<%=splCommittee.trim().toUpperCase()+"-"+key2+"/"+obj[5].toString().split("/")[4] %>
 								
 								
 								</span>	
@@ -878,15 +892,15 @@ String labcode = (String) session.getAttribute("labcode");
 				<%}%></table></div> <%} %>
 						</div>
 															
-					<%} %>
+					<%} %> --%>
 					 
 				</details>
 				
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->				
 				 
 						<details>
-   						<summary role="button" tabindex="0"><b>5. Milestones achieved prior to this <%=committee.getCommitteeShortName().trim().toUpperCase() %> period.</b>  </summary>
-							<div class="content">
+   						<summary role="button" class="no-arrow" tabindex="0"><b>5. Milestones achieved prior to this <%=committee.getCommitteeShortName().trim().toUpperCase() %> period.</b>  </summary>
+							<%-- <div class="content">
 				
 								<%for(int z=0;z<1;z++){ %>
 									<%if(ProjectDetail.size()>1){ %>
@@ -1083,13 +1097,13 @@ String labcode = (String) session.getAttribute("labcode");
 								<div id="milestoneactivitychange" ></div>
 								
 							<%} %>
-						</div>
+						</div> --%>
 				</details>
 <!--  -------------------------------------------------- Review of SunSet Milestone   -------------------------------------------------------------------------------------------  -->
  				
  				<details>
- 				<summary role="button" tabindex="0" id="leveltab"><b>6. Review of Sunset milestone.</b>  </summary>
- 					<div class="content">
+ 				<summary role="button" class="no-arrow" tabindex="0" id="leveltab"><b>6. Review of Sunset milestone.</b>  </summary>
+ 					<%-- <div class="content">
 				
 								<%for(int z=0;z<1;z++){ %>
 									<%if(ProjectDetail.size()>1){ %>
@@ -1286,15 +1300,15 @@ String labcode = (String) session.getAttribute("labcode");
 								<div id="milestoneactivitychange" ></div>
 								
 							<%} %>
-						</div>
+						</div> --%>
  				
  				</details>
  				
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
 				 	
 						<details>
-   						<summary role="button" tabindex="0" id="leveltab"><b>7. Details of work and current status of sub system with major milestones (since last <%=committee.getCommitteeShortName().trim().toUpperCase()%>)</b>  </summary>
-						<div class="content">
+   						<summary role="button" class="no-arrow" tabindex="0" id="leveltab"><b>7. Details of work and current status of sub system with major milestones (since last <%=committee.getCommitteeShortName().trim().toUpperCase()%>)</b>  </summary>
+						<%-- <div class="content">
 							
 							<%for(int z=0;z<1;z++){ %>
 								<%if(ProjectDetail.size()>1){ %>
@@ -1655,14 +1669,14 @@ String labcode = (String) session.getAttribute("labcode");
 								<% } %>
 							</div>
 							
-									
+									 --%>
 						</details>
 				
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
 				 
 						<details>
-   						<summary role="button" tabindex="0"><b>8. Details of Procurement</b>  </summary>
-						<div class="content">
+   						<summary role="button" class="no-arrow" tabindex="0"><b>8. Details of Procurement</b>  </summary>
+						<%-- <div class="content">
 							<%for(int z=0;z<projectidlist.size();z++){ %>
 								<%if(ProjectDetail.size()>1){ %>
 									<div>
@@ -2093,7 +2107,7 @@ String labcode = (String) session.getAttribute("labcode");
 								</table>
 									  
                				<% } %>
-							</div>
+							</div> --%>
 						</details>
 				
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->						
@@ -2304,12 +2318,12 @@ String labcode = (String) session.getAttribute("labcode");
 						
 					<details>
 						<%if(committee.getCommitteeShortName().trim().equalsIgnoreCase("EB")){ %>
-   							<summary role="button" tabindex="0"><b>10. Action Plan for Next Six months </b>    </summary>
+   							<summary role="button" class="no-arrow" tabindex="0"><b>10. Action Plan for Next Six months </b>    </summary>
 						<%}else { %>
-							<summary role="button" tabindex="0"><b>10. Action Plan for Next Three months </b>    </summary>
+							<summary role="button" class="no-arrow" tabindex="0"><b>10. Action Plan for Next Three months </b>    </summary>
 						<%} %>
 						
-						<div class="content">
+						<%-- <div class="content">
 						<%for(int z=0;z<1;z++){ %>
 							<%if(ProjectDetail.size()>1){ %>
 								<div>
@@ -2481,14 +2495,14 @@ String labcode = (String) session.getAttribute("labcode");
 											        <%= obj[28] != null ? StringEscapeUtils.escapeHtml4(obj[28].toString()) : "-" %>
 											    </span>
 											
-<%-- 											    <input
+											    <input
 											        type="text"
 											        id="remarksInput_<%=obj[34]%>"
 											        class="form-control"
 											        value="<%= obj[28] != null ? StringEscapeUtils.escapeHtml4(obj[28].toString()) : "" %>"
-											        style="display:none; width:200px;"> --%>
+											        style="display:none; width:200px;">
 											
-											   <%--  <% if("DLRL".equalsIgnoreCase(labcode) && obj[34] != null && !"0".equalsIgnoreCase(obj[34].toString())){ %>
+											    <% if("DLRL".equalsIgnoreCase(labcode) && obj[34] != null && !"0".equalsIgnoreCase(obj[34].toString())){ %>
 											        <button
 											            type="button"
 											            class="btn btn-sm edit"
@@ -2504,7 +2518,7 @@ String labcode = (String) session.getAttribute("labcode");
 											            onclick="saveRemarks('<%=obj[34]%>')">
 											            Save
 											        </button>
-											    <% } %> --%>
+											    <% } %>
 											</td>
 										</tr>
 										
@@ -2521,42 +2535,32 @@ String labcode = (String) session.getAttribute("labcode");
 		
 		
 						<%} %>
-						</div>
+						</div> --%>
 					
 					</details>
 
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->						
 
-				<!-- 	<details >
-   						<summary role="button" tabindex="0"><b> . Valuation of Technologies</b>    </summary>
-   					</details> -->
-
-
-
-
-
-
-
-
+					<%-- <jsp:include page="briefingPaper/ValuationOfTechnologyBp.jsp" />  --%>
+					
+					<details >
+   						<summary role="button" class="no-arrow" tabindex="0"><b> 11. Valuation of Technologies</b>    </summary>
+   					</details>
+					
+   					
 
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->						
 
-					<!-- <details >
-   						<summary role="button" tabindex="0"><b> . Economic Impact of Project</b>    </summary>
-   					</details> -->
-
-
-
-
-
-
-
+					<details >
+   						<summary role="button" class="no-arrow" tabindex="0"><b> 12. Economic Impact of Project</b>    </summary>
+   						
+   					</details>
 
 
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->						
 						
 					<details >
-   						<summary role="button" tabindex="0"><b> 11. GANTT chart of overall project schedule [<span class="text-underline">Original </span>(as per Project sanction / Latest PDC extension) and <span class="text-underline">Current</span>]</b>    </summary>
+   						<summary role="button" tabindex="0"><b> 13. GANTT chart of overall project schedule [<span class="text-underline">Original </span>(as per Project sanction / Latest PDC extension) and <span class="text-underline">Current</span>]</b>    </summary>
    						
 						    <div class="content">
 							    <%for(int z=0;z<1;z++){ %>
@@ -2617,9 +2621,9 @@ String labcode = (String) session.getAttribute("labcode");
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
  						
 					<details>
-   						<summary role="button" tabindex="0"><b>12. Issues</b></summary>
+   						<summary role="button" class="no-arrow" tabindex="0"><b>14. Issues</b></summary>
    						
-						   <div class="content">
+						 <%--   <div class="content">
 						   			<%for(int z=0;z<1;z++){ %>		
 						   			
 						   			<%if(ProjectDetail.size()>1){ %>
@@ -2746,13 +2750,13 @@ String labcode = (String) session.getAttribute("labcode");
 							</table>
 	
 								<%} %>
-						   </div>	
+						   </div>	 --%>
 						   
 					</details>
 
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->						
 					<details>
-   						<summary role="button" tabindex="0"><b> 13. Other Relevant Points (if any) 
+   						<summary role="button" tabindex="0"><b> 15. Other Relevant Points (if any) 
    							<%if(committee.getCommitteeShortName().trim().equalsIgnoreCase("EB")){ %>
    								and Technical Work Carried Out For Last Six Months
 							<%}else { %>
@@ -2876,7 +2880,7 @@ String labcode = (String) session.getAttribute("labcode");
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->
  
 					<details>
-   						<summary role="button" tabindex="0"><b>14. Decision/Recommendations sought from <%=committee.getCommitteeShortName().trim().toUpperCase() %></b>     </summary>
+   						<summary role="button" tabindex="0"><b>16. Decision/Recommendations sought from <%=committee.getCommitteeShortName().trim().toUpperCase() %></b>     </summary>
    						
 						  <div class="content">
 						  
