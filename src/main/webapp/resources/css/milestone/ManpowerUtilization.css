@@ -1,0 +1,173 @@
+@charset "UTF-8";
+
+.justify-content-end{
+	display: flex;
+	justify-content: end;
+	align-items:center;
+	gap:10px;
+}
+.fw-bold{
+	font-weight: bold;
+	font-size: 18px;
+}
+.w-60{
+	width: 250px;
+}
+
+.margin-top-0{
+	margin-top: -5px;
+}
+
+.resource-card {
+    border: 0;
+    border-radius: 8px;
+}
+
+.resource-header {
+    padding: 18px 22px;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.filter-section {
+    background: #f8f9fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 15px 18px;
+    margin-bottom: 18px;
+}
+
+.filter-label {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 5px;
+    margin-left: 2px;
+}
+
+.resource-tabs {
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 0;
+}
+
+.resource-tabs .nav-link {
+    color: #495057;
+    font-weight: 600;
+    padding: 12px 22px;
+    border: none;
+    border-bottom: 3px solid transparent;
+}
+
+.resource-tabs .nav-link:hover {
+    border-color: transparent;
+    color: #0d6efd;
+}
+
+.resource-tabs .nav-link.active {
+    color: #0d6efd;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid #0d6efd;
+}
+
+.tab-content-wrapper {
+    padding: 20px 5px 5px 5px;
+}
+
+.topic-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.topic-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.topic-description {
+    color: #6c757d;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.revision-bar {
+    background: #f8f9fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 11px 15px;
+    margin-bottom: 18px;
+}
+
+.revision-info {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.revision-label {
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.revision-value {
+    font-weight: 600;
+    color: #212529;
+}
+
+.revision-badge {
+    background: #e7f1ff;
+    color: #0d6efd;
+    border-radius: 20px;
+    padding: 4px 11px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.data-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+}
+
+.data-table td,
+.data-table th {
+    vertical-align: middle;
+}
+
+.action-section {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.revision-modal-header {
+    border-bottom: 1px solid #dee2e6;
+}
+
+.revision-modal-title {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.history-current {
+    font-weight: 600;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 35px;
+    color: #6c757d;
+}
+
+.justify-space-between{
+	display: flex;
+	justify-content: space-between;
+	padding-bottom: 10px;
+}

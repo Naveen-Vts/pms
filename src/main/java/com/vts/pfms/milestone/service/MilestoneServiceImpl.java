@@ -2,6 +2,7 @@ package com.vts.pfms.milestone.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,10 +13,19 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,9 +49,18 @@ import com.vts.pfms.milestone.dao.MilestoneDao;
 import com.vts.pfms.milestone.dto.FileDocAmendmentDto;
 import com.vts.pfms.milestone.dto.FileProjectDocDto;
 import com.vts.pfms.milestone.dto.FileUploadDto;
+import com.vts.pfms.milestone.dto.InfrastructureItemDto;
 import com.vts.pfms.milestone.dto.MileEditDto;
 import com.vts.pfms.milestone.dto.MilestoneActivityDto;
 import com.vts.pfms.milestone.dto.MilestoneScheduleDto;
+import com.vts.pfms.milestone.dto.ProjectEconomicImpactDto;
+import com.vts.pfms.milestone.dto.ProjectInfrastructureUtilizationDto;
+import com.vts.pfms.milestone.dto.ProjectManPowerUtilizationDto;
+import com.vts.pfms.milestone.dto.ProjectTrainingUtilizationDto;
+import com.vts.pfms.milestone.dto.ProjectUtilizationBriefingDto;
+import com.vts.pfms.milestone.dto.RevisionItemDto;
+import com.vts.pfms.milestone.dto.RevisionSummaryDto;
+import com.vts.pfms.milestone.dto.TrainingItemDto;
 import com.vts.pfms.milestone.model.ActivityTransaction;
 import com.vts.pfms.milestone.model.FileDocAmendment;
 import com.vts.pfms.milestone.model.FileDocMaster;
@@ -61,8 +80,19 @@ import com.vts.pfms.milestone.model.MilestoneActivityRev;
 import com.vts.pfms.milestone.model.MilestoneActivitySub;
 import com.vts.pfms.milestone.model.MilestoneActivitySubRev;
 import com.vts.pfms.milestone.model.MilestoneSchedule;
+import com.vts.pfms.milestone.model.ProjectEconomicImpact;
+import com.vts.pfms.milestone.model.ProjectEconomicImpactRev;
+import com.vts.pfms.milestone.model.ProjectInfrastructureUtilization;
+import com.vts.pfms.milestone.model.ProjectInfrastructureUtilizationRev;
+import com.vts.pfms.milestone.model.ProjectManPowerUtilization;
+import com.vts.pfms.milestone.model.ProjectManPowerUtilizationRev;
+import com.vts.pfms.milestone.model.ProjectResourceUtilization;
+import com.vts.pfms.milestone.model.ProjectTrainingUtilization;
+import com.vts.pfms.milestone.model.ProjectTrainingUtilizationRev;
 import com.vts.pfms.print.model.ProjectTechnicalWorkData;
 import com.vts.pfms.project.dao.ProjectDao;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class MilestoneServiceImpl implements MilestoneService {
@@ -2850,4 +2880,1128 @@ public class MilestoneServiceImpl implements MilestoneService {
 //		}
 //		return dao.updateSubMileStoneSunSet(id,"Y".equalsIgnoreCase(isSunSet) ? "N" : "Y");
 	}
+	
+	@Override
+	public String getFinancialYear(String pdcDate, String projectEndDate) throws Exception {
+
+	    LocalDate date;
+
+	    if (pdcDate != null && !pdcDate.isEmpty() && projectEndDate != null && !projectEndDate.isEmpty()) {
+
+	        date = LocalDate.parse(projectEndDate);
+
+	    } else {
+	        date = LocalDate.now();
+	    }
+
+	    int year = date.getYear();
+
+	    if (date.getMonthValue() >= 4) {
+	        return year + "-" + (year + 1);
+	    } else {
+	        return (year - 1) + "-" + year;
+	    }
+	}
+	
+	@Override
+	public List<String> getFinancialYearBasedOnProject(String pdcDate,String sanctionDate) throws Exception {
+
+	    LocalDate sanction = LocalDate.parse(sanctionDate);
+	    LocalDate pdc = LocalDate.parse(pdcDate);
+
+	    List<String> financialYears = new ArrayList<String>();
+
+	    int startYear;
+
+	    if (sanction.getMonthValue() >= 4) {
+	        startYear = sanction.getYear();
+	    } else {
+	        startYear = sanction.getYear() - 1;
+	    }
+
+	    int endYear;
+
+	    if (pdc.getMonthValue() >= 4) {
+	        endYear = pdc.getYear();
+	    } else {
+	        endYear = pdc.getYear() - 1;
+	    }
+
+	    for (int year = startYear; year <= endYear; year++) {
+	        financialYears.add(year + "-" + (year + 1));
+	    }
+
+	    return financialYears;
+	}
+	
+	@Override
+	public Object[] getManPowerUtilizationCounts(String projectId, String finYear, String quarter) throws Exception {
+		return dao.getManPowerUtilizationCounts(projectId,finYear,quarter);
+	}
+	
+	@Override
+	public long addManPowerUtilization(ProjectManPowerUtilizationDto dto) throws Exception {
+
+	    long projectId = Long.parseLong(dto.getProjectId());
+
+	    long sciCount  = toCount(dto.getScientistCount());
+	    long techCount = toCount(dto.getTechnicalCount());
+	    long admCount  = toCount(dto.getAdminCount());
+	    	    
+	    long sciDaysCount  = toCount(dto.getSciDaysCount());
+	    long techDaysCount = toCount(dto.getTechDaysCount());
+	    long admDyasCount  = toCount(dto.getAdminDaysCount());
+
+	    String[] cadreCodes = { "DRDS", "DTDC", "Admin & Allied" };
+	    long[] counts = { sciCount, techCount, admCount };
+	    long[] daysCount = {sciDaysCount, techDaysCount, admDyasCount};
+	    long count = 0;
+	    
+	    ProjectResourceUtilization resource = dao.findOrCreateResourceUtilization(projectId, dto.getFinancialYear(), dto.getQuarter(), dto.getCreatedBy());
+
+	    for (int i = 0; i < 3; i++) {
+	        ProjectManPowerUtilization entity = new ProjectManPowerUtilization();
+
+	        entity.setResourceUtilizationId(resource.getResourceUtilizationId());
+	        entity.setDesigCadre(cadreCodes[i]);
+	        entity.setManPowerCount(counts[i]);
+	        entity.setManPowerDays(daysCount[i]);
+	        entity.setRevisionNo(0L);
+	        entity.setCreatedBy(dto.getCreatedBy());
+	        entity.setCreatedDate(dto.getCreatedDate());
+	        entity.setIsActive(1);
+
+	        count += dao.addManPowerUtilization(entity);
+	    }
+
+	    return count;
+	}
+
+	private long toCount(String raw) {
+	    return (raw != null && !raw.isBlank()) ? Long.parseLong(raw) : 0L;
+	}
+		
+	@Override
+	public long updateManPowerUtilization(ProjectManPowerUtilizationDto dto) throws Exception {
+
+	    long projectId = Long.parseLong(dto.getProjectId());
+
+	    long sciCount  = toCount(dto.getScientistCount());
+	    long techCount = toCount(dto.getTechnicalCount());
+	    long admCount  = toCount(dto.getAdminCount());
+	    
+		long sciDaysCount  = toCount(dto.getSciDaysCount());
+		long techDaysCount = toCount(dto.getTechDaysCount());
+		long admDyasCount  = toCount(dto.getAdminDaysCount());
+
+		String action = dto.getAction();
+	    
+	    ProjectResourceUtilization resource = dao.findResourceUtilizationId(projectId, dto.getFinancialYear(), dto.getQuarter());
+	    
+	    if (resource == null || resource.getResourceUtilizationId() == null) {
+	        throw new IllegalStateException("Nothing to edit — this quarter has never been saved.");
+	    }	    
+
+	    List<ProjectManPowerUtilization> existingList = dao.getManPowerUtilization(resource.getResourceUtilizationId());
+
+	    if (existingList == null || existingList.isEmpty()) {
+	        throw new Exception("Manpower utilization record not found");
+	    }
+
+	    long currentRevision = existingList.get(0).getRevisionNo();
+	    
+	    
+	    long newRevision = currentRevision + 1;
+	    
+	    long count = 0;
+	    
+	    if("EDIT".equalsIgnoreCase(action)) {
+
+		    if (currentRevision > 0) {
+		        throw new IllegalStateException("This quarter has already been revised — use Revise instead of Edit.");
+		    }
+		    
+	    	for (ProjectManPowerUtilization existing : existingList) {
+
+	    	    String cadre = existing.getDesigCadre();
+
+	    	    if ("DRDS".equalsIgnoreCase(cadre)) {
+
+	    	        existing.setManPowerCount(sciCount);
+	    	        existing.setManPowerDays(sciDaysCount);
+
+	    	    } else if ("DTDC".equalsIgnoreCase(cadre)) {
+
+	    	        existing.setManPowerCount(techCount);
+	    	        existing.setManPowerDays(techDaysCount);
+
+	    	    } else if ("Admin & Allied".equalsIgnoreCase(cadre)) {
+
+	    	        existing.setManPowerCount(admCount);
+	    	        existing.setManPowerDays(admDyasCount);
+	    	    }
+	    	    
+	    	    existing.setModifiedBy(dto.getCreatedBy());
+	    	    existing.setModifiedDate(LocalDateTime.now());
+	    	    
+	    	    
+	    	    count += dao.addManPowerUtilization(existing);
+	    	}
+	    }else if("REVISE".equalsIgnoreCase(action)){
+	
+		    for (ProjectManPowerUtilization oldEntity : existingList) {
+		        ProjectManPowerUtilizationRev revision =   new ProjectManPowerUtilizationRev();
+	
+		        revision.setResourceUtilizationId(oldEntity.getResourceUtilizationId());
+		        revision.setManPowerCount(oldEntity.getManPowerCount());
+		        revision.setDesigCadre(oldEntity.getDesigCadre());
+		        revision.setManPowerDays(oldEntity.getManPowerDays());
+		        
+		        revision.setCreatedBy(oldEntity.getCreatedBy());
+		        revision.setCreatedDate(oldEntity.getCreatedDate());
+		        
+		        revision.setRevisionDate(LocalDateTime.now());
+		        revision.setRevisionNo(oldEntity.getRevisionNo());
+		        
+		        revision.setIsActive(oldEntity.getIsActive());
+		        revision.setModifiedBy(oldEntity.getModifiedBy());
+		        revision.setModifiedDate(oldEntity.getModifiedDate());
+		        
+		        dao.addManPowerUtilizationRevision(revision);
+		    }
+
+		    for (ProjectManPowerUtilization entity : existingList) {
+
+	    	    String cadre = entity.getDesigCadre();
+
+	    	    if ("DRDS".equalsIgnoreCase(cadre)) {
+
+	    	    	entity.setManPowerCount(sciCount);
+	    	    	entity.setManPowerDays(sciDaysCount);
+
+	    	    } else if ("DTDC".equalsIgnoreCase(cadre)) {
+
+	    	    	entity.setManPowerCount(techCount);
+	    	    	entity.setManPowerDays(techDaysCount);
+
+	    	    } else if ("Admin & Allied".equalsIgnoreCase(cadre)) {
+
+	    	    	entity.setManPowerCount(admCount);
+	    	    	entity.setManPowerDays(admDyasCount);
+	    	    }
+
+		        entity.setRevisionNo(newRevision);
+		        entity.setModifiedBy(dto.getCreatedBy());
+		        entity.setModifiedDate(LocalDateTime.now());
+	    	    
+	    	    
+	    	    count += dao.addManPowerUtilization(entity);
+	    	}
+	    }
+	    return count;
+	}
+	
+	@Override
+	public List<String> getQuartersBasedOnProject(String sanctionDate,String pdcDate,String finYear) {
+
+	    List<String> quarterList = new ArrayList<String>();
+
+	    LocalDate sanction = null;
+	    LocalDate pdc = null;
+
+	    if (sanctionDate != null && !sanctionDate.trim().isEmpty()) {
+	        sanction = LocalDate.parse(sanctionDate);
+	    }
+
+	    if (pdcDate != null && !pdcDate.trim().isEmpty()) {
+	        pdc = LocalDate.parse(pdcDate);
+	    }
+
+	    String[] years = finYear.split("-");
+
+	    int startYear = Integer.parseInt(years[0]);
+
+	    LocalDate fyStart = LocalDate.of(startYear, 4, 1);
+	    LocalDate fyEnd = LocalDate.of(startYear + 1, 3, 31);
+
+	    // Q1: Apr-Jun
+	    LocalDate q1Start = LocalDate.of(startYear, 4, 1);
+	    LocalDate q1End = LocalDate.of(startYear, 6, 30);
+
+	    // Q2: Jul-Sep
+	    LocalDate q2Start = LocalDate.of(startYear, 7, 1);
+	    LocalDate q2End = LocalDate.of(startYear, 9, 30);
+
+	    // Q3: Oct-Dec
+	    LocalDate q3Start = LocalDate.of(startYear, 10, 1);
+	    LocalDate q3End = LocalDate.of(startYear, 12, 31);
+
+	    // Q4: Jan-Mar
+	    LocalDate q4Start = LocalDate.of(startYear + 1, 1, 1);
+	    LocalDate q4End = LocalDate.of(startYear + 1, 3, 31);
+
+
+
+	    // Check each quarter
+	    if (isQuarterAllowed(q1Start, q1End, sanction, pdc, finYear)) {
+	        quarterList.add("Q1");
+	    }
+
+	    if (isQuarterAllowed(q2Start, q2End, sanction, pdc, finYear)) {
+	        quarterList.add("Q2");
+	    }
+
+	    if (isQuarterAllowed(q3Start, q3End, sanction, pdc, finYear)) {
+	        quarterList.add("Q3");
+	    }
+
+	    if (isQuarterAllowed(q4Start, q4End, sanction, pdc, finYear)) {
+	        quarterList.add("Q4");
+	    }
+
+	    return quarterList;
+	}
+	
+	private boolean isQuarterAllowed(LocalDate quarterStart,LocalDate quarterEnd,LocalDate sanction,LocalDate pdc,String finYear) {
+
+	    LocalDate today = LocalDate.now();
+	    
+	    if (sanction != null && quarterEnd.isBefore(sanction)) {
+	        return false;
+	    }
+
+	    if (pdc != null && quarterStart.isAfter(pdc)) {
+	        return false;
+	    }
+
+	    LocalDate currentDate = LocalDate.now();
+
+	    int currentYear = currentDate.getYear();
+
+	    int currentStartYear = currentDate.getMonthValue() >= 4 ? currentYear : currentYear - 1;
+
+	    int selectedStartYear = Integer.parseInt(finYear.substring(0, 4));
+
+	    if (selectedStartYear == currentStartYear && quarterStart.isAfter(today)) {
+	        return false;
+	    }
+
+	    return true;
+	}
+	
+	
+	@Override
+	public long saveInfrastructureUtilization(ProjectInfrastructureUtilizationDto dto) throws Exception {
+	    long projectId = Long.parseLong(dto.getProjectId());
+	    long count = 0;
+	    try {
+	    	
+	    	List<InfrastructureItemDto> items = dto.getItems();
+	    	
+	    	if(items == null || items.isEmpty()) {
+	    		return 0;
+	    	}
+	    	
+	    	ProjectResourceUtilization resource = dao.findOrCreateResourceUtilization(projectId, dto.getFinYear(), dto.getQuarter(), dto.getCreatedBy());
+	    	
+	    	for(InfrastructureItemDto item: items) {
+	    		ProjectInfrastructureUtilization entity = new ProjectInfrastructureUtilization();
+	    		
+	    		entity.setNameOfInfrastructure(item.getInfraName());
+	    		entity.setDaysUtilized(item.getDaysUtilized() != null && !item.getDaysUtilized().isBlank() ? Long.parseLong(item.getDaysUtilized()) : null);
+	    		entity.setResourceUtilizationId(resource.getResourceUtilizationId());
+	    		entity.setRevisionNo(0L);
+	    		entity.setCreatedBy(dto.getCreatedBy());
+	    		entity.setCreatedDate(LocalDateTime.now());
+	    		entity.setIsActive(1);
+	    		
+	    		count += dao.saveProjectInfrastructureUtilization(entity);
+	    	}
+
+	    }catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	    return count;
+	}
+	
+	
+	@Override
+	public List<Object[]> getInfrastructureItems(String projectId, String finYear, String quarter) throws Exception {
+		return dao.getInfrastructureItems(projectId,finYear,quarter);
+	}
+	
+	@Override
+	public String getInfrastructureMode(Long projectId, String finYear, String quarter) throws Exception {
+		ProjectResourceUtilization resource = dao.findResourceUtilizationId(projectId, finYear, quarter);
+	    if (resource == null || resource.getResourceUtilizationId() == null) return "ADD";
+
+	    List<ProjectInfrastructureUtilization> active = dao.getActiveInfrastructure(resource.getResourceUtilizationId());
+	    if (active.isEmpty()) return "ADD";
+
+	    return (active.get(0).getRevisionNo() == 0) ? "EDIT" : "REVISE";
+	}
+
+	@Override
+	public long editInfrastructureUtilization(ProjectInfrastructureUtilizationDto dto) throws Exception {
+	    long projectId = Long.parseLong(dto.getProjectId());
+	    
+	    List<InfrastructureItemDto> items = dto.getItems();
+	    if (items == null || items.isEmpty()) return 0;
+
+	    ProjectResourceUtilization resource = dao.findResourceUtilizationId(projectId, dto.getFinYear(), dto.getQuarter());
+	    
+	    if (resource == null || resource.getResourceUtilizationId() == null) {
+	        throw new IllegalStateException("Nothing to edit — this quarter has never been saved.");
+	    }
+	    
+
+	    List<ProjectInfrastructureUtilization> active = dao.getActiveInfrastructure(resource.getResourceUtilizationId());
+
+	    if ( active !=null && !active.isEmpty() && active.get(0).getRevisionNo() > 0) {
+	        throw new IllegalStateException("This quarter has already been revised — use Revise instead of Edit.");
+	    }
+	    
+	    Map<Long, ProjectInfrastructureUtilization> existingById = new HashMap<>();
+	    for (ProjectInfrastructureUtilization row : active) {
+	        existingById.put(row.getInfrastructureUtilizationId(), row);
+	    }
+	    
+	    Set<Long> submittedIds = new HashSet<>();
+	    long count = 0;
+	    
+	    for (InfrastructureItemDto item : items) {
+	        if (item.getInfraName() == null || item.getInfraName().isBlank()) continue;
+
+	        Long itemId = (item.getInfraUtilizationId() != null && !item.getInfraUtilizationId().isBlank())
+	                ? Long.parseLong(item.getInfraUtilizationId()) : null;
+	        Long days = (item.getDaysUtilized() != null && !item.getDaysUtilized().isBlank())
+	                ? Long.parseLong(item.getDaysUtilized()) : null;
+
+	        if (itemId != null && existingById.containsKey(itemId)) {
+	            ProjectInfrastructureUtilization existing = existingById.get(itemId);
+	            existing.setNameOfInfrastructure(item.getInfraName().trim());
+	            existing.setDaysUtilized(days);
+	            dao.updateProjectInfrastructureUtilization(existing);
+	            submittedIds.add(itemId);
+	            count++;
+	        } else {
+	            ProjectInfrastructureUtilization entity = new ProjectInfrastructureUtilization();
+	            entity.setNameOfInfrastructure(item.getInfraName().trim());
+	            entity.setDaysUtilized(days);
+	            entity.setResourceUtilizationId(resource.getResourceUtilizationId());
+	            entity.setRevisionNo(0L);
+	            entity.setCreatedBy(dto.getCreatedBy());
+	            entity.setCreatedDate(LocalDateTime.now());
+	            entity.setIsActive(1);
+	            count += dao.saveProjectInfrastructureUtilization(entity);
+	        }
+	    }
+
+	    for (ProjectInfrastructureUtilization row : active) {
+	        if (!submittedIds.contains(row.getInfrastructureUtilizationId())) {
+	            dao.deleteProjectInfrastructureUtilization(row);
+	        }
+	    }
+
+	    return count;
+	}
+
+	@Override
+	public long reviseInfrastructureUtilization(ProjectInfrastructureUtilizationDto dto) throws Exception {
+	    long projectId = Long.parseLong(dto.getProjectId());
+	    
+	    List<InfrastructureItemDto> items = dto.getItems();
+	    if (items == null || items.isEmpty()) return 0;
+
+	    ProjectResourceUtilization resource = dao.findResourceUtilizationId(projectId, dto.getFinYear(), dto.getQuarter());
+	    
+	    if (resource == null || resource.getResourceUtilizationId() == null) {
+	        throw new IllegalStateException("Nothing to revise — this quarter has never been saved.");
+	    }
+
+	    List<ProjectInfrastructureUtilization> active = dao.getActiveInfrastructure(resource.getResourceUtilizationId());
+	   
+	    long nextRevision =  active.isEmpty() ? 1L : active.get(0).getRevisionNo() + 1;;
+
+	    for (ProjectInfrastructureUtilization row : active) {
+	    	ProjectInfrastructureUtilizationRev rev = new ProjectInfrastructureUtilizationRev();
+	    	
+	    	rev.setNameOfInfrastructure(row.getNameOfInfrastructure());
+	    	rev.setDaysUtilized(row.getDaysUtilized());
+	    	rev.setResourceUtilizationId(row.getResourceUtilizationId());
+	    	rev.setRevisionNo(row.getRevisionNo());
+	    	rev.setRevisionDate(LocalDateTime.now());
+
+	    	rev.setCreatedBy(dto.getCreatedBy());
+	    	rev.setCreatedDate(LocalDateTime.now());
+	    	rev.setIsActive(row.getIsActive());
+	    	
+	    	dao.saveProjectInfrastructureUtilizationRev(rev);
+	        dao.deleteProjectInfrastructureUtilization(row);
+	    }
+
+	    long count = 0;
+	    for (InfrastructureItemDto item : items) {
+	        if (item.getInfraName() == null || item.getInfraName().isBlank()) continue;
+
+	        ProjectInfrastructureUtilization entity = new ProjectInfrastructureUtilization();
+	        entity.setNameOfInfrastructure(item.getInfraName());
+	        entity.setDaysUtilized(item.getDaysUtilized() != null && !item.getDaysUtilized().isBlank() ? Long.parseLong(item.getDaysUtilized()) : null);
+	        entity.setResourceUtilizationId(resource.getResourceUtilizationId());
+	        entity.setRevisionNo(nextRevision);
+	        entity.setCreatedBy(dto.getCreatedBy());
+	        entity.setCreatedDate(LocalDateTime.now());
+	        entity.setIsActive(1);
+
+	        count += dao.saveProjectInfrastructureUtilization(entity);
+	    }
+	    
+	    return count;
+	}
+
+	@Override
+	public long saveTrainingUtilization(ProjectTrainingUtilizationDto dto) throws Exception {
+	    long projectId = Long.parseLong(dto.getProjectId());
+	    long count = 0;
+	    try {
+	        List<TrainingItemDto> items = dto.getItems();
+	        
+	        if (items == null || items.isEmpty()) {
+	            return 0;
+	        }
+	        
+	        ProjectResourceUtilization resource = dao.findOrCreateResourceUtilization(projectId, dto.getFinYear(), dto.getQuarter(), dto.getCreatedBy());
+	        
+	        for (TrainingItemDto item : items) {
+	            if (item.getTrainingName() == null || item.getTrainingName().isBlank()) continue;
+
+	            ProjectTrainingUtilization entity = new ProjectTrainingUtilization();
+	            
+	            entity.setNameOfTraining(item.getTrainingName().trim());
+	            entity.setCost(item.getCost() != null && !item.getCost().isBlank() ? new BigDecimal(item.getCost()) : BigDecimal.ZERO);
+	            entity.setResourceUtilizationId(resource.getResourceUtilizationId());
+	            entity.setRevisionNo(0L);
+	            entity.setCreatedBy(dto.getCreatedBy());
+	            entity.setCreatedDate(LocalDateTime.now()); 
+	            entity.setIsActive(1);
+	            
+	            count += dao.saveProjectTrainingUtilization(entity);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return 0;
+	    }
+	    return count;
+	}
+
+	@Override
+	public List<Object[]> getTrainingItems(String projectId, String finYear, String quarter) throws Exception {
+	    return dao.getTrainingItems(projectId, finYear, quarter);
+	}
+
+	@Override
+	public String getTrainingMode(Long projectId, String finYear, String quarter) throws Exception {
+	    ProjectResourceUtilization resource = dao.findResourceUtilizationId(projectId, finYear, quarter);
+	    if (resource == null || resource.getResourceUtilizationId() == null) return "ADD";
+
+	    List<ProjectTrainingUtilization> active = dao.getActiveTraining(resource.getResourceUtilizationId());
+	    if (active.isEmpty()) return "ADD";
+
+	    return (active.get(0).getRevisionNo() == 0) ? "EDIT" : "REVISE";
+	}
+
+	@Override
+	public long editTrainingUtilization(ProjectTrainingUtilizationDto dto) throws Exception {
+	    long projectId = Long.parseLong(dto.getProjectId());
+	    
+	    List<TrainingItemDto> items = dto.getItems();
+	    if (items == null || items.isEmpty()) return 0;
+
+	    ProjectResourceUtilization resource = dao.findResourceUtilizationId(projectId, dto.getFinYear(), dto.getQuarter());
+	    
+	    if (resource == null || resource.getResourceUtilizationId() == null) {
+	        throw new IllegalStateException("Nothing to edit — this quarter has never been saved.");
+	    }
+	    
+	    List<ProjectTrainingUtilization> active = dao.getActiveTraining(resource.getResourceUtilizationId());
+
+	    if (active != null && !active.isEmpty() && active.get(0).getRevisionNo() > 0) {
+	        throw new IllegalStateException("This quarter has already been revised — use Revise instead of Edit.");
+	    }
+	    
+	    Map<Long, ProjectTrainingUtilization> existingById = new HashMap<>();
+	    for (ProjectTrainingUtilization row : active) {
+	        existingById.put(row.getTrainingUtilizationId(), row);
+	    }
+	    
+	    Set<Long> submittedIds = new HashSet<>();
+	    long count = 0;
+	    
+	    for (TrainingItemDto item : items) {
+	        if (item.getTrainingName() == null || item.getTrainingName().isBlank()) continue;
+
+	        Long itemId = (item.getTrainingUtilizationId() != null && !item.getTrainingUtilizationId().isBlank())
+	                ? Long.parseLong(item.getTrainingUtilizationId()) : null;
+	        BigDecimal cost = (item.getCost() != null && !item.getCost().isBlank())
+	                ? new BigDecimal(item.getCost()) : BigDecimal.ZERO;
+
+	        if (itemId != null && existingById.containsKey(itemId)) {
+	            ProjectTrainingUtilization existing = existingById.get(itemId);
+	            existing.setNameOfTraining(item.getTrainingName().trim());
+	            existing.setCost(cost);
+	            existing.setModifiedBy(dto.getCreatedBy());
+	            existing.setModifiedDate(LocalDateTime.now());
+	            dao.updateProjectTrainingUtilization(existing);
+	            submittedIds.add(itemId);
+	            count++;
+	        } else {
+	            ProjectTrainingUtilization entity = new ProjectTrainingUtilization();
+	            entity.setNameOfTraining(item.getTrainingName().trim());
+	            entity.setCost(cost);
+	            entity.setResourceUtilizationId(resource.getResourceUtilizationId());
+	            entity.setRevisionNo(0L);
+	            entity.setCreatedBy(dto.getCreatedBy());
+	            entity.setCreatedDate(LocalDateTime.now());
+	            entity.setIsActive(1);
+	            count += dao.saveProjectTrainingUtilization(entity);
+	        }
+	    }
+
+	    // Delete missing rows
+	    for (ProjectTrainingUtilization row : active) {
+	        if (!submittedIds.contains(row.getTrainingUtilizationId())) {
+	            dao.deleteProjectTrainingUtilization(row);
+	        }
+	    }
+
+	    return count;
+	}
+
+	@Override
+	public long reviseTrainingUtilization(ProjectTrainingUtilizationDto dto) throws Exception {
+	    long projectId = Long.parseLong(dto.getProjectId());
+	    
+	    List<TrainingItemDto> items = dto.getItems();
+	    if (items == null || items.isEmpty()) return 0;
+
+	    ProjectResourceUtilization resource = dao.findResourceUtilizationId(projectId, dto.getFinYear(), dto.getQuarter());
+	    
+	    if (resource == null || resource.getResourceUtilizationId() == null) {
+	        throw new IllegalStateException("Nothing to revise — this quarter has never been saved.");
+	    }
+
+	    List<ProjectTrainingUtilization> active = dao.getActiveTraining(resource.getResourceUtilizationId());
+	   
+	    long nextRevision = active.isEmpty() ? 1L : active.get(0).getRevisionNo() + 1;
+
+	    for (ProjectTrainingUtilization row : active) {
+	        ProjectTrainingUtilizationRev rev = new ProjectTrainingUtilizationRev();
+	        
+	        rev.setNameOfTraining(row.getNameOfTraining());
+	        rev.setCost(row.getCost());
+	        rev.setResourceUtilizationId(row.getResourceUtilizationId());
+	        rev.setRevisionNo(row.getRevisionNo());
+	        rev.setRevisionDate(new Date());
+	        rev.setCreatedBy(dto.getCreatedBy());
+	        rev.setCreatedDate(LocalDateTime.now());
+	        rev.setIsActive(row.getIsActive());
+	        
+	        dao.saveProjectTrainingUtilizationRev(rev);
+	        dao.deleteProjectTrainingUtilization(row);
+	    }
+
+	    long count = 0;
+	    for (TrainingItemDto item : items) {
+	        if (item.getTrainingName() == null || item.getTrainingName().isBlank()) continue;
+
+	        ProjectTrainingUtilization entity = new ProjectTrainingUtilization();
+	        entity.setNameOfTraining(item.getTrainingName().trim());
+	        entity.setCost(item.getCost() != null && !item.getCost().isBlank() ? new BigDecimal(item.getCost()) : BigDecimal.ZERO);
+	        entity.setResourceUtilizationId(resource.getResourceUtilizationId());
+	        entity.setRevisionNo(nextRevision);
+	        entity.setCreatedBy(dto.getCreatedBy());
+	        entity.setCreatedDate(LocalDateTime.now());
+	        entity.setIsActive(1);
+
+	        count += dao.saveProjectTrainingUtilization(entity);
+	    }
+	    
+	    return count;
+	}
+	
+	@Override
+	public List<ProjectEconomicImpact> getEconomicImpact(Long projectId) throws Exception{
+		return dao.getEconomicImpact(projectId);
+	}
+
+	@Override
+	@Transactional
+	public long saveEconomicImpact(ProjectEconomicImpactDto dto) throws Exception {
+		try{
+			ProjectEconomicImpact impact = new ProjectEconomicImpact();
+			
+			impact.setProjectId(Long.parseLong(dto.getProjectId()));
+			
+			impact.setIndigenousContentAndIndigenization(dto.getIndigenousContentAndIndigenization());
+			impact.setInternationalCollaborationsExecuted(dto.getInternationalCollaborationsExecuted());
+			impact.setIntellectualPropertyRights(dto.getIntellectualPropertyRights());
+			impact.setExportPotential(dto.getExportPotential());
+			impact.setInfrastructureCreated(dto.getInfrastructureCreated());
+			
+			impact.setCreatedBy(dto.getCreatedBy());
+			impact.setCreatedDate(LocalDateTime.now());
+			impact.setRevisionNo(0L);
+			impact.setIsActive(1);
+			
+			return dao.saveProjectEconomicImpact(impact);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	@Override
+	public long editEconomicImpact(ProjectEconomicImpactDto dto) throws Exception {
+		try {
+			ProjectEconomicImpact impact = dao.getEconomiImpactById(Long.parseLong(dto.getEconomicImpactId()));
+			
+			impact.setIndigenousContentAndIndigenization(dto.getIndigenousContentAndIndigenization());
+			impact.setInternationalCollaborationsExecuted(dto.getInternationalCollaborationsExecuted());
+			impact.setIntellectualPropertyRights(dto.getIntellectualPropertyRights());
+			impact.setExportPotential(dto.getExportPotential());
+			impact.setInfrastructureCreated(dto.getInfrastructureCreated());
+			
+			impact.setModifiedBy(dto.getCreatedBy());
+			impact.setModifiedDate(LocalDateTime.now());
+			
+			return dao.saveProjectEconomicImpact(impact);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	@Override
+	@Transactional
+	public long reviseEconomicImpact(ProjectEconomicImpactDto dto) throws Exception {
+		try {
+			ProjectEconomicImpact impact = dao.getEconomiImpactById(Long.parseLong(dto.getEconomicImpactId()));
+			Long revisionNo = impact.getRevisionNo() + 1;
+			
+			ProjectEconomicImpactRev rev = new ProjectEconomicImpactRev();
+
+			rev.setProjectId(impact.getProjectId());
+			
+			rev.setIndigenousContentAndIndigenization(impact.getIndigenousContentAndIndigenization());
+			rev.setInternationalCollaborationsExecuted(impact.getInternationalCollaborationsExecuted());
+			rev.setIntellectualPropertyRights(impact.getIntellectualPropertyRights());
+			rev.setExportPotential(impact.getExportPotential());
+			rev.setInfrastructureCreated(impact.getInfrastructureCreated());
+			
+			rev.setRevisionNo(impact.getRevisionNo());
+			rev.setRevisionDate(LocalDateTime.now());
+			
+			rev.setCreatedBy(dto.getCreatedBy());
+			rev.setCreatedDate(LocalDateTime.now());			
+			
+			rev.setIsActive(impact.getIsActive());
+			
+			dao.saveProjectEconomicImpactRev(rev);
+			
+			impact.setIndigenousContentAndIndigenization(dto.getIndigenousContentAndIndigenization());
+			impact.setInternationalCollaborationsExecuted(dto.getInternationalCollaborationsExecuted());
+			impact.setIntellectualPropertyRights(dto.getIntellectualPropertyRights());
+			impact.setExportPotential(dto.getExportPotential());
+			impact.setInfrastructureCreated(dto.getInfrastructureCreated());
+			
+			impact.setModifiedBy(dto.getCreatedBy());
+			impact.setModifiedDate(LocalDateTime.now());
+			
+			impact.setRevisionNo(revisionNo);
+			
+			return dao.saveProjectEconomicImpact(impact);
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
+	@Override
+	public Long findResourceUtilizationIdRaw(long projectId, String finYear, String quarter) throws Exception {
+		ProjectResourceUtilization resource = dao.findResourceUtilizationId(projectId, finYear, quarter);
+	    
+	    if (resource == null || resource.getResourceUtilizationId() == null) {
+	       return null;
+	    }
+	    
+	    return resource.getResourceUtilizationId();
+
+	}
+
+	@Override
+	public List<RevisionSummaryDto> getInfrastructureRevisionList(Long resourceUtilizationId) throws Exception {
+		try {
+			List<RevisionSummaryDto> summaryDtos = new ArrayList<RevisionSummaryDto>();
+			List<Object[]> revisionCounts = dao.getInfrastructureRevisionList(resourceUtilizationId);
+			for(Object[] obj: revisionCounts) {
+				RevisionSummaryDto dto = new RevisionSummaryDto();
+				
+				dto.setRevisedBy(obj[2] != null ? obj[2].toString() : null);
+				dto.setRevisionNo(obj[1]!=null ? Long.parseLong(obj[1].toString()) : null);
+				dto.setRevisedDate(obj[3] != null ? obj[3].toString() : null);
+				
+				summaryDtos.add(dto);
+			}
+			return summaryDtos;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
+	}
+
+	@Override
+	public List<RevisionSummaryDto> getTrainingRevisionList(Long resourceUtilizationId) throws Exception {
+		try {
+			List<RevisionSummaryDto> summaryDtos = new ArrayList<RevisionSummaryDto>();
+			List<Object[]> revisionCounts = dao.getTrainingRevisionList(resourceUtilizationId);
+			for(Object[] obj: revisionCounts) {
+				RevisionSummaryDto dto = new RevisionSummaryDto();
+				
+				dto.setRevisedBy(obj[2] != null ? obj[2].toString() : null);
+				dto.setRevisionNo(obj[1]!=null ? Long.parseLong(obj[1].toString()) : null);
+				dto.setRevisedDate(obj[3] != null ? obj[3].toString() : null);
+				
+				summaryDtos.add(dto);
+			}
+			return summaryDtos;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
+	}
+
+	@Override
+	public List<RevisionSummaryDto> getManpowerRevisionList(Long resourceUtilizationId) throws Exception {
+		try {
+			List<RevisionSummaryDto> summaryDtos = new ArrayList<RevisionSummaryDto>();
+			List<Object[]> revisionCounts = dao.getManpowerRevisionList(resourceUtilizationId);
+			for(Object[] obj: revisionCounts) {
+				RevisionSummaryDto dto = new RevisionSummaryDto();
+				
+				dto.setRevisedBy(obj[2] != null ? obj[2].toString() : null);
+				dto.setRevisionNo(obj[1]!=null ? Long.parseLong(obj[1].toString()) : null);
+				dto.setRevisedDate(obj[3] != null ? obj[3].toString() : null);
+				
+				summaryDtos.add(dto);
+			}
+			return summaryDtos;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
+	}
+
+	@Override
+	public List<RevisionItemDto> getInfrastructureRevisionItems(Long resourceUtilizationId, String revisionNo) throws Exception {
+		try {
+			List<RevisionItemDto> list = new ArrayList<RevisionItemDto>();
+			List<Object[]> revisionList = dao.getInfrastructureRevisionItemsList(resourceUtilizationId, Long.parseLong(revisionNo));
+			
+			for(Object[] obj: revisionList) {
+				RevisionItemDto dto = new RevisionItemDto();
+
+				dto.setMainId(obj[0] != null ? obj[0].toString() : null);
+				dto.setResourceUtilizationId(obj[1] != null ? obj[1].toString() : null);
+				dto.setItemName(obj[2] !=null ? obj[2].toString() : null);
+				dto.setItemValue(obj[3] != null ? obj[3].toString() : null);
+				dto.setRevisionNo(obj[4]!=null ? obj[4].toString() : null);
+				
+				list.add(dto);
+			}
+			return list;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return List.of();
+		}
+	}
+
+	@Override
+	public List<RevisionItemDto> getTrainingRevisionItems(Long resourceUtilizationId, String revisionNo) throws Exception {
+		try {
+			List<RevisionItemDto> list = new ArrayList<RevisionItemDto>();
+			List<Object[]> revisionList = dao.getTrainingRevisionItemsList(resourceUtilizationId, Long.parseLong(revisionNo));
+			
+			for(Object[] obj: revisionList) {
+				RevisionItemDto dto = new RevisionItemDto();
+
+				dto.setMainId(obj[0] != null ? obj[0].toString() : null);
+				dto.setResourceUtilizationId(obj[1] != null ? obj[1].toString() : null);
+				dto.setItemName(obj[2] !=null ? obj[2].toString() : null);
+				dto.setItemValue(obj[3] != null ? obj[3].toString() : null);
+				dto.setRevisionNo(obj[4]!=null ? obj[4].toString() : null);
+				
+				list.add(dto);
+			}
+			return list;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return List.of();
+		}
+	}
+
+	@Override
+	public List<RevisionItemDto> getManpowerRevisionItems(Long resourceUtilizationId, String revisionNo) throws Exception {
+	    try {
+	        List<RevisionItemDto> list = new ArrayList<>();
+
+	        Object[] row = dao.getManpowerRevisionRow(resourceUtilizationId, Long.parseLong(revisionNo));
+	        if (row == null) return list;
+
+	        long sciCount  = row[1] != null ? ((Number) row[1]).longValue() : 0;
+	        long techCount = row[2] != null ? ((Number) row[2]).longValue() : 0;
+	        long admCount  = row[3] != null ? ((Number) row[3]).longValue() : 0;
+	        long sciDays   = row[4] != null ? ((Number) row[4]).longValue() : 0;
+	        long techDays  = row[5] != null ? ((Number) row[5]).longValue() : 0;
+	        long admDays   = row[6] != null ? ((Number) row[6]).longValue() : 0;
+
+	        list.add(buildManpowerRow(resourceUtilizationId,revisionNo,"Scientist", sciCount, sciDays));
+	        list.add(buildManpowerRow(resourceUtilizationId,revisionNo,"Technical", techCount, techDays));
+	        list.add(buildManpowerRow(resourceUtilizationId,revisionNo,"Admin & Allied", admCount, admDays));
+
+	        return list;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return List.of();
+	    }
+	}
+
+	private RevisionItemDto buildManpowerRow( Long resUtilId, String revNo,String cadreName, long count, long days) {
+	    RevisionItemDto dto = new RevisionItemDto();
+	    dto.setResourceUtilizationId(resUtilId.toString());
+	    dto.setRevisionNo(revNo);
+	    dto.setItemName(cadreName);
+	    dto.setItemValue(String.valueOf(count));
+	    dto.setItemDays(String.valueOf(days));
+	    dto.setItemTotal(String.valueOf(count * days));
+	    return dto;
+	}
+	
+	@Override
+	public List<Object[]> getEconomicImpactRevisionList(Long projectId) throws Exception {
+	    return dao.getEconomicImpactRevisionList(projectId);
+	}
+
+	@Override
+	public ProjectEconomicImpactRev getEconomicImpactRevisionData(Long projectId, Long revisionNo) throws Exception {
+	    return dao.getEconomicImpactRevByProjectAndRevision(projectId, revisionNo);
+	}
+	
+	private String getCurrentFinancialYear() {
+
+	    LocalDate today = LocalDate.now();
+
+	    int startYear = today.getMonthValue() >= 4
+	            ? today.getYear()
+	            : today.getYear() - 1;
+
+	    return startYear + "-" + String.valueOf(startYear + 1);
+	}
+	
+	@Override
+	public List<ProjectUtilizationBriefingDto> getManPowerDetailsForBriefing(String projectIdValue) {
+
+		Long projectId= Long.parseLong(projectIdValue);
+	    List<ProjectUtilizationBriefingDto> list = new ArrayList<>();
+
+	    try {
+	        ProjectUtilizationBriefingDto scientist = buildManPowerBriefingDataDto("Scientist");
+	        ProjectUtilizationBriefingDto technical = buildManPowerBriefingDataDto("Technical");
+	        ProjectUtilizationBriefingDto adminAndAllied = buildManPowerBriefingDataDto("Admin & Allied");
+	        
+	        list.add(scientist);
+	        list.add(technical);
+	        list.add(adminAndAllied);
+	        
+	    	String financialYear = getCurrentFinancialYear();
+	    	
+	        List<Object[]> resources = dao.getProjectResourceUtilizationByProjectId(projectId,financialYear.trim());
+
+	        if (resources == null || resources.isEmpty()) {
+	            return list;
+	        }
+	        
+
+	        Object[] totalCounts = dao.getManPowerTotalCounts(projectId);
+	
+		    
+		    Long totalSciDaysCount = totalCounts[1] != null ? ((Number) totalCounts[1]).longValue() : 0L;
+		    Long totalTechnicalDaysCount = totalCounts[2] != null ? ((Number) totalCounts[2]).longValue() : 0L;
+		    Long totalAdmDaysCount = totalCounts[3] != null ? ((Number) totalCounts[3]).longValue() : 0L;
+		    
+		    scientist.setCummulativeTillDate(totalSciDaysCount);
+		    technical.setCummulativeTillDate(totalTechnicalDaysCount);
+		    adminAndAllied.setCummulativeTillDate(totalAdmDaysCount);
+		
+	        Long currentYearSciCount = 0L;
+	        Long currentYearTechCount = 0L;
+	        Long currentYearAdmCount = 0L;
+	        
+	        for (Object[] obj : resources) {
+	        	
+	        	String quarter = obj[3] != null ? obj[3].toString() : null;
+	        	
+	        	Long totalSci = obj[10] != null ? ((Number) obj[10]).longValue() : 0L;
+	        	
+	    		Long totalTech = obj[11] != null ? ((Number) obj[11]).longValue() : 0L;
+	    		
+	    		Long totalAdm = obj[12] != null ? ((Number) obj[12]).longValue() : 0L;
+	    		
+	    		currentYearSciCount+= totalSci;
+	    		currentYearTechCount+= totalTech;
+	    		currentYearAdmCount+= totalAdm;
+	    		
+	        	if("Q1".equalsIgnoreCase(quarter)) {
+	        		
+	        		scientist.setFirstQuarter(totalSci);
+	        		technical.setFirstQuarter(totalTech);
+	        		adminAndAllied.setFirstQuarter(totalAdm);
+	        		
+	        	}else if("Q2".equalsIgnoreCase(quarter)) {
+
+	        		scientist.setSecondQuarter(totalSci);
+	        		technical.setSecondQuarter(totalTech);
+	        		adminAndAllied.setSecondQuarter(totalAdm);
+	        		
+	        	}else if("Q3".equalsIgnoreCase(quarter)) {
+
+	        		scientist.setThirdQuarter(totalSci);
+	        		technical.setThirdQuarter(totalTech);
+	        		adminAndAllied.setThirdQuarter(totalAdm);
+	        		
+	        	}else if("Q4".equalsIgnoreCase(quarter)) {
+
+	        		scientist.setFourthQuarter(totalSci);
+	        		technical.setFourthQuarter(totalTech);
+	        		adminAndAllied.setFourthQuarter(totalAdm);
+	        		
+	        	}
+	        }
+	        
+	        scientist.setCummulativePastYears(totalSciDaysCount - currentYearSciCount);
+	        technical.setCummulativePastYears(totalTechnicalDaysCount - currentYearTechCount);
+	        adminAndAllied.setCummulativePastYears(totalAdmDaysCount - currentYearAdmCount);
+	        
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return list;
+	}
+	
+	private ProjectUtilizationBriefingDto buildManPowerBriefingDataDto(String desigCrade) {
+		ProjectUtilizationBriefingDto dto = new ProjectUtilizationBriefingDto();
+		
+		dto.setDesigCrade(desigCrade);
+		
+		
+		return dto;
+	}
+
+	@Override
+	public List<ProjectUtilizationBriefingDto> getInfrastructureDetailsForBriefing(String proid) throws Exception {
+		try {
+			Long projectId = Long.parseLong(proid);
+	        
+	    	String financialYear = getCurrentFinancialYear();
+			List<ProjectUtilizationBriefingDto> list = new ArrayList<>();
+			List<Object[]> infrastructures = dao.getInfrastructures(projectId,financialYear);
+			
+			if(infrastructures == null || infrastructures.isEmpty()) return List.of();
+			
+			for (Object[] row : infrastructures) {
+			    ProjectUtilizationBriefingDto dto = new ProjectUtilizationBriefingDto();
+
+			    dto.setNameOfInfrastructure(row[0] != null ? row[0].toString() : null);
+
+			    dto.setCummulativePastYears(row[1] != null ? ((Number) row[1]).longValue() : 0L);
+			    dto.setCummulativeTillDate(row[2] != null ? ((Number) row[2]).longValue() : 0L);
+			    
+			    dto.setFirstQuarter(row[3] != null ? ((Number) row[3]).longValue() : 0L);
+			    dto.setSecondQuarter(row[4] != null ? ((Number) row[4]).longValue() : 0L);
+			    dto.setThirdQuarter(row[5] != null ? ((Number) row[5]).longValue() : 0L);
+			    dto.setFourthQuarter(row[6] != null ? ((Number) row[6]).longValue() : 0L);
+
+			    dto.setProjectId(projectId);
+			    dto.setFinancialYear(financialYear);
+
+			    list.add(dto);
+			}
+			
+			
+			return list;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return List.of();
+		}
+	}
+
+	@Override
+	public List<ProjectUtilizationBriefingDto> getTrainingDetailsForBriefing(String proid) throws Exception {
+		
+		try {
+			Long projectId = Long.parseLong(proid);
+	        
+	    	String financialYear = getCurrentFinancialYear();
+			List<ProjectUtilizationBriefingDto> list = new ArrayList<>();
+			
+			List<Object[]> trainings = dao.getTrainings(projectId,financialYear);
+			
+			if(trainings == null || trainings.isEmpty()) return List.of();
+			
+			for (Object[] row : trainings) {
+			    ProjectUtilizationBriefingDto dto = new ProjectUtilizationBriefingDto();
+
+			    dto.setNameOfTraining(row[0] != null ? row[0].toString() : null);
+
+			    dto.setCummulativePastYears(row[1] != null ? ((Number) row[1]).longValue() : 0L);
+			    dto.setCummulativeTillDate(row[2] != null ? ((Number) row[2]).longValue() : 0L);
+			    
+			    dto.setFirstQuarter(row[3] != null ? ((Number) row[3]).longValue() : 0L);
+			    dto.setSecondQuarter(row[4] != null ? ((Number) row[4]).longValue() : 0L);
+			    dto.setThirdQuarter(row[5] != null ? ((Number) row[5]).longValue() : 0L);
+			    dto.setFourthQuarter(row[6] != null ? ((Number) row[6]).longValue() : 0L);
+
+			    dto.setProjectId(projectId);
+			    dto.setFinancialYear(financialYear);
+
+			    list.add(dto);
+			}
+			return list;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return List.of();
+		}
+	}
+
+	@Override
+	public List<ProjectInfrastructureUtilization> getActiveInfrastructure(Long resourceUtilizationId) throws Exception {
+		return dao.getActiveInfrastructure(resourceUtilizationId);
+	}
+
+	@Override
+	public List<ProjectTrainingUtilization> getActiveTraining(Long resourceUtilizationId) throws Exception {
+		return dao.getActiveTraining(resourceUtilizationId);
+	}
+
+	public List<ProjectEconomicImpact> getEconomicImpactForBriefing(String proid) {
+		try {
+			return dao.getEconomicImpact(Long.parseLong(proid));
+		}catch (Exception e) {
+			e.printStackTrace();
+			return List.of();
+		}
+	}
+	
 }

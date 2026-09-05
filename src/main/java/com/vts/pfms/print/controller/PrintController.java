@@ -1,8 +1,5 @@
 package com.vts.pfms.print.controller;
 
-
-
-
 import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -119,6 +116,8 @@ import com.vts.pfms.committee.service.CommitteeService;
 import com.vts.pfms.header.service.HeaderService;
 import com.vts.pfms.master.dto.ProjectFinancialDetails;
 import com.vts.pfms.milestone.dto.MilestoneActivityLevelConfigurationDto;
+import com.vts.pfms.milestone.dto.ProjectUtilizationBriefingDto;
+import com.vts.pfms.milestone.model.ProjectEconomicImpact;
 import com.vts.pfms.milestone.service.MilestoneService;
 import com.vts.pfms.model.BriefingFinance;
 import com.vts.pfms.model.BriefingHeading;
@@ -201,8 +200,10 @@ public class PrintController {
 
 	private SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private  SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
+	
 	@RequestMapping(value="PfmsPrint.htm", method = RequestMethod.POST)
 	public String PfmsPrint(HttpServletRequest req, HttpSession ses, RedirectAttributes redir,HttpServletResponse res)
+
 			throws Exception {
 		String UserId = (String) ses.getAttribute("Username");
 //		String LabCode =(String) ses.getAttribute("labcode");
@@ -3266,7 +3267,13 @@ public class PrintController {
 	    List<List<Object[]>> overallfinance = new ArrayList<>();
 
 		List<List<Object[]>> sunsetmilestones = new ArrayList<>();
+		List<List<ProjectUtilizationBriefingDto>> manpower = new ArrayList<>();
+		List<List<ProjectUtilizationBriefingDto>> infrastructure = new ArrayList<>();
+		List<List<ProjectUtilizationBriefingDto>> training = new ArrayList<>();
+		List<List<ProjectEconomicImpact>> econmicImpact  = new ArrayList<>();
+
 	    try {
+
 
 	    	List<String> Pmainlist = service.ProjectsubProjectIdList(projectid);
 
@@ -3289,6 +3296,10 @@ public class PrintController {
 	    		milestonesubsystemsnew.add(service.BreifingMilestoneDetails(proid, committeeid));
 	    		
 	    		sunsetmilestones.add(service.SunSetMilestones(proid));
+				manpower.add(milservice.getManPowerDetailsForBriefing(proid));
+				infrastructure.add(milservice.getInfrastructureDetailsForBriefing(proid));
+				training.add(milservice.getTrainingDetailsForBriefing(proid));
+				econmicImpact.add(milservice.getEconomicImpactForBriefing(proid));
 
 	    		Object[] prodetails = service.ProjectDataDetails(proid);
 	    		projectdatadetails.add(prodetails);
@@ -3303,6 +3314,7 @@ public class PrintController {
 		    		pdffiles.add(pdfs);
 	    		}
 	    		req.setAttribute("envisagedDemandlist", service.getEnvisagedDemandList(projectid));
+
 
 
 //	    		List<ProjectFinancialDetails> projectDetails = fetchFromApi(
@@ -3371,9 +3383,13 @@ public class PrintController {
 	    	req.setAttribute("projectidlist", Pmainlist);
 
 			req.setAttribute("sunsetmilestones", sunsetmilestones);
-
-	    	return 1;
-	    }catch (Exception e) {
+			req.setAttribute("manpowerDetails", manpower);
+			req.setAttribute("infrastructureDetails", infrastructure);
+			req.setAttribute("trainingDetails", training);
+			req.setAttribute("econmicImpactDetails", econmicImpact);
+			
+			return 1;
+		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;
 		}
@@ -3550,6 +3566,7 @@ public class PrintController {
 			return 0;
 		}
 	}
+	
 	/* ******************************* Briefing Paper Presentation New Changes ************************ */
 	
 	private int setMilestoneDetailsToResponse(Model model, HttpServletRequest req, HttpSession ses,

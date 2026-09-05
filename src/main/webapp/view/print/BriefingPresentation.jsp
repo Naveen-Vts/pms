@@ -1,3 +1,5 @@
+<%@page import="com.vts.pfms.milestone.model.ProjectEconomicImpact"%>
+<%@page import="com.vts.pfms.milestone.dto.ProjectUtilizationBriefingDto"%>
 <%@page import="org.apache.commons.text.StringEscapeUtils"%>
 <%@page import="java.nio.file.Paths"%>
 <%@page import="java.nio.file.Path"%>
@@ -123,6 +125,7 @@
 	
 
 	List<List<Object[]>> sunsetmilestones = (List<List<Object[]>>) request.getAttribute("sunsetmilestones");
+
 	%>
 	
 		<%
@@ -2815,7 +2818,15 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 				</div>
 			</div>
 			<!-- ---------------------------------------- Action Plan for Div ----------------------------------------------------- -->
-
+			
+			
+			<!-- ----------------------------------------11. Valuation of Technology  Div ----------------------------------------------------- -->
+			
+			
+			<jsp:include page="briefingPaper/BriefingPresentationTwo.jsp" />
+			
+			<!-- ----------------------------------------12. Economic Impact  Div ----------------------------------------------------- -->
+			
 			<!-- ---------------------------------------- P-13  GANTT chart of overall project Div ----------------------------------------------------- -->
 
 			<div class="carousel-item ">
@@ -2828,7 +2839,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-					<h3>11. GANTT Chart of Overall Project Schedule</h3>
+					<h3>13. GANTT Chart of Overall Project Schedule</h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -2849,7 +2860,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-						<h3>12. Issues</h3>
+						<h3>14. Issues</h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -2984,8 +2995,12 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 				</div>
 
 			</div>
+<<<<<<< HEAD
 
 			<!-- ---------------------------------------- P-13a  Other Relevant Points Div ----------------------------------------------------- -->
+=======
+			<!-- ---------------------------------------- P-15a  Other Relevant Points Div ----------------------------------------------------- -->
+>>>>>>> pgad
 
 			<div class="carousel-item ">
 				   <div class="content-header row ">
@@ -2994,7 +3009,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-						<h3>13 (a) Other Relevant Points</h3>
+						<h3>15 (a) Other Relevant Points</h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -3022,9 +3037,9 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 			</div>
 
 
-			<!-- ----------------------------------------p-13a Other Relevant Points Div ----------------------------------------------------- -->
+			<!-- ----------------------------------------p-15a Other Relevant Points Div ----------------------------------------------------- -->
 
-			<!-- ---------------------------------------- P-13b Technical Work Carried Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-15b Technical Work Carried Div ----------------------------------------------------- -->
 
 			<div class="carousel-item ">
 
@@ -3036,9 +3051,9 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<div class="col-md-8">
 						<h3>
 							<% if (CommitteeCode.equalsIgnoreCase("EB")) { %>
-								13 (b) Technical Work Carried Out For Last Six Months
+								15 (b) Technical Work Carried Out For Last Six Months
 							<% } else { %>
-								13 (b) Technical Work Carried Out For Last Three Months
+								15 (b) Technical Work Carried Out For Last Three Months
 							<% } %>
 						</h3>
 					</div>
@@ -3104,9 +3119,9 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 							</div>
 					<% } %>
 				</div></div>
-			<!-- ---------------------------------------- p-13b Technical Work Carried Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- p-15b Technical Work Carried Div ----------------------------------------------------- -->
 
-			<!-- ---------------------------------------- P-13c  Technical Images Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-15c  Technical Images Div ----------------------------------------------------- -->
 			<div class="carousel-item ">
 					<div class="content-header row ">
 					<div class="col-md-1" ><img class="bp-18"   <%if(Drdologo!=null ){ %> src="data:image/*;base64,<%=Drdologo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> ></div>
@@ -3114,7 +3129,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-							<h3>13 (c) Technical Images</h3>
+							<h3>15 (c) Technical Images</h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -3140,10 +3155,10 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 				</div>
 			</div>
 
-		<!-- ---------------------------------------- p-13c Technical Images Div ----------------------------------------------------- -->
+		<!-- ---------------------------------------- p-15c Technical Images Div ----------------------------------------------------- -->
 		
 			<!-- ---------------------------------------- Issues Div ----------------------------------------------------- -->
-			<!-- ---------------------------------------- P-14 Decision/Recommendations sought Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-16 Decision/Recommendations sought Div ----------------------------------------------------- -->
 			<div class="carousel-item ">
 	
 					<div class="content-header row ">
@@ -3152,7 +3167,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 					<h6 class="bp-21"><%=pdc %></h6>
 					</div>
 					<div class="col-md-8">
-						<h3> 14. Decision/Recommendations Sought from <%=CommitteeCode%> </h3>
+						<h3> 16. Decision/Recommendations Sought from <%=CommitteeCode%> </h3>
 					</div>
 					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
 					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
@@ -3180,7 +3195,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 			<!-- ---------------------------------------- Decision/Recommendations sought Div ----------------------------------------------------- -->
 
 			
-		<!-- ---------------------------------------- P-15  Thank you Div ----------------------------------------------------- -->
+		<!-- ---------------------------------------- P-17  Thank you Div ----------------------------------------------------- -->
 
 
 			<div class="carousel-item ">
@@ -3232,12 +3247,14 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="9. (<%=(char)(ch6) %>)  Overall Financial Status <%if(projectidlist.size()>1) {%>(<%=ProjectDetail.get(z)[1]%>) <%}%>"><b>9<%if(projectidlist.size()>1) {%>(<%=(char)(ch6++)%>)<%} %></b></li>
 			<%} %>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="10. Action Plan"><b>10</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="11. GANTT chart of overall project schedule"><b>11</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="12. Issues"><b>12</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="13 (a) Other Relevant Points"><b>13 (a)</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="13 (b) Technical Work Carried out"><b>13 (b)</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="13 (c) Technical Images"><b>13 (c)</b></li>
-			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="14. Decision/Recommendations"><b>14</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="11. Valuation Of Technologies"><b>11</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="12. Economic Impact of Project"><b>12</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="13. GANTT chart of overall project schedule"><b>13</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="14. Issues"><b>14</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="15 (a) Other Relevant Points"><b>15 (a)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="15 (b) Technical Work Carried out"><b>15 (b)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="15 (c) Technical Images"><b>15 (c)</b></li>
+			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="16. Decision/Recommendations"><b>16</b></li>
 			<li data-target="#presentation-slides" data-slide-to="<%=slideCount++ %>" class="carousel-indicator" data-toggle="tooltip" data-placement="top" title="Thank You"><b>End</b></li>
 			<li data-slide-to="21"  class="carousel-indicator content_full_screen bp-87" data-toggle="tooltip" data-placement="top" title="Full Screen Mode"><b><i class="fa fa-expand fa-lg" aria-hidden="true"></i></b></li>
 			<li data-slide-to="21"  class="carousel-indicator content_reg_screen bp-87" data-toggle="tooltip" data-placement="top" title="Exit Full Screen Mode"><b><i class="fa fa-compress fa-lg" aria-hidden="true"></i></b></li>

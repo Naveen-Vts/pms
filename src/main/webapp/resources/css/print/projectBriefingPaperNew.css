@@ -79,11 +79,23 @@ summary[role=button]:focus {
 	background-color: #4a47a3;
 	border: 0px;
 }
-
+ 
 summary::marker {
 	
 }
+summary.no-arrow {
+    list-style: none;
+}
 
+summary.no-arrow::marker {
+    display: none;
+    content: "";
+}
+
+summary.no-arrow::-webkit-details-marker {
+    display: none;
+} 
+ 
 details {
 	margin-bottom: 5px;
 }
@@ -114,6 +126,7 @@ details  .content {
 	-ms-user-select: none; /* IE 10+ */
 	user-select: none;
 }
+
 
 .caret-last-1 {
 	cursor: pointer;
@@ -1179,3 +1192,9 @@ ul, #myUL {
 	background-color: #39311D !important;
 	color: white;
 }
+
+
+.fw-bold-1{
+	font-weight: bold;
+	font-size: 16px;
+} 
