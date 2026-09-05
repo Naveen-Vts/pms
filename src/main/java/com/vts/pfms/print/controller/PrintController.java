@@ -149,8 +149,6 @@ import jakarta.servlet.http.Part;
 @Controller
 public class PrintController {
 
-	private final MilestoneServiceImpl milestoneServiceImpl;
-
 	@Autowired
 	PrintService service;
 
@@ -194,10 +192,6 @@ public class PrintController {
 
 	private SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-
-	PrintController(MilestoneServiceImpl milestoneServiceImpl) {
-		this.milestoneServiceImpl = milestoneServiceImpl;
-	}
 
 	@RequestMapping(value = "PfmsPrint.htm", method = RequestMethod.POST)
 	public String PfmsPrint(HttpServletRequest req, HttpSession ses, RedirectAttributes redir, HttpServletResponse res)
@@ -3274,10 +3268,10 @@ public class PrintController {
 				milestonesubsystemsnew.add(service.BreifingMilestoneDetails(proid, committeeid));
 				
 				sunsetmilestones.add(service.SunSetMilestones(proid));
-				manpower.add(milestoneServiceImpl.getManPowerDetailsForBriefing(proid));
-				infrastructure.add(milestoneServiceImpl.getInfrastructureDetailsForBriefing(proid));
-				training.add(milestoneServiceImpl.getTrainingDetailsForBriefing(proid));
-				econmicImpact.add(milestoneServiceImpl.getEconomicImpactForBriefing(proid));
+				manpower.add(milservice.getManPowerDetailsForBriefing(proid));
+				infrastructure.add(milservice.getInfrastructureDetailsForBriefing(proid));
+				training.add(milservice.getTrainingDetailsForBriefing(proid));
+				econmicImpact.add(milservice.getEconomicImpactForBriefing(proid));
 
 				Object[] prodetails = service.ProjectDataDetails(proid);
 				projectdatadetails.add(prodetails);

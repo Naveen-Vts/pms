@@ -3995,6 +3995,7 @@ public class MilestoneServiceImpl implements MilestoneService {
 		return dao.getActiveTraining(resourceUtilizationId);
 	}
 
+	@Override
 	public List<ProjectEconomicImpact> getEconomicImpactForBriefing(String proid) {
 		try {
 			return dao.getEconomicImpact(Long.parseLong(proid));
