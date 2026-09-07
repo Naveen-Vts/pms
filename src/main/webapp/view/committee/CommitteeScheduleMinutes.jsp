@@ -70,7 +70,7 @@ String committeeid=committeescheduleeditdata[0].toString();
 String projectid = committeescheduleeditdata[9].toString();
 String divisionid = committeescheduleeditdata[16].toString();
 String initiationid = committeescheduleeditdata[17].toString();
-String carsInitiationId = committeescheduleeditdata[25].toString();
+String carsInitiationId = committeescheduleeditdata[25] != null ?  committeescheduleeditdata[25].toString() : "";
 String   committeecode    = committeescheduleeditdata[8].toString();
 String programmeId = committeescheduleeditdata[26].toString();
 String userview = (String) request.getAttribute("userview");
