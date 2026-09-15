@@ -46,6 +46,6 @@ public interface PFTSService {
 	public List<Object[]> getprocurementMilestoneDetails(String parameter)throws Exception;
 	public Object[] ProjectDataByPrjCode(String projectCode) throws Exception;
 	public long upadteDemandFileRemarks(String fileId, String remarks) throws Exception;
-	public List<PmmgPmsDmdDetails> getPMMGProcurementData();
+	public List<PmmgPmsDmdDetails> getPMMGProcurementData(String projectImmsCd);
 
 }

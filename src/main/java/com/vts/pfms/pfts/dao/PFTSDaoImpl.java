@@ -492,6 +492,7 @@ public  class PFTSDaoImpl implements PFTSDao{
 	private static final String PMMGPROCUREMENTDATA = """
 	        SELECT DemandNo, DemandDate, ProjectCode, ItemName, SONo, SODate, DPDate, FirmName, ProcurementStage
 	        FROM imapmmgpms_dmddetails
+	        WHERE ProjectCode = :projectCode
 	        ORDER BY DemandDate DESC
 	        """;
 
@@ -499,9 +500,10 @@ public  class PFTSDaoImpl implements PFTSDao{
 	
 	@Override
 	@org.springframework.transaction.annotation.Transactional(transactionManager = "secondaryTransactionManager", readOnly = true)
-	public List<PmmgPmsDmdDetails> getPMMGProcurementData() {
+	public List<PmmgPmsDmdDetails> getPMMGProcurementData(String projectImmsCd) {
 
 	    Query query = procurementManager.createNativeQuery(PMMGPROCUREMENTDATA);
+	    query.setParameter("projectCode", projectImmsCd);
 
 	    List<Object[]> results = (List<Object[]>)query.getResultList();
 

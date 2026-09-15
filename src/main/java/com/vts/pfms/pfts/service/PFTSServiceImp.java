@@ -382,9 +382,9 @@ public class PFTSServiceImp implements PFTSService{
 	}
 	
 	@Override
-	public List<PmmgPmsDmdDetails> getPMMGProcurementData() {
+	public List<PmmgPmsDmdDetails> getPMMGProcurementData(String projectImmsCd) {
 
-		return dao.getPMMGProcurementData();
+		return dao.getPMMGProcurementData(projectImmsCd);
 	}
 	
 }

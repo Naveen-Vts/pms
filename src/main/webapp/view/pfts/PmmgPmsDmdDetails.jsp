@@ -1,3 +1,4 @@
+<%@page import="org.apache.commons.text.StringEscapeUtils"%>
 <%@page import="com.vts.pfms.FormatConverter"%>
 <%@page import="com.vts.pfms.pfts.dto.PmmgPmsDmdDetails"%>
 <%@page import="java.util.List"%>
@@ -12,6 +13,8 @@
 <body>
 <%
 	List<PmmgPmsDmdDetails> pmmgPmsDmdDetails = (List<PmmgPmsDmdDetails>)request.getAttribute("pmmgPmsDmdDetails");
+	List<Object[]> projectList = (List<Object[]>)request.getAttribute("projectList");
+	String projectImmsCd = (String)request.getAttribute("projectImmsCd");
 	FormatConverter fc = new FormatConverter();
 %>
 
@@ -20,11 +23,28 @@
 			<div class="card shadow-nohover">
 				<div class="card-header">
 					<div class="row">
-						<div class="col-md-3">
+						<div class="col-md-9">
 							<h4>
 								<b>Procurement List</b>
 							</h4>
 						</div>
+						<div class="col-md-1 right">
+								<label class="control-label" style="font-size: 15px; color: #07689f;"><b>Project:</b></label>
+							</div>
+							<div class="col-md-2"  style="margin-top: -8px;">
+								<form action="PmmgPmsDmdDetails.htm" method="POST">
+	        						<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+									<select class="form-control selectdee" name="projectImmsCd" onchange="this.form.submit()" style="margin-top: -10px;">
+										<%if(projectList!=null && projectList.size()>0){
+											for (Object[] obj : projectList) {
+												String projectshortName1 = (obj[17] != null) ? " ( " + obj[17].toString() + " ) " : ""; %>
+												<option value="<%=obj[6]!=null ? obj[6] : ""%>"  <%if(obj[6]!=null && obj[6].toString().equalsIgnoreCase(projectImmsCd)){ %> selected <%} %>>
+													<%=obj[4]!=null?StringEscapeUtils.escapeHtml4(obj[4].toString()): " - "%> <%=projectshortName1!=null?StringEscapeUtils.escapeHtml4(projectshortName1): " - " %>
+												</option>
+										<%} }%>
+									</select>
+								</form>	
+							</div>
 					</div>
 				</div>
 				
