@@ -454,7 +454,7 @@ public class CCMDaoImpl implements CCMDao{
 		}
 	}
 
-	private static final String GETPROJECTLISTBYLABCODE = "SELECT ProjectId,ProjectCode, ProjectShortName, ProjectName FROM project_master WHERE LabCode=:LabCode AND IsActive=1";
+	private static final String GETPROJECTLISTBYLABCODE = "SELECT Project_Id,Project_Code, Project_Short_Name, Project_Name FROM project_master WHERE Lab_Code=:LabCode AND Is_Active=1";
 	@Override
 	public List<Object[]> getProjectListByLabCode(String labCode) throws Exception {
 		try {
@@ -581,11 +581,11 @@ public class CCMDaoImpl implements CCMDao{
 		}
 	}
 
-	private static final String GETCLOSURESTATUSLIST = "SELECT a.CCMClosureId, a.LabCode, b.ProjectCode, b.ProjectShortName, b.ProjectName, \r\n"
+	private static final String GETCLOSURESTATUSLIST = "SELECT a.CCMClosureId, a.LabCode, b.Project_Code, b.Project_Short_Name, b.Project_Name, \r\n"
 			+ "(SELECT c.ProjectTypeShort FROM project_type c WHERE b.ProjectType=c.ProjectTypeId LIMIT 1) AS 'Category', b.TotalSanctionCost,\r\n"
-			+ "( SELECT CONCAT(IFNULL(CONCAT(d.title,' '),(IFNULL(CONCAT(d.Salutation, ' '), ''))), d.empname,', ', e.Designation) FROM cluster_lab_employee d,employee_desig e WHERE d.EmpId=b.ProjectDirector AND d.DesigId=e.DesigId AND d.LabCode=b.LabCode LIMIT 1) AS 'PD',\r\n"
+			+ "( SELECT CONCAT(IFNULL(CONCAT(d.title,' '),(IFNULL(CONCAT(d.Salutation, ' '), ''))), d.empname,', ', e.Designation) FROM cluster_lab_employee d,employee_desig e WHERE d.EmpId=b.ProjectDirector AND d.DesigId=e.Desig_Id AND d.LabCode=b.LabCode LIMIT 1) AS 'PD',\r\n"
 			+ "b.SanctionDate, b.PDC, a.Recommendation, a.TCRStatus, a.ACRStatus, a.ActivityStatus\r\n"
-			+ "FROM pfms_ccm_closure a, project_master b WHERE a.ProjectId=b.Projectid AND a.IsActive=1 AND a.ScheduleId=:ScheduleId ORDER BY a.LabCode, a.ProjectId\r\n"
+			+ "FROM pfms_ccm_closure a, project_master b WHERE a.ProjectId=b.Project_id AND a.IsActive=1 AND a.ScheduleId=:ScheduleId ORDER BY a.LabCode, a.ProjectId\r\n"
 			+ "";
 	@Override
 	public List<Object[]> getClosureStatusList(String scheduleId) throws Exception {

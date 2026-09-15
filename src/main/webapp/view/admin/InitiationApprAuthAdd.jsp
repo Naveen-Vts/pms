@@ -61,7 +61,7 @@ List<String> apprTypes = Arrays.asList("AD","DO-RTMD","GH-DP&C","AD-P&C","Chairm
                     <b class="text-white">Approval Authority <%if(action!=null) {%><%=StringEscapeUtils.escapeHtml4(action)%><%} %> </b>
         		</div>
         		<div class="card-body">
-        			<form action="RtmddoSubmit.htm" method="POST" name="myfrm" id="myfrm">
+        			<form action="RtmddoSubmit.htm" method="POST" name="myfrm" id="myfrm" onsubmit="return validateApprAuthDates();">
                 		<div class="row">
 							<div class="col-md-4">
                         		<div class="form-group">
@@ -144,6 +144,52 @@ $('#DateCompletion').daterangepicker({
 			format : 'DD-MM-YYYY'
 		}
 	});
+
+	function syncValidToMinDate() {
+		var fromVal = $('#DateCompletion').val();
+		if (fromVal) {
+			var fromMoment = moment(fromVal, 'DD-MM-YYYY', true);
+			if (fromMoment.isValid()) {
+				$('#DateCompletion2').data('daterangepicker').minDate = fromMoment;
+
+				var toVal = $('#DateCompletion2').val();
+				if (toVal) {
+					var toMoment = moment(toVal, 'DD-MM-YYYY', true);
+					if (toMoment.isValid() && toMoment.isBefore(fromMoment, 'day')) {
+						$('#DateCompletion2').val('');
+					}
+				}
+			}
+		}
+	}
+
+	$('#DateCompletion').on('apply.daterangepicker change', syncValidToMinDate);
+	syncValidToMinDate();
+
+	function validateApprAuthDates() {
+		var fromVal = $('#DateCompletion').val();
+		var toVal = $('#DateCompletion2').val();
+
+		if (!fromVal || !toVal) {
+			alert('Please select both Valid From and Valid To dates.');
+			return false;
+		}
+
+		var fromMoment = moment(fromVal, 'DD-MM-YYYY', true);
+		var toMoment = moment(toVal, 'DD-MM-YYYY', true);
+
+		if (!fromMoment.isValid() || !toMoment.isValid()) {
+			alert('Please enter valid dates in DD-MM-YYYY format.');
+			return false;
+		}
+
+		if (toMoment.isBefore(fromMoment, 'day')) {
+			alert('Valid To date cannot be earlier than Valid From date.');
+			return false;
+		}
+
+		return true;
+	}
 
 
 

@@ -880,15 +880,15 @@ public class MasterController {
 			String GroupHeadName=req.getParameter("ghempid");
 			String tdid=req.getParameter("tdId");
 			
-			if(!InputValidator.isValidCapitalsAndSmallsAndNumeric(groupCode)){
-				redir.addAttribute("sub", "add");
-				return redirectWithError(redir,"GroupMaster.htm","'Group Code' must contain only Alphabets and Numbers.!");
-			} 
-			if(!InputValidator.isValidCapitalsAndSmallsAndNumericAndSpace(groupName)) {
-				redir.addAttribute("sub", "add");
-				return redirectWithError(redir,"GroupMaster.htm","'Group Name' must contain only Alphabets and Numbers.!");
-			}
-			
+//			if(!InputValidator.isValidCapitalsAndSmallsAndNumeric(groupCode)){
+//				redir.addAttribute("sub", "add");
+//				return redirectWithError(redir,"GroupMaster.htm","'Group Code' must contain only Alphabets and Numbers.!");
+//			} 
+//			if(!InputValidator.isValidCapitalsAndSmallsAndNumericAndSpace(groupName)) {
+//				redir.addAttribute("sub", "add");
+//				return redirectWithError(redir,"GroupMaster.htm","'Group Name' must contain only Alphabets and Numbers.!");
+//			}
+//			
 			DivisionGroup dgm=new DivisionGroup();
 			dgm.setGroupCode(groupCode);
 			dgm.setGroupName(groupName);
@@ -967,16 +967,16 @@ public class MasterController {
 		    String isActiveStr = req.getParameter("isActive");
 
 
-		    if(!InputValidator.isValidCodeWithCapitalsAndNumeric(groupCode)){
-		    	redir.addAttribute("sub", "edit");
-		        redir.addAttribute("groupid", groupidStr);
-		        return redirectWithError(redir,"GroupMaster.htm","'Group code' must contain only Alphabets and Numbers.!");
-		    } 
-		    if(!InputValidator.isValidCapitalsAndSmallsAndNumericAndSpace(groupName)) {
-		    	redir.addAttribute("sub", "edit");
-		        redir.addAttribute("groupid", groupidStr);
-		        return redirectWithError(redir,"GroupMaster.htm","'Group name'  must contain only Alphabets and Numbers.!");
-		    }
+//		    if(!InputValidator.isValidCodeWithCapitalsAndNumeric(groupCode)){
+//		    	redir.addAttribute("sub", "edit");
+//		        redir.addAttribute("groupid", groupidStr);
+//		        return redirectWithError(redir,"GroupMaster.htm","'Group code' must contain only Alphabets and Numbers.!");
+//		    } 
+//		    if(!InputValidator.isValidCapitalsAndSmallsAndNumericAndSpace(groupName)) {
+//		    	redir.addAttribute("sub", "edit");
+//		        redir.addAttribute("groupid", groupidStr);
+//		        return redirectWithError(redir,"GroupMaster.htm","'Group name'  must contain only Alphabets and Numbers.!");
+//		    }
 
 		    DivisionGroup model = new DivisionGroup();
 		    model.setGroupCode(groupCode);
@@ -1492,14 +1492,14 @@ private boolean isValidFileType(MultipartFile file) {
 			String tdName=req.getParameter("tName");
 			String tdHeadName=req.getParameter("tdempid");
 			
-			if(!InputValidator.isValidCapitalsAndSmallsAndNumeric(tdCode)) {
-				 redir.addAttribute("sub", "add");
-				return redirectWithError(redir, "TDMaster.htm", "'TD Code' should contain Alphabets and Numbers.!");
-			}
-			if(!InputValidator.isValidCapitalsAndSmallsAndNumericAndSpace(tdName)) {
-				redir.addAttribute("sub", "add");
-				return redirectWithError(redir, "TDMaster.htm", "'TD Name' should contain Alphabets and Numbers.!");
-			}
+//			if(!InputValidator.isValidCapitalsAndSmallsAndNumeric(tdCode)) {
+//				 redir.addAttribute("sub", "add");
+//				return redirectWithError(redir, "TDMaster.htm", "'TD Code' should contain Alphabets and Numbers.!");
+//			}
+//			if(!InputValidator.isValidCapitalsAndSmallsAndNumericAndSpace(tdName)) {
+//				redir.addAttribute("sub", "add");
+//				return redirectWithError(redir, "TDMaster.htm", "'TD Name' should contain Alphabets and Numbers.!");
+//			}
 
 			DivisionTd dtd=new DivisionTd();
 			dtd.setTdCode(tdCode);
@@ -1591,16 +1591,16 @@ private boolean isValidFileType(MultipartFile file) {
 		try {
 				String tdCode=req.getParameter("tdcode");
 				String tdName=req.getParameter("tdname");
-				if(!InputValidator.isValidCapitalsAndSmallsAndNumeric(tdCode)) {
-					redir.addAttribute("tdid", tdid);
-					redir.addAttribute("sub", "edit");
-					return redirectWithError(redir, "TDMaster.htm", "'TD Code' should contain only Alphabets and Numbers.!");
-				}
-				if(!InputValidator.isValidCapitalsAndSmallsAndNumericAndSpace(tdName)) {
-					redir.addAttribute("tdid", tdid);
-					redir.addAttribute("sub", "edit");
-					return redirectWithError(redir, "TDMaster.htm", "'TD Name' should contain only Alphabets and Numbers.!");
-				}
+//				if(!InputValidator.isValidCapitalsAndSmallsAndNumeric(tdCode)) {
+//					redir.addAttribute("tdid", tdid);
+//					redir.addAttribute("sub", "edit");
+//					return redirectWithError(redir, "TDMaster.htm", "'TD Code' should contain only Alphabets and Numbers.!");
+//				}
+//				if(!InputValidator.isValidCapitalsAndSmallsAndNumericAndSpace(tdName)) {
+//					redir.addAttribute("tdid", tdid);
+//					redir.addAttribute("sub", "edit");
+//					return redirectWithError(redir, "TDMaster.htm", "'TD Name' should contain only Alphabets and Numbers.!");
+//				}
 			DivisionTd model= new DivisionTd();
 			model.setTdCode(tdCode);
 			model.setTdName(tdName);

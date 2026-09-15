@@ -234,6 +234,7 @@ public interface MilestoneDao {
 	public Object[] getManPowerTotalCounts(Long projectId) throws Exception;
 	public List<Object[]> getInfrastructures(Long proid,String finYear) throws Exception;
 	public List<Object[]> getTrainings(Long projectId, String financialYear) throws Exception;
+	public long updateMilestoneWeightage(Long parentActivityId,Long activityId) throws Exception;
 
 
 }

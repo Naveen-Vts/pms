@@ -50,6 +50,7 @@ List<Object[]> envisagedDemandlist = (List<Object[]> )request.getAttribute("envi
 	List<List<Object[]>> overallfinance = (List<List<Object[]>>) request.getAttribute("overallfinance");
 	List<String> projectidlist = (List<String>)request.getAttribute("projectidlist");
 	List<Object[]> ProjectDetail = (List<Object[]>)request.getAttribute("ProjectDetails");
+	List<Object[]> MilestoneActivityMain=(List<Object[]>)request.getAttribute("MilestoneActivityMain0");
 %>
 <style type="text/css">
 
@@ -820,7 +821,20 @@ p{
 								<%} %>
 						</tbody>				
 					</table>
-					  
+					  <h1 class="break"></h1>
+						
+											<div align="center" style="text-decoration: underline">Annexure - E</div>		
+					<table style="  <% if(labcode.equalsIgnoreCase("ADE")){%>width:690px;<%}else{%> width:1020px<%}%> ; margin-top:5px;font-size: 16px;margin-left:8px;margin-bottom:8px; border-collapse: collapse;" >
+						<tr>
+							<th colspan="8" style="text-align: left; font-weight: 700;"><br>Revised Gantt Chart</th>
+						</tr>
+					</table>			
+					<%if(MilestoneActivityMain != null && !MilestoneActivityMain.isEmpty()){ %>
+						<jsp:include page="MomGrantChart.jsp"></jsp:include>
+					<%} else {%>
+						NIL
+					<%} %>					
+						
 					<%if(actionlist.size()>=0 && !labcode.equalsIgnoreCase("ADE")){ %>
 						<h1 class="break"></h1>	
 					<div align="center">

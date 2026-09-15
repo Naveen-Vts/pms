@@ -15,12 +15,12 @@ import com.vts.pfms.model.IbasLabMaster;
 import com.vts.pfms.model.TotalDemand;
 import com.vts.pfms.pfts.dto.DemandOrderDetails;
 
-public class PFMSServeFallbackFactory  implements FallbackFactory<PFMSServeFeignClient>  {
+public class PFMSServeFallbackFactory  implements FallbackFactory<PFMSServeFeignClientIbas>  {
 	@Override
-	public PFMSServeFeignClient create(Throwable cause) {
+	public PFMSServeFeignClientIbas create(Throwable cause) {
 		System.err.println("PFMS SERVICE FAILED: " + cause.getMessage());
 
-        return new PFMSServeFeignClient() {
+        return new PFMSServeFeignClientIbas() {
 
             @Override
             public List<CCMView> getCCMViewData(String token, String LabCode) {

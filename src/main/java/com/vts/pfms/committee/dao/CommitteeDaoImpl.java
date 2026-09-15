@@ -74,7 +74,7 @@ public class CommitteeDaoImpl  implements CommitteeDao {
 	
 	private static final String EMPLOYEELIST="SELECT a.emp_id, CONCAT(IFNULL(CONCAT(a.title,' '),(IFNULL(CONCAT(a.salutation, ' '), ''))), a.emp_name) AS 'EmpName',b.Designation,a.emp_no  FROM employee a,employee_desig b WHERE a.is_active='1' AND a.desig_id=b.desig_id AND a.lab_code=:labcode AND a.emp_status IN ('P','R','T') ORDER BY a.sr_no=0,a.sr_no";
 	private static final String LASTCOMMITTEEID="SELECT committeemainid FROM committee_main WHERE isactive=1 and committeeid=:committeeid AND projectid=:projectid and divisionid=:divisionid AND InitiationId=:initiationid AND CARSInitiationId=:CARSInitiationId AND ProgrammeId=:ProgrammeId";
-	private static final String COMMITTEENAME="SELECT committeeid,committeename,committeeshortname,projectapplicable,periodicduration,isglobal FROM committee WHERE  committeeid=:committeeid";
+	private static final String COMMITTEENAME="SELECT committeeid,GetCommitteeName(:scheduleDate,committeeshortname,committeename) as committeename,GetCommitteeShortName(:scheduleDate,committeeshortname) as committeeshortname,projectapplicable,periodicduration,isglobal FROM committee WHERE  committeeid=:committeeid";
 	private static final String COMMITTEENAMESCHECK="SELECT SUM(IF(CommitteeShortName =:committeeshortname,1,0))   AS 'shortname',SUM(IF(CommitteeName = :committeename,1,0)) AS 'name'FROM committee where isactive=1 AND labcode=:labcode ";
 	private static final String COMMITTEELISTALL="SELECT committeeid,committeeshortname,committeename,CommitteeType,projectapplicable,isactive FROM committee";
 	private static final String COMMITTEELISTACTIVE="SELECT committeeid,committeeshortname,committeename,CommitteeType,projectapplicable,isactive,periodicnon,periodicduration,TechNonTech,Guidelines,Description,TermsOfReference,isglobal FROM committee WHERE isactive=1 AND isglobal=:isglobal AND projectapplicable=:projectapplicable  AND labcode=:labcode ;";
@@ -104,7 +104,7 @@ public class CommitteeDaoImpl  implements CommitteeDao {
 	private static final String PROJECTDIRECTOREMAIL="SELECT d.email,d.emp_name FROM employee d,project_master e WHERE d.isActive='1' AND e.project_id=:projectid AND e.project_director=d.emp_id";
 	private static final String RTMDDOEMAIL="SELECT a.email,a.emp_name FROM employee a,pfms_initiation_approver b WHERE a.isActive='1' AND a.emp_id=b.empid AND b.isactive=1 AND b.type='DO-RTMD' ";
 	private static final String KICKOFFOTP="SELECT kickoffotp FROM committee_schedule WHERE scheduleid=:scheduleid";
-	private static final String PROJECTDETAILS="SELECT project_id, project_name, project_description,project_main_id,project_code,project_type,project_imms_cd, unit_code, sanction_no,pdc,project_category FROM project_master WHERE project_id=:projectid";
+	private static final String PROJECTDETAILS="SELECT project_id, project_name, project_description,project_main_id,project_code,project_type,project_imms_cd, unit_code, sanction_no,pdc,project_category,sanction_date, sanction_cost_re,sanction_cost_fe, total_sanction_cost, objective,deliverable FROM project_master WHERE project_id=:projectid";
 	private static final String PROJECTSCHEDULELISTALL ="SELECT cs.scheduleid, cs.committeeid,cs.committeemainid,cs.scheduledate,cs.schedulestarttime,cs.projectid , GetCommitteeShortName(cs.scheduledate,c.committeeshortname) AS committeeshortname,cs.scheduleflag FROM committee_schedule cs,committee c WHERE cs.committeeid=c.committeeid AND cs.isactive=1 AND cs.projectid=:projectid ORDER BY cs.scheduledate DESC";
 	private static final String PROJECTAPPLICABLECOMMITTEELIST="SELECT  b.committeeid,a.projectid, a.autoschedule,b.committeeshortname,b.committeename,b.projectapplicable FROM committee_project a,committee b WHERE a.committeeid=b.committeeid AND b.projectapplicable='P' AND a.projectid=:projectid";
 	private static final String PROJECTCOMMITTEESCHEDULELISTALL ="SELECT cs.scheduleid, cs.committeeid,cs.committeemainid,cs.scheduledate,cs.schedulestarttime,cs.projectid , GetCommitteeShortName(cs.scheduledate,c.committeeshortname) AS committeeshortname,cs.scheduleflag FROM committee_schedule cs,committee c WHERE cs.committeeid=c.committeeid AND cs.projectid=:projectid AND cs.CommitteeId=:committeeid AND cs.isactive=1 ORDER BY cs.scheduledate DESC";
@@ -326,9 +326,10 @@ public class CommitteeDaoImpl  implements CommitteeDao {
 	}
 	
 	@Override
-	public Object[] CommitteeName(String CommitteeId) throws Exception {
+	public Object[] CommitteeName(String CommitteeId,String scheduleDate) throws Exception {
 		Query query=manager.createNativeQuery(COMMITTEENAME);
 		query.setParameter("committeeid", Long.parseLong(CommitteeId));
+		query.setParameter("scheduleDate", scheduleDate);
 		Object[] CommitteeName=(Object[])query.getSingleResult();	
 		return CommitteeName;
 	}
@@ -3132,7 +3133,7 @@ public class CommitteeDaoImpl  implements CommitteeDao {
 		int count=mf+query2.executeUpdate();
 		return count;
 	}
-	private static final String MEETINGS="SELECT cs.scheduleid,cs.projectid,cs.InitiationId,GetCommitteeShortName(cs.scheduledate,c.committeeshortname) AS committeeshortname,GetCommitteeName(cs.scheduledate,c.committeeshortname,c.committeename) AS committeename,cs.MeetingVenue,cs.ScheduleStartTime,pm.projectcode,pm.projectshortname FROM committee_schedule cs,committee c ,project_master pm WHERE  c.CommitteeId=cs.CommitteeId AND pm.projectid=cs.projectid AND  cs.ScheduleDate=:date AND cs.isactive='1'";
+	private static final String MEETINGS="SELECT cs.scheduleid,cs.projectid,cs.InitiationId,GetCommitteeShortName(cs.scheduledate,c.committeeshortname) AS committeeshortname,GetCommitteeName(cs.scheduledate,c.committeeshortname,c.committeename) AS committeename,cs.MeetingVenue,cs.ScheduleStartTime,pm.project_code,pm.project_short_name FROM committee_schedule cs,committee c ,project_master pm WHERE  c.CommitteeId=cs.CommitteeId AND pm.project_id=cs.projectid AND  cs.ScheduleDate=:date AND cs.isactive='1'";
 	@Override
 	public List<Object[]> getTodaysMeetings(String date) throws Exception {
 		Query query = manager.createNativeQuery(MEETINGS);
@@ -3226,7 +3227,7 @@ public class CommitteeDaoImpl  implements CommitteeDao {
 
 	// Prudhvi 27/03/2024
 	/* ------------------ start ----------------------- */
-	private static final String INDUSTRYPARTNERREPLISTINVITATIONS ="SELECT a.IndustryPartnerRepId,a.RepName,'00' AS EmpNo,a.RepDesignation,'00' AS DesigId FROM pfms_industry_partner_rep a,pfms_industry_partner b WHERE a.IndustryPartnerId=b.IndustryPartnerId AND b.IndustryPartnerId=:IndustryPartnerId AND a.IsActive=1 AND a.IndustryPartnerRepId NOT IN (SELECT empid  FROM committee_member WHERE  CommitteeMainId=:CommitteeMainId AND labcode='@IP')";
+	private static final String INDUSTRYPARTNERREPLISTINVITATIONS ="SELECT a.industry_partner_rep_id,a.rep_name,'00' AS EmpNo,a.rep_designation,'00' AS DesigId FROM pfms_industry_partner_rep a,pfms_industry_partner b WHERE a.industry_partner_id=b.industry_partner_id AND b.industry_partner_id=:IndustryPartnerId AND a.is_active=1 AND a.industry_partner_rep_id NOT IN (SELECT empid  FROM committee_member WHERE  CommitteeMainId=:CommitteeMainId AND labcode='@IP')";
 	@Override
 	public List<Object[]> IndustryPartnerRepListInvitationsMainMembers(String industryPartnerId, String committeemainid) throws Exception {
 		try {
@@ -4227,11 +4228,11 @@ private static final String ENOTEAPPROVELIST="SELECT MAX(a.EnoteId) AS EnoteId,M
 
 	// Naveen R 05-03-2026
 	private static final String MEETINGCOUNTPROJECT = """
-			SELECT pm.project_short_name, pm.project_code, pm.project_name,cs.project_id,COUNT(cs.project_id) AS meetingcount, c.committeeShortName, c.committeeName
+			SELECT pm.project_short_name, pm.project_code, pm.project_name,cs.projectid,COUNT(cs.projectid) AS meetingcount, c.committeeShortName, c.committeeName
 			FROM committee c LEFT JOIN committee_schedule cs ON c.committeeId = cs.committeeId
 			LEFT JOIN project_master pm ON cs.projectId = pm.project_id
 			WHERE cs.committeeId = :committeeId AND c.isBriefing = 'Y' AND c.isActive = 1 AND pm.project_id > 0 AND cs.isActive = 1 AND cs.ScheduleFlag IN ('MKV','MMR','MMF','MMS','MMA')
-			GROUP BY c.committeeShortName, c.committeeName, cs.project_id, pm.project_name, pm.project_short_name;
+			GROUP BY c.committeeShortName, c.committeeName, cs.projectid, pm.project_name, pm.project_short_name;
 			"""; 
 	@Override
 	public List<Object[]> getMeetingCountList(String committeeId) throws Exception {

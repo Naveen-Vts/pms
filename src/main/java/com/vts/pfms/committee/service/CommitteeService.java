@@ -49,7 +49,7 @@ public interface CommitteeService {
 	public List<Object[]> EmployeeList(String labcode) throws Exception;
 	public List<Object[]> ExpertList() throws Exception;
 	public List<Object[]> AllLabList() throws Exception;
-	public Object[] CommitteeName(String CommitteeId) throws Exception;
+	public Object[] CommitteeName(String CommitteeId,String scheduleDate) throws Exception;
 	public long CommitteeDetailsSubmit(CommitteeMainDto committeemaindto)throws Exception;
 	public long CommitteeAdd(CommitteeDto committeeDto) throws Exception;
 	public List<Object[]> CommitteeListActive(String isglobal,String Projectapplicable, String LabCode) throws Exception;

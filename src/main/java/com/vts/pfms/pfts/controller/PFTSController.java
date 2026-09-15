@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
@@ -25,29 +24,16 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.google.gson.Gson;
 import com.vts.pfms.FormatConverter;
 import com.vts.pfms.master.dto.DemandDetails;
-import com.vts.pfms.pfmsserv.feign.PFMSServeFeignClient;
+import com.vts.pfms.pfmsserv.feign.FeignClientService;
 import com.vts.pfms.pfts.dto.DemandOrderDetails;
 import com.vts.pfms.pfts.dto.PFTSFileDto;
 import com.vts.pfms.pfts.model.PFTSFile;
@@ -74,7 +60,7 @@ public class PFTSController {
     private String uri;
 	
 	@Autowired
-	PFMSServeFeignClient serv;
+	FeignClientService serv;
 	
 	private static final Logger logger=LogManager.getLogger(PFTSController.class);
 	FormatConverter fc = new FormatConverter();

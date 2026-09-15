@@ -121,12 +121,12 @@
 
 												</h4>
 												<div class="divFloat1">
-													<a data-toggle="collapse" data-parent="#accordion" href="#collapse55A<%=ProjectSubCount%>"> 
-														<i class="fa fa-plus" id="ClkA<%=ProjectSubCount%>" onclick="faChange('#ClkA<%=ProjectSubCount%>')"></i>
+													<a href="#" class="ms-toggle" data-target="#collapse55A<%=ProjectSubCount%>">
+														<i class="fa fa-plus" id="ClkA<%=ProjectSubCount%>"></i>
 													</a>
 												</div>
 											</div>
-											<div id="collapse55A<%=ProjectSubCount%>" class="panel-collapse collapse in">
+											<div id="collapse55A<%=ProjectSubCount%>" class="panel-collapse collapse ">
 												<div class="row">
 													<div class="col-md-6 ">
 														<label class="control-label ml-4 text-center"
@@ -144,1102 +144,157 @@
 														<label class="control-label">First OIC: <%=obj[14]!=null?StringEscapeUtils.escapeHtml4(obj[14].toString()): " - "%></label>
 													</div>
 												</div>
-												<%
-												int Sub1Count = 1;
-												List<Object[]> MilestoneActivityB = (List<Object[]>) request.getAttribute("MilestoneActivityB" + ProjectSubCount);
-												if (MilestoneActivityB != null && MilestoneActivityB.size() > 0) {
-													for (Object[] obj1 : MilestoneActivityB) {
-												%>
 
-
-												<div class="row">
-													<div class="col-md-12" >
-
-														<div class="panel panel-info m-1">
-															<div class="panel-heading">
-																<h4 class="panel-title">
-																	<span class="font14">
-																		Activity B<%=Sub1Count%>
-																		<i class="fa fa-calendar ml-3" aria-hidden="true" ></i> 
-																		<%=sdf.format(obj1[2])%> To <%=sdf.format(obj1[3])%>
-																	</span>
-
-																</h4>
-																<div class="divFloat1">
-																	<a data-toggle="collapse" data-parent="#accordion" href="#collapse55B<%=ProjectSubCount%><%=Sub1Count%>">
-																		<i class="fa fa-plus" id="ClkA<%=ProjectSubCount%>B<%=Sub1Count%>" onclick="faChange('#ClkA<%=ProjectSubCount%>B<%=Sub1Count%>')"></i>
-																	</a>
-																</div>
-															</div>
-															<div id="collapse55B<%=ProjectSubCount%><%=Sub1Count%>"
-																class="panel-collapse collapse in">
-																<div class="row">
-																	<div class="col-md-6 ">
-																		<label class="control-label ml-4 text-center"
-																			>Activity:
-																			<%=obj1[4]!=null?StringEscapeUtils.escapeHtml4(obj1[4].toString()): " - "%>
-																		</label>
-																	</div>
-																	<div class="col-md-2">
-																		<label class="control-label">Type: <%=obj1[12]!=null?StringEscapeUtils.escapeHtml4(obj1[12].toString()): " - "%></label>
-																	</div>
-																	<div class="col-md-2">
-																		<label class="control-label">Weightage: <%=obj1[6]!=null?StringEscapeUtils.escapeHtml4(obj1[6].toString()): " - "%></label>
-																	</div>
-																	<div class="col-md-2">
-																		<label class="control-label">First OIC: <%=obj1[14]!=null?StringEscapeUtils.escapeHtml4(obj1[14].toString()): " - "%></label>
-																	</div>
-																</div>
-																<%
-																int Sub2Count = 1;
-																List<Object[]> MilestoneActivityC = (List<Object[]>) request.getAttribute("MilestoneActivityC" + ProjectSubCount + Sub1Count);
-																if (MilestoneActivityC != null && MilestoneActivityC.size() > 0) {
-																	for (Object[] obj2 : MilestoneActivityC) {
-																%>
-
-																<div class="row">
-																	<div class="col-md-12" >
-
-																		<div class="panel panel-info m-1">
-																			<div class="panel-heading">
-																				<h4 class="panel-title">
-																					<span class="font14">
-																						Activity C<%=Sub2Count%>
-																						<i class="fa fa-calendar ml-3" aria-hidden="true" ></i> 
-																						<%=sdf.format(obj2[2])%> To <%=sdf.format(obj2[3])%>
-																					</span>
-
-																				</h4>
-																				<div class="divFloat1" >
-																					<a data-toggle="collapse" data-parent="#accordion" href="#collapse55C<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%>">
-																						<i class="fa fa-plus" id="ClkA<%=ProjectSubCount%>B<%=Sub1Count%>C<%=Sub2Count%>" onclick="faChange('#ClkA<%=ProjectSubCount%>B<%=Sub1Count%>C<%=Sub2Count%>')"></i>
-																					</a>
-																				</div>
-																			</div>
-																			<div id="collapse55C<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%>" class="panel-collapse collapse in">
-																				<div class="row">
-																					<div class="col-md-6 ">
-																						<label class="control-label ml-4 text-center" >
-																							Activity: <%=obj2[4]!=null?StringEscapeUtils.escapeHtml4(obj2[4].toString()): " - "%>
-																						</label>
-																					</div>
-																					<div class="col-md-2">
-																						<label class="control-label">Type: <%=obj2[12]!=null?StringEscapeUtils.escapeHtml4(obj2[12].toString()): " - "%></label>
-																					</div>
-																					<div class="col-md-2">
-																						<label class="control-label">Weightage: <%=obj2[6]!=null?StringEscapeUtils.escapeHtml4(obj2[6].toString()): " - "%></label>
-																					</div>
-																					<div class="col-md-2">
-																						<label class="control-label">First OIC: <%=obj2[14]!=null?StringEscapeUtils.escapeHtml4(obj2[14].toString()): " - "%></label>
-																					</div>
-																				</div>
-																				<%
-																				int Sub3Count = 1;
-																				List<Object[]> MilestoneActivityD = (List<Object[]>) request.getAttribute("MilestoneActivityD" + ProjectSubCount + Sub1Count + Sub2Count);
-																				if (MilestoneActivityD != null && MilestoneActivityD.size() > 0) {
-																					for (Object[] obj3 : MilestoneActivityD) {
-																				%>
-
-																				<div class="row">
-																					<div class="col-md-12" align="left" >
-
-																						<div class="panel panel-info m-1">
-																							<div class="panel-heading">
-																								<h4 class="panel-title">
-																									<span class="font14">
-																										Activity D<%=Sub3Count%>
-																										<i class="fa fa-calendar ml-4" aria-hidden="true" ></i>
-																										<%=sdf.format(obj3[2])%> To <%=sdf.format(obj3[3])%></span>
-
-																								</h4>
-																								<div class="divFloat1">
-																									<a data-toggle="collapse" data-parent="#accordion"
-																										href="#collapse55D<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%>">
-																										<i class="fa fa-plus"
-																										id="ClkA<%=ProjectSubCount%>B<%=Sub1Count%>C<%=Sub2Count%>D<%=Sub3Count%>"
-																										onclick="faChange('#ClkA<%=ProjectSubCount%>B<%=Sub1Count%>C<%=Sub2Count%>D<%=Sub3Count%>')"></i>
-																									</a>
-																								</div>
-																							</div>
-																							<div
-																								id="collapse55D<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%>"
-																								class="panel-collapse collapse in">
-
-																								<div class="row">
-																									<div class="col-md-6 ">
-																										<label class="control-label ml-5 text-center"
-																											>Activity:
-																											<%=obj3[4]!=null?StringEscapeUtils.escapeHtml4(obj3[4].toString()): " - "%>
-																										</label>
-																									</div>
-																									<div class="col-md-2">
-																										<label class="control-label">Type: <%=obj3[12]!=null?StringEscapeUtils.escapeHtml4(obj3[12].toString()): " - "%></label>
-																									</div>
-																									<div class="col-md-2">
-																										<label class="control-label">Weightage:
-																											<%=obj3[6]!=null?StringEscapeUtils.escapeHtml4(obj3[6].toString()): " - "%></label>
-																									</div>
-																									<div class="col-md-2">
-																										<label class="control-label">First
-																											OIC: <%=obj3[14]!=null?StringEscapeUtils.escapeHtml4(obj3[14].toString()): " - "%></label>
-																									</div>
-																								</div>
-																								<%
-																								int Sub4Count = 1;
-																								List<Object[]> MilestoneActivityE = (List<Object[]>) request.getAttribute("MilestoneActivityE" + ProjectSubCount + Sub1Count + Sub2Count + Sub3Count);
-																								if (MilestoneActivityE != null && MilestoneActivityE.size() > 0) {
-																									for (Object[] obj4 : MilestoneActivityE) {
-																								%>
-
-																								<div class="row">
-																									<div class="col-md-12" align="left"
-																										>
-
-																										<div class="panel panel-info m-1">
-																											<div class="panel-heading">
-																												<h4 class="panel-title">
-																													<span class="font14">Activity
-																														E<%=Sub4Count%> <i class="fa fa-calendar ml-4"
-																														aria-hidden="true"
-																														></i> <%=sdf.format(obj4[2])%>
-																														To <%=sdf.format(obj4[3])%></span>
-
-																												</h4>
-																												<div
-																													class="divFloat1">
-																													<a data-toggle="collapse"
-																														data-parent="#accordion"
-																														href="#collapse55E<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%><%=Sub4Count%>">
-																														<i class="fa fa-plus"
-																														id="ClkA<%=ProjectSubCount%>B<%=Sub1Count%>C<%=Sub2Count%>D<%=Sub3Count%>E<%=Sub4Count%>"
-																														onclick="faChange('#ClkA<%=ProjectSubCount%>B<%=Sub1Count%>C<%=Sub2Count%>D<%=Sub3Count%>E<%=Sub4Count%>')"></i>
-																													</a>
-																												</div>
-																											</div>
-																											<div
-																												id="collapse55E<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%><%=Sub4Count%>"
-																												class="panel-collapse collapse in">
-																												<div class="row">
-																													<div class="col-md-6 ">
-																														<label class="control-label ml-5 text-center"
-																															>Activity:
-																															<%=obj4[4]!=null?StringEscapeUtils.escapeHtml4(obj4[4].toString()): " - "%>
-																														</label>
-																													</div>
-																													<div class="col-md-2">
-																														<label class="control-label">Type:
-																															<%=obj4[12]!=null?StringEscapeUtils.escapeHtml4(obj4[12].toString()): " - "%></label>
-																													</div>
-																													<div class="col-md-2">
-																														<label class="control-label">Weightage:
-																															<%=obj4[6]!=null?StringEscapeUtils.escapeHtml4(obj4[6].toString()): " - "%></label>
-																													</div>
-																													<div class="col-md-2">
-																														<label class="control-label">First
-																															OIC: <%=obj4[14]!=null?StringEscapeUtils.escapeHtml4(obj4[14].toString()): " - "%></label>
-																													</div>
-																												</div>
-																											</div>
-																										</div>
-
-																									</div>
-																								</div>
-																								<%
-																								Sub4Count++;
-																								}
-																								}
-																								%>
-																								
-					                                     <%if( Arrays.asList(getMA[8].toString(),getMA[9].toString(),obj[13].toString(),obj[15].toString(),obj1[13].toString(),obj1[15].toString(),obj2[13].toString(),obj2[15].toString(),obj3[13].toString(),obj3[15].toString(),projectDirector   ).contains(EmpId.toString()) || Logintype.equalsIgnoreCase("A") ){ %>						
-																								<div class="row">
-																									<div class="col-md-12" align="left" >
-																										<div class="panel panel-info m-1">
-																											<div class="panel-heading">
-																												<h4 class="panel-title">
-																													Activity E<%=Sub4Count%>
-																												</h4>
-																											</div>
-																											<div>
-																												<form action="MilestoneActivitySubAdd.htm" method="POST" name="milestoneaddfrm" id="milestoneaddfrm<%=Sub1Count%>">
-																													<div class="row container-fluid" align="center">
-																														<div class="col-sm-6" align="left">
-																															<div class="form-group">
-																																<label>
-																																	Activity E Name: <span class="mandatory" >*</span>
-																																</label>
-																																<br> 
-																																<input class="form-control width-100" type="text" name="ActivityName"
-																																	id="ActivityName<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%><%=Sub4Count%>"
-																																	 maxlength="1000" required="required">
-																															</div>
-																														</div>
-
-
-																														<div class="col-md-2" align="left">
-																															<div class="form-group">
-																																<label class="control-label">
-																																	Activity Type 
-																																</label> 
-																																<select class="form-control selectdee"
-																																	id="ActivityType1<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%><%=Sub4Count%>"
-																																	required="required" name="ActivityType">
-																																	<option disabled="true" selected
-																																		value="">Choose...</option>
-																																	<%
-																																	for (Object[] actobj : ActivityTypeList) {
-																																	%>
-																																	<option value="<%=actobj[0]%>"><%=actobj[1]!=null?StringEscapeUtils.escapeHtml4(actobj[1].toString()): " - "%>
-																																	</option>
-																																	<%
-																																	}
-																																	%>
-																																</select>
-																															</div>
-																														</div>
-
-																														<div class="col-md-2" align="left">
-																															<div class="form-group">
-																																<label class="control-label">From
-																																	<span class="mandatory"
-																																	>*</span>
-																																</label> <input class="form-control "
-																																	name="ValidFrom" required="required"
-																																	id="DateCompletionA<%=obj[0]%><%=obj1[0]%><%=obj2[0]%><%=obj3[0]%>"
-																																	value="<%=sdf.format(obj3[2])%>"
-																																	readonly>
-																															</div>
-																														</div>
-																														<div class="col-md-2" align="left">
-																															<div class="form-group">
-																																<label class="control-label">To
-																																	<span class="mandatory"
-																																	>*</span>
-																																</label> <input class="form-control "
-																																	name="ValidTo" required="required"
-																																	id="DateCompletionA2<%=obj[0]%><%=obj1[0]%><%=obj2[0]%><%=obj3[0]%>"
-																																	
-																																	value="<%=sdf.format(obj3[3])%>"
-																																	readonly>
-																															</div>
-																														</div>
-
-
-																													</div>
-
-																													<div class="row container-fluid">
-																														<div class="col-md-2">
-																															<label  >Lab: <span class="mandatory" >*</span></label><br>
-																															<select class="form-control selectdee" name="labCode1" id="labCode1E<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%><%=Sub4Count%>" required 
-																															onchange="renderEmployeeList('1','E<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%><%=Sub4Count%>')" data-placeholder= "Lab Name">
-																															    <% for (Object[] lab : allLabList) { %>
-																															    	<option value="<%=lab[3]%>" <%if(labcode.equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-																															    <%}%>
-																															</select>
-																														</div>
-																														<div class="col-md-4">
-																							                        		<div class="form-group">
-																							                            		<label class="control-label">First OIC  </label>
-																							                            		<div class="float-right"  > <label>All : &nbsp;&nbsp;</label>
-																																	<input class="floatXp" type="checkbox"  id="allempcheckbox1E<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%><%=Sub4Count%>" 
-																																	onchange="changeempoic1('E<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%><%=Sub4Count%>')" >
-																																</div>
-																							                              		<select class="form-control selectdee" id="EmpIdE<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%><%=Sub4Count%>" required="required" name="EmpId">
-																							    									<option disabled="true"  selected value="">Choose...</option>
-																							    										<% for (Object[] objE : EmployeeList) {%>
-																																	<option value="<%=objE[0]%>"><%=objE[1]!=null?StringEscapeUtils.escapeHtml4(objE[1].toString()): " - "%>, <%=objE[2]!=null?StringEscapeUtils.escapeHtml4(objE[2].toString()): " - "%> </option>
-																																		<%} %>
-																							  									</select>
-																							                        		</div>
-																							                    		</div>
-																							                    		<div class="col-md-2">
-																															<label  >Lab: <span class="mandatory" >*</span></label><br>
-																															<select class="form-control selectdee" name="labCode2" id="labCode2E<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%><%=Sub4Count%>" required 
-																															onchange="renderEmployeeList('2','E<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%><%=Sub4Count%>')" data-placeholder= "Lab Name">
-																															    <% for (Object[] lab : allLabList) { %>
-																															    	<option value="<%=lab[3]%>" <%if(labcode.equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-																															    <%}%>
-																															</select>
-																														</div>
-																							                    		<div class="col-md-4 ">
-																							                        		<div class="form-group">
-																							                            		<label class="control-label">Second OIC </label>
-																							                            		<div class="float-right"  > <label>All : &nbsp;&nbsp;</label>
-																																	<input class="floatXp" type="checkbox"  id="allempcheckbox2E<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%><%=Sub4Count%>" 
-																																	onchange="changeempoic2('E<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%><%=Sub4Count%>')" >
-																																</div>
-																							                              		<select class="form-control selectdee" id="EmpId1E<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%><%=Sub4Count%>" name="EmpId1" required="required">
-																							    									<option disabled="true" selected value="">Choose...</option>
-																							    										<% for (Object[] objE : EmployeeList) {%>
-																																		<option value="<%=objE[0]%>"><%=objE[1]!=null?StringEscapeUtils.escapeHtml4(objE[1].toString()): " - "%>, <%=objE[2]!=null?StringEscapeUtils.escapeHtml4(objE[2].toString()): " - "%> </option>
-																																		<%} %>
-																							  									</select>
-																							                        		</div>
-																							                    		</div>
-																													</div>
-
-
-																													<div class="form-group" align="center">
-
-																														<input type="submit" class="btn btn-primary btn-sm submit " id="sub" value="SUBMIT" name="sub" onclick="return confirm('Are You Sure To Submit?');">
-																														<button type="submit" class="btn btn-primary btn-sm edit" id="sub" value="C" name="sub" formaction="MilestoneActivityDetails.htm" formnovalidate="formnovalidate">Edit</button>
-																														
-																														<input type="submit" class="btn btn-primary btn-sm back " id="sub" value="Back" name="sub" formaction="MilestoneActivityList.htm" formnovalidate="formnovalidate">
-																														<input type="hidden" name="ProjectId" value="<%=getMA[10]%>" />
-																													</div>
-																														<input type="hidden" name="projectDirector" value= "<%=projectDirector %>">
-																													<input type="hidden" name="projectDirector" value= "<%=projectDirector %>">
-																													<input type="hidden" name="LevelId" value="5" /> 
-																													<input type="hidden" name="formname" value="<%=ProjectSubCount%>/<%=Sub1Count%>/<%=Sub2Count%>/<%=Sub3Count%>/<%=Sub4Count%>" />
-																													<input type="hidden" name="MilestoneActivityId" value="<%=getMA[0]%>" /> 
-																													<input type="hidden" name="ActivityId" value="<%=obj3[0]%>" /> 
-																													<input type="hidden" name="OicEmpId" value="<%=getMA[8]%>" /> 
-																													<input type="hidden" name="OicEmpId1" value="<%=getMA[9]%>" /> 
-																													<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-																												</form>
-																											</div>
-<script type="text/javascript">
-var from5 ="<%=sdf.format(obj3[2])%>".split("-")
-var dt55 = new Date(from5[2], from5[1] - 1, from5[0])
-var to5 ="<%=sdf.format(obj3[3])%>".split("-")
-var dt5 = new Date(to5[2], to5[1] - 1, to5[0])
-$('#DateCompletionA'+'<%=obj[0]%><%=obj1[0]%><%=obj2[0]%><%=obj3[0]%>').daterangepicker({
-	"singleDatePicker" : true,
-	"linkedCalendars" : false,
-	"showCustomRangeLabel" : true,
-	"minDate" :dt55,
-	"maxDate" : dt5,
-	"cancelClass" : "btn-default",
-	showDropdowns : true,
-	locale : {
-		format : 'DD-MM-YYYY'
-	}
-});
-
-var mindate5=dt55;
-$('#DateCompletionA'+'<%=obj[0]%><%=obj1[0]%><%=obj2[0]%><%=obj3[0]%>').on('change', function() {
-    mindate5=$('#DateCompletionA'+'<%=obj[0]%><%=obj1[0]%><%=obj2[0]%><%=obj3[0]%>').val();
-    $('#DateCompletionA2'+'<%=obj[0]%><%=obj1[0]%><%=obj2[0]%><%=obj3[0]%>').prop("disabled",false);
-    $('#DateCompletionA2'+'<%=obj[0]%><%=obj1[0]%><%=obj2[0]%><%=obj3[0]%>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate5,
-    	"maxDate" : dt5,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	}
-    	});
-  });
-  
-  
-  
-  
-
-$( document ).ready(function() {
-    mindate5=$('#DateCompletionA'+'<%=obj[0]%><%=obj1[0]%><%=obj2[0]%><%=obj3[0]%>').val();
-    $('#DateCompletionA2'+'<%=obj[0]%><%=obj1[0]%><%=obj2[0]%><%=obj3[0]%>').prop("disabled",false);
-    $('#DateCompletionA2'+'<%=obj[0]%><%=obj1[0]%><%=obj2[0]%><%=obj3[0]%>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate5,
-    	"maxDate" : dt5,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	}
-    	});
-  });
-
-	    
-	</script>
-																											<!-- end four -->
-																										</div>
-
-																									</div>
-																								</div>
-																								<%} %>
-																							</div>
-
-																						</div>
-
-
-
-
-																					</div>
-
-																				</div>
-																				<%
-																				Sub3Count++;
-																				}
-																				}
-																				%>
-										<%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].toString(),obj[13].toString(),obj[15].toString(),obj1[13].toString(),obj1[15].toString(),obj2[13].toString(),obj2[15].toString()   ).contains(EmpId.toString()) || Logintype.equalsIgnoreCase("A")  ){ %>						
-																				<div class="row">
-																					<div class="col-md-12" align="left"
-																						>
-
-																						<div class="panel panel-info m-1">
-																							<div class="panel-heading">
-																								<h4 class="panel-title">
-																									Activity D<%=Sub3Count%>
-																								</h4>
-
-																							</div>
-																							<div>
-																								<form action="MilestoneActivitySubAdd.htm" method="POST" name="milestoneaddfrm" id="milestoneaddfrm<%=Sub1Count%>">
-																									<div class="row container-fluid" align="center">
-																										<div class="col-sm-6" align="left">
-																											<div class="form-group">
-																												<label>Activity D Name: <span
-																													class="mandatory" >*</span>
-																												</label><br> <input class="form-control width-100"
-																													type="text" name="ActivityName"
-																													id="ActivityName<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%>"
-																													 maxlength="1000"
-																													required="required">
-																											</div>
-																										</div>
-
-
-																										<div class="col-md-2" align="left">
-																											<div class="form-group">
-																												<label class="control-label">Activity Type </label> 
-																												<select class="form-control selectdee"
-																													id="ActivityType1<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%>"
-																													required="required" name="ActivityType">
-																													<option disabled="true" selected value="">Choose...</option>
-																													<%
-																													for (Object[] actobj : ActivityTypeList) {
-																													%>
-																													<option value="<%=actobj[0]%>"><%=actobj[1]!=null?StringEscapeUtils.escapeHtml4(actobj[1].toString()): " - "%>
-																													</option>
-																													<%
-																													}
-																													%>
-																												</select>
-																											</div>
-																										</div>
-
-																										<div class="col-md-2" align="left">
-																											<div class="form-group">
-																												<label class="control-label">From <span
-																													class="mandatory" >*</span></label>
-																												<input class="form-control "
-																													name="ValidFrom" required="required"
-																													id="DateCompletionA<%=obj[0]%><%=obj1[0]%><%=obj2[0]%>"
-																													value="<%=sdf.format(obj2[2])%>" readonly>
-																											</div>
-																										</div>
-																										<div class="col-md-2" align="left">
-																											<div class="form-group">
-																												<label class="control-label">To <span
-																													class="mandatory">*</span></label>
-																												<input class="form-control " name="ValidTo"
-																													required="required"
-																													id="DateCompletionA2<%=obj[0]%><%=obj1[0]%><%=obj2[0]%>"
-																													
-																													value="<%=sdf.format(obj2[3])%>" readonly>
-																											</div>
-																										</div>
-
-
-																									</div>
-
-																									<div class="row container-fluid">
-																										<div class="col-md-2">
-																											<label  >Lab: <span class="mandatory"  >*</span></label><br>
-																											<select class="form-control selectdee" name="labCode1" id="labCode1D<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%>" required 
-																											onchange="renderEmployeeList('1','D<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%>')" data-placeholder= "Lab Name">
-																											    <% for (Object[] lab : allLabList) { %>
-																											    	<option value="<%=lab[3]%>" <%if(labcode.equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-																											    <%}%>
-																											</select>
-																										</div>
-																										<div class="col-md-4">
-																			                        		<div class="form-group">
-																			                            		<label class="control-label">First OIC  </label>
-																			                            		<div class="float-right"  > <label>All : &nbsp;&nbsp;</label>
-																													<input type="checkbox" class="floatXp" id="allempcheckbox1D<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%>" 
-																													onchange="changeempoic1('D<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%>')" >
-																												</div>
-																			                              		<select class="form-control selectdee" id="EmpIdD<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%>" required="required" name="EmpId">
-																			    									<option disabled="true"  selected value="">Choose...</option>
-																			    										<% for (Object[] objD : EmployeeList) {%>
-																													<option value="<%=objD[0]%>"><%=objD[1]!=null?StringEscapeUtils.escapeHtml4(objD[1].toString()): " - "%>, <%=objD[2]!=null?StringEscapeUtils.escapeHtml4(objD[2].toString()): " - "%> </option>
-																														<%} %>
-																			  									</select>
-																			                        		</div>
-																			                    		</div>
-																			                    		<div class="col-md-2">
-																			                    			<label  >Lab: <span class="mandatory" >*</span></label><br>
-																				                    		<select class="form-control selectdee" name="labCode2" id="labCode2D<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%>" required 
-																											onchange="renderEmployeeList('2','D<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%>')" data-placeholder= "Lab Name">
-																											    <% for (Object[] lab : allLabList) { %>
-																											    	<option value="<%=lab[3]%>" <%if(labcode.equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-																											    <%}%>
-																											</select>
-																										</div>
-																			                    		<div class="col-md-4 ">
-																			                        		<div class="form-group">
-																			                            		<label class="control-label">Second OIC </label>
-																			                            		<div class="float-right"  > <label>All : &nbsp;&nbsp;</label>
-																													<input type="checkbox" class="floatXp" id="allempcheckbox2D<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%>" 
-																													onchange="changeempoic2('D<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%>')" >
-																												</div>
-																			                              		<select class="form-control selectdee" id="EmpId1D<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%><%=Sub3Count%>" name="EmpId1" required="required">
-																			    									<option disabled="true" selected value="">Choose...</option>
-																			    										<% for (Object[] objD : EmployeeList) {%>
-																														<option value="<%=objD[0]%>"><%=objD[1]!=null?StringEscapeUtils.escapeHtml4(objD[1].toString()): " - "%>, <%=objD[2]!=null?StringEscapeUtils.escapeHtml4(objD[2].toString()): " - "%> </option>
-																														<%} %>
-																			  									</select>
-																			                        		</div>
-																			                    		</div>
-																									</div>
-
-
-																									<div class="form-group" align="center">
-
-																										<input type="submit" class="btn btn-primary btn-sm submit " id="sub" value="SUBMIT" name="sub" onclick="return confirm('Are You Sure To Submit?');">
-																										<button type="submit" class="btn btn-primary btn-sm edit " id="sub" value="C" name="sub" formaction="MilestoneActivityDetails.htm" formnovalidate="formnovalidate">Edit</button>
-																										<input type="submit" class="btn btn-primary btn-sm back " id="sub" value="Back" name="sub" formaction="MilestoneActivityList.htm" formnovalidate="formnovalidate">
-																										<input type="hidden" name="ProjectId" value="<%=getMA[10]%>" />
-																									</div>
-																										<input type="hidden" name="projectDirector" value= "<%=projectDirector %>">
-																									<input type="hidden" name="LevelId" value="4" />
-																									<input type="hidden" name="formname" value="<%=ProjectSubCount%>/<%=Sub1Count%>/<%=Sub2Count%>/<%=Sub3Count%>" />
-																									<input type="hidden" name="MilestoneActivityId" value="<%=getMA[0]%>" /> 
-																									<input type="hidden" name="ActivityId" value="<%=obj2[0]%>" /> 
-																									<input type="hidden" name="OicEmpId" value="<%=getMA[8]%>" /> 
-																									<input type="hidden" name="OicEmpId1" value="<%=getMA[9]%>" /> 
-																									<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-																								</form>
-																							</div>
-<script type="text/javascript">
-var from4 ="<%=sdf.format(obj2[2])%>".split("-")
-var dt44= new Date(from4[2], from4[1] - 1, from4[0])
-var to4 ="<%=sdf.format(obj2[3])%>".split("-")
-var dt4 = new Date(to4[2], to4[1] - 1, to4[0])
-$('#DateCompletionA'+'<%=obj[0]%><%=obj1[0]%><%=obj2[0]%>').daterangepicker({
-	"singleDatePicker" : true,
-	"linkedCalendars" : false,
-	"showCustomRangeLabel" : true,
-	"minDate" :dt44,
-	"maxDate" : dt4,
-	"cancelClass" : "btn-default",
-	showDropdowns : true,
-	locale : {
-		format : 'DD-MM-YYYY'
-	}
-});
-
-var mindate4=dt44;
-$('#DateCompletionA'+'<%=obj[0]%><%=obj1[0]%><%=obj2[0]%>').on('change', function() {
-    mindate4=$('#DateCompletionA'+'<%=obj[0]%><%=obj1[0]%><%=obj2[0]%>').val();
-    $('#DateCompletionA2'+'<%=obj[0]%><%=obj1[0]%><%=obj2[0]%>').prop("disabled",false);
-    $('#DateCompletionA2'+'<%=obj[0]%><%=obj1[0]%><%=obj2[0]%>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate4,
-    	"maxDate" : dt4,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	} 
-    	});
-  });
-  
-  
-  
-  
-
-$( document ).ready(function() {
-    mindate4=$('#DateCompletionA'+'<%=obj[0]%><%=obj1[0]%><%=obj2[0]%>').val();
-    $('#DateCompletionA2'+'<%=obj[0]%><%=obj1[0]%><%=obj2[0]%>').prop("disabled",false);
-    $('#DateCompletionA2'+'<%=obj[0]%><%=obj1[0]%><%=obj2[0]%>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate4,
-    	"maxDate" : dt4,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	}
-    	});
-  });
-
-	    
-	</script>
-																							<!-- end three -->
-
-																						</div>
-
-																					</div>
-																				</div>
-																				<%} %>
-																			</div>
-
-																		</div>
-
-
-
-
-																	</div>
-
-																</div>
-																<%
-																Sub2Count++;
-																}
-																}
-																%>
-																
-													<%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].toString(),obj[13].toString(),obj[15].toString(),obj1[13].toString(),obj1[15].toString()  ).contains(EmpId.toString()) || Logintype.equalsIgnoreCase("A")  ){ %>						
-																
-																<div class="row">
-																	<div class="col-md-12" align="left"
-																		>
-
-																		<div class="panel panel-info m-1">
-																			<div class="panel-heading">
-																				<h4 class="panel-title">
-																					Activity C<%=Sub2Count%>
-																				</h4>
-
-																			</div>
-																			<div>
-																				<form action="MilestoneActivitySubAdd.htm" method="POST" name="milestoneaddfrm" id="milestoneaddfrm<%=Sub1Count%>">
-																					<div class="row container-fluid" align="center">
-																						<div class="col-sm-6" align="left">
-																							<div class="form-group">
-																								<label>Activity C Name: <span
-																									class="mandatory" >*</span>
-																								</label><br> <input class="form-control width-100"
-																									type="text" name="ActivityName"
-																									id="ActivityName<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%>"
-																									 maxlength="1000"
-																									required="required">
-																							</div>
-																						</div>
-
-
-																						<div class="col-md-2" align="left">
-																							<div class="form-group">
-																								<label class="control-label">Activity Type </label> 
-																								<select class="form-control selectdee"
-																									id="ActivityType1<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%>"
-																									required="required" name="ActivityType">
-																									<option disabled="true" selected value="">Choose...</option>
-																									<%
-																									for (Object[] actobj : ActivityTypeList) {
-																									%>
-																									<option value="<%=actobj[0]%>"><%=actobj[1]!=null?StringEscapeUtils.escapeHtml4(actobj[1].toString()): " - "%>
-																									</option>
-																									<%
-																									}
-																									%>
-																								</select>
-																							</div>
-																						</div>
-
-																						<div class="col-md-2" align="left">
-																							<div class="form-group">
-																								<label class="control-label">From <span
-																									class="mandatory" >*</span></label>
-																								<input class="form-control " name="ValidFrom"
-																									required="required"
-																									id="DateCompletionA<%=obj[0]%><%=obj1[0]%>"
-																									value="<%=sdf.format(obj1[2])%>" readonly>
-																							</div>
-																						</div>
-																						<div class="col-md-2" align="left">
-																							<div class="form-group">
-																								<label class="control-label">To <span
-																									class="mandatory" >*</span></label>
-																								<input class="form-control " name="ValidTo"
-																									required="required"
-																									id="DateCompletionA2<%=obj[0]%><%=obj1[0]%>"
-																									
-																									value="<%=sdf.format(obj1[3])%>" readonly>
-																							</div>
-																						</div>
-
-
-																					</div>
-
-																					<div class="row container-fluid">
-																						<div class="col-md-2">
-																							<label  >Lab: <span class="mandatory"  >*</span></label><br>
-																							<select class="form-control selectdee" name="labCode1" id="labCode1C<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%>" required 
-																							onchange="renderEmployeeList('1','C<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%>')" data-placeholder= "Lab Name">
-																							    <% for (Object[] lab : allLabList) { %>
-																							    	<option value="<%=lab[3]%>" <%if(labcode.equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-																							    <%}%>
-																							</select>
-																						</div>
-																						<div class="col-md-4">
-															                        		<div class="form-group">
-															                            		<label class="control-label">First OIC  </label>
-															                            		<div class="float-right"  > <label>All : &nbsp;&nbsp;</label>
-																									<input type="checkbox" class="floatXp" id="allempcheckbox1C<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%>" 
-																									onchange="changeempoic1('C<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%>')" >
-																								</div>
-															                              		<select class="form-control selectdee" id="EmpIdC<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%>" required="required" name="EmpId">
-															    									<option disabled="true"  selected value="">Choose...</option>
-															    										<% for (Object[] objC : EmployeeList) {%>
-																									<option value="<%=objC[0]%>"><%=objC[1]!=null?StringEscapeUtils.escapeHtml4(objC[1].toString()): " - "%>, <%=objC[2]!=null?StringEscapeUtils.escapeHtml4(objC[2].toString()): " - "%> </option>
-																										<%} %>
-															  									</select>
-															                        		</div>
-															                    		</div>
-															                    		<div class="col-md-2">
-																							<label  >Lab: <span class="mandatory"  >*</span></label><br>
-																							<select class="form-control selectdee" name="labCode2" id="labCode2C<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%>" required 
-																							onchange="renderEmployeeList('2','C<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%>')" data-placeholder= "Lab Name">
-																							    <% for (Object[] lab : allLabList) { %>
-																							    	<option value="<%=lab[3]%>" <%if(labcode.equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-																							    <%}%>
-																							</select>
-																						</div>
-															                    		<div class="col-md-4 ">
-															                        		<div class="form-group">
-															                            		<label class="control-label">Second OIC </label>
-															                            		<div class="float-right"  > <label>All : &nbsp;&nbsp;</label>
-																									<input type="checkbox" class="floatXp" id="allempcheckbox2C<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%>" 
-																									onchange="changeempoic2('C<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%>')" >
-																								</div>
-															                              		<select class="form-control selectdee" id="EmpId1C<%=ProjectSubCount%><%=Sub1Count%><%=Sub2Count%>" name="EmpId1" required="required">
-															    									<option disabled="true" selected value="">Choose...</option>
-															    										<% for (Object[] objC : EmployeeList) {%>
-																										<option value="<%=objC[0]%>"><%=objC[1]!=null?StringEscapeUtils.escapeHtml4(objC[1].toString()): " - "%>, <%=objC[2]!=null?StringEscapeUtils.escapeHtml4(objC[2].toString()): " - "%> </option>
-																										<%} %>
-															  									</select>
-															                        		</div>
-															                    		</div>
-																					</div>
-
-
-																					<div class="form-group" align="center">
-
-																						<input type="submit" class="btn btn-primary btn-sm submit " id="sub" value="SUBMIT" name="sub" onclick="return confirm('Are You Sure To Submit?');">
-																						<button type="submit" class="btn btn-primary btn-sm edit" id="sub" value="C" name="sub" formaction="MilestoneActivityDetails.htm" formnovalidate="formnovalidate">Edit</button>
-																						<input type="submit" class="btn btn-primary btn-sm back " id="sub" value="Back" name="sub" formaction="MilestoneActivityList.htm" formnovalidate="formnovalidate"> 
-																						<input type="hidden" name="ProjectId" value="<%=getMA[10]%>" />
-																					</div>
-																						<input type="hidden" name="projectDirector" value= "<%=projectDirector %>">
-																					<input type="hidden" name="LevelId" value="3" /> 
-																					<input type="hidden" name="formname" value="<%=ProjectSubCount%>/<%=Sub1Count%>/<%=Sub2Count%>" />
-																					<input type="hidden" name="MilestoneActivityId" value="<%=getMA[0]%>" /> 
-																					<input type="hidden" name="ActivityId" value="<%=obj1[0]%>" /> 
-																					<input type="hidden" name="OicEmpId" value="<%=getMA[8]%>" /> 
-																					<input type="hidden" name="OicEmpId1" value="<%=getMA[9]%>" /> 
-																					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-																				</form>
-																			</div>
-																			<script type="text/javascript">
-var from3 ="<%=sdf.format(obj1[2])%>".split("-")
-var dt33 = new Date(from3[2], from3[1] - 1, from3[0])
-var to3 ="<%=sdf.format(obj1[3])%>".split("-")
-var dt3 = new Date(to3[2], to3[1] - 1, to3[0])
-$('#DateCompletionA'+'<%=obj[0]%><%=obj1[0]%>').daterangepicker({
-	"singleDatePicker" : true,
-	"linkedCalendars" : false,
-	"showCustomRangeLabel" : true,
-	"minDate" :dt33,
-	"maxDate" : dt3,
-	"cancelClass" : "btn-default",
-	showDropdowns : true,
-	locale : {
-		format : 'DD-MM-YYYY'
-	}
-});
-
-var mindate3=dt33;
-$('#DateCompletionA'+'<%=obj[0]%><%=obj1[0]%>').on('change', function() {
-    mindate=$('#DateCompletionA'+'<%=obj[0]%><%=obj1[0]%>').val();
-    $('#DateCompletionA2'+'<%=obj[0]%><%=obj1[0]%>').prop("disabled",false);
-    $('#DateCompletionA2'+'<%=obj[0]%><%=obj1[0]%>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate3,
-    	"maxDate" : dt3,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	}
-    	});
-  });
-  
-  
-  
-  
-
-$( document ).ready(function() {
-    mindate3=$('#DateCompletionA'+'<%=obj[0]%><%=obj1[0]%>').val();
-    $('#DateCompletionA2'+'<%=obj[0]%><%=obj1[0]%>').prop("disabled",false);
-    $('#DateCompletionA2'+'<%=obj[0]%><%=obj1[0]%>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate3,
-    	"maxDate" : dt3,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	}
-    	});
-  });
-
-	    
-	</script>
-																			<!-- end two	 -->
-																		</div>
-
-																	</div>
-																</div>
-																
-																<%} %>
-															</div>
-
-														</div>
-
-
-
-
-													</div>
-
-												</div>
-												<%
-												Sub1Count++;
-												}
-												}
-												%>
-						<%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].toString(),obj[13].toString(),obj[15].toString() ).contains(EmpId.toString()) || Logintype.equalsIgnoreCase("A")  ){ %>						
-												<div class="row">
-													<div class="col-md-12" align="left"
-														>
-
-														<div class="panel panel-info m-1">
-															<div class="panel-heading">
-																<h4 class="panel-title">
-																	Activity B<%=Sub1Count%>
-																</h4>
-
-															</div>
-															<div>
-																<form action="MilestoneActivitySubAdd.htm" method="POST" name="milestoneaddfrm" id="milestoneaddfrm<%=Sub1Count%>">
-																	<div class="row container-fluid" align="center">
-																		<div class="col-sm-6" align="left">
-																			<div class="form-group">
-																				<label>Activity B Name: <span
-																					class="mandatory" >*</span>
-																				</label><br> <input class="form-control width-100" type="text"
-																					name="ActivityName"
-																					id="ActivityName<%=ProjectSubCount%><%=Sub1Count%>"
-																					 maxlength="1000"
-																					required="required">
-																			</div>
-																		</div>
-
-
-																		<div class="col-md-2" align="left">
-																			<div class="form-group">
-																				<label class="control-label">Activity Type </label>
-																				<select class="form-control selectdee"
-																					id="ActivityType1<%=ProjectSubCount%><%=Sub1Count%>"
-																					required="required" name="ActivityType">
-																					<option disabled="true" selected value="">Choose...</option>
-																					<%
-																					for (Object[] actobj : ActivityTypeList) {
-																					%>
-																					<option value="<%=actobj[0]%>"><%=actobj[1]!=null?StringEscapeUtils.escapeHtml4(actobj[1].toString()): " - "%>
-																					</option>
-																					<%
-																					}
-																					%>
-																				</select>
-																			</div>
-																		</div>
-
-																		<div class="col-md-2" align="left">
-																			<div class="form-group">
-																				<label class="control-label">From <span
-																					class="mandatory" >*</span></label> <input
-																					class="form-control " name="ValidFrom"
-																					required="required"
-																					id="DateCompletionA<%=obj[0]%>"
-																					value="<%=sdf.format(obj[2])%>" readonly>
-																			</div>
-																		</div>
-																		<div class="col-md-2" align="left">
-																			<div class="form-group">
-																				<label class="control-label">To <span
-																					class="mandatory" >*</span></label> <input
-																					class="form-control " name="ValidTo"
-																					required="required"
-																					id="DateCompletionA2<%=obj[0]%>"
-																					value="<%=sdf.format(obj[3])%>"
-																					readonly>
-																			</div>
-																		</div>
-
-
-																	</div>
-
-																	<div class="row container-fluid">
-																		<div class="col-md-2">
-																			<label  >Lab: <span class="mandatory"  >*</span></label><br>
-																			<select class="form-control selectdee" name="labCode1" id="labCode1B<%=ProjectSubCount%><%=Sub1Count%>" required 
-																			onchange="renderEmployeeList('1','B<%=ProjectSubCount%><%=Sub1Count%>')" data-placeholder= "Lab Name">
-																			    <% for (Object[] lab : allLabList) { %>
-																			    	<option value="<%=lab[3]%>" <%if(labcode.equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-																			    <%}%>
-																			</select>
-																		</div>
-																		<div class="col-md-4">
-											                        		<div class="form-group">
-											                            		<label class="control-label">First OIC  </label>
-											                            		<div class="float-right"  > <label>All : &nbsp;&nbsp;</label>
-																					<input type="checkbox" class="floatXp" id="allempcheckbox1B<%=ProjectSubCount%><%=Sub1Count%>" 
-																					onchange="changeempoic1('B<%=ProjectSubCount%><%=Sub1Count%>')" >
-																				</div>
-											                              		<select class="form-control selectdee" id="EmpIdB<%=ProjectSubCount%><%=Sub1Count%>" required="required" name="EmpId">
-											    									<option disabled="true"  selected value="">Choose...</option>
-											    										<% for (Object[] objB : EmployeeList) {%>
-																					<option value="<%=objB[0]%>"><%=objB[1]!=null?StringEscapeUtils.escapeHtml4(objB[1].toString()): " - "%>, <%=objB[2]!=null?StringEscapeUtils.escapeHtml4(objB[2].toString()): " - "%> </option>
-																						<%} %>
-											  									</select>
-											                        		</div>
-											                    		</div>
-											                    		<div class="col-md-2">
-																			<label  >Lab: <span class="mandatory"  >*</span></label><br>
-																			<select class="form-control selectdee" name="labCode2" id="labCode2B<%=ProjectSubCount%><%=Sub1Count%>" required 
-																			onchange="renderEmployeeList('2','B<%=ProjectSubCount%><%=Sub1Count%>')" data-placeholder= "Lab Name">
-																			    <% for (Object[] lab : allLabList) { %>
-																			    	<option value="<%=lab[3]%>" <%if(labcode.equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-																			    <%}%>
-																			</select>
-																		</div>
-											                    		<div class="col-md-4 ">
-											                        		<div class="form-group">
-											                            		<label class="control-label">Second OIC </label>
-											                            		<div class="float-right"  > <label>All : &nbsp;&nbsp;</label>
-																					<input type="checkbox" class="floatXp" id="allempcheckbox2B<%=ProjectSubCount%><%=Sub1Count%>" 
-																					onchange="changeempoic2('B<%=ProjectSubCount%><%=Sub1Count%>')" >
-																				</div>
-											                              		<select class="form-control selectdee" id="EmpId1B<%=ProjectSubCount%><%=Sub1Count%>" name="EmpId1" required="required">
-											    									<option disabled="true" selected value="">Choose...</option>
-											    										<% for (Object[] objB : EmployeeList) {%>
-																						<option value="<%=objB[0]%>"><%=objB[1]!=null?StringEscapeUtils.escapeHtml4(objB[1].toString()): " - "%>, <%=objB[2]!=null?StringEscapeUtils.escapeHtml4(objB[2].toString()): " - "%> </option>
-																						<%} %>
-											  									</select>
-											                        		</div>
-											                    		</div>
-																	</div>
-
-
-																	<div class="form-group" align="center">
-
-																		<input type="submit" class="btn btn-primary btn-sm submit " id="sub" value="SUBMIT" name="sub" onclick="return confirm('Are You Sure To Submit?');">
-																		<button type="submit" class="btn btn-primary btn-sm edit" id="sub" value="C" name="sub" formaction="MilestoneActivityDetails.htm" formnovalidate="formnovalidate">Edit</button>
-																		<input type="submit" class="btn btn-primary btn-sm back " id="sub" value="Back" name="sub" formaction="MilestoneActivityList.htm" formnovalidate="formnovalidate"> 
-																		<input type="hidden" name="ProjectId" value="<%=getMA[10]%>" />
-																	</div>
-																		<input type="hidden" name="projectDirector" value= "<%=projectDirector %>">
-																	<input type="hidden" name="LevelId" value="2" /> 
-																	<input type="hidden" name="formname" value="<%=ProjectSubCount%>/<%=Sub1Count%>" /> 
-																	<input type="hidden" name="MilestoneActivityId" value="<%=getMA[0]%>" /> 
-																	<input type="hidden" name="ActivityId" value="<%=obj[0]%>" /> 
-																	<input type="hidden" name="OicEmpId" value="<%=getMA[8]%>" />
-																	<input type="hidden" name="OicEmpId1" value="<%=getMA[9]%>" /> 
-																	<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-																</form>
-															</div>
-<script type="text/javascript">
-var from2 ="<%=sdf.format(getMA[2])%>".split("-")
-var dt22 = new Date(from2[2], from2[1] - 1, from2[0])
-var to2 ="<%=sdf.format(obj[3])%>".split("-")
-var dt2 = new Date(to2[2], to2[1] - 1, to2[0])
-$('#DateCompletionA'+'<%=obj[0]%>').daterangepicker({
-	"singleDatePicker" : true,
-	"linkedCalendars" : false,
-	"showCustomRangeLabel" : true,
-	"minDate" :dt22,
-	"maxDate" : dt2,
-	"cancelClass" : "btn-default",
-	showDropdowns : true,
-	locale : {
-		format : 'DD-MM-YYYY'
-	}
-});
-
-var mindate2=dt22;
-$('#DateCompletionA'+'<%=obj[0]%>').on('change', function() {
-    mindate2=$('#DateCompletionA'+'<%=obj[0]%>').val();
-    $('#DateCompletionA2'+'<%=obj[0]%>').prop("disabled",false);
-    $('#DateCompletionA2'+'<%=obj[0]%>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate2,
-    	"maxDate" : dt2,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	}
-    	});
-  });
-  
-  
-  
-  
-
-$( document ).ready(function() {
-    mindate2=$('#DateCompletionA'+'<%=obj[0]%>').val();
-    $('#DateCompletionA2'+'<%=obj[0]%>').prop("disabled",false);
-    $('#DateCompletionA2'+'<%=obj[0]%>').daterangepicker(
-			{
-				"singleDatePicker" : true,
-				"linkedCalendars" : false,
-				"showCustomRangeLabel" : true,
-				"minDate" : mindate2,
-				"maxDate" : dt2,
-				"cancelClass" : "btn-default",
-				showDropdowns : true,
-				locale : {
-					format : 'DD-MM-YYYY'
-				}
-			});
-});
-																							
-															</script>
-
-														</div>
-
-													</div>
-												</div>
-												<%} %>
-												<!-- B END  -->
-											</div>
-
+								<%
+								// CHANGED: Level B (and everything below it) used to be fetched eagerly here in a
+								// nested loop that queried the DB 5 levels deep for every single Level-A activity.
+								// That's what made the page slow with ~120 activities. Now we just leave an empty
+								// placeholder here; the JS below (loadLevel) fetches Level B for THIS activity
+								// only when the user actually expands it, via MilestoneActivityLevelFetch.htm.
+								String aAncestorOic = getMA[8] + "," + getMA[9] + "," + obj[13] + "," + obj[15];
+								%>
+								<div class="row">
+									<div class="col-md-12">
+										<div id="childrenA<%=ProjectSubCount%>" class="ms-children"
+											data-level="2"
+											data-parent-id="<%=obj[0]%>"
+											data-loaded="false"
+											data-path="<%=ProjectSubCount%>"
+											data-ancestor-oic="<%=aAncestorOic%>">
+											<!-- Level B activities load here on first expand -->
 										</div>
-
-
-
-
 									</div>
+								</div>
+
+								<%
+								boolean canAddB = Arrays.asList(getMA[8].toString(), projectDirector, getMA[9].toString(), obj[13].toString(), obj[15].toString()).contains(EmpId.toString()) || Logintype.equalsIgnoreCase("A");
+								if (canAddB) {
+								%>
+								<div class="row">
+									<div class="col-md-11 ml-3" align="left">
+										<div class="panel panel-info m-1">
+											<div class="panel-heading">
+												<h4 class="panel-title">Add Activity B</h4>
+											</div>
+											<div>
+												<form action="MilestoneActivitySubAdd.htm" method="POST" name="milestoneaddfrm" id="milestoneaddfrmA<%=ProjectSubCount%>">
+													<div class="row container-fluid" align="center">
+														<div class="col-sm-6" align="left">
+															<div class="form-group">
+																<label>Activity B Name: <span class="mandatory">*</span></label><br>
+																<input class="form-control width-100" type="text" name="ActivityName" id="ActivityNameA<%=ProjectSubCount%>New" maxlength="1000" required="required">
+															</div>
+														</div>
+														<div class="col-md-2" align="left">
+															<div class="form-group">
+																<label class="control-label">Activity Type </label>
+																<select class="form-control selectdee" id="ActivityType1A<%=ProjectSubCount%>New" required="required" name="ActivityType">
+																	<option disabled="true" selected value="">Choose...</option>
+																	<%
+																	for (Object[] actobj : ActivityTypeList) {
+																	%>
+																	<option value="<%=actobj[0]%>"><%=actobj[1]!=null?StringEscapeUtils.escapeHtml4(actobj[1].toString()): " - "%></option>
+																	<%
+																	}
+																	%>
+																</select>
+															</div>
+														</div>
+														<div class="col-md-2" align="left">
+															<div class="form-group">
+																<label class="control-label">From <span class="mandatory">*</span></label>
+																<input class="form-control" name="ValidFrom" required="required" id="DateCompletionA<%=obj[0]%>" value="<%=sdf.format(obj[2])%>" readonly>
+															</div>
+														</div>
+														<div class="col-md-2" align="left">
+															<div class="form-group">
+																<label class="control-label">To <span class="mandatory">*</span></label>
+																<input class="form-control" name="ValidTo" required="required" id="DateCompletionA2<%=obj[0]%>" value="<%=sdf.format(obj[3])%>" readonly>
+															</div>
+														</div>
+													</div>
+													<div class="row container-fluid">
+														<div class="col-md-2">
+															<label>Lab: <span class="mandatory">*</span></label><br>
+															<select class="form-control selectdee" name="labCode1" id="labCode1B<%=ProjectSubCount%>New" required
+																onchange="renderEmployeeList('1','B<%=ProjectSubCount%>New')" data-placeholder="Lab Name">
+																<% for (Object[] lab : allLabList) { %>
+																<option value="<%=lab[3]%>" <%if(labcode.equalsIgnoreCase(lab[3].toString())) {%>selected<%} %>><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
+																<%}%>
+															</select>
+														</div>
+														<div class="col-md-4">
+															<div class="form-group">
+																<label class="control-label">First OIC </label>
+																<div class="float-right"><label>All : &nbsp;&nbsp;</label>
+																	<input type="checkbox" class="floatXp" id="allempcheckbox1B<%=ProjectSubCount%>New" onchange="changeempoic1('B<%=ProjectSubCount%>New')">
+																</div>
+																<select class="form-control selectdee" id="EmpIdB<%=ProjectSubCount%>New" required="required" name="EmpId">
+																	<option disabled="true" selected value="">Choose...</option>
+																	<% for (Object[] objA : EmployeeList) {%>
+																	<option value="<%=objA[0]%>"><%=objA[1]!=null?StringEscapeUtils.escapeHtml4(objA[1].toString()): " - "%>, <%=objA[2]!=null?StringEscapeUtils.escapeHtml4(objA[2].toString()): " - "%></option>
+																	<%} %>
+																</select>
+															</div>
+														</div>
+														<div class="col-md-2">
+															<label>Lab: <span class="mandatory">*</span></label><br>
+															<select class="form-control selectdee" name="labCode2" id="labCode2B<%=ProjectSubCount%>New" required
+																onchange="renderEmployeeList('2','B<%=ProjectSubCount%>New')" data-placeholder="Lab Name">
+																<% for (Object[] lab : allLabList) { %>
+																<option value="<%=lab[3]%>" <%if(labcode.equalsIgnoreCase(lab[3].toString())) {%>selected<%} %>><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
+																<%}%>
+															</select>
+														</div>
+														<div class="col-md-4">
+															<div class="form-group">
+																<label class="control-label">Second OIC</label>
+																<div class="float-right"><label>All : &nbsp;&nbsp;</label>
+																	<input type="checkbox" class="floatXp" id="allempcheckbox2B<%=ProjectSubCount%>New" onchange="changeempoic2('B<%=ProjectSubCount%>New')">
+																</div>
+																<select class="form-control selectdee" id="EmpId1B<%=ProjectSubCount%>New" name="EmpId1" required="required">
+																	<option disabled="true" selected value="">Choose...</option>
+																	<% for (Object[] objA : EmployeeList) {%>
+																	<option value="<%=objA[0]%>"><%=objA[1]!=null?StringEscapeUtils.escapeHtml4(objA[1].toString()): " - "%>, <%=objA[2]!=null?StringEscapeUtils.escapeHtml4(objA[2].toString()): " - "%></option>
+																	<%} %>
+																</select>
+															</div>
+														</div>
+													</div>
+													<div class="form-group" align="center">
+														<input type="submit" class="btn btn-primary btn-sm submit" id="sub" value="SUBMIT" name="sub" onclick="return confirm('Are You Sure To Submit?');">
+														<button type="submit" class="btn btn-primary btn-sm edit" id="sub" value="C" name="sub" formaction="MilestoneActivityDetails.htm" formnovalidate="formnovalidate">Edit</button>
+														<input type="submit" class="btn btn-primary btn-sm back" id="sub" value="Back" name="sub" formaction="MilestoneActivityList.htm" formnovalidate="formnovalidate">
+														<input type="hidden" name="ProjectId" value="<%=getMA[10]%>" />
+													</div>
+													<input type="hidden" name="projectDirector" value="<%=projectDirector %>">
+													<input type="hidden" name="LevelId" value="2" />
+													<input type="hidden" name="formname" value="<%=ProjectSubCount%>" />
+													<input type="hidden" name="MilestoneActivityId" value="<%=getMA[0]%>" />
+													<input type="hidden" name="ActivityId" value="<%=obj[0]%>" />
+													<input type="hidden" name="OicEmpId" value="<%=getMA[8]%>" />
+													<input type="hidden" name="OicEmpId1" value="<%=getMA[9]%>" />
+													<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+								<script type="text/javascript">
+									$(function(){
+										initAddFormDates('DateCompletionA<%=obj[0]%>', 'DateCompletionA2<%=obj[0]%>', '<%=sdf.format(obj[2])%>', '<%=sdf.format(obj[3])%>');
+									});
+								</script>
+								<% } %>
 
 								</div>
+								<!-- collapse55A end -->
+							</div>
+							<!-- panel-info A end -->
+						</div>
+						<!-- col-md-11 end -->
+					</div>
+					<!-- row end -->
 
 								<%ProjectSubCount++;}} %>
 
@@ -1531,17 +586,14 @@ $( document ).ready(function() {
 	}
 
 $('#Clk').click();
-<%String FormName=(String)request.getAttribute("FromName");
+<%
+String FormName=(String)request.getAttribute("FromName");
 if(FormName!=null){
 	String [] id=FormName.split("/");
-	String IdName="Clk";
-	String []level={"A","B","C","D","E"};
-	for(int i=0;i<id.length;i++){
-		IdName=IdName+level[i]+id[i];
-		System.out.println("IdName:- "+IdName);
 %>
-      $('#<%=IdName%>').click();
-<%}}%>
+var autoExpandPath = [<%for(int i=0;i<id.length;i++){%><%=id[i]%><%if(i<id.length-1){%>,<%}%><%}%>];
+$(function(){ autoExpandAlongPath(autoExpandPath); });
+<%}%>
 </script>
 
 <script type="text/javascript">
@@ -1589,6 +641,287 @@ if(FormName!=null){
 		       }
 		});
 	} */
+</script>
+
+
+<%--
+	============================================================================
+	NEW: lazy-loading engine for Levels B-E.
+
+	Level A is rendered server-side above (cheap: one query total). Everything
+	below Level A used to be fetched eagerly, 5 levels deep, in nested Java
+	loops - that's what made this page slow with ~120 activities. Now each
+	level is fetched only when the user actually expands that node, via
+	MilestoneActivityLevelFetch.htm.
+	============================================================================
+--%>
+<script type="text/javascript">
+var RootMilestoneId = "<%=getMA[0]%>";
+var RootOicEmpId    = "<%=getMA[8]%>";
+var RootOicEmpId1   = "<%=getMA[9]%>";
+var ProjectDirectorVal = "<%=projectDirector!=null?StringEscapeUtils.escapeEcmaScript(projectDirector):""%>";
+var CurrentLabCode  = "<%=labcode!=null?StringEscapeUtils.escapeEcmaScript(labcode):""%>";
+
+// Same three lists the JSP already had in scope (ActivityTypeList / allLabList / EmployeeList),
+// exposed to JS once so the "add child" forms for AJAX-loaded levels (B-E) don't need an extra
+// round trip just to populate their dropdowns.
+var ActivityTypeOptions = [
+<% for (int i = 0; i < ActivityTypeList.size(); i++) { Object[] t = ActivityTypeList.get(i); %>
+	{ id: "<%=t[0]%>", name: "<%=t[1]!=null?StringEscapeUtils.escapeEcmaScript(t[1].toString()):""%>" }<%=i<ActivityTypeList.size()-1?",":""%>
+<% } %>
+];
+var LabOptions = [
+<% for (int i = 0; i < allLabList.size(); i++) { Object[] l = allLabList.get(i); %>
+	{ code: "<%=l[3]%>" }<%=i<allLabList.size()-1?",":""%>
+<% } %>
+];
+var EmployeeOptions = [
+<% for (int i = 0; i < EmployeeList.size(); i++) { Object[] e = EmployeeList.get(i); %>
+	{ id: "<%=e[0]%>", name: "<%=e[1]!=null?StringEscapeUtils.escapeEcmaScript(e[1].toString()):""%>", dept: "<%=e[2]!=null?StringEscapeUtils.escapeEcmaScript(e[2].toString()):""%>" }<%=i<EmployeeList.size()-1?",":""%>
+<% } %>
+];
+
+var LEVEL_LETTERS = { 2: 'B', 3: 'C', 4: 'D', 5: 'E' };
+
+function escapeHtml(str) {
+	if (str === null || str === undefined) return "";
+	return String(str)
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#39;");
+}
+
+function parseDMY(str) {
+	var p = str.split("-");
+	return new Date(p[2], p[1] - 1, p[0]);
+}
+
+// Generic date-range-picker wiring reused for every "add child" form (the root Level-A form
+// has its own copy further up the page; this is for the AJAX-rendered levels B-E).
+function initAddFormDates(fromId, toId, minDateStr, maxDateStr) {
+	var minDate = parseDMY(minDateStr);
+	var maxDate = parseDMY(maxDateStr);
+	var opts = function (min) {
+		return {
+			singleDatePicker: true, linkedCalendars: false, showCustomRangeLabel: true,
+			minDate: min, maxDate: maxDate, cancelClass: 'btn-default', showDropdowns: true,
+			locale: { format: 'DD-MM-YYYY' }
+		};
+	};
+	$('#' + fromId).daterangepicker(opts(minDate));
+	$('#' + fromId).on('change', function () {
+		var mindate = $('#' + fromId).val();
+		$('#' + toId).prop('disabled', false);
+		$('#' + toId).daterangepicker(opts(mindate));
+	});
+}
+
+// Fetches ONE level's children for a single parent node and renders them into `container`.
+// `onDone` (optional) is called after rendering; used by the auto-expand-after-submit feature.
+function loadLevel(container, onDone) {
+	if (container.data('loaded') === true) {
+		if (onDone) onDone();
+		return;
+	}
+	var parentId = container.data('parent-id');
+	var level = container.data('level');
+	var ancestorOic = container.data('ancestor-oic');
+
+	container.html('<div class="text-muted ml-3">Loading...</div>');
+	$.ajax({
+		type: 'GET',
+		url: 'MilestoneActivityLevelFetch.htm',
+		data: { ParentId: parentId, Level: level, AncestorOicIds: ancestorOic, projectDirector: ProjectDirectorVal },
+		dataType: 'json',
+		success: function (children) {
+			container.data('loaded', true);
+			container.empty();
+			renderLevelNodes(container, children || []);
+			if (onDone) onDone();
+		},
+		error: function () {
+			container.html('<div class="text-danger">Could not load activities. <a href="#" class="ms-retry">Retry</a></div>');
+			container.find('.ms-retry').on('click', function (e) {
+				e.preventDefault();
+				container.data('loaded', false);
+				loadLevel(container, onDone);
+			});
+		}
+	});
+}
+
+function renderLevelNodes(container, children) {
+	var level = container.data('level');
+	var parentPath = String(container.data('path'));
+	var ancestorOic = container.data('ancestor-oic');
+	var letter = LEVEL_LETTERS[level];
+
+	if (!children.length) {
+		container.append('<div class="text-muted ml-3">No activities.</div>');
+		return;
+	}
+
+	$.each(children, function (idx, node) {
+		var n = idx + 1;
+		var path = parentPath + n;
+		var collapseId = 'collapse55' + letter + path;
+		var clkId = 'Clk' + letter + path;
+		var childAncestorOic = ancestorOic + ',' + node.firstOicId + ',' + node.secondOicId;
+
+		var html = ''
+			+ '<div class="row"><div class="col-md-12" align="left">'
+			+ '<div class="panel panel-info m-1">'
+			+ '<div class="panel-heading"><h4 class="panel-title"><span class="font14">Activity ' + letter + n
+			+ ' <i class="fa fa-calendar ml-2" aria-hidden="true"></i> ' + escapeHtml(node.validFrom) + ' To ' + escapeHtml(node.validTo) + '</span></h4>'
+			+ '<div class="divFloat1"><a href="#" class="ms-toggle" data-target="#' + collapseId + '"><i class="fa fa-plus" id="' + clkId + '"></i></a></div>'
+			+ '</div>'
+			+ '<div id="' + collapseId + '" class="panel-collapse collapse">'
+			+ '<div class="row">'
+			+ '<div class="col-md-6"><label class="control-label ml-2">Activity: ' + escapeHtml(node.activityName) + '</label></div>'
+			+ '<div class="col-md-2"><label class="control-label">Type: ' + escapeHtml(node.type) + '</label></div>'
+			+ '<div class="col-md-2"><label class="control-label">Weightage: ' + escapeHtml(node.weightage) + '</label></div>'
+			+ '<div class="col-md-2"><label class="control-label">First OIC: ' + escapeHtml(node.firstOicName) + '</label></div>'
+			+ '</div>';
+
+		if (level < 5) {
+			html += '<div id="children' + letter + path + '" class="ms-children"'
+				+ ' data-level="' + (level + 1) + '" data-parent-id="' + node.id + '" data-loaded="false"'
+				+ ' data-path="' + path + '" data-ancestor-oic="' + escapeHtml(childAncestorOic) + '"></div>';
+
+			if (node.canAddChild) {
+				html += buildAddChildForm(LEVEL_LETTERS[level + 1], level + 1, node, path);
+			}
+		}
+
+		html += '</div></div></div></div>';
+
+		var $node = $(html);
+		container.append($node);
+		$node.find('.ms-add-form').each(function () {
+			var $f = $(this);
+			initAddFormDates($f.data('from-id'), $f.data('to-id'), $f.data('min-date'), $f.data('max-date'));
+		});
+		
+		$node.find('.selectdee').select2();
+	});
+}
+
+function buildAddChildForm(letter, levelId, parentNode, parentPath) {
+	var uid = letter + parentPath;
+	var fromId = 'DateCompletionAdd' + uid;
+	var toId = 'DateCompletionAdd2' + uid;
+
+	var typeOptions = $.map(ActivityTypeOptions, function (o) {
+		return '<option value="' + escapeHtml(o.id) + '">' + escapeHtml(o.name) + '</option>';
+	}).join('');
+	var labOptions = $.map(LabOptions, function (o) {
+		var sel = (o.code === CurrentLabCode) ? ' selected' : '';
+		return '<option value="' + escapeHtml(o.code) + '"' + sel + '>' + escapeHtml(o.code) + '</option>';
+	}).join('');
+	var empOptions = $.map(EmployeeOptions, function (o) {
+		return '<option value="' + escapeHtml(o.id) + '">' + escapeHtml(o.name) + ', ' + escapeHtml(o.dept) + '</option>';
+	}).join('');
+
+	// formname mirrors the original slash-separated convention (e.g. "1/2/3") so any code
+	// downstream of MilestoneActivitySubAdd.htm that parses it keeps working unchanged.
+	var formname = parentPath.split('').join('/');
+
+	return ''
+		+ '<div class="row"><div class="col-md-11 ml-3" align="left">'
+		+ '<div class="panel panel-info m-1">'
+		+ '<div class="panel-heading"><h4 class="panel-title">Add Activity ' + letter + '</h4></div>'
+		+ '<div><form action="MilestoneActivitySubAdd.htm" method="POST" class="ms-add-form"'
+		+ ' data-from-id="' + fromId + '" data-to-id="' + toId + '" data-min-date="' + parentNode.validFrom + '" data-max-date="' + parentNode.validTo + '">'
+		+ '<div class="row container-fluid" align="center">'
+		+ '<div class="col-sm-6" align="left"><div class="form-group"><label>Activity ' + letter + ' Name: <span class="mandatory">*</span></label><br>'
+		+ '<input class="form-control width-100" type="text" name="ActivityName" maxlength="1000" required="required"></div></div>'
+		+ '<div class="col-md-2" align="left"><div class="form-group"><label class="control-label">Activity Type</label>'
+		+ '<select class="form-control selectdee" name="ActivityType" required="required"><option disabled="true" selected value="">Choose...</option>' + typeOptions + '</select></div></div>'
+		+ '<div class="col-md-2" align="left"><div class="form-group"><label class="control-label">From <span class="mandatory">*</span></label>'
+		+ '<input class="form-control" name="ValidFrom" id="' + fromId + '" required="required" value="' + escapeHtml(parentNode.validFrom) + '" readonly></div></div>'
+		+ '<div class="col-md-2" align="left"><div class="form-group"><label class="control-label">To <span class="mandatory">*</span></label>'
+		+ '<input class="form-control" name="ValidTo" id="' + toId + '" required="required" value="' + escapeHtml(parentNode.validTo) + '" readonly></div></div>'
+		+ '</div>'
+		+ '<div class="row container-fluid">'
+		+ '<div class="col-md-2"><label>Lab: <span class="mandatory">*</span></label><br>'
+		+ '<select class="form-control selectdee" name="labCode1" id="labCode1' + uid + '" required="required" onchange="renderEmployeeList(\'1\',\'' + uid + '\')">' + labOptions + '</select></div>'
+		+ '<div class="col-md-4"><div class="form-group"><label class="control-label">First OIC</label>'
+		+ '<div class="float-right"><label>All : &nbsp;&nbsp;</label><input type="checkbox" class="floatXp" id="allempcheckbox1' + uid + '" onchange="changeempoic1(\'' + uid + '\')"></div>'
+		+ '<select class="form-control selectdee" id="EmpId' + uid + '" name="EmpId" required="required"><option disabled="true" selected value="">Choose...</option>' + empOptions + '</select></div></div>'
+		+ '<div class="col-md-2"><label>Lab: <span class="mandatory">*</span></label><br>'
+		+ '<select class="form-control selectdee" name="labCode2" id="labCode2' + uid + '" required="required" onchange="renderEmployeeList(\'2\',\'' + uid + '\')">' + labOptions + '</select></div>'
+		+ '<div class="col-md-4"><div class="form-group"><label class="control-label">Second OIC</label>'
+		+ '<div class="float-right"><label>All : &nbsp;&nbsp;</label><input type="checkbox" class="floatXp" id="allempcheckbox2' + uid + '" onchange="changeempoic2(\'' + uid + '\')"></div>'
+		+ '<select class="form-control selectdee" id="EmpId1' + uid + '" name="EmpId1" required="required"><option disabled="true" selected value="">Choose...</option>' + empOptions + '</select></div></div>'
+		+ '</div>'
+		+ '<div class="form-group" align="center">'
+		+ '<input type="submit" class="btn btn-primary btn-sm submit" value="SUBMIT" onclick="return confirm(\'Are You Sure To Submit?\');">'
+		+ '<button type="submit" class="btn btn-primary btn-sm edit" value="C" name="sub" formaction="MilestoneActivityDetails.htm" formnovalidate="formnovalidate">Edit</button>'
+		+ '<input type="submit" class="btn btn-primary btn-sm back" value="Back" name="sub" formaction="MilestoneActivityList.htm" formnovalidate="formnovalidate">'
+		+ '</div>'
+		+ '<input type="hidden" name="projectDirector" value="' + escapeHtml(ProjectDirectorVal) + '">'
+		+ '<input type="hidden" name="LevelId" value="' + levelId + '">'
+		+ '<input type="hidden" name="formname" value="' + formname + '">'
+		+ '<input type="hidden" name="MilestoneActivityId" value="' + RootMilestoneId + '">'
+		+ '<input type="hidden" name="ActivityId" value="' + escapeHtml(parentNode.id) + '">'
+		+ '<input type="hidden" name="OicEmpId" value="' + RootOicEmpId + '">'
+		+ '<input type="hidden" name="OicEmpId1" value="' + RootOicEmpId1 + '">'
+		+ '<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">'
+		+ '</form></div></div></div></div>';
+}
+
+// One delegated handler covers the Level-A toggles (server-rendered) AND every AJAX-rendered
+// toggle for Levels B-E, without needing to rebind anything after each AJAX insert.
+$(document).on('click', '.ms-toggle', function (e) {
+	e.preventDefault();
+	var $icon = $(this).find('i');
+	var $target = $($(this).data('target'));
+	
+	// Check if the panel is currently open
+	var wasVisible = $target.hasClass('in') || $target.hasClass('show');
+
+	// Toggle the icons
+	$icon.toggleClass('fa-plus fa-minus');
+	
+	// Trigger the bootstrap collapse animation
+	$target.collapse('toggle');
+
+	// If it was closed, we are opening it, so fetch the children
+	if (!wasVisible) {
+		// Use .find() instead of .children() because the div is nested deeply
+		var $childContainer = $target.find('.ms-children').first();
+		
+		if ($childContainer.length > 0) {
+			loadLevel($childContainer);
+		}
+	}
+});
+// Restores the old "jump back to where I was" behaviour after adding/editing an activity:
+// walks down the tree, fetching + expanding each level along the path in turn.
+function autoExpandAlongPath(path) {
+	if (!path || !path.length) return;
+	var container = $('#childrenA' + path[0]);
+	if (!container.length) return;
+	continueExpandPath(container, path, 1);
+}
+
+function continueExpandPath(container, path, depth) {
+	loadLevel(container, function () {
+		container.children('.row').each(function () {
+			var $panel = $(this).find('> .col-md-12 > .panel').first();
+			$panel.find('> .panel-collapse').collapse('show');
+			$panel.find('> .panel-heading .ms-toggle i').removeClass('fa-plus').addClass('fa-minus');
+		});
+		if (depth >= path.length) return;
+		var $childContainers = container.find('> .row > .col-md-12 > .panel > .panel-collapse > .ms-children');
+		var $next = $childContainers.eq(path[depth] - 1);
+		if ($next.length) {
+			continueExpandPath($next, path, depth + 1);
+		}
+	});
+}
 </script>
 
 </body>

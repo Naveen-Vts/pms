@@ -81,7 +81,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 	private static final String MILEACTIVITYTYPE="select activitytypeid,activitytype from milestone_activity_type";
 	private static final String MAINUPDATE="UPDATE milestone_activity SET activityname=:name,Weightage=:Weightage,activitytype=:type,oicempid=:empid,oicempid1=:empid1,startdate=:from,enddate=:to,orgstartdate=:orgfrom,orgenddate=:orgto,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE milestoneactivityid=:id";
 	private static final String MILEACTIVITYLEVELEDIT="UPDATE milestone_activity_level SET activityname=:name,startdate=:from,enddate=:to,Weightage=:Weightage ,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE activityid=:id";
-	private static final String ACTIVITYLEVELFULLEDIT="UPDATE milestone_activity_level SET activityname=:name,Weightage=:Weightage,activitytype=:type,oicempid=:empid,oicempid1=:empid1,startdate=:from,enddate=:to,orgstartdate=:orgfrom,orgenddate=:orgto,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE activityid=:id";
+	private static final String ACTIVITYLEVELFULLEDIT="UPDATE milestone_activity_level SET activityname=:name,Weightage=:Weightage,activitytype=:type,oicempid=:empid,oicempid1=:empid1,startdate=:from,enddate=:to,orgstartdate=:orgfrom,orgenddate=:orgto,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate,IsAutoWeightage = :IsAutoWeightage WHERE activityid=:id";
 	private static final String MILEACTIVITYUPDATE="UPDATE milestone_activity  SET activityname=:name, startdate=:from,enddate=:to,Weightage=:Weightage,ModifiedBy=:modifiedby, ModifiedDate=:modifieddate WHERE milestoneactivityid=:id";
     private static final String MILELEVELCOMPARE="CALL Pfms_Milestone_Level_Compare(:id,:rev,:rev1,:levelid)";
 	private static final String MILECOMPAREMAIN="SELECT a.milestoneactivityid,b.project_name,e.startdate,e.enddate,e.activityname,e.progressstatus as ps,c.emp_name,d.emp_name AS emp,e.revisionno,e.progressstatus as ps1,e.progressstatus as ps2,a.progressstatus as ps3,DATEDIFF(e.enddate,e.startdate) AS actual,(SELECT DATEDIFF(f.enddate,f.startdate) FROM milestone_activity_rev f WHERE  f.milestoneactivityid=:id  AND f.revisionno=:rev1 LIMIT 1) AS diff,a.dateofcompletion,g.activitystatus  FROM milestone_activity a,project_master b, employee c,employee d,milestone_activity_rev e,milestone_activity_status g WHERE a.activitystatusid=g.activitystatusid and a.projectid=b.project_id AND a.oicempid=c.emp_id AND a.oicempid1=d.emp_id AND a.milestoneactivityid=e.milestoneactivityid   AND a.milestoneactivityid=:id AND e.revisionno=:rev";
@@ -344,6 +344,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 		query.setParameter("orgfrom",dto.getStartDate());
 		query.setParameter("orgto",dto.getEndDate());
 		query.setParameter("Weightage",dto.getWeightage());
+		query.setParameter("IsAutoWeightage","N");
 		query.setParameter("modifiedby",dto.getCreatedBy());
 		query.setParameter("modifieddate",dto.getCreatedDate());
 		int result=query.executeUpdate();
@@ -1062,7 +1063,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 	}
 	
 
-	private static final String MILESTONEACTIVITYLISTNEW = "SELECT a.milestoneactivityid AS obid,0 AS 'parentactivityid',a.startdate,a.enddate,a.activityname,a.progressstatus,a.Weightage,a.dateofcompletion, b.activitystatus,a.activitystatusid,a.revisionno AS 'rev' ,d.activitytypeid, d.activitytype ,a.oicempid,e.emp_name,a.oicempid1,0 AS 'activitylevelid' FROM milestone_activity a,milestone_activity_status b, milestone_activity_type d ,employee e WHERE a.activitystatusid=b.activitystatusid AND a.isactive = 1 AND a.activitytype=d.activitytypeid AND a.oicempid=e.emp_id AND a.projectid=:projectid";
+	private static final String MILESTONEACTIVITYLISTNEW = "SELECT a.milestoneactivityid AS obid,0 AS 'parentactivityid',a.startdate,a.enddate,a.activityname,a.progressstatus,a.Weightage,a.dateofcompletion, b.activitystatus,a.activitystatusid,a.revisionno AS 'rev' ,d.activitytypeid, d.activitytype ,a.oicempid,e.emp_name,a.oicempid1,0 AS 'activitylevelid' FROM milestone_activity a,milestone_activity_status b, milestone_activity_type d ,employee e WHERE a.activitystatusid=b.activitystatusid AND a.isactive = 1 AND a.activitytype=d.activitytypeid AND a.oicempid=e.emp_id AND a.projectid=:projectid ORDER BY a.MilestoneNo";
 	@Override
 	public List<Object[]> MilestoneActivityListNew(String ProjectId) throws Exception 
 	{
@@ -2656,6 +2657,71 @@ public class MilestoneDaoImpl implements MilestoneDao {
 			}catch (Exception e) {
 				e.printStackTrace();
 				return List.of();
+			}
+		}
+		
+		private static final String MILESTONESIBLINGSSELECT = """
+				SELECT ActivityId, Weightage, IsAutoWeightage,ActivityLevelId
+				FROM milestone_activity_level
+				WHERE ParentActivityId = :parentActivityId AND ActivityLevelId = :ActivityLevelId
+				  AND IsActive = 1
+				""";
+		private static final String MILESTONEWEIGHTAGEUPDATE = """
+				UPDATE milestone_activity_level
+				SET Weightage = :weightage
+				WHERE ActivityId = :activityId
+				""";
+
+		@Override
+		@Transactional
+		public long updateMilestoneWeightage(Long parentActivityId, Long activityLevelId) throws Exception {
+			try {
+				@SuppressWarnings("unchecked")
+				List<Object[]> siblings = manager.createNativeQuery(MILESTONESIBLINGSSELECT)
+						.setParameter("parentActivityId", parentActivityId)
+						.setParameter("ActivityLevelId", activityLevelId)
+						.getResultList();
+	
+				List<Long> autoIds = new ArrayList<Long>();
+				long lockedSum = 0L;
+	
+				for (Object[] row : siblings) {
+					Long rowActivityId = ((Number) row[0]).longValue();
+					long weightage = row[1] != null ? ((Number) row[1]).longValue() : 0L;
+					String isAuto = row[2] != null ? row[2].toString() : "Y";
+	
+					if ("N".equalsIgnoreCase(isAuto)) {
+						lockedSum += weightage;
+					} else {
+						autoIds.add(rowActivityId);
+					}
+				}
+	
+				if (autoIds.isEmpty()) {
+					return 0;
+				}
+	
+				long remaining = 100 - lockedSum;
+				if (remaining < 0) {
+					remaining = 0;
+				}
+	
+				int count = autoIds.size();
+				long base = remaining / count;
+				long remainder = remaining % count;
+	
+				long updatedCount = 0L;
+				for (int i = 0; i < autoIds.size(); i++) {
+					long share = base + (i < remainder ? 1 : 0);
+					Query updateQuery = manager.createNativeQuery(MILESTONEWEIGHTAGEUPDATE);
+					updateQuery.setParameter("weightage", share);
+					updateQuery.setParameter("activityId", autoIds.get(i));
+					updatedCount += updateQuery.executeUpdate();
+				}
+				return updatedCount;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return 0;
 			}
 		}
 }

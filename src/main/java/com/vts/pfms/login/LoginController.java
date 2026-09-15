@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,11 +24,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
@@ -47,8 +41,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.vts.pfms.FormatConverter;
 import com.vts.pfms.admin.service.AdminService;
@@ -61,10 +53,9 @@ import com.vts.pfms.header.service.HeaderService;
 import com.vts.pfms.master.dto.ProjectSanctionDetailsMaster;
 import com.vts.pfms.master.service.MasterService;
 import com.vts.pfms.model.FinanceChanges;
-import com.vts.pfms.model.IbasLabMaster;
 import com.vts.pfms.model.LabMaster;
 import com.vts.pfms.model.Notice;
-import com.vts.pfms.pfmsserv.feign.PFMSServeFeignClient;
+import com.vts.pfms.pfmsserv.feign.FeignClientService;
 import com.vts.pfms.service.RfpMainService;
 import com.vts.pfms.utils.InputValidator;
 
@@ -105,7 +96,7 @@ public class LoginController {
 	CommitteeService comservice;
 
 	@Autowired
-	PFMSServeFeignClient PFMSServ;
+	FeignClientService PFMSServ;
 	
 	@Autowired
 	MasterService masterService;
@@ -1004,8 +995,7 @@ public class LoginController {
 			// req.setAttribute("clusterlablist", headerservice.LabList());
 			// req.setAttribute("clusterlist", comservice.ClusterList());
 			// req.setAttribute("CCMFinanceData",rfpmainservice.getCCMData(EmpId,LoginType,LabCode));
-			req.setAttribute("DashboardFinanceCashOutGo",
-					rfpmainservice.DashboardFinanceCashOutGo(LoginType, EmpId, LabCode, ClusterId));
+			req.setAttribute("DashboardFinanceCashOutGo",rfpmainservice.DashboardFinanceCashOutGo(LoginType, EmpId, LabCode, ClusterId));
 			//req.setAttribute("DashboardFinance", DashboardFinance);
 
 			String DGName = Optional.ofNullable(

@@ -2908,4 +2908,9 @@ public int ActionAssignerEdit(ActionAssign assign) throws Exception {
 	public List<Object[]> getRfaActionsOnRFAtype(String projectType,String projectid, String rfatypeid,String rfaType,String empId, String fdate, String tdate,String rfaStatus) throws Exception {
 		return dao.getRfaActionsOnRFAtype(projectType,projectid,rfatypeid,rfaType,empId,fdate,tdate,rfaStatus);
 	}
+	
+	@Override
+	public int updateActionRemarks(String actionSubId, String remarks, String modifiedBy) throws Exception {
+		return dao.updateActionRemarks(actionSubId,remarks,modifiedBy);
+	}
 }
