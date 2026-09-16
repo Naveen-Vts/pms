@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.vts.pfms.pfts.dto.PFTSFileDto;
+import com.vts.pfms.pfts.dto.PmmgPmsDmdDetails;
 import com.vts.pfms.pfts.model.PFTSFile;
 import com.vts.pfms.pfts.model.PftsFileMilestone;
 import com.vts.pfms.pfts.model.PftsFileMilestoneRev;
@@ -48,4 +49,5 @@ public interface PFTSDao {
 	public List<Object[]> getprocurementMilestoneDetails(String pftsid)throws Exception;
 	public Object[] ProjectDataByPrjCode(String projectCode) throws Exception;
 	public long upadteDemandFileRemarks(String fileId, String remarks) throws Exception;
+	public List<PmmgPmsDmdDetails> getPMMGProcurementData(String projectCode);
 }

@@ -14,6 +14,7 @@ import com.vts.pfms.master.dto.DemandDetails;
 import com.vts.pfms.pfts.dao.PFTSDao;
 import com.vts.pfms.pfts.dto.DemandOrderDetails;
 import com.vts.pfms.pfts.dto.PFTSFileDto;
+import com.vts.pfms.pfts.dto.PmmgPmsDmdDetails;
 import com.vts.pfms.pfts.model.PFTSFile;
 import com.vts.pfms.pfts.model.PftsFileMilestone;
 import com.vts.pfms.pfts.model.PftsFileMilestoneRev;
@@ -379,4 +380,11 @@ public class PFTSServiceImp implements PFTSService{
 	public long upadteDemandFileRemarks(String fileId, String remarks) throws Exception {
 		return dao.upadteDemandFileRemarks(fileId,remarks);
 	}
+	
+	@Override
+	public List<PmmgPmsDmdDetails> getPMMGProcurementData(String projectImmsCd) {
+
+		return dao.getPMMGProcurementData(projectImmsCd);
+	}
+	
 }

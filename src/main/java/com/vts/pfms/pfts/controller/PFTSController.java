@@ -41,6 +41,7 @@ import com.vts.pfms.pfts.model.PftsFileMilestone;
 import com.vts.pfms.pfts.model.PftsFileMilestoneRev;
 import com.vts.pfms.pfts.model.PftsFileOrder;
 import com.vts.pfms.pfts.service.PFTSService;
+import com.vts.pfms.project.service.ProjectService;
 import com.vts.pfms.utils.InputValidator;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -61,6 +62,9 @@ public class PFTSController {
 	
 	@Autowired
 	FeignClientService serv;
+	
+	@Autowired
+	ProjectService projectservice;
 	
 	private static final Logger logger=LogManager.getLogger(PFTSController.class);
 	FormatConverter fc = new FormatConverter();
@@ -1786,6 +1790,40 @@ public class PFTSController {
 				return "static/Error";
 			}
 		}
+	
+	@RequestMapping(value = "PmmgPmsDmdDetails.htm", method = { RequestMethod.GET, RequestMethod.POST })
+	public String pmmgPmsDmdDetails(HttpServletRequest req, HttpSession ses, RedirectAttributes redir) throws Exception {
+
+		String UserId = (String) ses.getAttribute("Username");
+		String EmpId = ((Long) ses.getAttribute("EmpId")).toString();
+		String Logintype= (String)ses.getAttribute("LoginType");
+		String LabCode = (String)ses.getAttribute("labcode");
 		
+		logger.info(new Date() + "Inside PmmgPmsDmdDetails.htm " + UserId);
+		try {
+			String projectImmsCd = req.getParameter("projectImmsCd");
+			List<Object[]> projectList = projectservice.LoginProjectDetailsList(EmpId, Logintype, LabCode);
+			
+			if(projectList.isEmpty()) {
+				redir.addAttribute("resultfail", "No Project is Assigned to you.");
+				return "redirect:/MainDashBoard.htm";
+			}
+			
+			if(projectImmsCd==null || projectImmsCd.equals("null")) {
+				// project_imms_cd at index 6
+				Object[] firstProject = projectList.get(0);
+				projectImmsCd = firstProject[6]!=null ? firstProject[6].toString() : "";
+			}
+			
+			req.setAttribute("projectImmsCd", projectImmsCd);
+			req.setAttribute("pmmgPmsDmdDetails", service.getPMMGProcurementData(projectImmsCd));
+			req.setAttribute("projectList", projectList);
+			return "pfts/PmmgPmsDmdDetails";
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(new Date() + " Inside PmmgPmsDmdDetails.htm " + UserId, e);
+			return "static/Error";
+		}
+	}
 }
 
