@@ -491,7 +491,7 @@
 								<%} %>
 								<%if(Long.parseLong(projectid)>0){ %>
 								<input type="submit" class="btn  btn-sm view text-white fs-12px committeeMinutesDownloadBgColor"
-									value="MINUTES 2021"
+									value="MINUTES 2026"
 									formaction="CommitteeMinutesNewDownload.htm"
 									formtarget="_blank" formmethod="get"
 									>

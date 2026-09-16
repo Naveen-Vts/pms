@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
-import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,7 +34,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -61,11 +59,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -79,12 +72,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.google.gson.Gson;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
@@ -147,15 +134,14 @@ import com.vts.pfms.committee.model.PmsEnote;
 import com.vts.pfms.committee.model.ProgrammeMaster;
 import com.vts.pfms.committee.service.CommitteeService;
 import com.vts.pfms.committee.service.RODService;
+import com.vts.pfms.header.service.HeaderService;
 import com.vts.pfms.mail.CustomJavaMailSender;
 import com.vts.pfms.mail.MailConfigurationDto;
 import com.vts.pfms.mail.MailService;
-import com.vts.pfms.master.dto.ProjectFinancialDetails;
-import com.vts.pfms.master.model.Employee;
 import com.vts.pfms.master.service.MasterService;
 import com.vts.pfms.milestone.model.FileRepUploadPreProject;
 import com.vts.pfms.model.TotalDemand;
-import com.vts.pfms.pfmsserv.feign.PFMSServeFeignClient;
+import com.vts.pfms.pfmsserv.feign.FeignClientService;
 import com.vts.pfms.print.controller.PrintController;
 import com.vts.pfms.print.service.PrintService;
 import com.vts.pfms.project.service.ProjectService;
@@ -179,7 +165,11 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class CommitteeController {
 
-	@Autowired CommitteeService service;
+	@Autowired 
+	CommitteeService service;	
+
+	@Autowired
+	HeaderService headservice;
 
 	@Autowired
 	MailService mailService;
@@ -202,7 +192,7 @@ public class CommitteeController {
 	
 	
 	@Autowired
-	PFMSServeFeignClient pfmsServ;
+	FeignClientService pfmsServ;
 	
 	private static final RestTemplate restTemplate = new RestTemplate();
 
@@ -616,7 +606,7 @@ public class CommitteeController {
 			}
 
 			req.setAttribute("committeereplist", service.CommitteeRepList());
-			req.setAttribute("committeedata", service.CommitteeName(CommitteeId));
+			req.setAttribute("committeedata", service.CommitteeName(CommitteeId,null));
 			req.setAttribute("employeelist", service.EmployeeList(LabCode));
 			req.setAttribute("projectlist", projectdetailslist);
 			req.setAttribute("initiationid", initiationid);
@@ -1741,7 +1731,11 @@ public class CommitteeController {
 			long count = service.CommitteeScheduleAddSubmit(committeescheduledto);
 			redir.addAttribute("committeeid",committeeid);
 
-			String CommitteeName=req.getParameter("committeename");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+			LocalDate scheduledDateLocal = LocalDate.parse(committeescheduledto.getScheduleDate(), formatter );
+//			String CommitteeName=req.getParameter("committeename");
+			String CommitteeName=service.CommitteeName(committeeid, scheduledDateLocal.toString())[1].toString();
 
 			if(count>0)
 			{
@@ -4142,7 +4136,7 @@ public class CommitteeController {
 				if(ProjectMasterList.get(i)[6].toString().equalsIgnoreCase("N"))
 				{
 					String CommitteeId=ProjectMasterList.get(i)[2].toString();
-					String PeriodicDuration=service.CommitteeName(CommitteeId)[4].toString();
+					String PeriodicDuration=service.CommitteeName(CommitteeId,null)[4].toString();
 
 					if(!PeriodicDuration.equalsIgnoreCase("0")) 
 					{					
@@ -7551,7 +7545,16 @@ private boolean isValidFileType(MultipartFile file) {
 				List<Object[]> envisagedDemandlist  = new ArrayList<Object[]>();
 				envisagedDemandlist=service.getEnvisagedDemandList(projectid);
 				req.setAttribute("envisagedDemandlist", envisagedDemandlist);
-
+				
+				Object[] projectattribute = printservice.ProjectAttributes(projectid);
+			  	req.setAttribute("projectattributes", projectattribute);
+			  	
+			  	List<Object[]> ProjectRevList = printservice.ProjectRevList(projectid);
+			  	req.setAttribute("ProjectRevList", ProjectRevList);
+			  	
+			  	List<Object[]> ebandpmrccount = printservice.EBAndPMRCCount(projectid);
+			  	req.setAttribute("ebandpmrccount", ebandpmrccount);
+			  	
 				req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutes(committeescheduleid) );
 				req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);
 				req.setAttribute("committeeminutes",service.CommitteeMinutesSpecNew());
@@ -7571,6 +7574,7 @@ private boolean isValidFileType(MultipartFile file) {
 				if( MileStoneLevelId!= null) {
 					LevelId= MileStoneLevelId[0].toString();
 				}
+				
 				req.setAttribute("levelid", LevelId);
 				req.setAttribute("labInfo", service.LabDetailes(LabCode));
 				/*---------------------------------------------------------------------------------------------------------------*/
@@ -7669,6 +7673,8 @@ private boolean isValidFileType(MultipartFile file) {
 						}
 					}
 				}
+		        String CommitteeCode = committee.getCommitteeShortName().trim();
+
 				List<Object[]> actionlist= service.MinutesViewAllActionList(committeescheduleid);
 
 				for(Object obj[] : actionlist) {
@@ -7687,8 +7693,16 @@ private boolean isValidFileType(MultipartFile file) {
 				//req.setAttribute("lastpmrcactions", printservice.LastPMRCActions(projectid,committeeid));
 				req.setAttribute("lastpmrcactions", printservice.LastPMRCActions(projectid,committeeid,committeescheduleeditdata[2].toString()));
 
+		        String projectLabCode = printservice.ProjectDetails(projectid).get(0)[5].toString();
 				//							
-
+				setMilestoneDetailsToResponse(req, projectid);
+		        req.setAttribute("projectLabCode", projectLabCode);
+		        req.setAttribute("filePath", env.getProperty("ApplicationFilesDrive"));
+				
+				req.setAttribute("projectid",projectid);
+				req.setAttribute("committeeshortname",CommitteeCode);
+		        req.setAttribute("committeeMetingsCount",printservice.ProjectCommitteeMeetingsCount(projectid, "0", "0", "0", "0", CommitteeCode));
+				
 				req.setAttribute("actionlist",actionsdata);
 				req.setAttribute("procurementOnDemand", procurementOnDemand);
 				req.setAttribute("procurementOnSanction", procurementOnSanction);
@@ -11510,6 +11524,59 @@ private boolean isValidFileType(MultipartFile file) {
             }
         }
         return false;
+	}
+	
+	private int setMilestoneDetailsToResponse(HttpServletRequest req,  String projectid) {
+
+		try {
+
+			if(projectid!=null) {
+				List<Object[]> main=headservice.GanttChartList(projectid);
+				List<Object[]> MilestoneActivityA0=new ArrayList<Object[]>();
+				List<Object[]> MilestoneActivityB0=new ArrayList<Object[]>();
+				List<Object[]> MilestoneActivityC0=new ArrayList<Object[]>();
+				List<Object[]> MilestoneActivityD0=new ArrayList<Object[]>();
+				List<Object[]> MilestoneActivityE0=new ArrayList<Object[]>();
+
+				for(Object[] objmain:main ) {
+					List<Object[]>  MilestoneActivityA1=headservice.MilestoneActivityLevel(objmain[0].toString(),"1");
+					MilestoneActivityA0.addAll(MilestoneActivityA1);
+
+					for(Object[] obj:MilestoneActivityA1) {
+						List<Object[]>  MilestoneActivityB1=headservice.MilestoneActivityLevel(obj[0].toString(),"2");
+						MilestoneActivityB0.addAll(MilestoneActivityB1);
+
+						for(Object[] obj1:MilestoneActivityB1) {
+							List<Object[]>  MilestoneActivityC1=headservice.MilestoneActivityLevel(obj1[0].toString(),"3");
+							MilestoneActivityC0.addAll(MilestoneActivityC1);
+
+							for(Object[] obj2:MilestoneActivityC1) {
+								List<Object[]>  MilestoneActivityD1=headservice.MilestoneActivityLevel(obj2[0].toString(),"4");
+								MilestoneActivityD0.addAll( MilestoneActivityD1);
+
+								for(Object[] obj3:MilestoneActivityD1) {
+									List<Object[]>  MilestoneActivityE1=headservice.MilestoneActivityLevel(obj3[0].toString(),"5");
+									MilestoneActivityE0.addAll( MilestoneActivityE1);
+								}
+							}
+						}
+					}
+				}
+				req.setAttribute("MilestoneActivityMain0", main);
+				req.setAttribute("MilestoneActivityE0", MilestoneActivityE0);
+				req.setAttribute("MilestoneActivityD0", MilestoneActivityD0);
+				req.setAttribute("MilestoneActivityC0", MilestoneActivityC0);
+				req.setAttribute("MilestoneActivityB0", MilestoneActivityB0);
+				req.setAttribute("MilestoneActivityA0", MilestoneActivityA0);
+
+			}
+
+		}catch (Exception e) {
+			logger.error(new Date() +" Inside BriefingPresentation.htm ");
+			e.printStackTrace();
+			return 0;
+		}
+		return 1;
 	}
 	
 //	------------------------------------ Naveen R 10/10/25 Representative Add -------------------------------------------	

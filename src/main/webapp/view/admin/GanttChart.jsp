@@ -150,7 +150,8 @@
 							<div>
 							<label>Interval : &nbsp;&nbsp;&nbsp; </label>
 							<select class="form-control selectdee f-right w-150" name="interval" id="interval" required="required"  data-live-search="true" >
-                                		<option value="quarter"> Quarterly </option>
+                                		<option value="week"> Weekly </option>
+                                		<option value="quarter" selected="selected"> Quarterly </option>
                                 		 <option value="half" >Half-Yearly</option>
                                 		 <option value="year" >Yearly</option>
                                 		 <option value="month"> Monthly </option>
@@ -470,7 +471,7 @@
 								     	var minDate = "<%=minDate != null ? minDate : ""%>";
 								     	var maxDate = "<%=maxDate != null ? maxDate : ""%>";
 								     	var min, max;
-								     	var months = 0, quarters = 0, years = 0;
+								     	var months = 0, quarters = 0, years = 0, weeks = 0;
 
 								     	if (minDate !== "" && maxDate !== "") {
 								     	    min = new Date(minDate);
@@ -481,15 +482,17 @@
 								     	        (max.getMonth() - min.getMonth()) + 1;
 
 								     	    quarters = Math.ceil(months / 3);
+								     	    weeks = Math.ceil((max.getTime() - min.getTime()) / (1000 * 60 * 60 * 24 * 7));
 								     	    years = Math.ceil(months / 12);
 								     	}
-								     	months =
+								     	/* months =
 								     	    (max.getFullYear() - min.getFullYear()) * 12 +
 								     	    (max.getMonth() - min.getMonth()) + 1;
 
 								     	quarters = Math.ceil(months / 3);
 								     	years = Math.ceil(months / 12);
-								     	
+								        weeks = Math.ceil((max.getTime() - min.getTime()) / (1000 * 60 * 60 * 24 * 7)); */
+								        
 												chart.getTimeline().scale().minimum("<%=minDate%>");
 												chart.getTimeline().scale().maximum("<%=maxDate%>");
 
@@ -534,6 +537,15 @@
 												    chart.getTimeline().scale().zoomLevels([["month", "quarter","year"]]);
 												    chart.zoomTo("month", months / 2, "first-date");     // show 4 months at a time
 												}
+
+												if (interval === "week") {
+												    chart.getTimeline().scale().zoomLevels([["week", "month", "quarter", "year"]]);
+												    chart.zoomTo("week", 50, "first-date");
+
+												    var header = chart.getTimeline().header();
+												    header.level(0).format("{%value}");
+												}
+
 
 												else if(interval===""){
 												    chart.getTimeline().scale().zoomLevels([["quarter", "semester","year"]]);

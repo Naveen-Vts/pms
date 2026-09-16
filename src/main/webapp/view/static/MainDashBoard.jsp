@@ -263,6 +263,9 @@ String pmsToStatsUrl = statsUrl+"/login";
 List<Object[]> todayschedulelist=(List<Object[]>)request.getAttribute("todayschedulelist");
 List<Object[]> todaysMeetings= new ArrayList<>();
 long todayMeetingCount=0;
+if(todayschedulelist == null){
+	todayschedulelist = new ArrayList<>();
+}
 if(todayschedulelist.size()>0){
 	todayMeetingCount=todayschedulelist.stream().filter(i -> i[3].toString().equalsIgnoreCase(LocalDate.now().toString())).count();
 	todaysMeetings=todayschedulelist.stream().filter(i -> i[3].toString().equalsIgnoreCase(LocalDate.now().toString())).collect(Collectors.toList());

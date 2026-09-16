@@ -160,6 +160,7 @@ public class MilestoneServiceImpl implements MilestoneService {
 		Milestone.setWeightage(0);
 		Milestone.setIsActive(1);
 		Milestone.setLoading(0);
+		Milestone.setIsSunSet(dto.getIsSunSet() != null ? dto.getIsSunSet() : "N");
 		return dao.MilestoneActivity(Milestone);
 	}
 
@@ -197,7 +198,14 @@ public class MilestoneServiceImpl implements MilestoneService {
 		Milestone.setLoading(0);
 		Milestone.setIsMasterData("N");
 		Milestone.setLinkedMilestonId(0l);
-		return dao.MilestoneActivityLevelInsert(Milestone);
+		Milestone.setIsSunSet(dto.getIsSunSet() != null ? dto.getIsSunSet() : "N");
+		Milestone.setIsAutoWeightage("Y");
+		
+		long count = dao.MilestoneActivityLevelInsert(Milestone);
+		
+		dao.updateMilestoneWeightage(Milestone.getParentActivityId(),Milestone.getActivityLevelId());
+		
+		return count;
 	}
 	
 
@@ -615,7 +623,7 @@ public class MilestoneServiceImpl implements MilestoneService {
 				activityLevel.setActivityName(dto.getActivityName());
 				activityLevel.setOicEmpId(dto.getOicEmpId()!=null?Long.parseLong(dto.getOicEmpId()):0L);
 				activityLevel.setOicEmpId1(dto.getOicEmpId1()!=null?Long.parseLong(dto.getOicEmpId1()):0L);
-				
+				activityLevel.setIsAutoWeightage("N");
 				dao.MilestoneActivityLevelInsert(activityLevel);
 				result = 1;
 			}

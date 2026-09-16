@@ -247,8 +247,10 @@ public class HeaderController {
 		String UserId = (String) ses.getAttribute("Username");
 		logger.info(new Date() +"Inside UserManualDoc.htm "+UserId);		
 		try {
-			Path filePath = Paths.get(uploadpath,"UserManual","PMS.pdf");
-			String path = filePath.toString();
+
+			String path = req.getServletContext().getRealPath("/UserManual/" + "PFMS Work Flow.pdf");
+//			Path filePath = Paths.get(uploadpath,"UserManual","PMS.pdf");
+//			String path = filePath.toString();
 			
 			res.setContentType("application/pdf");
 			res.setHeader("Content-Disposition", String.format("inline; filename=User Manual-PFMS.pdf"));
@@ -279,9 +281,9 @@ public class HeaderController {
 		logger.info(new Date() +"Inside WorkFlow.htm "+UserId);		
 		try {
 
-		//String path = req.getServletContext().getRealPath("/UserManual/" + "PFMS Work Flow.pdf");
-			Path filePath = Paths.get(uploadpath,"WorkFlow","PMS.pdf");
-			String path = filePath.toString();
+		String path = req.getServletContext().getRealPath("/UserManual/" + "PFMS Work Flow.pdf");
+//			Path filePath = Paths.get(uploadpath,"WorkFlow","PMS.pdf");
+//			String path = filePath.toString();
 			res.setContentType("application/pdf");
 			res.setHeader("Content-Disposition", String.format("inline; filename=PFMS Work Flow.pdf"));
 

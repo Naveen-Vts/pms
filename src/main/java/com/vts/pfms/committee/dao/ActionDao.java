@@ -208,5 +208,6 @@ public interface ActionDao {
 	public List<Object[]> divisionList()throws Exception;
 	public List<Object[]> getDivisionEmployeesList(String divisionId) throws Exception;
 	public List<Object[]> getRfaActionsOnRFAtype(String projectType, String projectid, String rfatypeid, String rfatype,String empId,String fdate, String tdate,String rfaStatus) throws Exception;
+	public int updateActionRemarks(String actionSubId, String remarks, String modifiedBy) throws Exception;
 	
 }

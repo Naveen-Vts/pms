@@ -24,7 +24,7 @@ import com.vts.pfms.pfts.dto.DemandOrderDetails;
 url = "${pfms_serv_url:NA}",
 fallbackFactory = PFMSServeFallbackFactory.class
 )
-public interface PFMSServeFeignClient {
+public interface PFMSServeFeignClientIbas {
 
 	@GetMapping(value =  "/api/pfms-serv/getCCMViewData",consumes = MediaType.APPLICATION_JSON_VALUE)
     List<CCMView> getCCMViewData(@RequestHeader("Authorization") String token, @RequestParam(name = "labCode") String LabCode);

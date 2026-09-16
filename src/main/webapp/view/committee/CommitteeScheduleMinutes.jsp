@@ -66,13 +66,13 @@ String committscheduleid=(String) request.getAttribute("committscheduleid");
 String membertype=(String) request.getAttribute("membertype");
 String filesize=(String) request.getAttribute("filesize");
 
-String committeeid=committeescheduleeditdata[0].toString();
-String projectid = committeescheduleeditdata[9].toString();
-String divisionid = committeescheduleeditdata[16].toString();
-String initiationid = committeescheduleeditdata[17].toString();
-String carsInitiationId = committeescheduleeditdata[25].toString();
-String   committeecode    = committeescheduleeditdata[8].toString();
-String programmeId = committeescheduleeditdata[26].toString();
+String committeeid=  committeescheduleeditdata[0] != null ?committeescheduleeditdata[0].toString() : "0";
+String projectid =  committeescheduleeditdata[9] != null ?committeescheduleeditdata[9].toString() : "0";
+String divisionid =  committeescheduleeditdata[16] != null ?committeescheduleeditdata[16].toString() : "0";
+String initiationid =  committeescheduleeditdata[17] != null ? committeescheduleeditdata[17].toString() : "0";
+String carsInitiationId = committeescheduleeditdata[25] != null ?  committeescheduleeditdata[25].toString() : "0";
+String committeecode    = committeescheduleeditdata[8] != null ? committeescheduleeditdata[8].toString() : "";
+String programmeId = committeescheduleeditdata[26] != null ?committeescheduleeditdata[26].toString() : "0";
 String userview = (String) request.getAttribute("userview");
 String GenId="GenAdd";
 List<Object[]> minutesattachmentlist=(List<Object[]>)request.getAttribute("minutesattachmentlist");
@@ -167,9 +167,9 @@ List<CommitteeSchedule> dmcScheduleList = (List<CommitteeSchedule>) request.getA
 			<%} %>
 			<button type="submit" class="btn btn-primary btn-sm"  name="sub" value="word"  id="wordDownloadBtn" formmethod="get" formtarget="_blank" formaction="CommitteeMinutesNewWordDownload.htm"  ><i class="fa fa-file-word-o minutesIconStyle" title="Committee Minutes New Word Download"></i></button> 
 		<%} %>
-			<%if(committeescheduleeditdata[22].toString().equals("N")){%><button type="submit" class="btn btn-sm prints my-2 my-sm-0 fs-12px" formaction="getMinutesFrozen.htm" onclick="return confirm('Are You Sure to Freeze Minutes 2021 ?')">FREEZE</button>
+			<%if(committeescheduleeditdata[22].toString().equals("N")){%><button type="submit" class="btn btn-sm prints my-2 my-sm-0 fs-12px" formaction="getMinutesFrozen.htm" onclick="return confirm('Are You Sure to Freeze Minutes 2026 ?')">FREEZE</button>
 			<%}else{ %>
-			<button type="submit" class="btn btn-sm prints my-2 my-sm-0 fs-12px" formaction="getMinutesFrozen.htm" onclick="return confirm('Are You Sure to unfreeze Minutes 2021 ?')">UNFREEZE</button>
+			<button type="submit" class="btn btn-sm prints my-2 my-sm-0 fs-12px" formaction="getMinutesFrozen.htm" onclick="return confirm('Are You Sure to unfreeze Minutes 2026 ?')">UNFREEZE</button>
 			<%} %>
 		<%} %>
 		<input type="hidden" name="IsFrozen" value="<%=committeescheduleeditdata[22].toString()%>">

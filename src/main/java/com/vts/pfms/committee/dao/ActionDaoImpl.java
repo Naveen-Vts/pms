@@ -71,7 +71,7 @@ public class ActionDaoImpl implements ActionDao{
 	private static final String ASSIGNEEDETAILS="SELECT assignor,assignee,actionno, assigneelabcode, assignorlabcode FROM action_assign WHERE actionassignid=:assignid";
 	private static final String SCHEDULEITEM="SELECT a.scheduleminutesid,a.details FROM  committee_schedules_minutes_details a WHERE  a.scheduleminutesid=:schid";
     private static final String ACTIONSEARCHNO="CALL Pfms_ActionNo_Search(:empid,:no,:position)";
-	private static final String PROJECTLIST="SELECT projectid,projectmainid,projectcode,projectname,ProjectShortName FROM project_master WHERE isactive=1";
+	private static final String PROJECTLIST="SELECT project_id,project_main_id,project_code,project_name,Project_Short_Name FROM project_master WHERE isactive=1";
     private static final String ACTIONCOUNT="CALL Pfms_Action_PD_Chart(:projectid)";
     private static final String LOGINPROJECTIDLIST="SELECT a.projectid,a.projectcode,a.projectname,a.ProjectMainId,a.ProjectDescription,a.UnitCode,a.ProjectType,a.ProjectCategory,a.SanctionNo,a.SanctionDate,a.PDC,a.ProjectDirector FROM project_master a,project_employee b WHERE a.isactive=1 and a.projectid=b.projectid and b.empid=:empid";
     private static final String ALLPROJECTDETAILSLIST ="SELECT a.project_id,a.project_code,a.project_name,a.project_main_id,a.project_description,a.unit_code,a.project_type,a.project_category,a.sanction_no,a.sanction_date,a.pdc,a.project_director,a.project_short_name FROM project_master a WHERE a.is_active=1 ";
@@ -993,17 +993,17 @@ public class ActionDaoImpl implements ActionDao{
 	}
 	
 	
-	private static final String RFAACTIONLIST="SELECT DISTINCT a.rfaid,a.labcode,CASE WHEN a.projectType ='P' THEN d.projectcode ELSE h.projectShortName END AS projectCode,a.rfano,a.rfadate,b.priority,\r\n"
+	private static final String RFAACTIONLIST="SELECT DISTINCT a.rfaid,a.labcode,CASE WHEN a.projectType ='P' THEN d.project_code ELSE h.project_Short_Name END AS projectCode,a.rfano,a.rfadate,b.priority,\r\n"
 			+ "f.classification AS category,a.statement,a.description,a.reference,a.isactive,a.createdby,a.createddate,a.projectid,a.rfastatus,a.AssignorId,\r\n"
 			+ "(SELECT COUNT(Remarks) FROM pfms_rfa_action_transaction trans WHERE a.RfaId=trans.RfaId) AS Remarks,g.rfastatusdetails,a.TypeOfRfa ,a.projectType\r\n"
 			+ "FROM pfms_rfa_action a\r\n"
 			+ "INNER JOIN pfms_rfa_priority b ON a.priorityid = b.priorityid\r\n"
-			+ "LEFT JOIN project_master d ON a.projectid = d.projectid\r\n"
+			+ "LEFT JOIN project_master d ON a.projectid = d.project_id\r\n"
 			+ "LEFT JOIN pfms_initiation h ON a.projectid = h.initiationId\r\n"
 			+ "INNER JOIN pfms_security_classification f \r\n"
 			+ "ON(\r\n"
-			+ "(a.projectType = 'P' AND d.projectcategory = f.classificationid)\r\n"
-			+ " OR (a.projectType <> 'P' AND h.classificationId = f.classificationid)\r\n"
+			+ "(a.projectType = 'P' AND d.projectcategory = f.classification_id)\r\n"
+			+ " OR (a.projectType <> 'P' AND h.classificationId = f.classification_id)\r\n"
 			+ ")\r\n"
 			+ "INNER JOIN pfms_rfa_status g ON a.rfastatus = g.rfastatus\r\n"
 			+ "WHERE a.projectType = :projectType AND\r\n"
@@ -1481,10 +1481,10 @@ public class ActionDaoImpl implements ActionDao{
 	}
 
 	public static final String RFAATTACHMENTDOWNLOAD="SELECT a.rfaattachmentid,a.rfaid,a.filespath,a.assignorattachment,a.assigneeattachment,b.rfano,a.CloseAttachment,\r\n"
-			+ "CASE WHEN b.projectType = 'P' THEN p.projectcode ELSE h.projectShortName END AS projectCode \r\n"
+			+ "CASE WHEN b.projectType = 'P' THEN p.project_code ELSE h.projectShortName END AS projectCode \r\n"
 			+ "FROM pfms_rfa_attachment a\r\n"
 			+ "LEFT JOIN pfms_rfa_action b ON a.rfaid = b.rfaid\r\n"
-			+ "LEFT JOIN project_master p ON p.projectid = b.projectid\r\n"
+			+ "LEFT JOIN project_master p ON p.project_id = b.projectid\r\n"
 			+ "LEFT JOIN pfms_initiation h ON h.initiationId = b.projectid\r\n"
 			+ "WHERE a.rfaid =:rfaid AND a.isactive = 1;";
 	@Override
@@ -1623,17 +1623,17 @@ public class ActionDaoImpl implements ActionDao{
 	}
 	}
 	
-	private static final String RFAACTIONLIST1="SELECT DISTINCT a.rfaid,a.labcode,CASE WHEN a.projectType = 'P' THEN d.projectcode ELSE h.projectShortName END AS projectCode,a.rfano,a.rfadate,b.priority,\r\n"
+	private static final String RFAACTIONLIST1="SELECT DISTINCT a.rfaid,a.labcode,CASE WHEN a.projectType = 'P' THEN d.project_code ELSE h.projectShortName END AS projectCode,a.rfano,a.rfadate,b.priority,\r\n"
 			+ "f.classification AS category,a.statement,a.description,a.reference,a.isactive,a.createdby,a.createddate,a.projectid,a.rfastatus,a.AssignorId,\r\n"
 			+ "(SELECT COUNT(Remarks) FROM pfms_rfa_action_transaction trans WHERE a.RfaId=trans.RfaId) AS Remarks,g.rfastatusdetails,a.TypeOfRfa,a.projectType\r\n"
 			+ "FROM pfms_rfa_action a\r\n"
 			+ "INNER JOIN pfms_rfa_priority b ON a.priorityid = b.priorityid\r\n"
-			+ "LEFT JOIN project_master d ON a.projectid = d.projectid\r\n"
+			+ "LEFT JOIN project_master d ON a.projectid = d.project_id\r\n"
 			+ "LEFT JOIN pfms_initiation h ON a.projectId = h.initiationId\r\n"
 			+ "INNER JOIN pfms_security_classification f \r\n"
 			+ "ON(\r\n"
-			+ "(a.projectType = 'P' AND d.projectcategory = f.classificationid)\r\n"
-			+ " OR (a.projectType <> 'P' AND h.classificationId = f.classificationid)\r\n"
+			+ "(a.projectType = 'P' AND d.projectcategory = f.classification_id)\r\n"
+			+ " OR (a.projectType <> 'P' AND h.classificationId = f.classification_id)\r\n"
 			+ ")\r\n"
 			+ "INNER JOIN pfms_rfa_status g ON a.rfastatus = g.rfastatus\r\n"
 			+ "WHERE a.projectType = :projectType AND\r\n"
@@ -2224,7 +2224,7 @@ public class ActionDaoImpl implements ActionDao{
 		return query.executeUpdate();
 	}
 	
-	private static final String GETPROJECTCODE = "SELECT CASE WHEN 'P'=:projectType THEN (SELECT d.projectcode FROM project_master d WHERE d.projectid=:projectId AND d.isactive='1') ELSE (SELECT h.projectShortName FROM pfms_initiation h WHERE h.initiationId=:projectId AND h.isactive='1') END AS projectCode";
+	private static final String GETPROJECTCODE = "SELECT CASE WHEN 'P'=:projectType THEN (SELECT d.project_code FROM project_master d WHERE d.project_id=:projectId AND d.isactive='1') ELSE (SELECT h.projectShortName FROM pfms_initiation h WHERE h.initiationId=:projectId AND h.isactive='1') END AS projectCode";
 	@Override
 	public String getProjectCode(Long projectId, String projectType) throws Exception {
 		Query query=manager.createNativeQuery(GETPROJECTCODE);
@@ -2312,4 +2312,17 @@ public class ActionDaoImpl implements ActionDao{
 		query.setParameter("rfaStatus", rfaStatus);
 		return (List<Object[]>)query.getResultList();
 	}	
+	
+	private static final String REMARKSEDIT = "UPDATE action_sub  SET Remarks = :Remarks,ModifiedDate = :ModifiedDate, ModifiedBy= :ModifiedBy  WHERE ActionSubId = :ActionSubId";
+	@Override
+	public int updateActionRemarks(String actionSubId, String remarks, String modifiedBy) throws Exception {
+		Query query = manager.createNativeQuery(REMARKSEDIT);
+
+	    query.setParameter("Remarks", remarks);
+	    query.setParameter("ModifiedBy", modifiedBy);
+	    query.setParameter("ModifiedDate", LocalDateTime.now());
+	    query.setParameter("ActionSubId", actionSubId);
+
+	    return query.executeUpdate();
+	}
 }

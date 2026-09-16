@@ -44,7 +44,7 @@ public class MilestoneActivityLevel {
 	private Long LinkedMilestonId;
 	private String IsMasterData;
 	private String IsSunSet;
-	
+	private String IsAutoWeightage;
 	
     
 }

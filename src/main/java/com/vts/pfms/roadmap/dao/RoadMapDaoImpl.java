@@ -94,7 +94,7 @@ public class RoadMapDaoImpl implements RoadMapDao{
 		}
 	}
 	
-	private static final String GETPROJECTDETAILS= "SELECT ProjectId,ProjectCode,ProjectShortName,ProjectName,DivisionId,SanctionDate,PDC,Objective,Scope,BoardReference,TotalSanctionCost FROM project_master WHERE IsActive=1 AND LabCode=:LabCode AND ProjectId=:ProjectId";
+	private static final String GETPROJECTDETAILS= "SELECT Project_Id,Project_Code,Project_Short_Name,Project_Name,Division_Id,Sanction_Date,PDC,Objective,Scope,Board_Reference,Total_Sanction_Cost FROM project_master WHERE Is_Active=1 AND Lab_Code=:LabCode AND Project_Id=:ProjectId";
 	private static final String GETPREPROJECTDETAILS= "SELECT InitiationId,ProjectProgramme,ProjectShortName,ProjectTitle,DivisionId,'Sanction Date','PDC','Objective','Scope','BoardReference',ProjectCost FROM pfms_initiation WHERE IsActive=1 AND LabCode=:LabCode AND InitiationId=:ProjectId";
 	@Override
 	public Object[] getProjectDetails(String labcode,String projectId,String roadMapType) throws Exception {

@@ -245,8 +245,8 @@ public class CommitteeServiceImpl implements CommitteeService{
 	}
 	
 	@Override
-	public Object[] CommitteeName(String CommitteeId) throws Exception {
-		return dao.CommitteeName(CommitteeId);
+	public Object[] CommitteeName(String CommitteeId,String scheduleDate) throws Exception {
+		return dao.CommitteeName(CommitteeId,scheduleDate);
 	}
 
 
@@ -498,7 +498,12 @@ public class CommitteeServiceImpl implements CommitteeService{
 				committeeschedule.setScheduleType("P");
 			}
 			
-			String CommitteeName=dao.CommitteeName(committeescheduledto.getCommitteeId().toString())[2].toString();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+			LocalDate scheduledDateLocal = LocalDate.parse(committeescheduledto.getScheduleDate(), formatter );
+			
+			String CommitteeName = dao.CommitteeName(committeescheduledto.getCommitteeId().toString(),scheduledDateLocal.toString())[2].toString();
+			
 			String LabName=dao.LabDetails(committeeschedule.getLabCode())[1].toString();
 			Long SerialNo=dao.MeetingCount(new java.sql.Date(sdf.parse(committeescheduledto.getScheduleDate()).getTime()),committeescheduledto.getProjectId());
 			String ProjectName=null;

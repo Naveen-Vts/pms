@@ -337,7 +337,7 @@ List<Object[]> PlatformList=(List<Object[]>) request.getAttribute("PlatformList"
 </tr>
  <tr>
 		<th colspan="1"><label class="mb-n1p">Application:<span class="mandatory text-danger">*</span></label></th>
-		<td colspan="3"><textarea required="required" name="application" placeholder="Enter maximum 50 charcters " class="form-control " maxlength="49" rows="1" cols="53"><%if(ProjectMainEditData[25]!=null){%> <%=ProjectMainEditData[25].toString()%> <%}%></textarea></td>
+		<td colspan="3"><textarea required="required" name="application" placeholder="Enter maximum 100 charcters " class="form-control " maxlength="100" rows="1" cols="53"><%if(ProjectMainEditData[25]!=null){%> <%=ProjectMainEditData[25].toString()%> <%}%></textarea></td>
 </tr>
  <tr>
 	<th colspan="1"><label class="mb-n1p">Scope:

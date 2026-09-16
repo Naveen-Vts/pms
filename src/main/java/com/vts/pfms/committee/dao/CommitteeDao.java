@@ -47,7 +47,7 @@ import com.vts.pfms.print.model.MinutesFinanceList;
 public interface CommitteeDao {
 
 	public List<Object[]> EmployeeList(String LabCode) throws Exception;
-	public Object[] CommitteeName(String CommitteeMainId)throws Exception;
+	public Object[] CommitteeName(String CommitteeMainId,String scheduleDate)throws Exception;
 	public long CommitteeDetailsSubmit(CommitteeMain committeemain) throws Exception;
 	public Long LastCommitteeId(String CommitteeId,String projectid,String divisionid,String initiationid, String carsInitiationId, String programmeId) throws Exception;
 	public Long UpdateCommitteemainValidto(CommitteeMain committeemain) throws Exception;

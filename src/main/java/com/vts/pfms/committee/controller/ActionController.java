@@ -5838,4 +5838,22 @@ private boolean isValidFileType(MultipartFile file) {
    			}
    			return json.toJson(divisionEmployees);
    		}
+		 
+		 @RequestMapping(value = "UpdateActionRemarks.htm", method = {RequestMethod.POST, RequestMethod.GET})
+		 @ResponseBody
+		 public String updateActionRemarks( HttpSession ses, HttpServletRequest req) {
+		     try {
+		         String modifiedBy = (String) ses.getAttribute("Username");
+		         String remarks = (String) req.getParameter("remarks");
+		         String actionSubId = (String) req.getParameter("actionSubId");
+		         int result = service.updateActionRemarks( actionSubId, remarks, modifiedBy );
+		         if (result > 0) {
+		             return "success";
+		         }
+		         return "error";
+		     } catch (Exception e) {
+		         e.printStackTrace();
+		         return "error";
+		     }
+		 }
 }

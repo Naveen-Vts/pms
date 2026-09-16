@@ -745,7 +745,7 @@ public class MasterDaoImpl implements MasterDao {
 		}
 	}
 	
-	public static final String INDUSTRYPARTNERLIST="SELECT a.IndustryPartnerId,a.IndustryName,a.IndustryAddress,b.IndustryPartnerRepId,b.RepName,b.RepDesignation,b.RepMobileNo,b.RepEmail,b.IsActive,a.IndustryCity,a.IndustryPinCode FROM pfms_industry_partner a, pfms_industry_partner_rep b WHERE a.IndustryPartnerId=b.IndustryPartnerId AND a.IsActive=1 ORDER BY a.IndustryPartnerId DESC, b.IndustryPartnerRepId ASC";
+	public static final String INDUSTRYPARTNERLIST="SELECT a.industry_partner_Id,a.industry_name,a.industry_address,b.industry_partner_rep_id,b.rep_name,b.rep_designation,b.rep_mobile_no,b.rep_email,b.is_active,a.industry_city,a.industry_pin_code FROM pfms_industry_partner a, pfms_industry_partner_rep b WHERE a.industry_partner_id=b.industry_partner_id AND a.is_active=1 ORDER BY a.industry_partner_id DESC, b.industry_partner_rep_id ASC";
 	@Override
 	public List<Object[]> industryPartnerList() throws Exception{
 		try {
@@ -757,7 +757,7 @@ public class MasterDaoImpl implements MasterDao {
 		}
 	}
 	
-	public static final String INDUSTRYPARTNERDETAILSBYINDUSTRYPARTNERREPID="SELECT a.IndustryPartnerId,a.IndustryName,a.IndustryAddress,b.IndustryPartnerRepId,b.RepName,b.RepDesignation,b.RepMobileNo,b.RepEmail,b.IsActive,a.IndustryCity,a.IndustryPinCode FROM pfms_industry_partner a, pfms_industry_partner_rep b WHERE a.IndustryPartnerId=b.IndustryPartnerId AND a.IsActive=1 AND b.IsActive=1 AND b.IndustryPartnerRepId=:IndustryPartnerRepId";
+	public static final String INDUSTRYPARTNERDETAILSBYINDUSTRYPARTNERREPID="SELECT a.industry_partner_id,a.industry_name,a.industry_address,b.industry_partner_rep_id,b.rep_name,b.rep_designation,b.rep_mobile_no,b.rep_email,b.is_active,a.industry_city,a.industry_pin_code FROM pfms_industry_partner a, pfms_industry_partner_rep b WHERE a.industry_partner_id=b.industry_partner_id AND a.is_active=1 AND b.is_active=1 AND b.industry_partner_rep_id=:IndustryPartnerRepId";
 	@Override
 	public Object[] industryPartnerDetailsByIndustryPartnerRepId(String industryPartnerRepId) throws Exception{
 		try {
@@ -830,7 +830,7 @@ public class MasterDaoImpl implements MasterDao {
 		}
 	}
 	
-	private static final String INDUSTRYPARTNERREPDETAILS="SELECT a.IndustryPartnerRepId,a.IndustryPartnerId,a.RepName,a.RepDesignation,a.RepMobileNo,a.RepEmail FROM pfms_industry_partner_rep a,pfms_industry_partner b WHERE a.IndustryPartnerId=b.IndustryPartnerId AND b.IndustryPartnerId=:IndustryPartnerId AND a.IsActive=1 AND b.IsActive=1 AND a.IndustryPartnerRepId<>:IndustryPartnerRepId";
+	private static final String INDUSTRYPARTNERREPDETAILS="SELECT a.industry_partner_rep_id,a.industry_partner_id,a.rep_name,a.rep_designation,a.rep_mobile_no,a.rep_email FROM pfms_industry_partner_rep a,pfms_industry_partner b WHERE a.industry_partner_id=b.industry_partner_id AND b.industry_partner_id=:IndustryPartnerId AND a.is_active=1 AND b.is_active=1 AND a.industry_partner_rep_id<>:IndustryPartnerRepId";
 	@Override
 	public List<Object[]> industryPartnerRepDetails(String industryPartnerId, String industryPartnerRepId) throws Exception {
 		try {
@@ -1128,7 +1128,7 @@ public class MasterDaoImpl implements MasterDao {
 			}
 		} 
 		
-		private static final String PROJECTLISTFORPROGRAMMEID = "SELECT a.projectid, a.projectmainid, a.projectcode, a.projectname, a.ProjectShortName FROM project_master a LEFT JOIN pfms_programme_projects b ON a.projectid = b.projectId AND b.isActive = 1 LEFT JOIN pfms_programme_master c ON b.programmeId = c.programmeId AND c.isActive = 1 WHERE a.isActive = 1 AND a.labcode = :labCode AND ( b.projectId IS NULL OR ( c.programmeId =:programmeId AND a.projectid IN ( SELECT projectId FROM pfms_programme_projects WHERE isActive = 1 GROUP BY projectId HAVING COUNT(DISTINCT programmeId) = 1 ))) ORDER BY a.projectid ASC;";
+		private static final String PROJECTLISTFORPROGRAMMEID = "SELECT a.project_id, a.project_main_id, a.project_code, a.project_name, a.Project_Short_Name FROM project_master a LEFT JOIN pfms_programme_projects b ON a.project_id = b.projectId AND b.isActive = 1 LEFT JOIN pfms_programme_master c ON b.programmeId = c.programmeId AND c.isActive = 1 WHERE a.is_active = 1 AND a.lab_code = :labCode AND ( b.projectId IS NULL OR ( c.programmeId =:programmeId AND a.project_id IN ( SELECT projectId FROM pfms_programme_projects WHERE isActive = 1 GROUP BY projectId HAVING COUNT(DISTINCT programmeId) = 1 ))) ORDER BY a.project_id ASC;";
 		@Override
 		public List<Object[]> getProjectList(String labcode, String programmeId) throws Exception {
 			try {

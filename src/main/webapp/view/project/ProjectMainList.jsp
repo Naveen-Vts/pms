@@ -120,7 +120,7 @@ if(logintype.equalsIgnoreCase("P")){
 			<th class="text-nowrap w-10">Sanc Date</th>
 			<th class="w-124" >Sanc Cost(&#8377; Lakh)</th>
 			<th class="w-10">PDC</th>
-			<th>RevNo</th>
+			<!-- <th>RevNo</th> -->
 	  </tr>
 	   </thead> 
     <tbody>
@@ -152,7 +152,7 @@ NFormatConvertion nfc1=new NFormatConvertion();
 
 <td class="text-nowrap"><%=sdf.format(obj[10]) %></td>
 
-<td ><%=obj[11]!=null?StringEscapeUtils.escapeHtml4(obj[11].toString()): " - "%></td>
+<%-- <td ><%=obj[11]!=null?StringEscapeUtils.escapeHtml4(obj[11].toString()): " - "%></td> --%>
 </tr>
 
 <%count++;} %>

@@ -172,44 +172,44 @@ var s = '';
 		}
 	}
 
-	// Runs once on page load. If a branch was remembered before the last
-	// submit, expand every ancestor in that chain (so nested items become
-	// visible) and scroll/highlight the exact row that was updated.
+	// Runs once on page load. If a branch was remembered before the last submit, walks down
+	// that chain fetching + expanding each ancestor in turn (content is lazy-loaded now, so it
+	// won't already be in the DOM the way it used to be) then scrolls to the row that was updated.
+	// See loadLevelInto()/expandNode() further down the page (defined in the lazy-loading engine).
 	function restoreReopenState() {
 		var raw;
 		try {
 			raw = '<%= chainId %>';
-			// raw = sessionStorage.getItem('mape_reopenChain');
 		} catch (e) {
 			return;
 		}
-		if (raw === null) {
+		if (raw === null || raw === '' || raw === 'null') {
 			return;
 		}
-		// var target = sessionStorage.getItem('mape_reopenTarget');
 		var target = '<%= targetRowId %>';
 		try {
 			var chain = JSON.parse(raw);
-			if(chain){
-				chain.forEach(function(item) {
-					var div = document.getElementById('children_' + item);
-					var btn = document.getElementById('btn_' + item);
-					if (div) { div.style.display = 'block'; }
-					if (btn) { btn.innerHTML = '<i class="fa fa-minus" aria-hidden="true"></i>'; }
+			if (chain && chain.length && typeof autoExpandChain === 'function') {
+				autoExpandChain(chain, function () {
+					if (target) {
+						setTimeout(function () {
+							var el = document.getElementById(target);
+							if (el) {
+								el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+							}
+						}, 300);
+					}
 				});
+				return;
 			}
 		} catch (e) {
 			console.log('restoreReopenState error', e);
 		}
-		// sessionStorage.removeItem('mape_reopenChain');
-		// sessionStorage.removeItem('mape_reopenTarget');
 		if (target) {
 			setTimeout(function() {
 				var el = document.getElementById(target);
 				if (el) {
 					el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-					/* el.classList.add('mape-highlight');
-					setTimeout(function() { el.classList.remove('mape-highlight'); }, 2500); */
 				}
 			}, 300);
 		}
@@ -403,1017 +403,161 @@ renderEmployeeList('2','M', '<%=getMA[9]!=null?StringEscapeUtils.escapeHtml4(get
 </div>
 <div class="col-md-12">
 <%
-
-changes.add(getMA[20]!=null? getMA[20].toString():"0");
-
+// CHANGED: Level B and below used to be fetched eagerly here in a nested loop querying
+// the DB 5 levels deep for every Level-A activity - this is what made the page slow with
+// ~120 activities. Now only Level A is fetched (already done, one query, in the controller).
+// Levels B-E are fetched on demand, one level at a time, via MilestoneActivityLevelFetch.htm,
+// the first time the user expands a given node - see the lazy-loading engine script near the
+// bottom of this page.
 if(MilestoneActivityA!=null&&MilestoneActivityA.size()>0){
 	int countA=1;
 	for(Object[] ActivityA:MilestoneActivityA){
-		List<Object[]> MilestoneActivityB=(List<Object[]>)request.getAttribute("MilestoneActivityB"+countA);
-
-		changes.add(ActivityA[26].toString());
+		String aAncestorOic = getMA[8] + "," + getMA[9];
+		boolean canEditA = Arrays.asList(getMA[8].toString(), projectDirector, getMA[9].toString()).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A");
 %>
 
+		<form   method="POST" action="MilestoneActivityEditSubmit.htm" id="form<%=getMA[0] %>A<%=ActivityA[0] %>">
 
-	
-		
+				<div class="row container-fluid" id="row_A_<%=ActivityA[0]%>">
+					<div class="col-md-1 " ><label class="control-label ml-1" ></label><br> <b class="ml-1">A-<%=countA %></b><br>
+					     <!-- CHANGED: always shown now (whether or not this node turns out to have children) since
+					          knowing that up front would need the same eager per-node query we're trying to avoid.
+					          Expanding a leaf just shows "No sub-activities." -->
+					     <button type="button" id="btn_A_<%=ActivityA[0]%>" class="btn btn-sm btn-primary py-0 px-2 mt-1"
+					     	onclick="toggleAjaxChildren(this,'children_A_<%=ActivityA[0]%>','A','<%=ActivityA[0]%>','<%=sdf.format(ActivityA[2])%>','<%=sdf.format(ActivityA[3])%>','<%=aAncestorOic%>',['A_<%=ActivityA[0]%>'])">
+					     	<i class="fa fa-plus" aria-hidden="true"></i>
+					     </button>
+					</div>
+				  <div class="col-md-5 " ><br>
+                	 <textarea rows="1" cols="50" class="form-control mp2" <%if(RevisionCount>0){ %>  <%} %> name="ActivityName" id="ActivityName"    maxlength="1000" required="required"><%=ActivityA[4]!=null?ActivityA[4].toString(): " - " %></textarea>
+                	</div>
 
+                	<div class="col-md-1 " align="center"><br>
+                	<input class="form-control width120" name="ValidFrom" id="DateCompletionA<%=ActivityA[0] %>"  value="<%=sdf.format(ActivityA[2]) %>"  required="required"  >
 
-				<form   method="POST" action="MilestoneActivityEditSubmit.htm" id="form<%=getMA[0] %>A<%=ActivityA[0] %>">
-					
-						<div class="row container-fluid" id="row_A_<%=ActivityA[0]%>">
-						    <%-- <div class="col-md-1 " ><label class="control-label ml-1" ></label><br> <b class="ml-1">A-<%=countA %></b><br>
-                    		
-                        	</div> --%>
-                        	<div class="col-md-1 " ><label class="control-label ml-1" ></label><br> <b class="ml-1">A-<%=countA %></b><br>
-							    <% if(MilestoneActivityB != null && MilestoneActivityB.size() > 0) { %>
-							         <button type="button" id="btn_A_<%=ActivityA[0]%>" class="btn btn-sm btn-primary py-0 px-2 mt-1" onclick="toggleChildren('children_A_<%=ActivityA[0]%>', this)"><i class="fa fa-plus" aria-hidden="true"></i></button>
-							    <% } %>
-							</div>
-						  <div class="col-md-5 " ><br>
-                    		 <textarea rows="1" cols="50" class="form-control mp2" <%if(RevisionCount>0){ %>  <%} %> name="ActivityName" id="ActivityName"    maxlength="1000" required="required"><%=ActivityA[4]!=null?ActivityA[4].toString(): " - " %></textarea> 
-                        	</div>
-                        	
-                        	<div class="col-md-1 " align="center"><br>
-                        	<input class="form-control width120" name="ValidFrom" id="DateCompletionA<%=ActivityA[0] %>"  value="<%=sdf.format(ActivityA[2]) %>"  required="required"  >
-                        	
-                        	</div>
-                        	<div class="col-md-1 " align="center"><br>
-                        	<input class="form-control width120" name="ValidTo" id="DateCompletionA2<%=ActivityA[0] %>"  value="<%=sdf.format(ActivityA[3]) %>"  required="required"  >
-                        	</div>
-                       		<div class="col-md-1 " align="center" ><br>      
-                   				<input type="number" class="form-control width95"  name="Weightage" id="Weightage<%=getMA[0] %>A<%=ActivityA[0] %>" required="required" min="0" max="100" value="<%=ActivityA[6]!=null?StringEscapeUtils.escapeHtml4(ActivityA[6].toString()): "" %>" >
-                       		</div>
-                       		<div class="col-md-2 " ><br>
-                       			<%if(RevisionCount==0) { %>
-                              		<select class="form-control selectdee" id="ActivityTypeId<%=ActivityA[0] %>" required="required" name="ActivityTypeId">
-    									<option disabled="true"  selected value="">Choose...</option>
-    										<% for (Object[] obj : ActivityTypeList) {%>
-										<option value="<%=obj[0]%>" <%if(ActivityA[11].toString().equalsIgnoreCase(obj[0].toString())){ %> selected="selected" <% }%>><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - "%> </option>
-											<%} %>
+                	</div>
+                	<div class="col-md-1 " align="center"><br>
+                	<input class="form-control width120" name="ValidTo" id="DateCompletionA2<%=ActivityA[0] %>"  value="<%=sdf.format(ActivityA[3]) %>"  required="required"  >
+                	</div>
+               		<div class="col-md-1 " align="center" ><br>
+           				<input type="number" class="form-control width95"  name="Weightage" id="Weightage<%=getMA[0] %>A<%=ActivityA[0] %>" required="required" min="0" max="100" value="<%=ActivityA[6]!=null?StringEscapeUtils.escapeHtml4(ActivityA[6].toString()): "" %>" >
+               		</div>
+               		<div class="col-md-2 " ><br>
+               			<%if(RevisionCount==0) { %>
+                      		<select class="form-control selectdee" id="ActivityTypeId<%=ActivityA[0] %>" required="required" name="ActivityTypeId">
+									<option disabled="true"  selected value="">Choose...</option>
+										<% for (Object[] obj : ActivityTypeList) {%>
+									<option value="<%=obj[0]%>" <%if(ActivityA[11].toString().equalsIgnoreCase(obj[0].toString())){ %> selected="selected" <% }%>><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - "%> </option>
+										<%} %>
   									</select>
-                        		<%} %>
-                        	</div>
-                            <div class="col-md-1 "><br>
-                            <%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].toString() ).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A")){ %>
-                        	  <button type="button"  class="btn btn-sm edit" onclick="weightage_sum('<%=getMA[0] %>','<%=ActivityA[0] %>','A','1',[],'row_A_<%=ActivityA[0]%>');"> <i class="fa fa-edit" aria-hidden="true"></i> </button>
-                        	 
-                        	 <%if((ActivityA[5] == null || Long.parseLong(ActivityA[5].toString()) <= 0) && (ActivityA[6] == null || Long.parseLong(ActivityA[6].toString()) <= 0)  && (ActivityA[9] == null || Long.parseLong(ActivityA[9].toString()) < 2)){ %>
-	                        	  <button type="button" class="btn btn-sm delete" onclick="deletSubMilestones('<%=getMA[0] %>','<%=ActivityA[0] %>','A','1');" >
-	                        	  	<i class="fa fa-trash" aria-hidden="true"></i>
-	                        	  </button>
-	                         <%} %>
-	                         
-                        	  <input type="submit" hidden="hidden" id="<%=getMA[0] %>A<%=ActivityA[0] %>sub"/> 
-                              <input type="hidden" name="RevId"	value="<%=RevisionCount %>" /> 
-                              <input type="hidden" name="MilestoneActivityId"	value="<%=getMA[0] %>" /> 
-                              <input type="hidden" name="ActivityId"	value="<%=ActivityA[0] %>" /> 
-                              <input type="hidden" name="ActivityType"	value="A" /> 
-                              <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
-                              <input type="hidden" name="projectDirector" value ="<%=projectDirector%>">
-                              <input type="hidden" name="chainId" value="[]" />
-                              <input type="hidden" name="targetRowId" value="row_A_<%=ActivityA[0]%>" />
-                              
-                        <%} %>
-                        	</div>
-                        	</div>
-                        	
-                       		<div class="row container-fluid" >
-                             <div class="col-md-1 " >                    		
-                        	</div>
-                        	
-                        	<div class="col-md-2"><br>
-                        		<label  >Lab: <span class="mandatory"  >*</span></label><br>
-                        		<select class="form-control selectdee" name="labCode1" id="labCode1A<%=ActivityA[0] %>" required 
-								onchange="renderEmployeeList('1','A<%=ActivityA[0] %>','0')" data-placeholder= "Lab Name">
-								    <% for (Object[] lab : allLabList) { %>
-								    	<option value="<%=lab[3]%>" <%if(ActivityA[28].toString().equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-								    <%}%>
-								</select>
-                        	</div>
-                        	<div class="col-md-3 " align="center"><br>
-                        	<label class="control-label">First OIC  </label>
-                        	<%-- <div style="float: right;"  > <label>All &nbsp; : &nbsp;&nbsp;</label>
-										<input type="checkbox" style="float: right; margin-top : 6px;" id="allempcheckbox1<%=ActivityA[0] %>" onchange="changeempoic1('<%=ActivityA[13]%>','<%=ActivityA[0] %>')" >
-									</div> --%>
-                              		<select class="form-control selectdee" id="EmpIdA<%=ActivityA[0] %>" required="required" name="EmpId">
-    									
-											
+                		<%} %>
+                	</div>
+                    <div class="col-md-1 "><br>
+                    <%if(canEditA){ %>
+                	  <button type="button"  class="btn btn-sm edit" onclick="weightage_sum('<%=getMA[0] %>','<%=ActivityA[0] %>','A','1',[],'row_A_<%=ActivityA[0]%>');"> <i class="fa fa-edit" aria-hidden="true"></i> </button>
+
+                	 <%if((ActivityA[5] == null || Long.parseLong(ActivityA[5].toString()) <= 0) && (ActivityA[6] == null || Long.parseLong(ActivityA[6].toString()) <= 0)  && (ActivityA[9] == null || Long.parseLong(ActivityA[9].toString()) < 2)){ %>
+	                	  <button type="button" class="btn btn-sm delete" onclick="deletSubMilestones('<%=getMA[0] %>','<%=ActivityA[0] %>','A','1');" >
+	                	  	<i class="fa fa-trash" aria-hidden="true"></i>
+	                	  </button>
+	                 <%} %>
+
+                	  <input type="submit" hidden="hidden" id="<%=getMA[0] %>A<%=ActivityA[0] %>sub"/>
+                          <input type="hidden" name="RevId"	value="<%=RevisionCount %>" />
+                          <input type="hidden" name="MilestoneActivityId"	value="<%=getMA[0] %>" />
+                          <input type="hidden" name="ActivityId"	value="<%=ActivityA[0] %>" />
+                          <input type="hidden" name="ActivityType"	value="A" />
+                          <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" />
+                          <input type="hidden" name="projectDirector" value ="<%=projectDirector%>">
+                          <input type="hidden" name="chainId" value="[]" />
+                          <input type="hidden" name="targetRowId" value="row_A_<%=ActivityA[0]%>" />
+
+                    <%} %>
+                	</div>
+                	</div>
+
+               		<div class="row container-fluid" >
+                     <div class="col-md-1 " >
+                	</div>
+
+                	<div class="col-md-2"><br>
+                		<label  >Lab: <span class="mandatory"  >*</span></label><br>
+                		<select class="form-control selectdee" name="labCode1" id="labCode1A<%=ActivityA[0] %>" required
+							onchange="renderEmployeeList('1','A<%=ActivityA[0] %>','0')" data-placeholder= "Lab Name">
+							    <% for (Object[] lab : allLabList) { %>
+							    	<option value="<%=lab[3]%>" <%if(ActivityA[28].toString().equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
+							    <%}%>
+							</select>
+                	</div>
+                	<div class="col-md-3 " align="center"><br>
+                	<label class="control-label">First OIC  </label>
+                      		<select class="form-control selectdee" id="EmpIdA<%=ActivityA[0] %>" required="required" name="EmpId">
   									</select>
-                        	</div>
-                        	<div class="col-md-2"><br>
-                        		<label  >Lab: <span class="mandatory"  >*</span></label><br>
-                        		<select class="form-control selectdee" name="labCode2" id="labCode2A<%=ActivityA[0] %>" required 
-								onchange="renderEmployeeList('2','A<%=ActivityA[0] %>','0')" data-placeholder= "Lab Name">
-								    <% for (Object[] lab : allLabList) { %>
-								    	<option value="<%=lab[3]%>" <%if(ActivityA[29].toString().equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-								    <%}%>
-								</select>
-                        	</div>
-                        	<div class="col-md-3 " align="center"><br>
-                        		<label class="control-label">Second OIC </label>
-                        		<%-- <div style="float: right;"  > <label>All &nbsp; : &nbsp;&nbsp;</label>
-										<input type="checkbox" style="float: right; margin-top : 6px;" id="allempcheckbox2<%=ActivityA[0] %>" onchange="changeempoic2('<%=ActivityA[15]%>','<%=ActivityA[0] %>')" >
-									</div> --%>
-                              		<select class="form-control selectdee" id="EmpId1A<%=ActivityA[0] %>" required="required" name="EmpId1">
-    									
+                	</div>
+                	<div class="col-md-2"><br>
+                		<label  >Lab: <span class="mandatory"  >*</span></label><br>
+                		<select class="form-control selectdee" name="labCode2" id="labCode2A<%=ActivityA[0] %>" required
+							onchange="renderEmployeeList('2','A<%=ActivityA[0] %>','0')" data-placeholder= "Lab Name">
+							    <% for (Object[] lab : allLabList) { %>
+							    	<option value="<%=lab[3]%>" <%if(ActivityA[29].toString().equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
+							    <%}%>
+							</select>
+                	</div>
+                	<div class="col-md-3 " align="center"><br>
+                		<label class="control-label">Second OIC </label>
+                      		<select class="form-control selectdee" id="EmpId1A<%=ActivityA[0] %>" required="required" name="EmpId1">
   									</select>
   										</div>
-  										
-  							</div>			
-  <script type="text/javascript">
 
+  							</div>
+  <script type="text/javascript">
   renderEmployeeList('1','A<%=ActivityA[0]!=null?StringEscapeUtils.escapeHtml4(ActivityA[0].toString()): " - " %>', '<%=ActivityA[13]!=null?StringEscapeUtils.escapeHtml4(ActivityA[13].toString()): " - "%>');
   renderEmployeeList('2','A<%=ActivityA[0]!=null?StringEscapeUtils.escapeHtml4(ActivityA[0].toString()): " - " %>', '<%=ActivityA[15]!=null?StringEscapeUtils.escapeHtml4(ActivityA[15].toString()): " - "%>');
-  
-<%-- changeempoic1(<%=ActivityA[13] %>,<%=ActivityA[0] %>);
-changeempoic2(<%=ActivityA[15] %>,<%=ActivityA[0] %>); --%>
-
-
 </script>
 
-  										
-  										
-                        
-                       		
-                       		
-                        	
-                      </form>
-							<script type="text/javascript">
+	 </form>
+		<script type="text/javascript">
+$(function(){
 var from ="<%=sdf.format(getMA[2])%>".split("-")
 var dt = new Date(from[2], from[1] - 1, from[0])
 var to ="<%=sdf.format(getMA[3])%>".split("-")
 var dt1 = new Date(to[2], to[1] - 1, to[0])
 $('#DateCompletionA'+'<%=ActivityA[0] %>').daterangepicker({
-	"singleDatePicker" : true,
-	"linkedCalendars" : false,
-	"showCustomRangeLabel" : true,
-	"minDate" :dt,
-	"maxDate" : dt1,
-	"cancelClass" : "btn-default",
-	showDropdowns : true,
-	locale : {
-		format : 'DD-MM-YYYY'
-	}
+	"singleDatePicker" : true, "linkedCalendars" : false, "showCustomRangeLabel" : true,
+	"minDate" :dt, "maxDate" : dt1, "cancelClass" : "btn-default", showDropdowns : true,
+	locale : { format : 'DD-MM-YYYY' }
 });
-
 var mindate=dt;
 $('#DateCompletionA'+'<%=ActivityA[0] %>').on('change', function() {
     mindate=$('#DateCompletionA'+'<%=ActivityA[0] %>').val();
     $('#DateCompletionA2'+'<%=ActivityA[0] %>').prop("disabled",false);
     $('#DateCompletionA2'+'<%=ActivityA[0] %>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate,
-    	"maxDate" : dt1,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	}
+    	"singleDatePicker" : true, "linkedCalendars" : false, "showCustomRangeLabel" : true,
+    	"minDate" :mindate, "maxDate" : dt1, "cancelClass" : "btn-default", showDropdowns : true,
+    	locale : { format : 'DD-MM-YYYY' }
     	});
   });
-  
-  
-  
-  
-
-$( document ).ready(function() {
-    mindate=$('#DateCompletionA'+'<%=ActivityA[0] %>').val();
-    $('#DateCompletionA2'+'<%=ActivityA[0] %>').prop("disabled",false);
-    $('#DateCompletionA2'+'<%=ActivityA[0] %>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate,
-    	"maxDate" : dt1,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	}
-    	});
-  });
-
-	    
-	</script>	                   
-	
-                      <div id="children_A_<%=ActivityA[0]%>" style="display:none; border-left: 2px dashed #ccc; margin-left: 15px;">
-								
-							<%
-
-
-if(MilestoneActivityB!=null&&MilestoneActivityB.size()>0){
-	int countB=1;
-	for(Object[] ActivityB:MilestoneActivityB){
-		List<Object[]> MilestoneActivityC=(List<Object[]>)request.getAttribute("MilestoneActivityC"+countA+countB);	
-		changes.add(ActivityB[26].toString());
-%>
-
-
-	                              <form   method="POST" action="MilestoneActivityEditSubmit.htm" id="form<%=ActivityA[0] %>B<%=ActivityB[0] %>">
-		
-						    <div class="row container-fluid" id="row_B_<%=ActivityB[0]%>">
-						     <%-- <div class="col-md-1 " ><br> <label class="control-label"></label><b class="ml-1">B-<%=countB %></b>
-                    		
-                        	</div> --%>
-                        	<div class="col-md-1 " ><label class="control-label ml-1" ></label><br> <b class="ml-1">B-<%=countB %></b><br>
-							    <% if(MilestoneActivityC != null && MilestoneActivityC.size() > 0) { %>
-							         <button type="button" id="btn_B_<%=ActivityB[0]%>" class="btn btn-sm btn-primary py-0 px-2 mt-1" onclick="toggleChildren('children_B_<%=ActivityB[0]%>', this)"><i class="fa fa-plus" aria-hidden="true"></i></button>
-							    <% } %>
-							</div>
-						    <div class="col-md-5 " ><br>
-                    		 <textarea rows="1" cols="50" class="form-control mp2" <%if(RevisionCount>0){ %>  <%} %> name="ActivityName" id="ActivityName"    maxlength="1000" required="required"><%=ActivityB[4]!=null?ActivityB[4].toString(): " - " %></textarea> 
-                        	</div>
-                        	
-                        	<div class="col-md-1 " align="center"><br>
-                        	<input class="form-control width120" name="ValidFrom" id="DateCompletionB<%=ActivityA[0] %><%=ActivityB[0] %>"  value="<%=sdf.format(ActivityB[2]) %>"  required="required"   >
-                        	
-                        	</div>
-                        	<div class="col-md-1 " align="center"><br>
-                        	<input class="form-control width120" name="ValidTo" id="DateCompletionB2<%=ActivityA[0] %><%=ActivityB[0] %>"  value="<%=sdf.format(ActivityB[3]) %>"  required="required"   >
-                        		</div>
-                            <div class="col-md-1 " align="center" ><br>      
-                    		<input type="number" class="form-control width95"  name="Weightage" id="Weightage<%=ActivityA[0] %>B<%=ActivityB[0] %>" required="required" min="0" max="100" value="<%=ActivityB[6]!=null?StringEscapeUtils.escapeHtml4(ActivityB[6].toString()): "" %>"  >
-                    		</div>
-                    		<div class="col-md-2 " ><br>
-                    			<%if(RevisionCount==0) { %>
-                              		<select class="form-control selectdee" id="ActivityTypeId<%=ActivityA[0] %><%=ActivityB[0] %>" required="required" name="ActivityTypeId">
-    									<option disabled="true"  selected value="">Choose...</option>
-    										<% for (Object[] obj : ActivityTypeList) {%>
-										<option value="<%=obj[0]%>" <%if(ActivityB[11].toString().equalsIgnoreCase(obj[0].toString())){ %> selected="selected" <% }%>><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - "%> </option>
-											<%} %>
-  									</select>
-                    	      	
-                        		<%} %>
-                    		</div> 
-                        	<div class="col-md-1 "><br>
-                        	                            <%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].toString(),ActivityA[13].toString(),ActivityA[15].toString() ).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A")  ){ %>
-                        	
-                        	  <button type="button"  class="btn btn-sm edit" onclick="weightage_sum('<%=ActivityA[0] %>','<%=ActivityB[0] %>','B','2',['A_<%=ActivityA[0]%>'],'row_B_<%=ActivityB[0]%>');"> <i class="fa fa-edit" aria-hidden="true"></i> </button>
-                        	 
-                        	 <%if((ActivityB[5] == null || Long.parseLong(ActivityB[5].toString()) <= 0) && (ActivityB[6] == null || Long.parseLong(ActivityB[6].toString()) <= 0)  && (ActivityB[9] == null || Long.parseLong(ActivityB[9].toString()) < 2)){ %>
-                        	  <button type="button" class="btn btn-sm delete" onclick="deletSubMilestones('<%=ActivityA[0] %>','<%=ActivityB[0] %>','B','2');" >
-                        	  	<i class="fa fa-trash" aria-hidden="true"></i>
-                        	  </button>
-	                       	<%} %>
-	                        	  
-                        	  <input type="submit" hidden="hidden" id="<%=ActivityA[0] %>B<%=ActivityB[0] %>sub"/> 
-                              <input type="hidden" name="RevId"	value="<%=RevisionCount %>" /> 
-                              <input type="hidden" name="MilestoneActivityId"	value="<%=getMA[0] %>" /> 
-                              <input type="hidden" name="ActivityId"	value="<%=ActivityB[0] %>" /> 
-                              <input type="hidden" name="ActivityType"	value="B" /> 
-                              <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
-                              <input type="hidden" name="projectDirector" value ="<%=projectDirector%>">
-                              <input type="hidden" name="chainId" value="['A_<%=ActivityA[0]%>']" />
-                              <input type="hidden" name="targetRowId" value="row_B_<%=ActivityB[0]%>" />
-                                                
-                                            <%} %>    
-                                                  	</div>
-							</div>	
-							
-                       		<div class="row container-fluid" >
-                             <div class="col-md-1 " >                    		
-                        	</div>
-                        	
-                        	<div class="col-md-2"><br>
-                        		<label  >Lab: <span class="mandatory"  >*</span></label><br>
-                        		<select class="form-control selectdee" name="labCode1" id="labCode1B<%=ActivityA[0] %><%=ActivityB[0] %>" required 
-								onchange="renderEmployeeList('1','B<%=ActivityA[0] %><%=ActivityB[0] %>','0')" data-placeholder= "Lab Name">
-								    <% for (Object[] lab : allLabList) { %>
-								    	<option value="<%=lab[3]%>" <%if(ActivityB[28].toString().equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-								    <%}%>
-								</select>
-                        	</div>
-                       		<div class="col-md-3 " align="center"><br>
-                        	<label class="control-label">First OIC  </label>
-                        	<%-- <div style="float: right;"  > <label>All &nbsp; : &nbsp;&nbsp;</label>
-										<input type="checkbox" style="float: right; margin-top : 6px;" id="allempcheckbox1<%=ActivityA[0] %><%=ActivityB[0] %>" onchange="changeempoic1('<%=ActivityB[13]%>','<%=ActivityA[0] %><%=ActivityB[0] %>')" >
-									</div> --%>
-                              		<select class="form-control selectdee" id="EmpIdB<%=ActivityA[0] %><%=ActivityB[0] %>" required="required" name="EmpId">
-    									
-											
-  									</select>
-                        	</div>
-                        	<div class="col-md-2"><br>
-                        		<label  >Lab: <span class="mandatory"  >*</span></label><br>
-                        		<select class="form-control selectdee" name="labCode2" id="labCode2B<%=ActivityA[0] %><%=ActivityB[0] %>" required 
-								onchange="renderEmployeeList('2','B<%=ActivityA[0] %><%=ActivityB[0] %>','0')" data-placeholder= "Lab Name">
-								    <% for (Object[] lab : allLabList) { %>
-								    	<option value="<%=lab[3]%>" <%if(ActivityB[29].toString().equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-								    <%}%>
-								</select>
-                        	</div>
-                        	<div class="col-md-3 " align="center"><br>
-                        		<label class="control-label">Second OIC </label>
-                        		<%-- <div style="float: right;"  > <label>All &nbsp; : &nbsp;&nbsp;</label>
-										<input type="checkbox" style="float: right; margin-top : 6px;" id="allempcheckbox2<%=ActivityA[0] %><%=ActivityB[0] %>" onchange="changeempoic2('<%=ActivityB[15]%>','<%=ActivityA[0] %><%=ActivityB[0] %>')" >
-									</div> --%>
-                              		<select class="form-control selectdee" id="EmpId1B<%=ActivityA[0] %><%=ActivityB[0] %>" required="required" name="EmpId1">
-    									
-  									</select>
-  										</div>
-  										
-  							</div>			
-  <script type="text/javascript">
-
-<%-- changeempoic1(<%=ActivityB[13] %>,<%=ActivityA[0] %><%=ActivityB[0] %>);
-changeempoic2(<%=ActivityB[15] %>,<%=ActivityA[0] %><%=ActivityB[0] %>); --%>
-
-renderEmployeeList('1','B<%=ActivityA[0]!=null?StringEscapeUtils.escapeHtml4(ActivityA[0].toString()): " - " %><%=ActivityB[0]!=null?StringEscapeUtils.escapeHtml4(ActivityB[0].toString()): " - " %>', '<%=ActivityB[13]!=null?StringEscapeUtils.escapeHtml4(ActivityB[13].toString()): " - "%>');
-renderEmployeeList('2','B<%=ActivityA[0]!=null?StringEscapeUtils.escapeHtml4(ActivityA[0].toString()): " - " %><%=ActivityB[0]!=null?StringEscapeUtils.escapeHtml4(ActivityB[0].toString()): " - " %>', '<%=ActivityB[15]!=null?StringEscapeUtils.escapeHtml4(ActivityB[15].toString()): " - "%>');
-
-</script>
-                       		
-							
-						 </form>   
-						 
-							<script type="text/javascript">
-var from ="<%=sdf.format(ActivityA[2])%>".split("-")
-var dt = new Date(from[2], from[1] - 1, from[0])
-var to ="<%=sdf.format(ActivityA[3])%>".split("-")
-var dt1 = new Date(to[2], to[1] - 1, to[0])
-$('#DateCompletionB'+'<%=ActivityA[0] %><%=ActivityB[0] %>').daterangepicker({
-	"singleDatePicker" : true,
-	"linkedCalendars" : false,
-	"showCustomRangeLabel" : true,
-	"minDate" :dt,
-	"maxDate" : dt1,
-	"cancelClass" : "btn-default",
-	showDropdowns : true,
-	locale : {
-		format : 'DD-MM-YYYY'
-	}
+mindate=$('#DateCompletionA'+'<%=ActivityA[0] %>').val();
+$('#DateCompletionA2'+'<%=ActivityA[0] %>').prop("disabled",false);
+$('#DateCompletionA2'+'<%=ActivityA[0] %>').daterangepicker({
+	"singleDatePicker" : true, "linkedCalendars" : false, "showCustomRangeLabel" : true,
+	"minDate" :mindate, "maxDate" : dt1, "cancelClass" : "btn-default", showDropdowns : true,
+	locale : { format : 'DD-MM-YYYY' }
+	});
 });
-
-
-var mindate=dt;
-$('#DateCompletionB'+'<%=ActivityA[0] %><%=ActivityB[0] %>').on('change', function() {
-    mindate=$('#DateCompletionB'+'<%=ActivityA[0] %><%=ActivityB[0] %>').val();
-    $('#DateCompletionB2'+'<%=ActivityA[0] %><%=ActivityB[0] %>').prop("disabled",false);
-    $('#DateCompletionB2'+'<%=ActivityA[0] %><%=ActivityB[0] %>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate,
-    	"maxDate" : dt1,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	}
-    	});
-  });
-  
-  
-  
-$( document ).ready(function() {
-    mindate=$('#DateCompletionB'+'<%=ActivityA[0] %><%=ActivityB[0] %>').val();
-    var dt2=$('#DateCompletionA2'+'<%=ActivityA[0] %>').val();
-    $('#DateCompletionB2'+'<%=ActivityA[0] %><%=ActivityB[0] %>').prop("disabled",false);
-    $('#DateCompletionB2'+'<%=ActivityA[0] %><%=ActivityB[0] %>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate,
-    	"maxDate" : dt2,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	}
-    	});
-  });
-	    
-	</script> 					 
-						 
-						<!-- B end -->
-						
-                      <div id="children_B_<%=ActivityB[0]%>" style="display:none; border-left: 2px dashed #ccc; margin-left: 15px;">
-							<%
-
-
-if(MilestoneActivityC!=null&&MilestoneActivityC.size()>0){
-	int countC=1;
-	for(Object[] ActivityC:MilestoneActivityC){
-		List<Object[]> MilestoneActivityD=(List<Object[]>)request.getAttribute("MilestoneActivityD"+countA+countB+countC);	
-		changes.add(ActivityC[26].toString());
-%>
-
-
-	
-		
-
-					
-						<form   method="POST" action="MilestoneActivityEditSubmit.htm" id="form<%=ActivityB[0] %>C<%=ActivityC[0] %>">
-                            <div class="row container-fluid" id="row_C_<%=ActivityC[0]%>">
-                             <%-- <div class="col-md-1 " ><br> <label class="control-label"></label><b class="ml-2">C-<%=countC %></b>
-                    		
-                        	</div> --%>
-                        	<div class="col-md-1 " ><label class="control-label ml-1" ></label><br> <b class="ml-1">C-<%=countC %></b><br>
-							    <% if(MilestoneActivityD != null && MilestoneActivityD.size() > 0) { %>
-							         <button type="button" id="btn_C_<%=ActivityC[0]%>" class="btn btn-sm btn-primary py-0 px-2 mt-1" onclick="toggleChildren('children_C_<%=ActivityC[0]%>', this)"><i class="fa fa-plus" aria-hidden="true"></i></button>
-							    <% } %>
-							</div>
-                        	
-						    <div class="col-md-5 " ><br>
-                    		 <textarea rows="1" cols="50" class="form-control mp2 " <%if(RevisionCount>0){ %>  <%} %> name="ActivityName" id="ActivityName"    maxlength="1000" required="required"><%=ActivityC[4]!=null?ActivityC[4].toString(): " - " %></textarea> 
-                        	</div>
-                        	
-                        	<div class="col-md-1 " align="center"><br>
-                        	<input class="form-control width120" name="ValidFrom" id="DateCompletionC<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>"  value="<%=sdf.format(ActivityC[2]) %>"  required="required" >
-                        	
-                        	</div>
-                        	<div class="col-md-1 " align="center"><br>
-                        	<input class="form-control width120" name="ValidTo" id="DateCompletionC2<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>"  value="<%=sdf.format(ActivityC[3]) %>"  required="required"   >
-                        		</div>
-                        		<div class="col-md-1 " align="center" ><br>      
-                    		<input type="number" class="form-control width95" name="Weightage" id="Weightage<%=ActivityB[0] %>C<%=ActivityC[0] %>" required="required" min="0" max="100" value="<%=ActivityC[6]!=null?StringEscapeUtils.escapeHtml4(ActivityC[6].toString()): "" %>"  >
-                        	</div>
-                        	
-                        	<div class="col-md-2 " ><br>
-                        		<%if(RevisionCount==0) { %>
-                              		<select class="form-control selectdee" id="ActivityTypeId<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>" required="required" name="ActivityTypeId">
-    									<option disabled="true"  selected value="">Choose...</option>
-    										<% for (Object[] obj : ActivityTypeList) {%>
-										<option value="<%=obj[0]%>" <%if(ActivityC[11].toString().equalsIgnoreCase(obj[0].toString())){ %> selected="selected" <% }%>><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - "%> </option>
-											<%} %>
-  									</select>
-                        		<%} %>
-                        	</div>
-                        	<div class="col-md-1 "><br>
-                          <%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].toString(),ActivityA[13].toString(),ActivityA[15].toString(),ActivityB[13].toString(),ActivityB[15].toString() ).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A")  ){ %>
-                        	  <button type="button"  class="btn btn-sm edit" onclick="weightage_sum('<%=ActivityB[0] %>','<%=ActivityC[0] %>','C','3',['A_<%=ActivityA[0]%>','B_<%=ActivityB[0]%>'],'row_C_<%=ActivityC[0]%>');"> <i class="fa fa-edit" aria-hidden="true"></i> </button>
-                        	  
-                        	  <%if((ActivityC[5] == null || Long.parseLong(ActivityC[5].toString()) <= 0) && (ActivityC[6] == null || Long.parseLong(ActivityC[6].toString()) <= 0)  && (ActivityC[9] == null || Long.parseLong(ActivityC[9].toString()) < 2)){ %>
-                        	  <button type="button" class="btn btn-sm delete" onclick="deletSubMilestones('<%=ActivityB[0] %>','<%=ActivityC[0] %>','C','3');" >
-                        	  	<i class="fa fa-trash" aria-hidden="true"></i>
-                        	  </button>
-                        	  <%} %>
-                        	  
-                        	  <input type="submit" hidden="hidden" id="<%=ActivityB[0] %>C<%=ActivityC[0] %>sub"/> 
-                        	  
-                              <input type="hidden" name="RevId"	value="<%=RevisionCount %>" /> 
-                              <input type="hidden" name="MilestoneActivityId"	value="<%=getMA[0] %>" /> 
-                              <input type="hidden" name="ActivityId"	value="<%=ActivityC[0] %>" /> 
-                              <input type="hidden" name="ActivityType"	value="C" /> 
-                                   <input type="hidden" name="projectDirector" value ="<%=projectDirector%>">
-                              <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
-	                              <input type="hidden" name="chainId" value="['A_<%=ActivityA[0]%>','B_<%=ActivityB[0]%>']" />
-	                              <input type="hidden" name="targetRowId" value="row_C_<%=ActivityC[0]%>" />
-                                 <%} %>                   	
-                               </div>
-                                                    	 
-                        	</div>
-                        	
-                       		<div class="row container-fluid" >
-                             <div class="col-md-1 " >                    		
-                        	</div>
-                        	
-                        	<div class="col-md-2"><br>
-                        		<label  >Lab: <span class="mandatory"  >*</span></label><br>
-                        		<select class="form-control selectdee" name="labCode1" id="labCode1C<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>" required 
-								onchange="renderEmployeeList('1','C<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>','0')" data-placeholder= "Lab Name">
-								    <% for (Object[] lab : allLabList) { %>
-								    	<option value="<%=lab[3]%>" <%if(ActivityC[28].toString().equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-								    <%}%>
-								</select>
-                        	</div>
-                       <div class="col-md-3 " align="center"><br>
-                        	<label class="control-label">First OIC  </label>
-                        	<%-- <div style="float: right;"  > <label>All &nbsp; : &nbsp;&nbsp;</label>
-										<input type="checkbox" style="float: right; margin-top : 6px;" id="allempcheckbox1<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>" onchange="changeempoic1('<%=ActivityC[13]%>','<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>')" >
-									</div> --%>
-                              		<select class="form-control selectdee" id="EmpIdC<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>" required="required" name="EmpId">
-    									
-											
-  									</select>
-                        	</div>
-                        	<div class="col-md-2"><br>
-                        		<label  >Lab: <span class="mandatory" >*</span></label><br>
-                        		<select class="form-control selectdee" name="labCode2" id="labCode2C<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>" required 
-								onchange="renderEmployeeList('2','C<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>','0')" data-placeholder= "Lab Name">
-								    <% for (Object[] lab : allLabList) { %>
-								    	<option value="<%=lab[3]%>" <%if(ActivityC[29].toString().equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-								    <%}%>
-								</select>
-                        	</div>
-                        	<div class="col-md-3 " align="center"><br>
-                        		<label class="control-label">Second OIC </label>
-                        		<%-- <div style="float: right;"  > <label>All &nbsp; : &nbsp;&nbsp;</label>
-										<input type="checkbox" style="float: right; margin-top : 6px;" id="allempcheckbox2<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>" onchange="changeempoic2('<%=ActivityC[15]%>','<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>')" >
-									</div> --%>
-                              		<select class="form-control selectdee" id="EmpId1C<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>" required="required" name="EmpId1">
-    									
-  									</select>
-  										</div>
-  										
-  							</div>			
-  <script type="text/javascript">
-
-<%-- changeempoic1(<%=ActivityC[13] %>,<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>);
-changeempoic2(<%=ActivityC[15] %>,<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>); --%>
-
-renderEmployeeList('1','C<%=ActivityA[0]!=null?StringEscapeUtils.escapeHtml4(ActivityA[0].toString()): " - " %><%=ActivityB[0]!=null?StringEscapeUtils.escapeHtml4(ActivityB[0].toString()): " - " %><%=ActivityC[0]!=null?StringEscapeUtils.escapeHtml4(ActivityC[0].toString()): " - " %>', '<%=ActivityC[13]!=null?StringEscapeUtils.escapeHtml4(ActivityC[13].toString()): " - "%>');
-renderEmployeeList('2','C<%=ActivityA[0]!=null?StringEscapeUtils.escapeHtml4(ActivityA[0].toString()): " - " %><%=ActivityB[0]!=null?StringEscapeUtils.escapeHtml4(ActivityB[0].toString()): " - " %><%=ActivityC[0]!=null?StringEscapeUtils.escapeHtml4(ActivityC[0].toString()): " - " %>', '<%=ActivityC[15]!=null?StringEscapeUtils.escapeHtml4(ActivityC[15].toString()): " - "%>');
-
-</script>
-                       		
-                        	
-	                        </form> 
-	                        
-	           					<script type="text/javascript">
-var from ="<%=sdf.format(ActivityB[2])%>".split("-")
-var dt = new Date(from[2], from[1] - 1, from[0])
-var to ="<%=sdf.format(ActivityB[3])%>".split("-")
-var dt1 = new Date(to[2], to[1] - 1, to[0])
-$('#DateCompletionC'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>').daterangepicker({
-	"singleDatePicker" : true,
-	"linkedCalendars" : false,
-	"showCustomRangeLabel" : true,
-	"minDate" :dt,
-	"maxDate" : dt1,
-	"cancelClass" : "btn-default",
-	showDropdowns : true,
-	locale : {
-		format : 'DD-MM-YYYY'
-	}
-});
-
-
-var mindate=dt;
-$('#DateCompletionC'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>').on('change', function() {
-    mindate=$('#DateCompletionC'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>').val();
-    $('#DateCompletionC2'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>').prop("disabled",false);
-    $('#DateCompletionC2'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate,
-    	"maxDate" : dt1,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	}
-    	});
-  });
-  
-  
-  
-$( document ).ready(function() {
-    mindate=$('#DateCompletionC'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>').val();
-    var dt3=$('#DateCompletionB2'+'<%=ActivityA[0] %><%=ActivityB[0] %>').val();
-    $('#DateCompletionC2'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>').prop("disabled",false);
-    $('#DateCompletionC2'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate,
-    	"maxDate" : dt3,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	}
-    	});
-  });
-	    
-	</script> 	     
-	
-                      <div id="children_C_<%=ActivityC[0]%>" style="display:none; border-left: 2px dashed #ccc; margin-left: 15px;">
-								<%
-
-
-if(MilestoneActivityD!=null&&MilestoneActivityD.size()>0){
-	int countD=1;
-	for(Object[] ActivityD:MilestoneActivityD){
-		List<Object[]> MilestoneActivityE=(List<Object[]>)request.getAttribute("MilestoneActivityE"+countA+countB+countC+countD);	
-		changes.add(ActivityD[26].toString());
-%>
-
-
-	                              <form  method="POST" action="MilestoneActivityEditSubmit.htm" id="form<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>">
-		
-						    <div class="row container-fluid" id="row_D_<%=ActivityD[0]%>">
-						     <%-- <div class="col-md-1 " ><br> <label class="control-label"></label><b class="ml-2">D-<%=countD %></b>
-                    		
-                        	</div> --%>
-                        	<div class="col-md-1 " ><label class="control-label ml-1" ></label><br> <b class="ml-1">D-<%=countD %></b><br>
-							    <% if(MilestoneActivityE != null && MilestoneActivityE.size() > 0) { %>
-							         <button type="button" id="btn_D_<%=ActivityD[0]%>" class="btn btn-sm btn-primary py-0 px-2 mt-1" onclick="toggleChildren('children_D_<%=ActivityD[0]%>', this)"><i class="fa fa-plus" aria-hidden="true"></i></button>
-							    <% } %>
-							</div>
-						    <div class="col-md-5 " ><br>
-                    		 <textarea rows="1" cols="50" class="form-control mp2" <%if(RevisionCount>0){ %>  <%} %> name="ActivityName" id="ActivityName"    maxlength="1000" required="required"><%=ActivityD[4]!=null?ActivityD[4].toString(): " - " %></textarea> 
-                        	</div>
-                        	
-                        	<div class="col-md-1 " align="center"><br>
-                        	<input class="form-control width120" name="ValidFrom" id="DateCompletionB<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>"  value="<%=sdf.format(ActivityD[2]) %>"  required="required"  " >
-                        	
-                        	</div>
-                        	<div class="col-md-1 " align="center"><br>
-                        	<input class="form-control width120" name="ValidTo" id="DateCompletionB2<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>"  value="<%=sdf.format(ActivityD[3]) %>"  required="required"   >
-                        		</div>
-                            <div class="col-md-1 " align="center" ><br>      
-                    		<input type="number" class="form-control width95"  name="Weightage" id="Weightage<%=ActivityC[0] %>D<%=ActivityD[0] %>" required="required" min="0" max="100" value="<%=ActivityD[6]!=null?StringEscapeUtils.escapeHtml4(ActivityD[6].toString()): " - " %>"   >
-                        	</div>
-                        	
-                        	<div class="col-md-2 " ><br>
-                        		<%if(RevisionCount==0) { %>
-                              		<select class="form-control selectdee" id="ActivityTypeId<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>" required="required" name="ActivityTypeId">
-    									<option disabled="true"  selected value="">Choose...</option>
-    										<% for (Object[] obj : ActivityTypeList) {%>
-										<option value="<%=obj[0]%>" <%if(ActivityD[11].toString().equalsIgnoreCase(obj[0].toString())){ %> selected="selected" <% }%>><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): ""%> </option>
-											<%} %>
-  									</select>
-                    	    	<%} %>
-                    	    </div>
-                    	      	
-                        	<div class="col-md-1 "><br>
-                        	
-                       <%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].toString(),ActivityA[13].toString(),ActivityA[15].toString(),ActivityB[13].toString(),ActivityB[15].toString(),ActivityC[13].toString(),ActivityC[15].toString() ).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A")  ){ %>
-                        	  <button type="button"  class="btn btn-sm edit" onclick="weightage_sum('<%=ActivityC[0] %>','<%=ActivityD[0] %>','D','4',['A_<%=ActivityA[0]%>','B_<%=ActivityB[0]%>','C_<%=ActivityC[0]%>'],'row_D_<%=ActivityD[0]%>');"> <i class="fa fa-edit" aria-hidden="true"></i> </button>
-                        	 
-                        	 <%if((ActivityD[5] == null || Long.parseLong(ActivityD[5].toString()) <= 0) && (ActivityD[6] == null || Long.parseLong(ActivityD[6].toString()) <= 0)  && (ActivityD[9] == null || Long.parseLong(ActivityD[9].toString()) < 2)){ %>
-                        	  <button type="button" class="btn btn-sm delete" onclick="deletSubMilestones('<%=ActivityC[0] %>','<%=ActivityD[0] %>','D','4');" >
-                        	  	<i class="fa fa-trash" aria-hidden="true"></i>
-                        	  </button>
-                        	  <%} %>
-                        	  
-                        	  <input type="submit" hidden="hidden" id="<%=ActivityC[0] %>D<%=ActivityD[0] %>sub"/> 
-                              <input type="hidden" name="RevId"	value="<%=RevisionCount %>" /> 
-                              <input type="hidden" name="MilestoneActivityId"	value="<%=getMA[0] %>" /> 
-                              <input type="hidden" name="ActivityId"	value="<%=ActivityD[0] %>" /> 
-                              <input type="hidden" name="projectDirector" value ="<%=projectDirector%>">
-                              <input type="hidden" name="chainId" value="['A_<%=ActivityA[0]%>','B_<%=ActivityB[0]%>','C_<%=ActivityC[0]%>']" />
-                              <input type="hidden" name="targetRowId" value="row_D_<%=ActivityD[0]%>" />
-                                                          
-                                                            <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
-                              <%} %>
-                                                  	</div>
-							</div>
-							
-                       		<div class="row container-fluid" >
-                             <div class="col-md-1 " >                    		
-                        	</div>
-                        	
-                        	<div class="col-md-2"><br>
-                        		<label  >Lab: <span class="mandatory" >*</span></label><br>
-                        		<select class="form-control selectdee" name="labCode1" id="labCode1D<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>" required 
-								onchange="renderEmployeeList('1','D<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>','0')" data-placeholder= "Lab Name">
-								    <% for (Object[] lab : allLabList) { %>
-								    	<option value="<%=lab[3]%>" <%if(ActivityD[28].toString().equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-								    <%}%>
-								</select>
-                        	</div>
-                        	
-                            <div class="col-md-3 " align="center"><br>
-                        	<label class="control-label">First OIC  </label>
-                        	<%-- <div style="float: right;"  > <label>All &nbsp; : &nbsp;&nbsp;</label>
-										<input type="checkbox" style="float: right; margin-top : 6px;" id="allempcheckbox1<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>" onchange="changeempoic1('<%=ActivityD[13]%>','<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>')" >
-									</div> --%>
-                              		<select class="form-control selectdee" id="EmpIdD<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>" required="required" name="EmpId">
-    									
-											
-  									</select>
-                        	</div>
-                        	<div class="col-md-2"><br>
-                        		<label  >Lab: <span class="mandatory" >*</span></label><br>
-                        		<select class="form-control selectdee" name="labCode2" id="labCode2D<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>" required 
-								onchange="renderEmployeeList('2','D<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>','0')" data-placeholder= "Lab Name">
-								    <% for (Object[] lab : allLabList) { %>
-								    	<option value="<%=lab[3]%>" <%if(ActivityD[29].toString().equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-								    <%}%>
-								</select>
-                        	</div>
-                        	<div class="col-md-3 " align="center"><br>
-                        		<label class="control-label">Second OIC </label>
-                        		<%-- <div style="float: right;"  > <label>All &nbsp; : &nbsp;&nbsp;</label>
-										<input type="checkbox" style="float: right; margin-top : 6px;" id="allempcheckbox2<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>" onchange="changeempoic2('<%=ActivityD[15]%>','<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>')" >
-									</div> --%>
-                              		<select class="form-control selectdee" id="EmpId1D<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>" required="required" name="EmpId1">
-    									
-  									</select>
-  										</div>
-  										
-  							</div>			
-  <script type="text/javascript">
-
-<%-- changeempoic1(<%=ActivityD[13] %>,<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>);
-changeempoic2(<%=ActivityD[15] %>,<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>); --%>
-
-renderEmployeeList('1','D<%=ActivityA[0]!=null?StringEscapeUtils.escapeHtml4(ActivityA[0].toString()): " - " %><%=ActivityB[0]!=null?StringEscapeUtils.escapeHtml4(ActivityB[0].toString()): " - " %><%=ActivityC[0]!=null?StringEscapeUtils.escapeHtml4(ActivityC[0].toString()): " - " %><%=ActivityD[0]!=null?StringEscapeUtils.escapeHtml4(ActivityD[0].toString()): " - " %>', '<%=ActivityD[13]!=null?StringEscapeUtils.escapeHtml4(ActivityD[13].toString()): " - "%>');
-renderEmployeeList('2','D<%=ActivityA[0]!=null?StringEscapeUtils.escapeHtml4(ActivityA[0].toString()): " - " %><%=ActivityB[0]!=null?StringEscapeUtils.escapeHtml4(ActivityB[0].toString()): " - " %><%=ActivityC[0]!=null?StringEscapeUtils.escapeHtml4(ActivityC[0].toString()): " - " %><%=ActivityD[0]!=null?StringEscapeUtils.escapeHtml4(ActivityD[0].toString()): " - " %>', '<%=ActivityD[15]!=null?StringEscapeUtils.escapeHtml4(ActivityD[15].toString()): " - "%>');
-</script>
-								
-						 </form>   
-						 
-							<script type="text/javascript">
-var from ="<%=sdf.format(ActivityC[2])%>".split("-")
-var dt = new Date(from[2], from[1] - 1, from[0])
-var to ="<%=sdf.format(ActivityC[3])%>".split("-")
-var dt1 = new Date(to[2], to[1] - 1, to[0])
-$('#DateCompletionB'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>').daterangepicker({
-	"singleDatePicker" : true,
-	"linkedCalendars" : false,
-	"showCustomRangeLabel" : true,
-	"minDate" :dt,
-	"maxDate" : dt1,
-	"cancelClass" : "btn-default",
-	showDropdowns : true,
-	locale : {
-		format : 'DD-MM-YYYY'
-	}
-});
-
-
-var mindate=dt;
-$('#DateCompletionB'+'<%=ActivityD[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>').on('change', function() {
-    mindate=$('#DateCompletionB'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>').val();
-    $('#DateCompletionB2'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>').prop("disabled",false);
-    $('#DateCompletionB2'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate,
-    	"maxDate" : dt1,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	}
-    	});
-  });
-  
-  
-  
-$( document ).ready(function() {
-    mindate=$('#DateCompletionB'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>').val();
-    var dt4=$('#DateCompletionC2'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>').val();
-    $('#DateCompletionB2'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>').prop("disabled",false);
-    $('#DateCompletionB2'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate,
-    	"maxDate" : dt4,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	}
-    	});
-  });
-	    
-	</script> 					 
-						 
-                      <div id="children_D_<%=ActivityD[0]%>" style="display:none; border-left: 2px dashed #ccc; margin-left: 15px;">
-						<!-- B end -->
-						
-							<%
-
-
-if(MilestoneActivityE!=null&&MilestoneActivityE.size()>0){
-	int countE=1;
-	for(Object[] ActivityE:MilestoneActivityE){
-		changes.add(ActivityE[26].toString());
-%>
-
-
-	
-		
-
-					
-						<form   method="POST" action="MilestoneActivityEditSubmit.htm" id="form<%=ActivityD[0] %>E<%=ActivityE[0] %>">
-                            <div class="row container-fluid" id="row_E_<%=ActivityE[0]%>">
-                             <div class="col-md-1 " ><br> <label class="control-label"></label><b class="ml-3">E-<%=countE %></b>
-                    		
-                        	</div>
-                        	
-						    <div class="col-md-5 " ><br>
-                    		 <textarea rows="1" cols="50" class="form-control mp2" <%if(RevisionCount>0){ %>  <%} %> name="ActivityName" id="ActivityName"    maxlength="1000" required="required"><%=ActivityE[4] !=null?ActivityE[4].toString(): " - "%></textarea> 
-                        	</div>
-                        	
-                        	<div class="col-md-1 width120" align="center"><br>
-                        	<input class="form-control " name="ValidFrom" id="DateCompletionC<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>"  value="<%=sdf.format(ActivityE[2]) %>"  required="required"  >
-                        	
-                        	</div>
-                        	<div class="col-md-1 width120" align="center"><br>
-                        	<input class="form-control " name="ValidTo" id="DateCompletionC2<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>"  value="<%=sdf.format(ActivityE[3]) %>"  required="required"   >
-                        		</div>
-                        		<div class="col-md-1 " align="center" ><br>      
-                    		<input type="number" class="form-control width95" name="Weightage" id="Weightage<%=ActivityD[0] %>E<%=ActivityE[0] %>" required="required" min="0" max="100" value="<%=ActivityE[6]!=null?StringEscapeUtils.escapeHtml4(ActivityE[6].toString()): "" %>"  >
-                        	</div>
-                        	<div class="col-md-2 " ><br>
-                        		<%if(RevisionCount==0) { %>
-                              		<select class="form-control selectdee" id="ActivityTypeId<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>" required="required" name="ActivityTypeId">
-    									<option disabled="true"  selected value="">Choose...</option>
-    										<% for (Object[] obj : ActivityTypeList) {%>
-										<option value="<%=obj[0]%>" <%if(ActivityE[11].toString().equalsIgnoreCase(obj[0].toString())){ %> selected="selected" <% }%>><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()): " - "%> </option>
-											<%} %>
-  									</select>
-                        		<%} %>
-                        	</div>
-                        	<div class="col-md-1 "><br>
-                  			<%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].toString(),ActivityA[13].toString(),ActivityA[15].toString(),ActivityB[13].toString(),ActivityB[15].toString(),ActivityC[13].toString(),ActivityC[15].toString(),ActivityD[13].toString(),ActivityD[15].toString() ).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A")  ){ %>
-                        	  <button type="button"  class="btn btn-sm edit" onclick="weightage_sum('<%=ActivityD[0] %>','<%=ActivityE[0] %>','E','5',['A_<%=ActivityA[0]%>','B_<%=ActivityB[0]%>','C_<%=ActivityC[0]%>','D_<%=ActivityD[0]%>'],'row_E_<%=ActivityE[0]%>');"> <i class="fa fa-edit" aria-hidden="true"></i> </button>
-                        	  
-                        	  <%if((ActivityE[5] == null || Long.parseLong(ActivityE[5].toString()) <= 0) && (ActivityE[6] == null || Long.parseLong(ActivityE[6].toString()) <= 0) && (ActivityE[9] == null || Long.parseLong(ActivityE[9].toString()) < 2)){ %>  
-                        	  <button type="button" class="btn btn-sm delete" onclick="deletSubMilestones('<%=ActivityD[0] %>','<%=ActivityE[0] %>','E','5');" >
-                        	  	<i class="fa fa-trash" aria-hidden="true"></i>
-                        	  </button>
-                        	  <%} %>
-                        	  
-                        	  <input type="submit" hidden="hidden" id="<%=ActivityD[0] %>E<%=ActivityE[0] %>sub"/> 
-                              <input type="hidden" name="RevId"	value="<%=RevisionCount %>" /> 
-                              <input type="hidden" name="MilestoneActivityId"	value="<%=getMA[0] %>" /> 
-                              <input type="hidden" name="ActivityId"	value="<%=ActivityE[0] %>" /> 
-                              <input type="hidden" name="projectDirector" value ="<%=projectDirector%>">
-                              <input type="hidden" name="chainId" value="['A_<%=ActivityA[0]%>','B_<%=ActivityB[0]%>','C_<%=ActivityC[0]%>','D_<%=ActivityD[0]%>']" />
-                              <input type="hidden" name="targetRowId" value="row_E_<%=ActivityE[0]%>" />
-                              
-                              <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
-                              <%} %>     
-                               </div>
-                                                    	 
-                        	</div>
-                        	
-                       		<div class="row container-fluid" >
-                             <div class="col-md-1 " >                    		
-                        	</div>
-                        	
-                        	<div class="col-md-2"><br>
-                        		<label  >Lab: <span class="mandatory" >*</span></label><br>
-                        		<select class="form-control selectdee" name="labCode1" id="labCode1E<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>" required 
-								onchange="renderEmployeeList('1','E<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>','0')" data-placeholder= "Lab Name">
-								    <% for (Object[] lab : allLabList) { %>
-								    	<option value="<%=lab[3]%>" <%if(ActivityE[28].toString().equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-								    <%}%>
-								</select>
-                        	</div>
-                        	
-                        <div class="col-md-3 " align="center"><br>
-                        	<label class="control-label">First OIC  </label>
-                        	<%-- <div style="float: right;"  > <label>All &nbsp; : &nbsp;&nbsp;</label>
-										<input type="checkbox" style="float: right; margin-top : 6px;" id="allempcheckbox1<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>" onchange="changeempoic1('<%=ActivityE[13]%>','<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>')" >
-									</div> --%>
-                              		<select class="form-control selectdee" id="EmpIdE<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>" required="required" name="EmpId">
-    									
-											
-  									</select>
-                        	</div>
-                        	
-                        	<div class="col-md-2"><br>
-                        		<label  >Lab: <span class="mandatory" >*</span></label><br>
-                        		<select class="form-control selectdee" name="labCode2" id="labCode2E<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>" required 
-								onchange="renderEmployeeList('2','E<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>','0')" data-placeholder= "Lab Name">
-								    <% for (Object[] lab : allLabList) { %>
-								    	<option value="<%=lab[3]%>" <%if(ActivityE[29].toString().equalsIgnoreCase(lab[3].toString())) {%>selected<%} %> ><%=lab[3]!=null?StringEscapeUtils.escapeHtml4(lab[3].toString()): " - "%></option>
-								    <%}%>
-								</select>
-                        	</div>
-                        	
-                        	<div class="col-md-3 " align="center"><br>
-                        		<label class="control-label">Second OIC </label>
-                        		<%-- <div style="float: right;"  > <label>All &nbsp; : &nbsp;&nbsp;</label>
-										<input type="checkbox" style="float: right; margin-top : 6px;" id="allempcheckbox2<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>" onchange="changeempoic2('<%=ActivityE[15]%>','<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>')" >
-									</div> --%>
-                              		<select class="form-control selectdee" id="EmpId1E<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>" required="required" name="EmpId1">
-    									
-  									</select>
-  										</div>
-  										
-  							</div>			
-  <script type="text/javascript">
-
-<%-- changeempoic1(<%=ActivityE[13] %>,<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>);
-changeempoic2(<%=ActivityE[15] %>,<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>); --%>
-
-renderEmployeeList('1','E<%=ActivityA[0]!=null?StringEscapeUtils.escapeHtml4(ActivityA[0].toString()): " - " %><%=ActivityB[0]!=null?StringEscapeUtils.escapeHtml4(ActivityB[0].toString()): " - " %><%=ActivityC[0]!=null?StringEscapeUtils.escapeHtml4(ActivityC[0].toString()): " - " %><%=ActivityD[0]!=null?StringEscapeUtils.escapeHtml4(ActivityD[0].toString()): " - " %><%=ActivityE[0]!=null?StringEscapeUtils.escapeHtml4(ActivityE[0].toString()): " - " %>', '<%=ActivityE[13]!=null?StringEscapeUtils.escapeHtml4(ActivityE[13].toString()): " - "%>');
-renderEmployeeList('2','E<%=ActivityA[0]!=null?StringEscapeUtils.escapeHtml4(ActivityA[0].toString()): " - " %><%=ActivityB[0]!=null?StringEscapeUtils.escapeHtml4(ActivityB[0].toString()): " - " %><%=ActivityC[0]!=null?StringEscapeUtils.escapeHtml4(ActivityC[0].toString()): " - " %><%=ActivityD[0]!=null?StringEscapeUtils.escapeHtml4(ActivityD[0].toString()): " - " %><%=ActivityE[0]!=null?StringEscapeUtils.escapeHtml4(ActivityE[0].toString()): " - " %>', '<%=ActivityE[15]!=null?StringEscapeUtils.escapeHtml4(ActivityE[15].toString()): " - "%>');
-</script>
-                        	
-	                        </form> 
-	                        
-	           					<script type="text/javascript">
-var from ="<%=sdf.format(ActivityD[2])%>".split("-")
-var dt = new Date(from[2], from[1] - 1, from[0])
-var to ="<%=sdf.format(ActivityD[3])%>".split("-")
-var dt1 = new Date(to[2], to[1] - 1, to[0])
-$('#DateCompletionC'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>').daterangepicker({
-	"singleDatePicker" : true,
-	"linkedCalendars" : false,
-	"showCustomRangeLabel" : true,
-	"minDate" :dt,
-	"maxDate" : dt1,
-	"cancelClass" : "btn-default",
-	showDropdowns : true,
-	locale : {
-		format : 'DD-MM-YYYY'
-	}
-});
-
-
-var mindate=dt;
-$('#DateCompletionC'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>').on('change', function() {
-    mindate=$('#DateCompletionC'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>').val();
-    $('#DateCompletionC2'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>').prop("disabled",false);
-    $('#DateCompletionC2'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate,
-    	"maxDate" : dt1,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	}
-    	});
-  });
-  
-  
-  
-$( document ).ready(function() {
-    mindate=$('#DateCompletionC'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>').val();
-    var dt5=$('#DateCompletionC2'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %>').val();
-
-    
-    $('#DateCompletionC2'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>').prop("disabled",false);
-    $('#DateCompletionC2'+'<%=ActivityA[0] %><%=ActivityB[0] %><%=ActivityC[0] %><%=ActivityD[0] %><%=ActivityE[0] %>').daterangepicker({
-    	"singleDatePicker" : true,
-    	"linkedCalendars" : false,
-    	"showCustomRangeLabel" : true,
-    	"minDate" :mindate,
-    	"maxDate" : dt5,
-    	"cancelClass" : "btn-default",
-    	showDropdowns : true,
-    	locale : {
-    		format : 'DD-MM-YYYY'
-    	}
-    	});
-  });
-	    
 	</script>
-						<!-- C end -->
-									
-									
-	
-		<%countE++;}}else{
-	%>
-				
-	
-<%} %>	
-	
-	</div>			
-									
-									
-									
-		
-		<%countD++;}}else{
-	%>
-					
-	
-<%} %>	        
-						<!-- C end -->
-		
-		</div>
-									
-									
-	
-		<%countC++;}}else{
-	%>
-				
-	
-<%} %>	
 
-</div>
-									
-									
-									
-		
-		<%countB++;}}else{
-	%>
-					
-	
-<%} %>	
-			
-						<!-- A end -->
-						
-		 
-			
-		
-				
-	</div>
-	               
+              <div id="children_A_<%=ActivityA[0]%>" class="ms-children" style="display:none; border-left: 2px dashed #ccc; margin-left: 15px;">
+			<!-- Level B activities for this Activity A load here on first expand -->
+              </div>
+
 <%countA++;}}else{
-	%>
-				
-	
+%>
+
+
+
 <%} %>
-	</div>
+</div>
 	
 	<div  class="col-md-12">
 	<br><br>
@@ -1421,14 +565,26 @@ $( document ).ready(function() {
 	</div>
 	</div>
 	
-	<% boolean anychange = changes.stream().anyMatch(e->e.equalsIgnoreCase("1")); 
-	if(!anychange){
-	%>
+	<%--
+		CHANGED: this used to scan a "changed" flag across every activity in the whole 5-level
+		tree (changes.stream().anyMatch(...)), which required the eager full-tree load we just
+		removed. Replaced with one dedicated, cheap check - see MilestoneActivityHasChanges.htm.
+		NOTE: that endpoint currently only checks the root milestone's own flag as a placeholder;
+		it needs a real aggregate query to fully match the old behavior (see controller comments).
+	--%>
 	<script type="text/javascript">
-	console.log("No change to do BaseLine")
-	$('#baseLineBtn').hide();
+	$.ajax({
+		type: 'GET',
+		url: 'MilestoneActivityHasChanges.htm',
+		data: { MilestoneActivityId: '<%=getMA[0]%>' },
+		dataType: 'json',
+		success: function (result) {
+			if (!result || !result.hasChange) {
+				$('#baseLineBtn').hide();
+			}
+		}
+	});
 	</script>
-	<%} %>
 	
 
 									</div>	
@@ -1576,6 +732,255 @@ $( document ).ready(function() {
 	    
 	</script>  
 
+
+
+<%--
+	============================================================================
+	NEW: lazy-loading engine for Levels B-E (mirrors the one added to
+	MilestoneActivityDetails.jsp, adapted for this page's inline-edit rows).
+	Level A is rendered server-side above (one query total). Everything below
+	Level A is fetched only when its node is actually expanded, via the shared
+	MilestoneActivityLevelFetch.htm endpoint.
+	============================================================================
+--%>
+<script type="text/javascript">
+var RevisionCountVal = <%=RevisionCount%>;
+var RootMilestoneIdPreview = "<%=getMA[0]%>";
+var ProjectDirectorValPreview = "<%=projectDirector!=null?StringEscapeUtils.escapeEcmaScript(projectDirector):""%>";
+var RootOicEmpIdsPreview = "<%=getMA[8]%>,<%=getMA[9]%>";
+
+// Same lists the JSP already had in scope, exposed once so AJAX-rendered rows (B-E) don't
+// need an extra round trip just to populate the Activity Type / Lab dropdowns. (Employee
+// dropdowns are still populated per-row via the existing renderEmployeeList()/GetLabcodeEmpList.htm
+// AJAX call, unchanged.)
+var ActivityTypeOptions = [
+<% for (int i = 0; i < ActivityTypeList.size(); i++) { Object[] t = ActivityTypeList.get(i); %>
+	{ id: "<%=t[0]%>", name: "<%=t[1]!=null?StringEscapeUtils.escapeEcmaScript(t[1].toString()):""%>" }<%=i<ActivityTypeList.size()-1?",":""%>
+<% } %>
+];
+var LabOptions = [
+<% for (int i = 0; i < allLabList.size(); i++) { Object[] l = allLabList.get(i); %>
+	"<%=l[3]%>"<%=i<allLabList.size()-1?",":""%>
+<% } %>
+];
+
+var LEVEL_NUM = { A: 1, B: 2, C: 3, D: 4, E: 5 };
+var NEXT_LETTER = { A: 'B', B: 'C', C: 'D', D: 'E' };
+
+function escapeHtml(str) {
+	if (str === null || str === undefined) return "";
+	return String(str)
+		.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+function parseDMY(str) {
+	if (!str) return null;
+	var p = str.split("-");
+	return new Date(p[2], p[1] - 1, p[0]);
+}
+
+function initRowDatePicker(fromId, toId, minDateStr, maxDateStr) {
+	var minDate = parseDMY(minDateStr);
+	var maxDate = parseDMY(maxDateStr);
+	var opts = function (min) {
+		return {
+			singleDatePicker: true, linkedCalendars: false, showCustomRangeLabel: true,
+			minDate: min, maxDate: maxDate, cancelClass: 'btn-default', showDropdowns: true,
+			locale: { format: 'DD-MM-YYYY' }
+		};
+	};
+	$('#' + fromId).daterangepicker(opts(minDate));
+	$('#' + fromId).on('change', function () {
+		var mindate = $('#' + fromId).val();
+		$('#' + toId).prop('disabled', false);
+		$('#' + toId).daterangepicker(opts(mindate));
+	});
+	$('#' + toId).prop('disabled', false);
+	$('#' + toId).daterangepicker(opts(minDate));
+}
+
+// Click handler for every "+/-" expand button (Level A ones rendered server-side above call
+// this directly; AJAX-rendered B/C/D rows wire up the same function - see buildEditRow()).
+function toggleAjaxChildren(btnEl, containerId, letter, nodeId, parentFrom, parentTo, ancestorOic, chain) {
+	var $container = $('#' + containerId);
+	var isHidden = $container.css('display') === 'none' || $container.css('display') === '';
+
+	if (isHidden) {
+		$container.show();
+		$(btnEl).html('<i class="fa fa-minus" aria-hidden="true"></i>');
+		if ($container.data('loaded') !== true) {
+			loadLevelInto($container, letter, nodeId, ancestorOic, chain, parentFrom, parentTo);
+		}
+	} else {
+		$container.hide();
+		$(btnEl).html('<i class="fa fa-plus" aria-hidden="true"></i>');
+	}
+}
+
+function loadLevelInto(container, parentLetter, parentId, ancestorOic, chain, parentFrom, parentTo, onDone) {
+	if (container.data('loaded') === true) {
+		if (onDone) onDone();
+		return;
+	}
+	var level = LEVEL_NUM[parentLetter] + 1;
+	container.html('<div class="text-muted ml-3">Loading...</div>');
+	$.ajax({
+		type: 'GET',
+		url: 'MilestoneActivityLevelFetch.htm',
+		data: { ParentId: parentId, Level: level, AncestorOicIds: ancestorOic },
+		dataType: 'json',
+		success: function (children) {
+			container.data('loaded', true);
+			container.empty();
+			renderLevelNodes(container, children || [], NEXT_LETTER[parentLetter], parentId, ancestorOic, chain, parentFrom, parentTo);
+			if (onDone) onDone();
+		},
+		error: function () {
+			container.html('<div class="text-danger">Could not load activities. <a href="#" class="ms-retry">Retry</a></div>');
+			container.find('.ms-retry').on('click', function (e) {
+				e.preventDefault();
+				container.data('loaded', false);
+				loadLevelInto(container, parentLetter, parentId, ancestorOic, chain, parentFrom, parentTo, onDone);
+			});
+		}
+	});
+}
+
+function renderLevelNodes(container, children, letter, parentId, ancestorOic, chain, parentFrom, parentTo) {
+	if (!children.length) {
+		container.append('<div class="text-muted ml-3">No sub-activities.</div>');
+		return;
+	}
+	$.each(children, function (idx, node) {
+		var $row = $(buildEditRow(letter, node, parentId, ancestorOic, chain, idx + 1, parentFrom, parentTo));
+		container.append($row);
+
+		var uid = letter + node.id;
+		initRowDatePicker('DateCompletion' + uid, 'DateCompletion2' + uid, parentFrom, parentTo);
+		renderEmployeeList('1', uid, node.firstOicId || '');
+		renderEmployeeList('2', uid, node.secondOicId || '');
+
+		if (letter !== 'E') {
+			var childAncestorOic = ancestorOic + ',' + node.firstOicId + ',' + node.secondOicId;
+			var childChain = chain.concat([letter + '_' + node.id]);
+			$row.find('.ms-toggle-btn').on('click', function () {
+				toggleAjaxChildren(this, 'children_' + letter + '_' + node.id, letter, node.id, node.validFrom, node.validTo, childAncestorOic, childChain);
+			});
+		}
+	});
+}
+
+function buildEditRow(letter, node, parentId, ancestorOic, chain, displayIndex, parentFrom, parentTo) {
+	console.log(chain)
+	var uid = letter + node.id;
+	var chainForThisNode = chain; 
+	var childAncestorOic = ancestorOic + ',' + node.firstOicId + ',' + node.secondOicId;
+
+	var typeSelect = '';
+	if (RevisionCountVal === 0) {
+		var typeOptions = $.map(ActivityTypeOptions, function (o) {
+			var sel = (String(o.id) === String(node.activityTypeId)) ? ' selected="selected"' : '';
+			return '<option value="' + escapeHtml(o.id) + '"' + sel + '>' + escapeHtml(o.name) + '</option>';
+		}).join('');
+		typeSelect = '<select class="form-control selectdee" id="ActivityTypeId' + uid + '" required="required" name="ActivityTypeId">'
+			+ '<option disabled="true" selected value="">Choose...</option>' + typeOptions + '</select>';
+	}
+
+	var labOptions1 = $.map(LabOptions, function (code) {
+		var sel = (code === node.labCode1) ? ' selected' : '';
+		return '<option value="' + escapeHtml(code) + '"' + sel + '>' + escapeHtml(code) + '</option>';
+	}).join('');
+	var labOptions2 = $.map(LabOptions, function (code) {
+		var sel = (code === node.labCode2) ? ' selected' : '';
+		return '<option value="' + escapeHtml(code) + '"' + sel + '>' + escapeHtml(code) + '</option>';
+	}).join('');
+
+	var expandBtn = '';
+	if (letter !== 'E') {
+		expandBtn = '<button type="button" id="btn_' + letter + '_' + node.id + '" class="btn btn-sm btn-primary py-0 px-2 mt-1 ms-toggle-btn">'
+			+ '<i class="fa fa-plus" aria-hidden="true"></i></button>';
+	}
+
+	var actionsHtml = '';
+	if (node.canEdit) {
+		var chainJson = JSON.stringify(chainForThisNode);
+		var chainForOnclick = '[' + $.map(chainForThisNode, function (c) { return "'" + c + "'"; }).join(',') + ']';
+		actionsHtml += '<button type="button" class="btn btn-sm edit" onclick="weightage_sum(\'' + parentId + '\',\'' + node.id + '\',\'' + letter + '\',\'' + LEVEL_NUM[letter] + '\',' + chainForOnclick + ',\'row_' + letter + '_' + node.id + '\');"><i class="fa fa-edit" aria-hidden="true"></i></button>';
+		if (node.canDelete) {
+			actionsHtml += '<button type="button" class="btn btn-sm delete" onclick="deletSubMilestones(\'' + parentId + '\',\'' + node.id + '\',\'' + letter + '\',\'' + LEVEL_NUM[letter] + '\');"><i class="fa fa-trash" aria-hidden="true"></i></button>';
+		}
+		actionsHtml += '<input type="submit" hidden="hidden" id="' + parentId + letter + node.id + 'sub">'
+			+ '<input type="hidden" name="RevId" value="' + RevisionCountVal + '">'
+			+ '<input type="hidden" name="MilestoneActivityId" value="' + RootMilestoneIdPreview + '">'
+			+ '<input type="hidden" name="ActivityId" value="' + escapeHtml(node.id) + '">'
+			+ '<input type="hidden" name="ActivityType" value="' + letter + '">'
+			+ '<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">'
+			+ '<input type="hidden" name="projectDirector" value="' + escapeHtml(ProjectDirectorValPreview) + '">'
+			+ '<input type="hidden" name="chainId" value="' + escapeHtml(chainJson) + '">'
+			+ '<input type="hidden" name="targetRowId" value="row_' + letter + '_' + node.id + '">';
+	}
+
+	return ''
+		+ '<form method="POST" action="MilestoneActivityEditSubmit.htm" id="form' + parentId + letter + node.id + '">'
+		+ '<div class="row container-fluid" id="row_' + letter + '_' + node.id + '">'
+		+ '<div class="col-md-1"><b class="ml-1">' + letter + '-' + displayIndex + '</b><br>' + expandBtn + '</div>'
+		+ '<div class="col-md-5"><textarea rows="1" cols="50" class="form-control mp2" name="ActivityName" maxlength="1000" required="required">' + escapeHtml(node.activityName) + '</textarea></div>'
+		+ '<div class="col-md-1" align="center"><input class="form-control width120" name="ValidFrom" id="DateCompletion' + uid + '" value="' + escapeHtml(node.validFrom) + '" required="required"></div>'
+		+ '<div class="col-md-1" align="center"><input class="form-control width120" name="ValidTo" id="DateCompletion2' + uid + '" value="' + escapeHtml(node.validTo) + '" required="required"></div>'
+		+ '<div class="col-md-1" align="center"><input type="number" class="form-control width95" name="Weightage" id="Weightage' + parentId + letter + node.id + '" required="required" min="0" max="100" value="' + escapeHtml(node.weightage) + '"></div>'
+		+ '<div class="col-md-2">' + typeSelect + '</div>'
+		+ '<div class="col-md-1">' + actionsHtml + '</div>'
+		+ '</div>'
+		+ '<div class="row container-fluid">'
+		+ '<div class="col-md-1"></div>'
+		+ '<div class="col-md-2"><label>Lab: <span class="mandatory">*</span></label><br>'
+		+ '<select class="form-control selectdee" name="labCode1" id="labCode1' + uid + '" required onchange="renderEmployeeList(\'1\',\'' + uid + '\',\'0\')">' + labOptions1 + '</select></div>'
+		+ '<div class="col-md-3" align="center"><label class="control-label">First OIC</label>'
+		+ '<select class="form-control selectdee" id="EmpId' + uid + '" required="required" name="EmpId"></select></div>'
+		+ '<div class="col-md-2"><label>Lab: <span class="mandatory">*</span></label><br>'
+		+ '<select class="form-control selectdee" name="labCode2" id="labCode2' + uid + '" required onchange="renderEmployeeList(\'2\',\'' + uid + '\',\'0\')">' + labOptions2 + '</select></div>'
+		+ '<div class="col-md-3" align="center"><label class="control-label">Second OIC</label>'
+		+ '<select class="form-control selectdee" id="EmpId1' + uid + '" required="required" name="EmpId1"></select></div>'
+		+ '</div>'
+		+ '</form>'
+		+ (letter !== 'E' ? '<div id="children_' + letter + '_' + node.id + '" class="ms-children" style="display:none; border-left: 2px dashed #ccc; margin-left: 15px;"></div>' : '');
+}
+
+// Restores the old "jump back to where I was" behaviour after editing a nested activity:
+// walks down the chain of ancestor ids (e.g. ['A_12','B_34']), fetching + expanding each level
+// in turn, then invokes the callback (used to scroll to + highlight the edited row).
+function autoExpandChain(chain, onComplete) {
+	if (!chain || !chain.length) { if (onComplete) onComplete(); return; }
+	stepExpandChain(chain, 0, RootOicEmpIdsPreview, [], onComplete);
+}
+
+function stepExpandChain(chain, idx, ancestorOic, chainSoFar, onComplete) {
+	if (idx >= chain.length) { if (onComplete) onComplete(); return; }
+	var part = chain[idx].split('_');
+	var letter = part[0];
+	var id = part[1];
+	var containerId = 'children_' + letter + '_' + id;
+	var $container = $('#' + containerId);
+	var $btn = $('#btn_' + letter + '_' + id);
+	if (!$container.length) { if (onComplete) onComplete(); return; }
+
+	$container.show();
+	if ($btn.length) { $btn.html('<i class="fa fa-minus" aria-hidden="true"></i>'); }
+
+	var parentFrom = $('#DateCompletion' + letter + id).val();
+	var parentTo = $('#DateCompletion2' + letter + id).val();
+
+	loadLevelInto($container, letter, id, ancestorOic, chainSoFar, parentFrom, parentTo, function () {
+		// find this node's own OIC ids (now in the DOM) to extend the ancestor chain for the next hop
+		var firstOic = $('#EmpId' + letter + id).val() || '';
+		var secondOic = $('#EmpId1' + letter + id).val() || '';
+		var nextAncestorOic = ancestorOic + ',' + firstOic + ',' + secondOic;
+		var nextChain = chainSoFar.concat([chain[idx]]);
+		stepExpandChain(chain, idx + 1, nextAncestorOic, nextChain, onComplete);
+	});
+}
+</script>
 
 </body>
 </html>

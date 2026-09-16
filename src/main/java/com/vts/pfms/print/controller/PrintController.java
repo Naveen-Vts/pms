@@ -79,7 +79,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -123,7 +122,7 @@ import com.vts.pfms.model.BriefingFinance;
 import com.vts.pfms.model.BriefingHeading;
 import com.vts.pfms.model.BriefingHeadingDetails;
 import com.vts.pfms.model.TotalDemand;
-import com.vts.pfms.pfmsserv.feign.PFMSServeFeignClient;
+import com.vts.pfms.pfmsserv.feign.FeignClientService;
 import com.vts.pfms.print.dto.PfmsBriefingFwdDto;
 import com.vts.pfms.print.model.CommitteeProjectBriefingFrozen;
 import com.vts.pfms.print.model.FavouriteSlidesModel;
@@ -160,7 +159,7 @@ public class PrintController {
 	MilestoneService milservice;
 	
 	@Autowired
-	PFMSServeFeignClient PFMSserv;
+	FeignClientService PFMSserv;
 
 	@Value("${server_uri}")
     private String uri;
@@ -194,7 +193,7 @@ public class PrintController {
 	HeaderService headservice;
 	
 	@Autowired
-	PFMSServeFeignClient pfmsServ;
+	FeignClientService pfmsServ;
 	
 	private static final Logger logger=LogManager.getLogger(PrintController.class);
 

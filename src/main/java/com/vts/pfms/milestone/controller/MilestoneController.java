@@ -509,6 +509,7 @@ public class MilestoneController {
 			mainDto.setStartDate(req.getParameter("ValidFrom"));
 			mainDto.setEndDate(req.getParameter("ValidTo"));
 			mainDto.setCreatedBy(UserId);
+			mainDto.setIsSunSet("N");
 			long count =service.MilestoneActivityInsert(mainDto);
 
 			if (count > 0) {
@@ -528,64 +529,182 @@ public class MilestoneController {
 		}	
 		return "redirect:/MA-DetailsRedirect.htm";
 	}
-
+//
+//	@RequestMapping(value = "MilestoneActivityDetails.htm")
+//	public String MilestoneActivityDetails(HttpServletRequest req, HttpSession ses, RedirectAttributes redir)throws Exception 
+//	{
+//		String UserId = (String) ses.getAttribute("Username");
+//		String LabCode =(String)ses.getAttribute("labcode");
+//		logger.info(new Date() +"Inside MilestoneActivityDetails.htm "+UserId);		
+//		try {
+//			int countA=1;
+//			List<Object[]> list = service.MilestoneActivity(req.getParameter("MilestoneActivityId"));
+//			req.setAttribute("MilestoneActivity", list != null && !list.isEmpty() ? list.get(0) : new Object[100]);
+//			
+//	 
+//			List<Object[]>  MilestoneActivityA=service.MilestoneActivityLevel(req.getParameter("MilestoneActivityId"),"1");
+//			req.setAttribute("MilestoneActivityA", MilestoneActivityA);
+//			for(Object[] obj:MilestoneActivityA) {
+//				List<Object[]>  MilestoneActivityB=service.MilestoneActivityLevel(obj[0].toString(),"2");
+//				req.setAttribute("MilestoneActivityB"+countA, MilestoneActivityB);
+//				int countB=1;
+//				for(Object[] obj1:MilestoneActivityB) {
+//					List<Object[]>  MilestoneActivityC=service.MilestoneActivityLevel(obj1[0].toString(),"3");
+//					req.setAttribute("MilestoneActivityC"+countA+countB, MilestoneActivityC);
+//
+//					int countC=1;
+//					for(Object[] obj2:MilestoneActivityC) {
+//						List<Object[]>  MilestoneActivityD=service.MilestoneActivityLevel(obj2[0].toString(),"4");
+//						req.setAttribute("MilestoneActivityD"+countA+countB+countC, MilestoneActivityD);
+//						int countD=1;
+//						for(Object[] obj3:MilestoneActivityD) {
+//							List<Object[]>  MilestoneActivityE=service.MilestoneActivityLevel(obj3[0].toString(),"5");
+//							req.setAttribute("MilestoneActivityE"+countA+countB+countC+countD, MilestoneActivityE);
+//							countD++;
+//						}
+//						countC++;
+//					}
+//					countB++;
+//				}
+//				countA++;
+//			}	
+//			req.setAttribute("ActivityTypeList", service.ActivityTypeList());
+//			String projectId=req.getParameter("ProjectId");
+//			req.setAttribute("EmployeeList", service.ProjectEmpList(projectId , LabCode));
+//			req.setAttribute("allLabList", committeservice.AllLabList());
+//			req.setAttribute("ProjectId", projectId);
+//			req.setAttribute("projectDirector", req.getParameter("projectDirector"));
+//			if("C".equalsIgnoreCase(req.getParameter("sub"))) {
+//				req.setAttribute("RevisionCount", service.MilestoneRevisionCount(req.getParameter("MilestoneActivityId")));
+//				return "milestone/MilestoneActivityPreview";
+//			}
+//			return "milestone/MilestoneActivityDetails";
+//		}
+//		catch (Exception e) {
+//			e.printStackTrace();  
+//			logger.error(new Date() +" Inside MilestoneActivityDetails.htm "+UserId, e); 
+//			return "static/Error";			
+//		}
+//
+//	}
+	
+	
 	@RequestMapping(value = "MilestoneActivityDetails.htm")
-	public String MilestoneActivityDetails(HttpServletRequest req, HttpSession ses, RedirectAttributes redir)throws Exception 
-	{
-		String UserId = (String) ses.getAttribute("Username");
-		String LabCode =(String)ses.getAttribute("labcode");
-		logger.info(new Date() +"Inside MilestoneActivityDetails.htm "+UserId);		
-		try {
-			int countA=1;
-			List<Object[]> list = service.MilestoneActivity(req.getParameter("MilestoneActivityId"));
-			req.setAttribute("MilestoneActivity", list != null && !list.isEmpty() ? list.get(0) : new Object[100]);
-			
+	public String MilestoneActivityDetails(HttpServletRequest req, HttpSession ses, RedirectAttributes redir) throws Exception {
+	    String UserId = (String) ses.getAttribute("Username");
+	    String LabCode = (String) ses.getAttribute("labcode");
+	    logger.info(new Date() + "Inside MilestoneActivityDetails.htm " + UserId);
+	    try {
+	        List<Object[]> list = service.MilestoneActivity(req.getParameter("MilestoneActivityId"));
+	        req.setAttribute("MilestoneActivity", list != null && !list.isEmpty() ? list.get(0) : new Object[100]);
 	 
-			List<Object[]>  MilestoneActivityA=service.MilestoneActivityLevel(req.getParameter("MilestoneActivityId"),"1");
-			req.setAttribute("MilestoneActivityA", MilestoneActivityA);
-			for(Object[] obj:MilestoneActivityA) {
-				List<Object[]>  MilestoneActivityB=service.MilestoneActivityLevel(obj[0].toString(),"2");
-				req.setAttribute("MilestoneActivityB"+countA, MilestoneActivityB);
-				int countB=1;
-				for(Object[] obj1:MilestoneActivityB) {
-					List<Object[]>  MilestoneActivityC=service.MilestoneActivityLevel(obj1[0].toString(),"3");
-					req.setAttribute("MilestoneActivityC"+countA+countB, MilestoneActivityC);
-
-					int countC=1;
-					for(Object[] obj2:MilestoneActivityC) {
-						List<Object[]>  MilestoneActivityD=service.MilestoneActivityLevel(obj2[0].toString(),"4");
-						req.setAttribute("MilestoneActivityD"+countA+countB+countC, MilestoneActivityD);
-						int countD=1;
-						for(Object[] obj3:MilestoneActivityD) {
-							List<Object[]>  MilestoneActivityE=service.MilestoneActivityLevel(obj3[0].toString(),"5");
-							req.setAttribute("MilestoneActivityE"+countA+countB+countC+countD, MilestoneActivityE);
-							countD++;
-						}
-						countC++;
-					}
-					countB++;
-				}
-				countA++;
-			}	
-			req.setAttribute("ActivityTypeList", service.ActivityTypeList());
-			String projectId=req.getParameter("ProjectId");
-			req.setAttribute("EmployeeList", service.ProjectEmpList(projectId , LabCode));
-			req.setAttribute("allLabList", committeservice.AllLabList());
-			req.setAttribute("ProjectId", projectId);
-			req.setAttribute("projectDirector", req.getParameter("projectDirector"));
-			if("C".equalsIgnoreCase(req.getParameter("sub"))) {
-				req.setAttribute("RevisionCount", service.MilestoneRevisionCount(req.getParameter("MilestoneActivityId")));
-				return "milestone/MilestoneActivityPreview";
-			}
-			return "milestone/MilestoneActivityDetails";
-		}
-		catch (Exception e) {
-			e.printStackTrace();  
-			logger.error(new Date() +" Inside MilestoneActivityDetails.htm "+UserId, e); 
-			return "static/Error";			
-		}
-
+	        // CHANGED: only fetch Level A eagerly (one query). Levels B/C/D/E are no longer
+	        // walked in nested loops here — they're fetched lazily via MilestoneActivityLevelFetch.htm
+	        // as the user expands each panel, which is what was causing the slow load with ~120 activities.
+	        List<Object[]> MilestoneActivityA = service.MilestoneActivityLevel(req.getParameter("MilestoneActivityId"), "1");
+	        req.setAttribute("MilestoneActivityA", MilestoneActivityA);
+	 
+	        req.setAttribute("ActivityTypeList", service.ActivityTypeList());
+	        String projectId = req.getParameter("ProjectId");
+	        req.setAttribute("EmployeeList", service.ProjectEmpList(projectId, LabCode));
+	        req.setAttribute("allLabList", committeservice.AllLabList());
+	        req.setAttribute("ProjectId", projectId);
+	        req.setAttribute("projectDirector", req.getParameter("projectDirector"));
+	        if ("C".equalsIgnoreCase(req.getParameter("sub"))) {
+	            req.setAttribute("RevisionCount", service.MilestoneRevisionCount(req.getParameter("MilestoneActivityId")));
+	            return "milestone/MilestoneActivityPreview";
+	        }
+	        return "milestone/MilestoneActivityDetails";
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        logger.error(new Date() + " Inside MilestoneActivityDetails.htm " + UserId, e);
+	        return "static/Error";
+	    }
 	}
+	 
+	@RequestMapping(value = "MilestoneActivityLevelFetch.htm", method = RequestMethod.GET)
+	public @ResponseBody List<Map<String, Object>> MilestoneActivityLevelFetch(HttpServletRequest req, HttpSession ses) throws Exception {
+	    String parentId = req.getParameter("ParentId");
+	    String level = req.getParameter("Level");
+	    Long empId = (Long) ses.getAttribute("EmpId");
+	    String currentEmpId = empId != null ? empId.toString() : "";
+	    String logintype = (String) ses.getAttribute("LoginType");
+	    String projectDirector = req.getParameter("projectDirector");
+	    boolean isAdmin = "A".equalsIgnoreCase(logintype);
+	    boolean isDirector = projectDirector != null && projectDirector.equals(currentEmpId);
+	 
+	    String ancestorOicIdsParam = req.getParameter("AncestorOicIds");
+	    Set<String> ancestorOicIds = new HashSet<String>();
+	    if (ancestorOicIdsParam != null && !ancestorOicIdsParam.isEmpty()) {
+	        ancestorOicIds.addAll(Arrays.asList(ancestorOicIdsParam.split(",")));
+	    }
+	 
+	    List<Object[]> rows = service.MilestoneActivityLevel(parentId, level);
+	    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+	    List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+	 
+	    if (rows != null) {
+	        for (Object[] row : rows) {
+	            Map<String, Object> node = new LinkedHashMap<String, Object>();
+	            String firstOicId = row[13] != null ? row[13].toString() : "";
+	            String secondOicId = row[15] != null ? row[15].toString() : "";
+	 
+	            node.put("id", row[0] != null ? row[0].toString() : "");
+	            node.put("validFrom", row[2] != null ? sdf.format(row[2]) : "");
+	            node.put("validTo", row[3] != null ? sdf.format(row[3]) : "");
+	            node.put("activityName", row[4] != null ? row[4].toString() : "");
+	            node.put("weightage", row[6] != null ? row[6].toString() : "");
+	            node.put("type", row[12] != null ? row[12].toString() : "");           
+	            node.put("activityTypeId", row[11] != null ? row[11].toString() : ""); 
+	            node.put("firstOicId", firstOicId);
+	            node.put("firstOicName", row[14] != null ? row[14].toString() : "");
+	            node.put("secondOicId", secondOicId);
+	            node.put("labCode1", row[28] != null ? row[28].toString() : "");
+	            node.put("labCode2", row[29] != null ? row[29].toString() : "");
+	            node.put("changed", row[26] != null && "1".equals(row[26].toString()));
+	 
+	            Set<String> chainIncludingSelf = new HashSet<String>(ancestorOicIds);
+	            chainIncludingSelf.add(firstOicId);
+	            chainIncludingSelf.add(secondOicId);
+	            boolean canAddChild = isAdmin || isDirector || chainIncludingSelf.contains(currentEmpId);
+	            node.put("canAddChild", canAddChild);
+	 
+	            boolean canEdit = isAdmin || isDirector || ancestorOicIds.contains(currentEmpId);
+	            node.put("canEdit", canEdit);
+	 
+	            boolean field5Empty = row[5] == null || toLongSafe(row[5]) <= 0;
+	            boolean weightageEmpty = row[6] == null || toLongSafe(row[6]) <= 0;
+	            boolean field9Low = row[9] == null || toLongSafe(row[9]) < 2;
+	            node.put("canDelete", canEdit && field5Empty && weightageEmpty && field9Low);
+	 
+	            result.add(node);
+	        }
+	    }
+	    return result;
+	}
+	 
+	private long toLongSafe(Object o) {
+	    try {
+	        return Long.parseLong(o.toString());
+	    } catch (Exception e) {
+	        return 0L;
+	    }
+	}
+	 
+	@RequestMapping(value = "MilestoneActivityHasChanges.htm", method = RequestMethod.GET)
+	public @ResponseBody Map<String, Object> MilestoneActivityHasChanges(HttpServletRequest req) throws Exception {
+	    String milestoneActivityId = req.getParameter("MilestoneActivityId");
+	    Map<String, Object> resp = new LinkedHashMap<String, Object>();
+	    List<Object[]> rootList = service.MilestoneActivity(milestoneActivityId);
+	    boolean hasChange = false;
+	    if (rootList != null && !rootList.isEmpty()) {
+	        Object[] root = rootList.get(0);
+	        hasChange = root[20] != null && "1".equals(root[20].toString());
+	    }
+	    resp.put("hasChange", hasChange);
+	    return resp;
+	}
+		 
 
 	@RequestMapping(value = "MilestoneActivitySubAdd.htm", method = RequestMethod.POST)
 	public String MilestoneActivitySubAdd(HttpServletRequest req, HttpSession ses, RedirectAttributes redir)throws Exception {
@@ -615,6 +734,7 @@ public class MilestoneController {
 			mainDto.setOicEmpId(req.getParameter("EmpId"));
 			mainDto.setOicEmpId1(req.getParameter("EmpId1"));
 			mainDto.setCreatedBy(UserId);
+			mainDto.setIsSunSet("N");
 			long count =service.MilestoneActivityLevelInsert(mainDto);
 
 			if (count > 0) {
@@ -3752,10 +3872,10 @@ private boolean isValidFileType(MultipartFile file) {
 			String tabNo = req.getParameter("tabNo");
 			String activityType = req.getParameter("activityType");
 			String empId = req.getParameter("empId");
-			empId = empId == null?EmpId : empId;
+			empId = empId == null ? EmpId : empId;
 			String finalEmpId = empId;
 			
-			List<Object[]> roleWiseEmployeeList = timesheetservice.getRoleWiseEmployeeList(labcode, LoginType, empId);
+			List<Object[]> roleWiseEmployeeList = timesheetservice.getRoleWiseEmployeeList(labcode, LoginType, EmpId);
 			List<Object[]> mainList = service.getAllMilestoneActivityList();
 			List<Object[]> subList = service.getAllMilestoneActivityLevelList();
 			

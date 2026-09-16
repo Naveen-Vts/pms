@@ -158,7 +158,7 @@ String pearlimg=  (String)request.getAttribute("pearlimg");
 											</td>
 											<td>
 										    	<label ><b>6. Procurement Limit </b></label>
-										    	<input class="form-control" type="number" name="proclimit" placeholder="Add Limit" min="500000" step="0.01"  <%if(projectdatadetails!=null && projectdatadetails[11]!=null){ %>value="<%=StringEscapeUtils.escapeHtml4(projectdatadetails[11].toString()) %>" <%} %>  >
+										    	<input class="form-control" type="number" name="proclimit" placeholder="Add Limit" min="500000" step="0.01"  <%if(projectdatadetails!=null && projectdatadetails[11]!=null){ %>value="<%= new java.math.BigDecimal(projectdatadetails[11].toString()).toPlainString() %>" <%} %>  >
 										 		<!--<span >procurement level above which report will display</span> -->
 										    </td>
 										</tr>

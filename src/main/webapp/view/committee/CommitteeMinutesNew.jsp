@@ -74,6 +74,11 @@
 	// new
 	
 		LinkedHashMap< String, ArrayList<Object[]>> actionlist = (LinkedHashMap< String, ArrayList<Object[]>>) request.getAttribute("tableactionlist");
+		Object[] projectattributes=(Object[])request.getAttribute("projectattributes");
+		List<Object[]> ProjectRevList = (List<Object[]>) request.getAttribute("ProjectRevList");
+		List<Object[]> ebandpmrccount = (List<Object[]>)request.getAttribute("ebandpmrccount");
+		
+		int topiccount = 1;
 	
 	%>
 <style type="text/css">
@@ -302,6 +307,146 @@ p{
 		</div>  
 		
  <h1 class="break"></h1> 
+ 
+ 
+ 
+ 
+ <%int prjCount=0; %>
+		<div>
+		<h2>Project Attributes</h2>
+		<table style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 15px; width: 650px; font-size: 16px; border-collapse:collapse; border: 1px solid black;" >	
+									<tr>
+											 <td style="width: 5px !important; padding: 5px; padding-left: 10px;border: 1px solid black;">(a)</td>
+											 <th  style="width: 150px;padding: 5px; padding-left: 10px;border: 1px solid black;text-align: left;"><b>Project Title</b></th>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px;border: 1px solid black;text-align: left;"> <%=projectattributes[1]!=null?(projectattributes[1].toString()): " - " %></td>
+										</tr>
+										<tr>
+											 <td  style="padding: 5px; padding-left: 10px;border: 1px solid black;">(b)</td>
+											 <th style="width: 150px;padding: 5px; padding-left: 10px;border: 1px solid black;text-align: left;"><b>Project Code </b></th>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px;border: 1px solid black;text-align: left;"> <%=projectattributes[0]!=null?(projectattributes[0].toString()): " - "%> </td>
+										</tr>
+										<tr>
+											 <td  style=" padding: 5px; padding-left: 10px;border: 1px solid black;">(c)</td>
+											 <th  style="width: 150px;padding: 5px; padding-left: 10px;border: 1px solid black;text-align: left;"><b>Category</b></th>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px;border: 1px solid black;text-align: left;"><%=projectattributes[14]!=null?(projectattributes[14].toString()): " - "%></td>
+										</tr>
+										<tr>
+											 <td  style="padding: 5px; padding-left: 10px;border: 1px solid black;">(d)</td>
+											 <th  style="width: 150px;padding: 5px; padding-left: 10px;border: 1px solid black;text-align: left;"><b>Date of Sanction</b></th>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px;border: 1px solid black;text-align: left;"><%=sdf.format(sdf1.parse(projectattributes[3].toString()))%></td>
+										</tr>
+										<tr>
+											 <td  style="width: 20px; padding: 5px; padding-left: 10px;border: 1px solid black;">(e)</td>
+											 <th  style="width: 150px;padding: 5px; padding-left: 10px;border: 1px solid black;text-align: left;"><b>Nodal and Participating Labs</b></th>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px;border: 1px solid black;text-align: left;"><%if(projectattributes[15]!=null){ %><%=(projectattributes[15].toString())%><%} %></td>
+										</tr>
+										<tr>
+											 <td  style=" padding: 5px; padding-left: 10px;border: 1px solid black;">(f)</td>
+											 <th  style="width: 150px;padding: 5px; padding-left: 10px;border: 1px solid black;text-align: left;"><b>Objective</b></th>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px;text-align: justify;border: 1px solid black;text-align: left;"> <%=projectattributes[4]!=null?(projectattributes[4].toString()): " - "%></td>
+										</tr>
+										<tr>
+											 <td  style="padding: 5px; padding-left: 10px;border: 1px solid black;">(g)</td>
+											 <th  style="width: 150px;padding: 5px; padding-left: 10px;border: 1px solid black;text-align: left;"><b>Deliverables</b></th>
+											 <td colspan="4" style=" width: 370px; padding: 5px; padding-left: 10px;border: 1px solid black;text-align: left;"> <%=projectattributes[5]!=null?(projectattributes[5].toString()): " - "%></td>
+										</tr>
+										<tr>
+											 <td rowspan="2" style="padding: 5px; padding-left: 10px;border: 1px solid black;">(h)</td>
+											 <th rowspan="2" style="width: 150px;padding: 5px; padding-left: 10px;border: 1px solid black;text-align: left;"><b>PDC</b></th>
+											 
+											<th colspan="2" style="text-align: center !important;border: 1px solid black;">Original&nbsp;</th>					
+											<%if( ProjectRevList.size()>0){ %>	
+												<th colspan="2" style="text-align: center !important;border: 1px solid black;">Revised</th>																			
+											<%}else{ %>													 
+										 		<th colspan="2" style="border: 1px solid black;text-align: left;" ></th>	
+										 	<%} %>
+										</tr>
+								 		<tr>
+								 			<%if( ProjectRevList.size()>0 ){ %>								
+										 		<td colspan="2" style="text-align: center;border: 1px solid black;"><%= sdf.format(sdf1.parse(ProjectRevList.get(0)[12].toString()))%> </td>
+										 		<td colspan="2" style="text-align: center;border: 1px solid black;">
+											 		<%if(LocalDate.parse(projectattributes[6].toString()).isEqual(LocalDate.parse(ProjectRevList.get(0)[12].toString())) ){ %>
+											 			-
+											 		<%}else{ %>
+											 			<%= sdf.format(sdf1.parse(projectattributes[6].toString()))%>
+											 		<%} %>
+										 		
+										 		</td>
+											<%}else{ %>													 
+										 		<td colspan="2" style="text-align: center;border: 1px solid black;"><%= sdf.format(sdf1.parse(projectattributes[6].toString()))%></td>
+												<td style="border: 1px solid black;text-align: left;" colspan="2" ></td>
+										 	<%} %>
+										 		    
+								 		</tr>
+											 	
+										<tr>
+											<td rowspan="3" style="width: 30px; padding: 5px; padding-left: 10px;border: 1px solid black;">(i)</td>
+											<th rowspan="3" style="padding-left: 10px;border: 1px solid black;text-align: left;"><b>Cost Breakup( &#8377; <span class="currency">Lakhs</span>)</b></th>
+											
+											<%if( ProjectRevList.size()>0 ){ %>
+													<td style="width: 10% !important;border: 1px solid black;text-align: left;" >RE Cost</td>
+													<td style="text-align: center;border: 1px solid black;text-align: right;"><%=ProjectRevList.get(0)[17]!=null?(ProjectRevList.get(0)[17].toString()): " - " %></td> 
+													<td colspan="2" style="text-align: center;border: 1px solid black;text-align: right;"><%=projectattributes[8]!=null?(projectattributes[8].toString()): " - " %></td>
+												</tr>
+												
+												
+												<tr>
+													<td style="width: 10% !important;border: 1px solid black;text-align: left;">FE Cost</td>		
+													<td style="text-align: center;border: 1px solid black;text-align: right;"><%=ProjectRevList.get(0)[16]!=null?(ProjectRevList.get(0)[16].toString()): " - " %></td>					
+													<td colspan="2" style="text-align: center;border: 1px solid black;text-align: right;"><%=projectattributes[9]!=null?(projectattributes[9].toString()): " - " %></td>
+												</tr>
+													
+												<tr>	
+													<td style="width: 10% !important;border: 1px solid black;text-align: left;">Total Cost</td>	
+													<td style="text-align: center;border: 1px solid black;text-align: right;"><%=ProjectRevList.get(0)[11]!=null?(ProjectRevList.get(0)[11].toString()): " - " %></td>
+											 		<td colspan="2" style="text-align: center;border: 1px solid black;text-align: right;"><%=projectattributes[7]!=null?(projectattributes[7].toString()): " - " %></td>
+												</tr> 
+														
+											<%}else{ %>
+													
+													<td style="width: 10% !important;border: 1px solid black;text-align: left;">RE Cost</td>
+													<td style="border: 1px solid black;text-align: right;"><%=projectattributes[8]!=null?(projectattributes[8].toString()): " - " %></td>
+													<td colspan="2" style=";border: 1px solid black;text-align: right;" ></td>
+												</tr>
+											
+												<tr>
+													<td style="width: 10% !important;border: 1px solid black;text-align: left;">FE Cost</td>		
+													<td style="border: 1px solid black;text-align: right;"><%=projectattributes[9]!=null?(projectattributes[9].toString()): " - " %></td>					
+													<td style="border: 1px solid black;text-align: right;" colspan="2"></td>
+												</tr>
+												
+												<tr>	
+													<td style="width: 10% !important;border: 1px solid black;text-align: left;" >Total Cost</td>	
+													<td style="border: 1px solid black;text-align: right;" ><%=projectattributes[7]!=null?(projectattributes[7].toString()): " - " %></td>
+													<td style="border: 1px solid black;text-align: right;" colspan="2"></td>			
+												</tr> 
+											<%} %>
+												
+																			 	
+										<tr>
+											<td  style="width: 20px; padding: 5px; padding-left: 10px;border: 1px solid black;">(j)</td>
+											<th style="width: 150px;padding: 5px; padding-left: 10px;border: 1px solid black;text-align: left;"><b>No. of Meetings held</b> </th>
+								 			<td colspan="4" style="border: 1px solid black;text-align: left;">
+												<% if(ebandpmrccount!=null && ebandpmrccount.size()>0){
+													List<Object[]> ebandpmrcsub = ebandpmrccount; 
+													for(Object[] ebandpmrc: ebandpmrcsub) { %>
+												 	<b><%=ebandpmrc[0]!=null?(ebandpmrc[0].toString()): " - " %> : </b>
+													<span><%=ebandpmrc[1]!=null?(ebandpmrc[1].toString()): " - " %></span> &emsp;&emsp;
+												<%} }%>
+											</td>
+										</tr>
+										<tr>
+											<td  style="width: 20px; padding: 5px; padding-left: 10px;border: 1px solid black;">(k)</td>
+											<th  style="width: 210px;padding: 5px; padding-left: 10px;border: 1px solid black;text-align: left;"><b>Current Stage of Project</b></th>
+											<td colspan="4" style=" width: 200px;color:blue; padding: 5px; padding-left: 10px ;;border: 1px solid black;text-align: left; <%if(projectdatadetails!=null){ %> background-color: <%=projectdatadetails[11] !=null?(projectdatadetails[11].toString()): " - "%> ;   <%} %>" >
+													 <span> <%if(projectdatadetails!=null){ %><b><%=(projectdatadetails[10].toString()) %> </b>  <%}else{ %>Data Not Found<%} %></span>
+											</td> 
+										</tr>
+		</table>
+		
+		</div>
+	 <h1 class="break"></h1> 	
+ 
 <!-- ------------------------------------------------------- members --------------------------------- -->
 <%-- 	<div align="center">
 		<table style="align: center; margin-top: 10px; margin-bottom: 10px; margin-left: 15px; max-width: 650px; font-size: 16px">
@@ -618,71 +763,7 @@ for( Object[]obj:specialMembers){ %>
  
 <!-- -------------------------------------------------------members----------------------------- -->
 			
-		<%if(labcode.equalsIgnoreCase("DLRL") && projectdetails!=null){
-			int prjCount=0;
-			%>
-		<div>
-		<h2>Project Attributes</h2>
-		<table style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 15px; width: 650px; font-size: 16px; border-collapse:collapse;" >	
-		<tr>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; width:5%"><%=++prjCount %>.</td>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; width:20%;font-weight:bold"">Project Title</td>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; text-align: left"><%=projectdetails[1]!=null?projectdetails[1].toString():"" %></td>
-		</tr>
-		<tr>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; width:5%"><%=++prjCount %>.</td>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; width:20%;font-weight:bold">Project Code</td>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; text-align: left"><%=projectdetails[4]!=null?projectdetails[4].toString():"" %></td>
-		</tr>
-		<tr>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; width:5%"><%=++prjCount %>.</td>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; width:20%;font-weight:bold">Date of Sanction</td>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; text-align: left"><%=projectdetails[11]!=null?sdf.format(sdf1.parse(projectdetails[11].toString())):"" %></td>
-		</tr>
-		<tr>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; width:5%"><%=++prjCount %>.</td>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; width:20%;font-weight:bold">Objective</td>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; text-align: left"><%=projectdetails[15]!=null?projectdetails[15].toString():"" %></td>
-		</tr>
-		<tr>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; width:5%"><%=++prjCount %>.</td>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; width:20%;font-weight:bold">Deliverable</td>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; text-align: left"><%=projectdetails[16]!=null?projectdetails[16].toString():"" %></td>
-		</tr>
-		<tr>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; width:5%"><%=++prjCount %>.</td>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; width:20%;font-weight:bold">PDC</td>
-		<td style="text-align: center ;padding: 5px;border: 1px solid black;width: 10px; text-align: left"><%=projectdetails[9]!=null?sdf.format(sdf1.parse(projectdetails[9].toString())):"" %></td>
-		</tr>
-		<tr>
-    <td style="text-align: center; padding: 5px; border: 1px solid black; width: 5%;"><%=++prjCount %>.</td>
-    
-    <td style="text-align: center; padding: 5px; border: 1px solid black; width: 20%; font-weight: bold;">
-        <b>Cost Breakup( &#8377; <span class="currency">Lakhs</span>)</b>
-    </td>
-
-    <td style="padding: 0; border: 1px solid black; text-align: left;">
-        <table style="width: 100%; height: 100%; border-collapse: collapse; border: none;">
-            <tr>
-                <td style="border-bottom: 1px solid black; border-right: 1px solid black; padding: 5px; width: 50%; text-align:center;font-size:12px">RE COST</td>
-                <td style="border-bottom: 1px solid black; padding: 5px;"><%=projectdetails[12]!=null?df.format(Double.parseDouble(projectdetails[12].toString())/100000):0 %></td>
-            </tr>
-            <tr>
-                <td style="border-bottom: 1px solid black; border-right: 1px solid black; padding: 5px; text-align:center;font-size:12px">FE COST</td>
-                <td style="border-bottom: 1px solid black; padding: 5px;"><%=projectdetails[13]!=null?df.format(Double.parseDouble(projectdetails[13].toString())/100000):0 %></td>
-            </tr>
-            <tr>
-                <td style="border-right: 1px solid black; padding: 5px; text-align:center;font-size:12px">Total Cost</td>
-                <td style="padding: 5px;"><%=projectdetails[14]!=null?df.format((Double.parseDouble(projectdetails[14].toString())/100000)):0 %></td>
-            </tr>
-		        </table>
-		    </td>
-		</tr>
-		</table>
 		
-		</div>
-	 <h1 class="break"></h1> 	
-	 <%} %>
 	
 		<% for (Object[] committeemin : committeeminutes) { %>
 		<% if (committeemin[0].toString().equals("1") ) { %>
@@ -690,7 +771,7 @@ for( Object[]obj:specialMembers){ %>
 		<table style="margin-top: 0px; margin-left: 10px; width: 650px; font-size: 16px; border-collapse: collapse;">
 			<tbody>
 				<tr>
-					<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=committeemin[0]!=null?committeemin[0].toString(): " - "%>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%></th>
+					<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=topiccount++%>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%></th>
 				</tr>
 				<tr>
 						<%
@@ -731,7 +812,7 @@ for( Object[]obj:specialMembers){ %>
 		<table style="margin-top: 0px; margin-left: 10px; width: 650px; font-size: 16px; border-collapse: collapse;">
 			<tbody>
 				<tr>
-					<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=committeemin[0]!=null?committeemin[0].toString(): " - "%>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%></th>
+					<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=topiccount++%>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%></th>
 				</tr>
 				<tr>
 					<%
@@ -886,7 +967,7 @@ for( Object[]obj:specialMembers){ %>
 <%} %>
 							<table style="margin-top: 0px; margin-left: 10px; width: 650px; font-size: 16px; border-collapse: collapse;">
 								<tr>
-									<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=committeemin[0]!=null?committeemin[0].toString(): " - "%> (b)&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%></th>
+									<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=topiccount++%> (b)&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%></th>
 								</tr>
 							</table>	
    				
@@ -1009,29 +1090,35 @@ for( Object[]obj:specialMembers){ %>
 				<br>
 					<table style="margin-top: -15px; margin-left: 10px; width: 650px; font-size: 16px; border-collapse: collapse;">
 						<tr>
-							<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=committeemin[0]!=null?committeemin[0].toString(): " - "%>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%> (Annexure - A)</th>
+							<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=topiccount++%>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%> (Annexure - A)</th>
 						</tr>
 					</table>	
 			<%}else if (committeemin[0].toString().equals("5") ){%>
 					<table style="margin-top: 0px; margin-left: 10px; width: 650px; font-size: 16px; border-collapse: collapse;">
 						<tr>
-							<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=committeemin[0]!=null?committeemin[0].toString(): " - "%>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%>  (Annexure - B)</th>
+							<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=topiccount++%>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%>  (Annexure - B)</th>
 						</tr>
 					</table>	
 			<%}else if (committeemin[0].toString().equals("6") ) 
 			{ %>
 					<table style="margin-top: 0px; margin-left: 10px; width: 650px; font-size: 16px; border-collapse: collapse;">
 						<tr>
-							<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=committeemin[0]!=null?committeemin[0].toString(): " - "%>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%> (Annexure - C)</th>
+							<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=topiccount++%>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%> (Annexure - C)</th>
 						</tr>
 					</table>	
 		<%}else if (committeemin[0].toString().equals("7") ){ %>
 			
 					<table style="margin-top: 0px; margin-left: 10px; width: 650px; font-size: 16px; border-collapse: collapse;">
 						<tr>
-							<th colspan="8" style="text-align: left; font-weight: 700; text-align: justify;padding-left: 15px;" ><br><%=committeemin[0]!=null?committeemin[0].toString(): " - "%>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%> (Annexure - D)</th>
+							<th colspan="8" style="text-align: left; font-weight: 700; text-align: justify;padding-left: 15px;" ><br><%=topiccount++%>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%> (Annexure - D)</th>
 						</tr>
 					</table>	
+					
+					<table style="margin-top: 0px; margin-left: 10px; width: 650px; font-size: 16px; border-collapse: collapse;">
+						<tr>
+							<th colspan="8" style="text-align: left; font-weight: 700; text-align: justify;padding-left: 15px;" ><br><%=topiccount++%>.&nbsp;&nbsp;&nbsp;Revised Gantt Chart (Annexure - E)</th>
+						</tr>
+					</table>
 		
 				
 		<%} else if (committeemin[0].toString().equals("8") || committeemin[0].toString().equals("9") || committeemin[0].toString().equals("10"))
@@ -1041,7 +1128,7 @@ for( Object[]obj:specialMembers){ %>
 				<table style="margin-top:0px; margin-left: 10px; width: 650px; font-size: 16px; border-collapse: collapse;">
 					<tbody>
 						<tr>
-							<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=committeemin[0]!=null?committeemin[0].toString(): " - "%>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%></th>
+							<th colspan="8" style="text-align: left; font-weight: 700;"><br>&nbsp;&nbsp;&nbsp;<%=topiccount++%>.&nbsp;&nbsp;&nbsp;<%=committeemin[1]!=null?committeemin[1].toString(): " - "%></th>
 						</tr>
 				
 						<%

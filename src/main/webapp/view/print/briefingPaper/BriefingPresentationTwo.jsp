@@ -1,3 +1,5 @@
+<%@page import="java.time.LocalDate"%>
+<%@page import="java.time.temporal.ChronoUnit"%>
 <%@page import="com.vts.pfms.committee.model.Committee"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="com.vts.pfms.FormatConverter"%>
@@ -21,6 +23,8 @@ String committeeid = (String) request.getAttribute("committeeid");
 String CommitteeCode = committeeData.getCommitteeShortName().trim();
 
 List<Object[]> projectattributeslist = (List<Object[]>) request.getAttribute("projectattributes");
+List<List<Object[]>> oldpmrcissueslist = (List<List<Object[]>>) request.getAttribute("oldpmrcissueslist");
+LocalDate before6months = LocalDate.now().minusDays(committeeData.getPeriodicDuration());
 
 List<Object[]> ProjectDetail = (List<Object[]>) request.getAttribute("ProjectDetails");
 String pdc = "";;
@@ -341,4 +345,171 @@ List<List<ProjectEconomicImpact>> econmicImpactDetails = (List<List<ProjectEcono
 			</div>
 			<!-- ---------------------------------------- P-12  Economic Impact Of Project Div ----------------------------------------------------- -->
 			
-			
+				<!-- ---------------------------------------- P-13  GANTT chart of overall project Div ----------------------------------------------------- -->
+
+		<%-- 	<div class="carousel-item ">
+
+	
+				
+					<div class="content-header row ">
+					<div class="col-md-1" ><img class="bp-18"   <%if(Drdologo!=null ){ %> src="data:image/*;base64,<%=Drdologo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> ></div>
+					<div class="col-md-1 bp-19" align="left"  ><b class="bp-20"><%=ProjectCode %></b>
+					<h6 class="bp-21"><%=pdc %></h6>
+					</div>
+					<div class="col-md-8">
+					<h3>13. GANTT Chart of Overall Project Schedule</h3>
+					</div>
+					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
+					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
+					</div>
+					</div>
+
+
+				<div class="content">
+				<jsp:include page="../BpGrantChart.jsp" />
+				</div>
+			</div> --%>
+			<!-- ---------------------------------------- GANTT chart of overall project Div ----------------------------------------------------- -->
+			<!-- ---------------------------------------- P-14 Issues Div ----------------------------------------------------- -->
+			<%-- <div class="carousel-item ">
+					<div class="content-header row ">
+					<div class="col-md-1" ><img class="bp-18"   <%if(Drdologo!=null ){ %> src="data:image/*;base64,<%=Drdologo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> ></div>
+					<div class="col-md-1 bp-19" align="left"  ><b class="bp-20"><%=ProjectCode %></b>
+					<h6 class="bp-21"><%=pdc %></h6>
+					</div>
+					<div class="col-md-8">
+						<h3>14. Issues</h3>
+					</div>
+					<div class="col-md-1 bp-22" align="right"  ><b class="bp-20"><%=MeetingNo %></b></div>
+					<div class="col-md-1"><img class="bp-18"   <%if(lablogo!=null ){ %> src="data:image/*;base64,<%=lablogo%>" alt="Logo"<%}else{ %> alt="File Not Found" <%} %> >
+					</div>
+					</div>
+
+				<div class="content">
+					<% for (int z = 0; z < 1; z++) { %>
+
+					<% if (ProjectDetail.size() > 1) { %>
+					<div>
+						<b>Project : <%=ProjectDetail.get(z)[1]%> <% if (z != 0) {  %>(SUB)<% }  %> </b>
+					</div>
+					<% } %>
+					<!-- CALL Old_Issues_List(:projectid); -->
+					<table class="subtables bp-55" >
+						<thead>
+							<tr>
+								<td colspan="7" class="border=0">
+									<p class="bp-49">
+										<span class="notassign">NA</span> : Not Assigned &nbsp;&nbsp;
+										<span class="assigned">AA</span> : Activity Assigned &nbsp;&nbsp; 
+										<span class="ongoing">OG</span> : On Going &nbsp;&nbsp; 
+										<span class="delay">DO</span> : Delay - On Going &nbsp;&nbsp; 
+										<span class="ongoing">RC</span> : Review & Close &nbsp;&nbsp; 
+										<span class="delay">FD</span> : Forwarded With Delay &nbsp;&nbsp; 
+										<span class="completed">CO</span> :Completed &nbsp;&nbsp; 
+										<span class="completeddelay">CD</span> : Completed with Delay &nbsp;&nbsp; 
+										<span class="inactive">IA</span> : InActive &nbsp;&nbsp; 
+										<span class="delaydays">DD</span> : Delayed days &nbsp;&nbsp;
+									</p>
+								</td>
+							</tr>
+							<tr>
+								<th class="width20">SN</th>
+								<th class="width20">ID</th>
+								<th class="width350">Issue Point</th>
+								<th class="width100">ADC <br> PDC</th>
+								<!-- <th style="width: 100px;">ADC</th> -->
+								<th class="width200">Responsibility</th>
+								<th class="width50">Status(DD)</th>
+								<th class="width220">Remarks</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if (oldpmrcissueslist.get(z).size() == 0) { %>
+							<tr>
+								<td colspan="7" class="text-center">Nil</td>
+							</tr>
+							<% } else if (oldpmrcissueslist.get(z).size() > 0) {
+							int i = 1;
+							for (Object[] obj : oldpmrcissueslist.get(z)) {
+								if(!obj[9].toString().equals("C")  || (obj[9].toString().equals("C") && obj[13]!=null && before6months.isBefore(LocalDate.parse(obj[13].toString())) )){ %>
+							<tr>
+								<td class="text-center"><%=i%></td>
+									<td class="text-center" >
+									<%if(obj[18]!=null && Long.parseLong(obj[18].toString())>0){
+										String []temp=obj[1].toString().split("/");
+										String tempString=temp[temp.length-1];
+										%>
+										<button type="button" class="btn btn-sm font-weight-bold"  onclick="ActionDetails( <%=obj[18] %>);" data-toggle="tooltip" data-placement="bottom" title="Action Details" >
+										<%=tempString %>
+										</button>
+									<%}%>
+								</td>
+								<td class="text-justify"> <%=(obj[2].toString())%> </td>
+								<td class="text-justify">
+																	<%	String actionstatus = obj[9].toString();
+										int progress = obj[16]!=null ? Integer.parseInt(obj[16].toString()) : 0;
+										LocalDate pdcorg = LocalDate.parse(obj[3].toString());
+										LocalDate endDate = LocalDate.parse(obj[4].toString());
+										LocalDate lastdate = obj[13]!=null ? LocalDate.parse(obj[13].toString()): null;
+										LocalDate today = LocalDate.now();
+									%> 
+									<% if(lastdate!=null && actionstatus.equalsIgnoreCase("C") ){%>
+										<%if(actionstatus.equals("C") && (pdcorg.isAfter(lastdate) || pdcorg.equals(lastdate))){%>
+											<span class="completed"><%= sdf.format(sdf1.parse(obj[13].toString()))%> </span>
+										<%}else if(actionstatus.equals("C") && pdcorg.isBefore(lastdate)){ %>	
+											<span class="completeddelay"><%= sdf.format(sdf1.parse(obj[13].toString()))%> </span>
+										<%} %>	
+									<%}else{ %>
+										-									
+									<%} %>
+									<br>
+									<%if(!pdcorg.equals(endDate)) {%>
+									<%=sdf.format(sdf1.parse(obj[4].toString()))%><br>
+									<%} %>
+									<%=sdf.format(sdf1.parse(obj[3].toString()))%>
+								</td>
+						<!-- 		<td style="text-align: center;">
+
+								</td> -->
+								<td><%=obj[11]%><%=obj[12] %></td>
+								<td class="text-center">
+									<%if(obj[4]!= null){ %> 
+														
+										<% if(lastdate!=null && actionstatus.equalsIgnoreCase("C") ){%>
+											<%if(actionstatus.equals("C") && (pdcorg.isAfter(lastdate) || pdcorg.equals(lastdate))){%>
+												<span class="completed">CO</span>
+											<%}else if(actionstatus.equals("C") && pdcorg.isBefore(lastdate)){ %>	
+												<span class="delay">CD (<%= ChronoUnit.DAYS.between(pdcorg, today)  %>)  </span>
+											<%} %>	
+										<%}else{ %>
+											<%if(actionstatus.equals("F")  && (pdcorg.isAfter(lastdate) || pdcorg.isEqual(lastdate) )){ %>
+												<span class="ongoing">RC</span>												
+											<%}else if(actionstatus.equals("F")  && pdcorg.isBefore(lastdate)) { %>
+												<span class="delay">FD</span>
+											<%}else if(actionstatus.equals("A") && progress==0){  %>
+												<span class="assigned">
+													AA <%if(pdcorg.isBefore(today)){ %> (<%= ChronoUnit.DAYS.between(pdcorg, today)  %>) <%} %>
+												</span>
+											<%} else if(pdcorg.isAfter(today) || pdcorg.isEqual(today)){  %>
+												<span class="ongoing">OG</span>
+											<%}else if(pdcorg.isBefore(today)){  %>
+												<span class="delay">DO (<%= ChronoUnit.DAYS.between(pdcorg, today)  %>)  </span>
+											<%} %>										
+										<%} %>
+									<%}else { %>
+										-
+									<%} %>
+								</td>
+								<td>
+									<% if (obj[17] != null) { %> <%=(obj[17].toString() )%> <% } %>
+								</td>
+							
+							</tr>
+							<% i++; }}
+							} %>
+						</tbody>
+					</table>
+					<% } %>
+				</div>
+
+			</div> --%>

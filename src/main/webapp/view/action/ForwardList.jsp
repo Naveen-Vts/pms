@@ -27,7 +27,7 @@
   SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
   SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd");
   String type = (String)request.getAttribute("type");
-  
+  String Logintype = (String) session.getAttribute("LoginType");
   
  %>
 
@@ -200,6 +200,21 @@
 																</form> 
 																<%}else if(obj[6]!=null && "C".equalsIgnoreCase(obj[6].toString())){%>
 																<span class="badge badge-pill badge-success p-2">Closed</span>
+																<%if("A".equalsIgnoreCase(Logintype)){ %>
+																	<button type="button" onclick="openRemarksModal('<%= obj[10] %>', '<%= obj[12] != null ? obj[12].toString().replace("'", "\\'") : "" %>')">
+																	    <div class="cc-rockmenu">
+																	        <div class="rolling">
+																	            <figure class="rolling_icon">
+																	                <img src="view/images/remarksedit.png"
+																	                     alt="Edit Remarks"
+																	                     title="Edit Remarks"
+																	                     style="width: 30px; height: 30px;">
+																	            </figure>
+																	            <span>Edit Remarks</span>
+																	        </div>
+																	    </div>
+																	</button>
+																<%} %>
 																<%} %>		
 															</td>
 														</tr>
@@ -261,6 +276,41 @@
 				
 				
 				
+<div class="modal fade" id="remarksModal" tabindex="-1" role="dialog" aria-labelledby="remarksModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="remarksModalLabel">
+                    Edit Remarks
+                </h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+             <div class="modal-body">
+                <input type="hidden" id="remarksId">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" id="csrfToken">
+                <div class="form-group">
+                    <label for="remarksText">Remarks</label>
+                    <textarea class="form-control" id="remarksText"  rows="5"  placeholder="Enter remarks..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-sm revoke"
+                        data-dismiss="modal">
+                    Close
+                </button>
+                <button type="button"
+                        class="btn btn-sm edit"
+                        onclick="saveRemarks()">
+                    Edit
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 				
 
 
@@ -295,8 +345,55 @@
 		$('#header').html(b);
 		$('#exampleModalCenter').modal('show');
 	}
-	</script>  
+	
+	function openRemarksModal(id, remarks) {
 
+	    $('#remarksId').val(id);
+	    $('#remarksText').val(remarks);
+	    $('#remarksModal').modal('show');
+	}
+
+
+	function saveRemarks() {
+
+	    var actionSubId = $('#remarksId').val();
+	    var remarks = $('#remarksText').val();
+	    var csrfToken = $('#csrfToken').val();
+
+	    if (!remarks || remarks.trim() === '') {
+	        alert("Please enter remarks.");
+	        return;
+	    }
+	    
+	    if(!confirm("Are you sure to Edit Remarks?")){
+			return;
+		}
+
+	    $.ajax({
+	        type: "POST",
+	        url: "UpdateActionRemarks.htm",
+	        data: {
+	            actionSubId: actionSubId,
+	            remarks: remarks,
+	            "${_csrf.parameterName}": csrfToken
+	        },
+	        success: function(response) {
+	            if (response === "success") {
+	                $('#remarksModal').modal('hide');
+	                alert( 'Remarks updated successfully.');
+	                location.reload();
+	            } else {
+	                alert("Failed to update remarks.");
+	            }
+	        },
+	        error: function(xhr, status, error) {
+	            console.log("Error:", error);
+	            alert("Something went wrong while updating remarks.");
+	        }
+	    });
+	}
+	
+	</script>  
 
 </body>
 </html>

@@ -917,8 +917,21 @@ List<List<ProjectEconomicImpact>> econmicImpactDetails = (List<List<ProjectEcono
 									 String formattedDate = outputFormat.format(date);
 									 if(entry.getValue().equalsIgnoreCase(formattedDate)){
 										 key2=entry.getKey().toString();
-									 } }%>
-								<%=committee.getCommitteeShortName().trim().toUpperCase()+"-"+key2+"/"+obj[5].toString().split("/")[4] %>
+									 } }
+									 
+								String committeeCode = committee.getCommitteeShortName().trim().toUpperCase();
+								String splCommittee = committeeCode;
+								if("PMRC".equalsIgnoreCase(committeeCode)|| "PMRB".equalsIgnoreCase(committeeCode)){
+									LocalDate scheduleDate = obj[20] != null ? LocalDate.parse(obj[20].toString()) : null;
+									LocalDate PMRB_EFFECTIVE_DATE = LocalDate.of(2026, 4, 1);
+									if(scheduleDate.isBefore(PMRB_EFFECTIVE_DATE)){
+										splCommittee = "PMRC";
+									}else {
+										splCommittee = committeeCode;
+									}
+								}
+									 %>
+								<%=splCommittee.trim().toUpperCase()+"-"+key2+"/"+obj[5].toString().split("/")[4] %>
 
 								</span>	
 									
@@ -931,6 +944,25 @@ List<List<ProjectEconomicImpact>> econmicImpactDetails = (List<List<ProjectEcono
 							<td  style="text-align: justify; "><%=obj[2]!=null?obj[2].toString(): " - " %></td>
 					
 							<td style="text-align: center;">
+							<%if(obj[4]!= null){ %> 
+									<%	String actionstatus = obj[10].toString();
+										int progress = obj[18]!=null ? Integer.parseInt(obj[18].toString()) : 0;
+										LocalDate pdcorg = LocalDate.parse(obj[6].toString());
+										LocalDate lastdate = obj[22]!=null ? LocalDate.parse(obj[22].toString()): null;
+										LocalDate today = LocalDate.now();
+									%> 
+									<% if(lastdate!=null && actionstatus.equalsIgnoreCase("C") ){%>
+											<%if(actionstatus.equals("C") && (pdcorg.isAfter(lastdate) || pdcorg.equals(lastdate))){%>
+												<span class="completed"><%= sdf.format(sdf1.parse(obj[22].toString())) %></span><br>
+											<%}else if(actionstatus.equals("C") && pdcorg.isBefore(lastdate)){ %>	
+												<span class="completeddelay"><%= sdf.format(sdf1.parse(obj[22].toString())) %> </span><br>
+											<%} %>	
+										<%}else{ %>
+											<span> - </span><br>
+									<%} %>
+								<%}else { %>
+									<span class="notassign"> - </span><br>
+								<%} %>
 								<%if(obj[8]!= null && !LocalDate.parse(obj[8].toString()).equals(LocalDate.parse(obj[7].toString())) ){ %><span style="color:black;font-weight: bold;"><%=sdf.format(sdf1.parse(obj[8].toString()))%></span><br><%} %>	
 								<%if(obj[7]!= null && !LocalDate.parse(obj[7].toString()).equals(LocalDate.parse(obj[6].toString())) ){ %><span style="color:black;font-weight: bold;"><%=sdf.format(sdf1.parse(obj[7].toString()))%></span><br><%} %>
 								<%if(obj[6]!= null){ %><span><%=sdf.format(sdf1.parse(obj[6].toString()))%></span><br><%} %>
