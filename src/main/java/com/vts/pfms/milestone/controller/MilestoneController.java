@@ -598,22 +598,22 @@ public class MilestoneController {
 	        List<Object[]> list = service.MilestoneActivity(req.getParameter("MilestoneActivityId"));
 	        req.setAttribute("MilestoneActivity", list != null && !list.isEmpty() ? list.get(0) : new Object[100]);
 	 
-	        // CHANGED: only fetch Level A eagerly (one query). Levels B/C/D/E are no longer
-	        // walked in nested loops here — they're fetched lazily via MilestoneActivityLevelFetch.htm
-	        // as the user expands each panel, which is what was causing the slow load with ~120 activities.
 	        List<Object[]> MilestoneActivityA = service.MilestoneActivityLevel(req.getParameter("MilestoneActivityId"), "1");
 	        req.setAttribute("MilestoneActivityA", MilestoneActivityA);
 	 
 	        req.setAttribute("ActivityTypeList", service.ActivityTypeList());
 	        String projectId = req.getParameter("ProjectId");
+	        
 	        req.setAttribute("EmployeeList", service.ProjectEmpList(projectId, LabCode));
 	        req.setAttribute("allLabList", committeservice.AllLabList());
 	        req.setAttribute("ProjectId", projectId);
 	        req.setAttribute("projectDirector", req.getParameter("projectDirector"));
+	        
 	        if ("C".equalsIgnoreCase(req.getParameter("sub"))) {
 	            req.setAttribute("RevisionCount", service.MilestoneRevisionCount(req.getParameter("MilestoneActivityId")));
 	            return "milestone/MilestoneActivityPreview";
 	        }
+	        
 	        return "milestone/MilestoneActivityDetails";
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -634,7 +634,9 @@ public class MilestoneController {
 	    boolean isDirector = projectDirector != null && projectDirector.equals(currentEmpId);
 	 
 	    String ancestorOicIdsParam = req.getParameter("AncestorOicIds");
+	    
 	    Set<String> ancestorOicIds = new HashSet<String>();
+	    
 	    if (ancestorOicIdsParam != null && !ancestorOicIdsParam.isEmpty()) {
 	        ancestorOicIds.addAll(Arrays.asList(ancestorOicIdsParam.split(",")));
 	    }
@@ -646,6 +648,7 @@ public class MilestoneController {
 	    if (rows != null) {
 	        for (Object[] row : rows) {
 	            Map<String, Object> node = new LinkedHashMap<String, Object>();
+	            
 	            String firstOicId = row[13] != null ? row[13].toString() : "";
 	            String secondOicId = row[15] != null ? row[15].toString() : "";
 	 
@@ -666,6 +669,7 @@ public class MilestoneController {
 	            Set<String> chainIncludingSelf = new HashSet<String>(ancestorOicIds);
 	            chainIncludingSelf.add(firstOicId);
 	            chainIncludingSelf.add(secondOicId);
+	            
 	            boolean canAddChild = isAdmin || isDirector || chainIncludingSelf.contains(currentEmpId);
 	            node.put("canAddChild", canAddChild);
 	 

@@ -102,6 +102,8 @@ String labCode = (String) session.getAttribute("labcode");
 								<option value=""  selected="selected"	hidden="true">--Select--</option>
 								<option value="Mr."    <%if(OfficerEditData[12]!=null && OfficerEditData[12].toString().equalsIgnoreCase("Mr.")){%>    selected="selected" <%}%>> Mr.</option>
 								<option value="Ms."   <%if(OfficerEditData[12]!=null && OfficerEditData[12].toString().equalsIgnoreCase("Ms.")){%>   selected="selected" <%}%>> Ms.</option>
+								<option value="Shri"   <%if(OfficerEditData[11]!=null && OfficerEditData[12].toString().equalsIgnoreCase("Shri")){%>   selected="selected" <%}%>> Shri</option>
+								<option value="Smt"   <%if(OfficerEditData[11]!=null && OfficerEditData[12].toString().equalsIgnoreCase("Smt")){%>   selected="selected" <%}%>> Smt</option>
 							</select>
 					</div>
 </div>

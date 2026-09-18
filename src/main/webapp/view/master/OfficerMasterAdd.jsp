@@ -96,6 +96,8 @@ String labCode = (String) session.getAttribute("labcode");
 								<option value=""  selected="selected"	hidden="true">--Select--</option>
 								<option value="Mr.">Mr.</option>
 								<option value="Ms.">Ms.</option>
+								<option value="Shri"> Shri</option>
+								<option value="Smt"> Smt</option>
 							</select>
 					</div>
 	</div>
