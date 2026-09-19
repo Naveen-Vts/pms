@@ -3750,7 +3750,7 @@ private boolean isValidFileType(MultipartFile file) {
 			empId = empId == null?EmpId : empId;
 			String finalEmpId = empId;
 			
-			List<Object[]> roleWiseEmployeeList = timesheetservice.getRoleWiseEmployeeList(labcode, LoginType, empId);
+			List<Object[]> roleWiseEmployeeList = timesheetservice.getRoleWiseEmployeeList(labcode, LoginType, EmpId);
 			List<Object[]> mainList = service.getAllMilestoneActivityList();
 			List<Object[]> subList = service.getAllMilestoneActivityLevelList();
 			

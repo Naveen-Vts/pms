@@ -155,7 +155,8 @@ String projectType=(String)request.getAttribute("projectType");
 		                  <div class="col-md-4">
 		                     <div class="form-group">
 		                            <label class="control-label">Assigned To</label>
-		                     <select class="form-control selectdee" required="required" name="assignee" id="assignee" multiple="multiple" data-placeholder= "Select Employees">                   
+		                            <span class="mandatory" style="color: #cd0a0a;">*</span>
+		                     <select class="form-control selectdee" required="required" name="assignee" id="assignee" multiple="multiple" data-placeholder= "Select Employees" >                   
 		                         <% for(Object[] obj : EmployeeList) { %>
 		                         <option value="<%=obj[0]%>"><%=obj[1]!=null?StringEscapeUtils.escapeHtml4(obj[1].toString()):" - "%> , <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):" - "%></option>
 		                         <%} %>
@@ -182,7 +183,7 @@ String projectType=(String)request.getAttribute("projectType");
 		            <div class="form-group"> 
 		               <label class="control-label"> Box No.   <span class="mandatory" style="color: #cd0a0a;">*</span></label>
 		           
-		           <input type="text" class="form-control" name="boxno" maxlength="250" value="<%=RfaAction[16]!=null?StringEscapeUtils.escapeHtml4(RfaAction[1].toString().trim()):""  %>" required="required">
+		           <input type="text" class="form-control" name="boxno" maxlength="250" value="<%=RfaAction[16]!=null?StringEscapeUtils.escapeHtml4(RfaAction[16].toString().trim()):""  %>" required="required">
 		            </div>
 		            </div>
 		            
@@ -415,28 +416,39 @@ String projectType=(String)request.getAttribute("projectType");
 						LabCode : labCode,	
 					},
 					datatype : 'json',
-					success : function(result) {
-						var result = JSON.parse(result);
-						var values = Object.keys(result).map(function(e) {
-							return result[e]
-						});
-						
-						var s = '';
-						s += '<option   value="">SELECT</option>';
-						if(labCode == '@EXP'){
-							values = values.filter(e => e[4] == vendortype)
-						} 
-						console.log(values)
-						/* for (i = 0; i < values.length; i++) 
-						{
-							s += '<option value="'+values[i][0]+'">'+values[i][1] + ', ' +values[i][3] + '</option>';
-						}  */
-						$('#assignee').html('');
-						$('#assignee').html(s);
-					 /* $('#ApprovingOfficer').val(''+value).trigger('change'); */ 
-						var assignEmp = <%=request.getAttribute("AssignEmp") %>
-					 	console.log(assignEmp,"Assignee");
-						$('#assignee').val(assignEmp).trigger('change');
+					success: function(result) {
+
+					    var result = JSON.parse(result);
+
+					    var values = Object.keys(result).map(function(e) {
+					        return result[e];
+					    });
+
+					    var s = '';
+
+					    if (labCode == '@EXP') {
+					        values = values.filter(e => e[4] == vendortype);
+					    }
+
+					    console.log("Assignee Employees:", values);
+
+					    for (var i = 0; i < values.length; i++) {
+
+					        s += '<option value="' + values[i][0] + '">'
+					           + values[i][1] + ', ' + values[i][3]
+					           + '</option>';
+
+					    }
+
+					    $('#assignee').html(s);
+
+					    // Set previously selected assignees
+					    var assignEmp = <%=request.getAttribute("AssignEmp")%>;
+
+					    console.log(assignEmp, "Assignee");
+
+					    $('#assignee').val(assignEmp).trigger('change');
+
 					}
 				});
 		}
