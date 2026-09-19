@@ -922,8 +922,7 @@ public class MilestoneController {
 			for (Object modelKey : md.keySet()) {
 				System.out.println(" =============================================="+md.get("MilestoneActivityId"));
 				System.out.println(modelKey+"==============================================");
-				MainId = (String) md.get(modelKey);
-
+				if(md.get("MilestoneActivityId") != null) MainId = (String) md.get("MilestoneActivityId");
 			}
 			
 			

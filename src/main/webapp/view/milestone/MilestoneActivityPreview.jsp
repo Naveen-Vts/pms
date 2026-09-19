@@ -228,7 +228,21 @@ Kindly note that only the Project Director, the Admin, and the OICs of the Paren
 </div>
   <a class="navbar-brand"></a>
   <form class="form-inline"  method="POST" action="MilestoneActivityList.htm">
-    <%if( Arrays.asList(getMA[8].toString(),projectDirector,getMA[9].	toString()).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A")  ){ %>
+    <%
+    
+    boolean hasAccess =
+    (getMA[8] != null && EmpId != null &&
+        getMA[8].toString().equals(EmpId.toString()))
+    ||
+    (projectDirector != null && EmpId != null &&
+        projectDirector.toString().equals(EmpId.toString()))
+    ||
+    (getMA[9] != null && EmpId != null &&
+        getMA[9].toString().equals(EmpId.toString()))
+    ||
+    (LoginType != null && LoginType.equalsIgnoreCase("A"));
+    
+    if(hasAccess){ %>
    <%if(getMA[13]!=null){ %>
     <input type="submit" class="btn btn-primary btn-sm submit " id="baseLineBtn"  value="Set Base Line ( <%=RevisionCount %> )" onclick="return confirm('Are You Sure To Submit ?')" formaction="M-A-Set-BaseLine.htm" > 
   
@@ -413,7 +427,7 @@ if(MilestoneActivityA!=null&&MilestoneActivityA.size()>0){
 	int countA=1;
 	for(Object[] ActivityA:MilestoneActivityA){
 		String aAncestorOic = getMA[8] + "," + getMA[9];
-		boolean canEditA = Arrays.asList(getMA[8].toString(), projectDirector, getMA[9].toString()).contains(EmpId.toString()) || LoginType.equalsIgnoreCase("A");
+		boolean canEditA = (EmpId != null && (Objects.equals(getMA[8], EmpId) || Objects.equals(projectDirector, EmpId) || Objects.equals(getMA[9], EmpId))) || "A".equalsIgnoreCase(LoginType);
 %>
 
 		<form   method="POST" action="MilestoneActivityEditSubmit.htm" id="form<%=getMA[0] %>A<%=ActivityA[0] %>">

@@ -2,6 +2,7 @@ package com.vts.pfms.pfts.service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.vts.pfms.master.dto.DemandDetails;
 import com.vts.pfms.pfts.dao.PFTSDao;
+import com.vts.pfms.pfts.dao.PftsPrgmDao;
 import com.vts.pfms.pfts.dto.DemandOrderDetails;
 import com.vts.pfms.pfts.dto.PFTSFileDto;
 import com.vts.pfms.pfts.dto.PmmgPmsDmdDetails;
@@ -24,7 +26,10 @@ import com.vts.pfms.pfts.model.PftsFileOrder;
 public class PFTSServiceImp implements PFTSService{
 	
 	@Autowired 
-	PFTSDao dao;
+	private PFTSDao dao;
+	
+	@Autowired(required = false)
+	private PftsPrgmDao dao2;
 	
 	private static final Logger logger=LogManager.getLogger(PFTSServiceImp.class);
 	
@@ -383,8 +388,8 @@ public class PFTSServiceImp implements PFTSService{
 	
 	@Override
 	public List<PmmgPmsDmdDetails> getPMMGProcurementData(String projectImmsCd) {
-
-		return dao.getPMMGProcurementData(projectImmsCd);
+		if(dao2 != null) return dao2.getPMMGProcurementData(projectImmsCd);
+		else return Collections.emptyList();
 	}
 	
 }

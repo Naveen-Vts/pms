@@ -3,6 +3,7 @@ package com.vts.pfms.cfg;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -17,6 +18,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import jakarta.persistence.EntityManagerFactory;
 
 @Configuration
+@ConditionalOnProperty(
+    name = "app.lab-code",
+    havingValue = "PGAD"
+)
 @EnableTransactionManagement
 @EnableJpaRepositories(
     basePackages = "com.vts.pfms.pfts.model.Procurement",
@@ -26,7 +31,7 @@ import jakarta.persistence.EntityManagerFactory;
 public class SecondaryDbConfig {
 
     @Bean(name = "secondaryDataSource")
-    @ConfigurationProperties(prefix = "app.secondary.datasource") // Uses secondary properties
+    @ConfigurationProperties(prefix = "app.secondary.datasource")
     public DataSource secondaryDataSource() {
         return DataSourceBuilder.create().build();
     }
@@ -35,18 +40,19 @@ public class SecondaryDbConfig {
     public LocalContainerEntityManagerFactoryBean secondaryEntityManagerFactory(
             EntityManagerFactoryBuilder builder,
             @Qualifier("secondaryDataSource") DataSource dataSource) {
-        
+
         return builder
                 .dataSource(dataSource)
-                // ⚠️ IMPORTANT: Create a specific package ONLY for secondary entities
-                .packages("com.vts.pfms.pfts.model") 
+                .packages("com.vts.pfms.pfts.model")
                 .persistenceUnit("secondary")
                 .build();
     }
 
     @Bean(name = "secondaryTransactionManager")
     public PlatformTransactionManager secondaryTransactionManager(
-            @Qualifier("secondaryEntityManagerFactory") EntityManagerFactory secondaryEntityManagerFactory) {
+            @Qualifier("secondaryEntityManagerFactory")
+            EntityManagerFactory secondaryEntityManagerFactory) {
+
         return new JpaTransactionManager(secondaryEntityManagerFactory);
     }
 }
