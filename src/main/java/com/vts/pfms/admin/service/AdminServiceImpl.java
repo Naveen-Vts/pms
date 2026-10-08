@@ -644,7 +644,8 @@ public class AdminServiceImpl implements AdminService{
 		} 
 		@Override
 		public int resetPassword(String lid,String UserId, String labcode) throws Exception {
-			String password= labcode+"@1234";
+			String finalLabCode = labcode.substring(0,1).toUpperCase() + labcode.substring(1).toLowerCase();
+			String password= finalLabCode+"@123";
 			String newPasword=encoder.encode(password);
 			System.out.println(newPasword);
 			return dao.resetPassword(lid,UserId,newPasword,sdf1.format(new Date()));

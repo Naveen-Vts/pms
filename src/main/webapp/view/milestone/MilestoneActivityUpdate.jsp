@@ -3,361 +3,250 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1" import="java.util.*,com.vts.*,java.text.SimpleDateFormat"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%!
+	private String esc(Object o, String def) {
+		return (o == null || o.toString().trim().isEmpty()) ? def : StringEscapeUtils.escapeHtml4(o.toString());
+	}
+
+	private String fmt(SimpleDateFormat sdf, Object d) {
+		try { return d == null ? "-" : sdf.format(d); } catch (Exception e) { return "-"; }
+	}
+
+	private int pct(Object o) {
+		try {
+			int v = (int) Math.round(Double.parseDouble(o.toString().trim()));
+			return Math.max(0, Math.min(100, v));
+		} catch (Exception e) { return 0; }
+	}
+%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="ISO-8859-1">
 <title>Milestone Activity Update</title>
 <jsp:include page="../static/header.jsp"></jsp:include>
-  <spring:url value="/resources/css/milestone/milestoneReports.css" var="milestoneReports" />     
+<spring:url value="/resources/css/milestone/milestoneReports.css" var="milestoneReports" />
+<link href="${milestoneReports}" rel="stylesheet" />
 
-	<link href="${milestoneReports}" rel="stylesheet" />
+<style>
+	.ma-page { padding: 15px 20px; }
 
+	/* ---- title bar ---- */
+	.ma-title {
+		background: #1a5799; color: #fff; text-align: center;
+		margin: 0; padding: 10px 15px; font-size: 1.15rem; font-weight: 600;
+		border-radius: 6px 6px 0 0;
+	}
+
+	/* ---- table ---- */
+	.ma-table {
+		width: 100%; table-layout: fixed; border-collapse: collapse;
+		background: #fff; margin-bottom: 0; font-size: .9rem;
+	}
+	.ma-table th, .ma-table td {
+		border: 1px solid #d3dbe6; padding: 9px 10px; vertical-align: middle;
+	}
+	.ma-table thead th {
+		background: #e8eef7; color: #1a3a63; font-weight: 700;
+		text-align: center; white-space: nowrap;
+	}
+	.ma-table thead tr.top th { background: #d5e1f1; }
+	.ma-table tbody td.c { text-align: center; }
+	.ma-table tbody tr:hover td { background: #f5f9ff; }
+
+	/* ---- level rows ---- */
+	.ma-table tr.lvl-M td { background: #eaf2fc; font-weight: 600; }
+	.ma-table tr.lvl-M:hover td { background: #e0ecfa; }
+
+	.ma-table td.nm { word-wrap: break-word; }
+	.ma-table tr.lvl-A td.nm { padding-left: 28px; }
+	.ma-table tr.lvl-B td.nm { padding-left: 50px; }
+	.ma-table tr.lvl-C td.nm { padding-left: 72px; }
+
+	.ma-table tr.lvl-A td.lv { border-left: 4px solid #0e9aa7; }
+	.ma-table tr.lvl-B td.lv { border-left: 4px solid #7c5cd6; }
+	.ma-table tr.lvl-C td.lv { border-left: 4px solid #e08a1e; }
+	.ma-table tr.lvl-M td.lv { border-left: 4px solid #1a5799; }
+
+	.ma-tag {
+		display: inline-block; min-width: 44px; padding: 2px 10px; border-radius: 4px;
+		color: #fff; font-size: .8rem; font-weight: 700; text-align: center;
+	}
+	.lvl-M .ma-tag { background: #1a5799; }
+	.lvl-A .ma-tag { background: #0e9aa7; }
+	.lvl-B .ma-tag { background: #7c5cd6; }
+	.lvl-C .ma-tag { background: #e08a1e; }
+
+	/* ---- progress ---- */
+	.ma-progress { height: 20px; background: #e3e9f2; border-radius: 4px; overflow: hidden; }
+	.ma-progress span {
+		display: block; height: 100%; min-width: 32px; background: #1a5799; color: #fff;
+		font-size: .75rem; font-weight: 700; line-height: 20px; text-align: center;
+	}
+	.ma-progress span.done { background: #1f9d55; }
+	.ma-none {
+		display: block; height: 20px; line-height: 20px; border-radius: 4px;
+		background: #e3e6ea; color: #444; font-size: .75rem; font-weight: 700; text-align: center;
+	}
+
+	.ma-status { display: inline-block; padding: 2px 10px; border-radius: 4px; background: #fff3dc; color: #8a5300; font-size: .8rem; font-weight: 600; }
+	.ma-done   { display: inline-block; padding: 2px 10px; border-radius: 4px; background: #e1f5e9; color: #17733f; font-size: .8rem; font-weight: 600; }
+
+	.ma-edit { background: #ffa733; border: 0; border-radius: 4px; padding: 5px 12px; color: #222; cursor: pointer; }
+	.ma-edit:hover { background: #f59210; }
+
+	.ma-empty td { text-align: center; padding: 30px !important; color: #777; }
+</style>
 </head>
-<%SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
-Object[] getMA=(Object[])request.getAttribute("MilestoneActivity");
-String projectid=(String)request.getAttribute("projectid");
-	%>
-<body>
-  <nav class="navbar navbar-light bg-light m01" >
-  <a class="navbar-brand"></a>
-  <form class="form-inline"  method="POST" action="MilestoneReports.htm">
-   <input type="submit" class="btn btn-primary btn-sm back ml-1"  value="Back" > 	
-      <input type="hidden" name="MilestoneActivityId"	value="<%=getMA!=null?getMA[0]:0 %>" /> 
 
-<input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
-</form>
-</nav>
-
-<% 
-    String ses = (String) request.getParameter("result");
-    String ses1 = (String) request.getParameter("resultfail");
-    if (ses1 != null) { %>
-    <div align="center">
-        <div class="alert alert-danger" role="alert">
-            <%=StringEscapeUtils.escapeHtml4(ses1) %>
-        </div>
-    </div>
-<% }if (ses != null) { %>
-    <div align="center">
-        <div class="alert alert-success" role="alert">
-            <%=StringEscapeUtils.escapeHtml4(ses) %>
-        </div>
-    </div>
-<% } %>
-
-    <br />
-
-
-<div class="container-fluid">
-<div class="row" >
-<div class="col-md-12">
-<div  class="panel-group" ><h5 class="text-center bg-color text-white"><%=getMA!=null?getMA[1]:"-" %> Milestone Activity Details</h5>  
-<div class="row container-fluid" >
-                           <div class="col-md-1 " ><br><label class="control-label">Type</label>  <br>  <b >Main</b>                    		
-                        	</div>
-                    		<div class="col-md-5 " ><br>
-                    		<label class="control-label"> Activity Name:</label> <br>  <%=getMA[4]!=null?StringEscapeUtils.escapeHtml4(getMA[4].toString()):" - " %> 
-                        	</div>
-                        	<div class="col-md-1 " align="center" ><br>
-                    		<label class="control-label">Progress <br> </label>
-                    		<%if(getMA!=null && !getMA[11].toString().equalsIgnoreCase("0")){ %>
-															<div class="progress progress-1" >
-															<div class="progress-bar progress-bar-striped width-<%=getMA[11] %>" role="progressbar"  aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" >
-															<%=getMA[11]!=null?StringEscapeUtils.escapeHtml4(getMA[11].toString()):" - " %>
-															</div> 
-															</div> <%}else{ %>
-															<div class="progress progress-1" >
-															<div class="progress-bar noProgress" role="progressbar"   >
-															Not Started
-															</div>
-															</div> <%} %>
-                    		 
-                        	</div>
-                        	<div class="col-md-2 " align="center" ><br>
-                        	<label class="control-label">PDC<br>From :  <%=getMA[2]!=null?sdf.format(getMA[2]):"-" %> <br> To :  <%=getMA[3]!=null?sdf.format(getMA[3]):"-" %> <br></label>
-                        	</div>
-                        	<div class="col-md-2 clxm-2" align="center" >
-                        	<br><label class="control-label">Completed On<br>
-                        	<%if(getMA!=null && getMA[14]!=null){ %>
-                        	<%=sdf.format(getMA[14]) %>
-                        	<%}else{ %>
-                        	<%=getMA!=null?StringEscapeUtils.escapeHtml4(getMA[15].toString()):" - " %>
-                        	<%} %>
-                        	</label>
-                        	</div>
-                        	<div class="col-md-1 clxm-2" "><br>
-                        	<%
-
-                            List<Object[]> MilestoneActivityA=(List<Object[]>)request.getAttribute("MilestoneActivityA");
-                            if(MilestoneActivityA==null&&MilestoneActivityA.size()==0){%>
-                        	<label class="control-label">Update<br></label>
-                        	  <form class="form-inline"  method="POST" action="M-A-Update.htm">
-                        	  <button class="btn btn-sm edit"> <i class="fa fa-wrench" aria-hidden="true"></i> </button>
-                        	 
-                        	  
-                         	  <input type="hidden" name="ProjectId"	value="<%=projectid %>" />	
-                              <input type="hidden" name="MilestoneActivityId"	value="<%=getMA!=null?getMA[0]:"0" %>" /> 
-                              <input type="hidden" name="ActivityId"	value="<%=getMA!=null?getMA[0]:"0" %>" /> 
-                              <input type="hidden" name="ActivityType"	value="M" /> 
-                              <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
-                              </form>
-                              <%} %>
-                        	</div>
-                       		</div>
-                  	
-</div>
-
-</div>
-<div class="col-md-12">
 <%
+	SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+	Object[] getMA = (Object[]) request.getAttribute("MilestoneActivity");
+	String projectid = (String) request.getAttribute("projectid");
+	List<Object[]> MilestoneActivityA = (List<Object[]>) request.getAttribute("MilestoneActivityA");
+	String maId = getMA != null ? String.valueOf(getMA[0]) : "0";
 
+	/* row = { level, label, name, progress, from, to, completedOn, statusText, activityId, showUpdate } */
+	List<Object[]> rows = new ArrayList<Object[]>();
 
-if(MilestoneActivityA!=null&&MilestoneActivityA.size()>0){
-	int countA=1;
-	for(Object[] ActivityA:MilestoneActivityA){
-		List<Object[]> MilestoneActivityB=(List<Object[]>)request.getAttribute("MilestoneActivityB"+countA);
+	if (getMA != null) {
+		boolean mainLeaf = (MilestoneActivityA == null || MilestoneActivityA.isEmpty());
+		rows.add(new Object[] { "M", "Main", getMA[4], getMA[11], getMA[2], getMA[3], getMA[14], getMA[15], getMA[0], mainLeaf });
+	}
+
+	if (MilestoneActivityA != null) {
+		int countA = 1;
+		for (Object[] a : MilestoneActivityA) {
+			List<Object[]> listB = (List<Object[]>) request.getAttribute("MilestoneActivityB" + countA);
+			boolean aLeaf = (listB == null || listB.isEmpty());
+			rows.add(new Object[] { "A", "A-" + countA, a[4], a[5], a[2], a[3], a[8], a[9], a[0], aLeaf });
+
+			if (listB != null) {
+				int countB = 1;
+				for (Object[] b : listB) {
+					List<Object[]> listC = (List<Object[]>) request.getAttribute(countA + "MilestoneActivityC" + countB);
+					boolean bLeaf = (listC == null || listC.isEmpty());
+					rows.add(new Object[] { "B", "B-" + countB, b[4], b[5], b[2], b[3], b[8], b[9], b[0], bLeaf });
+
+					if (listC != null) {
+						int countC = 1;
+						for (Object[] c : listC) {
+							rows.add(new Object[] { "C", "C-" + countC, c[4], c[5], c[2], c[3], c[8], c[9], c[0], true });
+							countC++;
+						}
+					}
+					countB++;
+				}
+			}
+			countA++;
+		}
+	}
 %>
+<body>
 
+	<nav class="navbar navbar-light bg-light m01">
+		<a class="navbar-brand"></a>
+		<form class="form-inline" method="POST" action="MilestoneReports.htm">
+			<input type="submit" class="btn btn-primary btn-sm back ml-1" value="Back">
+			<input type="hidden" name="MilestoneActivityId" value="<%=maId%>" />
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+		</form>
+	</nav>
 
-	
-		
-
-
-					
-						<div class="row container-fluid ml-1" >
-						 <div  class="col-sm-12" align="left" >
-						   <div class="row container-fluid" >
-						    <div class="col-md-1 " ><label class="control-label">A-<%=countA %><br></label>
-                    		
-                        	</div>
-						   <div  class="col-sm-5" align="left" >
-                    		<label class="control-label"> Activity   Name: <br>  <%=ActivityA[4]!=null?StringEscapeUtils.escapeHtml4(ActivityA[4].toString()):" - " %> </label>
-                    		<br>
-                        	</div>
-                        	<div class="col-md-1 clxm-2" align="center" ><br>
-                    		 
-                    		<%if(!ActivityA[5].toString().equalsIgnoreCase("0")){ %>
-															<div class="progress progress-1" >
-															<div class="progress-bar progress-bar-striped width-<%=ActivityA[5] %>" role="progressbar"  aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" >
-															<%=ActivityA[5]!=null?StringEscapeUtils.escapeHtml4(ActivityA[5].toString()):" - " %>
-															</div> 
-															</div> <%}else{ %>
-															<div class="progress progress-1" >
-															<div class="progress-bar noProgress" role="progressbar"   >
-															Not  Started
-															</div>
-															</div> <%} %>
-                    		 
-                        	</div>
-                        	 <div  class="col-sm-2 ml-1" align="center"> <br> 
-                    		<label class="control-label">From: <%= ActivityA[2]!=null?sdf.format(ActivityA[2]):" - " %> <br>To: <%=ActivityA[3]!=null?sdf.format(ActivityA[3]):" - " %></label>
-                    		<br>
-                        	</div>
-                        	<div class="col-md-2 " align="center" >
-                        	<br><label class="control-label"> 
-                        	<%if(ActivityA[8]!=null){ %>
-                        	<%=sdf.format(ActivityA[8]) %>
-                        	<%}else{ %>
-                        	<%=ActivityA[9]!=null?StringEscapeUtils.escapeHtml4(ActivityA[9].toString()):" - " %>
-                        	<%} %>
-                        	</label>
-                        	</div>
-                            <div class="col-md-1 " ><br>
-                            <%if(MilestoneActivityB==null||MilestoneActivityB.size()==0){ %>
-                        	 <form class="form-inline"  method="POST" action="M-A-Update.htm">
-                        	  <button class="btn btn-sm edit"> <i class="fa fa-wrench" aria-hidden="true"></i> </button>
-                        	 
-                        	  
-                           		 <input type="hidden" name="ProjectId"	value="<%=projectid %>" />	
-                              <input type="hidden" name="MilestoneActivityId"	value="<%=getMA!=null?getMA[0]:"0" %>" /> 
-                              <input type="hidden" name="ActivityId"	value="<%=ActivityA[0] %>" /> 
-                              <input type="hidden" name="ActivityType"	value="A" /> 
-                              <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
-                              </form>
-                           <%} %>
-                        	</div>
-                        	</div>
-                        	</div>
-		                   </div>
-		                   
-								
-							<%
-
-
-if(MilestoneActivityB!=null&&MilestoneActivityB.size()>0){
-	int countB=1;
-	for(Object[] ActivityB:MilestoneActivityB){
-		
-%>
-
-
-	
-		
-                       <div class="row container-fluid">
-					
-						 <div  class="col-sm-12 ml-2" align="left"  >
-						    <div class="row container-fluid" >
-						     <div class="col-md-1 " ><label class="control-label">B-<%=countB %><br></label>
-                    		
-                        	</div>
-						   <div  class="col-sm-5" align="left" >
-                    		<label class="control-label"> Activity   Name:  <br> <%=ActivityB[4]!=null?StringEscapeUtils.escapeHtml4(ActivityB[4].toString()):" - " %> </label>
-                    		<br>
-                        	</div>
-                        	<div class="col-md-1 clmx-3" align="center" ><br>
-                    		 
-                    		<%if(!ActivityB[5].toString().equalsIgnoreCase("0")){ %>
-															<div class="progress progress-1" >
-															<div class="progress-bar progress-bar-striped width-<%=ActivityB[5] %>" role="progressbar"  aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" >
-															<%=ActivityB[5]!=null?StringEscapeUtils.escapeHtml4(ActivityB[5].toString()):" - " %>
-															</div> 
-															</div> <%}else{ %>
-															<div class="progress progress-1"  >
-															<div class="progress-bar noProgress" role="progressbar" >
-															Not  Started
-															</div>
-															</div> <%} %>
-                    		 
-                        	</div>
-                        	 <div  class="col-sm-2" align="center"  > <br> 
-                    		<label class="control-label">From: <%=ActivityB[2]!=null?sdf.format(ActivityB[2]): " - "  %>  <br> To: <%=ActivityB[2]!=null?sdf.format(ActivityB[3]):" - " %></label>
-                    		<br>
-                       
-                        	</div>
-                        	<div class="col-md-2 " align="center" >
-                        	<br><label class="control-label"> 
-                        	<%if(ActivityB[8]!=null){ %>
-                        	<%=sdf.format(ActivityB[8]) %>
-                        	<%}else{ %>
-                        	<%=ActivityB[9]!=null?StringEscapeUtils.escapeHtml4(ActivityB[9].toString()):" - " %>
-                        	<%} %>
-                        	</label>
-                        	</div>
-                        	<div class="col-md-1 "><br>
-                        	<%
-
-                                 List<Object[]> MilestoneActivityC=(List<Object[]>)request.getAttribute(countA+"MilestoneActivityC"+countB);
-                                if(MilestoneActivityC==null||MilestoneActivityC.size()==0){%>
-                              <form class="form-inline"  method="POST" action="M-A-Update.htm">
-                        	  <button class="btn btn-sm edit"> <i class="fa fa-wrench" aria-hidden="true"></i> </button>
-                        	 
-                        	  
-                               <input type="hidden" name="ProjectId"	value="<%=projectid %>" />	
-                              <input type="hidden" name="MilestoneActivityId"	value="<%=getMA!=null?getMA[0]:"0" %>" /> 
-                              <input type="hidden" name="ActivityId"	value="<%=ActivityB[0] %>" /> 
-                              <input type="hidden" name="ActivityType"	value="B" /> 
-                              <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
-                              </form>                        
-                              <%} %>	</div>
-							</div>	
-							</div>
-							</div>
-						<!-- B end -->
-						
-							<%
-if(MilestoneActivityC!=null&&MilestoneActivityC.size()>0){
-	int countC=1;
-	for(Object[] ActivityC:MilestoneActivityC){
-		
-%>
-
-
-	
-		
-
-					
-						<div class="row container-fluid">
-						 <div  class="col-sm-12 ml-3" align="left" >
-                            <div class="row container-fluid" >
-                             <div class="col-md-1 " ><label class="control-label">C-<%=countC %><br></label>
-                    		
-                        	</div>
-						   <div  class="col-sm-5" align="left" >
-                    		<label class="control-label">  Activity   Name: <br> <%=ActivityC[4]!=null?StringEscapeUtils.escapeHtml4(ActivityC[4].toString()):" - " %> </label>
-                    		<br>
-                        	</div>
-                        	<div class="col-md-1 clmx-4" align="center"  ><br>
-                    		 
-                    		<%if(!ActivityC[5].toString().equalsIgnoreCase("0")){ %>
-															<div class="progress progress-1" >
-												 			<div class="progress-bar progress-bar-striped width-<%=ActivityC[5] %>" role="progressbar"  aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" >
-															<%=ActivityC[5]!=null?StringEscapeUtils.escapeHtml4(ActivityC[5].toString()):" - " %>
-															</div> 
-															</div> <%}else{ %>
-															<div class="progress progress-1" >
-															<div class="progress-bar noProgress" role="progressbar"  >
-															Not  Started
-															</div>
-															</div> <%} %>
-                    		 
-                        	</div>
-                        	 <div  class="col-sm-2" align="center"   ><br>
-                    		<label class="control-label">From: <%=ActivityC[4]!=null?sdf.format(ActivityC[2]) :" - "%>  <br> To: <%=ActivityC[4]!=null?sdf.format(ActivityC[3]):" - " %></label>
-                    		<br>
-                       
-                        	</div>
-                        	<div class="col-md-2 " align="center" >
-                        	<br><label class="control-label"> 
-                        	<%if(ActivityC[8]!=null){ %>
-                        	<%=sdf.format(ActivityC[8]) %>
-                        	<%}else{ %>
-                        	<%=ActivityC[9]!=null?StringEscapeUtils.escapeHtml4(ActivityC[9].toString()):" - " %>
-                        	<%} %>
-                        	</label>
-                        	</div>
-                        	<div class="col-md-1 "><br>
-                              <form class="form-inline"  method="POST" action="M-A-Update.htm">
-                        	  <button class="btn btn-sm edit"> <i class="fa fa-wrench" aria-hidden="true"></i> </button>
-                        	 
-                        	  
-                              <input type="hidden" name="ProjectId"	value="<%=projectid %>" />	
-                              <input type="hidden" name="MilestoneActivityId"	value="<%=getMA!=null?getMA[0]:"0" %>" /> 
-                              <input type="hidden" name="ActivityId"	value="<%=ActivityC[0] %>" /> 
-                              <input type="hidden" name="ActivityType"	value="C" /> 
-                              <input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 
-                              </form>                        	</div>
-                        	</div>
-	
-						<!-- C end -->
-									</div>
-									</div>
-									
-	
-		<%countC++;}}else{
+	<%
+		String ses = request.getParameter("result");
+		String ses1 = request.getParameter("resultfail");
+		if (ses1 != null) {
 	%>
-				
-	
-<%} %>	
-									
-									
-									
-		
-		<%countB++;}}else{
+	<div align="center"><div class="alert alert-danger" role="alert"><%=StringEscapeUtils.escapeHtml4(ses1)%></div></div>
+	<%
+		}
+		if (ses != null) {
 	%>
-					
-	
-<%} %>	
-			
-						<!-- A end -->
-						
-		 
-			
-		
-				
-				
-	               
-<%countA++;}}else{
+	<div align="center"><div class="alert alert-success" role="alert"><%=StringEscapeUtils.escapeHtml4(ses)%></div></div>
+	<%
+		}
 	%>
-				
-	
-<%} %>
+
+	<div class="container-fluid ma-page">
+
+		<h5 class="ma-title"><%=getMA != null ? esc(getMA[1], "-") : "-"%> Milestone Activity Details</h5>
+
+		<table class="ma-table">
+			<colgroup>
+				<col style="width: 80px;">
+				<col>
+				<col style="width: 150px;">
+				<col style="width: 110px;">
+				<col style="width: 110px;">
+				<col style="width: 150px;">
+				<col style="width: 80px;">
+			</colgroup>
+			<thead>
+				<tr class="top">
+					<th rowspan="2">Level</th>
+					<th rowspan="2">Activity Name</th>
+					<th rowspan="2">Progress</th>
+					<th colspan="2">PDC</th>
+					<th rowspan="2">Completed On</th>
+					<th rowspan="2">Update</th>
+				</tr>
+				<tr>
+					<th>From</th>
+					<th>To</th>
+				</tr>
+			</thead>
+			<tbody>
+				<%
+					if (rows.isEmpty()) {
+				%>
+				<tr class="ma-empty"><td colspan="7">No activity details available.</td></tr>
+				<%
+					}
+					for (Object[] r : rows) {
+						String lvl = (String) r[0];
+						int p = pct(r[3]);
+						boolean showUpdate = (Boolean) r[9];
+				%>
+				<tr class="lvl-<%=lvl%>">
+					<td class="c lv"><span class="ma-tag"><%=r[1]%></span></td>
+					<td class="nm"><%=esc(r[2], " - ")%></td>
+					<td class="c">
+						<%if (p > 0) {%>
+						<div class="ma-progress"><span class="<%=p == 100 ? "done" : ""%>" style="width:<%=p%>%"><%=p%>%</span></div>
+						<%} else {%>
+						<span class="ma-none">Not Started</span>
+						<%}%>
+					</td>
+					<td class="c"><%=fmt(sdf, r[4])%></td>
+					<td class="c"><%=fmt(sdf, r[5])%></td>
+					<td class="c">
+						<%if (r[6] != null) {%>
+						<span class="ma-done"><%=fmt(sdf, r[6])%></span>
+						<%} else {%>
+						<span class="ma-status"><%=esc(r[7], " - ")%></span>
+						<%}%>
+					</td>
+					<td class="c">
+						<%if (showUpdate) {%>
+						<form method="POST" action="M-A-Update.htm" class="m-0">
+							<button class="ma-edit" type="submit" title="Update"><i class="fa fa-wrench" aria-hidden="true"></i></button>
+							<input type="hidden" name="ProjectId" value="<%=projectid%>" />
+							<input type="hidden" name="MilestoneActivityId" value="<%=maId%>" />
+							<input type="hidden" name="ActivityId" value="<%=r[8]%>" />
+							<input type="hidden" name="ActivityType" value="<%=lvl%>" />
+							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+						</form>
+						<%}%>
+					</td>
+				</tr>
+				<%
+					}
+				%>
+			</tbody>
+		</table>
+
 	</div>
-</div>
-	</div>								
-<script type="text/javascript">
 
-	    
-	</script>  
 </body>
 </html>

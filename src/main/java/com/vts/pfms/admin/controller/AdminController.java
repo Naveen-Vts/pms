@@ -504,9 +504,10 @@ public class AdminController {
 		logger.info(new Date() + "Inside Resetpassword.htm " + UserId);
 		try {
 			String Lid = req.getParameter("Lid");
+			String finalLabCode = labcode.substring(0,1).toUpperCase() + labcode.substring(1).toLowerCase();
 			int count = (int) service.resetPassword(Lid, UserId, labcode);
 			if (count > 0) {
-				redir.addAttribute("result", "Password is reset to "+labcode+"@1234");
+				redir.addAttribute("result", "Password is reset to "+finalLabCode+"@123");
 			} else {
 				redir.addAttribute("resultfail", "Password reset unsuccessfull ");
 			}

@@ -23,6 +23,8 @@
 	String Onboarding = (String)request.getAttribute("Onboarding");
 	List<Object[]> officerlist = (List<Object[]>)request.getAttribute("OfficerList");
 	List<Object[]> usermanager = (List<Object[]>)request.getAttribute("UserManager");
+	String labCode = (String) session.getAttribute("labcode");
+	
 	%>
 	
 	<% 
@@ -137,7 +139,9 @@
 								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 								<button type="submit" class="btn btn-danger btn-sm delete" name="sub" value="delete" onclick="Delete(frm1)">DELETE</button>
 								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<%if(!"CAIR".equalsIgnoreCase(labCode)){ %>
 								<button type="submit" class="btn btn-danger btn-sm btn-font"  formaction="Resetpassword.htm" Onclick="return ResetPwd(frm1)">RESET PASSWORD </button>
+								<%} %>
 								<%}%>
 									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 								 <%if(Onboarding!=null && "Yes".equalsIgnoreCase(Onboarding)){%>

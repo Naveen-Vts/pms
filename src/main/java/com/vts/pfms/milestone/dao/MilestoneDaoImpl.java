@@ -1076,7 +1076,7 @@ public class MilestoneDaoImpl implements MilestoneDao {
 	}
 	
 	
-	private static final String MILESTONEACTIVITYLEVELEXCEL = "SELECT a.activityid AS obid,a.parentactivityid,a.startdate,a.enddate,a.activityname,a.progressstatus,a.Weightage,a.dateofcompletion, b.activitystatus,a.activitystatusid,a.revision AS rev,d.activitytypeid, d.activitytype,a.oicempid,e.emp_name,a.oicempid1 ,a.activitylevelid FROM milestone_activity_level a,milestone_activity_status b, milestone_activity_type d ,employee e WHERE a.activitystatusid=b.activitystatusid AND a.activitytype=d.activitytypeid AND a.oicempid=e.emp_id AND   a.parentactivityid=:MilestoneActivityId AND a.activitylevelid=:levelid ";
+	private static final String MILESTONEACTIVITYLEVELEXCEL = "SELECT a.activityid AS obid,a.parentactivityid,a.startdate,a.enddate,a.activityname,a.progressstatus,a.Weightage,a.dateofcompletion, b.activitystatus,a.activitystatusid,a.revision AS rev,d.activitytypeid, d.activitytype,a.oicempid,e.emp_name,a.oicempid1 ,a.activitylevelid FROM milestone_activity_level a,milestone_activity_status b, milestone_activity_type d ,employee e WHERE a.activitystatusid=b.activitystatusid AND a.activitytype=d.activitytypeid AND a.oicempid=e.emp_id AND a.parentactivityid=:MilestoneActivityId AND a.activitylevelid=:levelid ORDER BY a.SrNo";
 	@Override
 	public List<Object[]> MilestoneActivityLevelExcel(String MilestoneActivityId,String LevelId) throws Exception {
 		Query query=manager.createNativeQuery(MILESTONEACTIVITYLEVELEXCEL);

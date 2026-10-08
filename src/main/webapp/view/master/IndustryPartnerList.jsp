@@ -120,14 +120,14 @@ Map<String, List<Object[]>> industryPartnerToListMap = industryPartnerList.strea
 												        <td class="sNoData"><%=obj[6]!=null?StringEscapeUtils.escapeHtml4(obj[6].toString()):"-"%> </td>
 												        <td><%=obj[7]!=null?StringEscapeUtils.escapeHtml4(obj[7].toString()):"-"%> </td>
 												        <td class="sNoData">
-			                                               <%if(Boolean.parseBoolean(obj[8].toString())) {%>
+			                                               <%if("1".equalsIgnoreCase(obj[8].toString())) {%>
 			                                                     <span class="badge badge-success">Active</span>  
 			                                               <%}else{ %>
 			                                               <span class="badge badge-danger">Inactive</span>
 			                                               <%} %>
 			                                               </td>
 												        <td  class="center width">
-															<% if(Boolean.parseBoolean(obj[8].toString())) {%>
+															<% if("1".equalsIgnoreCase(obj[8].toString())) {%>
 													 		<form action="#" method="POST" name="myfrm" class="editFrm" >
 																<button  class="editable-click" name="Action" value="Edit" formaction="IndustryPartner.htm">
 																	<div class="cc-rockmenu">

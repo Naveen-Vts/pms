@@ -454,7 +454,7 @@
 										
 											<form  action="CommitteeInvitationCreate.htm" method="POST" name="myfrm1" id="myfrm1">
 												<button type="submit" class="btn" onclick="return confirm('Are you sure To Add this Member to Invitation List?')" data-toggle="tooltip" data-placement="top" title="Member Not Added to Invitation List (Click Here to Add)"> <i class="fa fa-plus-square text-success margin-1px" aria-hidden="true"></i> </button>											
-												<input type="hidden" name="internalmember" value="<%=obj[6]%>,P,<%=obj[10]%>">
+												<input type="hidden" name="internalmember" value="<%=obj[6]%>,P,<%=obj[10]%>">dao
 												<input type="hidden" name="internallabcode" value="<%=obj[5] %>" />	
 												<input type="hidden" name="committeescheduleid" value="<%=committeescheduleid%>">																						
 												<input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" /> 

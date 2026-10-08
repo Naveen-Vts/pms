@@ -172,7 +172,7 @@ public class MailController {
 		 	 logger.error(new Date() +" Login Problem Occures When MailConfigurationAddSubmit.htm was clicked ", e);
 		 	 result = 0;
 	     }
-		if(result >0) {
+		if(result >0) {	
 			redir.addAttribute("result", "Mail Configuration Added Successfully");
 		}
 		else if(result ==-1){

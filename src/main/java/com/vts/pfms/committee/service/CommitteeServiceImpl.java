@@ -1235,11 +1235,9 @@ public class CommitteeServiceImpl implements CommitteeService{
 	    
 	    long ret = 0;
 	    
-	    // Parse schedule ID safely
 	    String rawScheduleId = committeeinvitationdto.getCommitteeScheduleId();
 	    Long scheduleId = (rawScheduleId != null && !rawScheduleId.isBlank()) ? Long.parseLong(rawScheduleId) : 0L;
 
-	    // Fetch initial max serial number from DB
 	    long currentSl = 0;
 	    Object[] maxslno = dao.InvitationMaxSerialNo(String.valueOf(scheduleId));
 	    if (maxslno != null && maxslno.length > 1 && maxslno[1] != null) {
@@ -1258,7 +1256,6 @@ public class CommitteeServiceImpl implements CommitteeService{
 	    List<String> labCodeList = committeeinvitationdto.getLabCodeList();
 	    boolean isInviteFlagY = "Y".equalsIgnoreCase(committeeinvitationdto.getInviteFlag());
 
-	    // Helper holder for valid candidates
 	    class Candidate {
 	        CommitteeInvitation invitation;
 	        String role;
@@ -1271,7 +1268,6 @@ public class CommitteeServiceImpl implements CommitteeService{
 	        }
 	    }
 
-	    // STEP 1: Filter out invalid/duplicate records first
 	    List<Candidate> validCandidates = new ArrayList<>();
 
 	    for (int i = 0; i < empList.size(); i++) {
@@ -1317,7 +1313,6 @@ public class CommitteeServiceImpl implements CommitteeService{
 	        return ret;
 	    }
 
-	    // STEP 2: Sort candidates in strict priority order
 	    List<Candidate> orderedCandidates = new ArrayList<>();
 
 	    if (isInviteFlagY) {
@@ -1341,10 +1336,8 @@ public class CommitteeServiceImpl implements CommitteeService{
 	            }
 	        }
 
-	        // Sort custom sequence members by customSl ascending
 	        customList.sort((a, b) -> Integer.compare(a.customSl, b.customSl));
 
-	        // Assemble hierarchy: CC -> CH -> Custom -> Default -> CS
 	        orderedCandidates.addAll(ccList);
 	        orderedCandidates.addAll(chList);
 	        orderedCandidates.addAll(customList);
@@ -1354,7 +1347,6 @@ public class CommitteeServiceImpl implements CommitteeService{
 	        orderedCandidates.addAll(validCandidates);
 	    }
 
-	    // STEP 3: Assign gapless sequential serial numbers and save
 	    for (Candidate candidate : orderedCandidates) {
 	        currentSl++;
 	        candidate.invitation.setSerialNo((int) currentSl);

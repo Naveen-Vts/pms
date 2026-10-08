@@ -11468,7 +11468,7 @@ private boolean isValidFileType(MultipartFile file) {
 				}
 			} 
 
-			req.setAttribute("actionsdata",actionsdata );
+			req.setAttribute("actionsdata",actionsdata);
 
 			req.setAttribute("committeeminutesspeclist",service.CommitteeScheduleMinutesforAction(committeescheduleid) );
 			req.setAttribute("committeescheduleeditdata", committeescheduleeditdata);

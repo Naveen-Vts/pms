@@ -391,5 +391,10 @@ public class PFTSServiceImp implements PFTSService{
 		if(dao2 != null) return dao2.getPMMGProcurementData(projectImmsCd);
 		else return Collections.emptyList();
 	}
-	
+	@Override
+	public Object[] getPftsStageDates(String fileId) throws Exception {
+		// TODO Auto-generated method stub
+		return dao.getPftsStageDates(fileId);
+	}
+
 }

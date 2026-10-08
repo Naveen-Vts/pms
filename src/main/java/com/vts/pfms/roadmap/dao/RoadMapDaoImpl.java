@@ -222,7 +222,7 @@ public class RoadMapDaoImpl implements RoadMapDao{
 
 	}
 	
-	private static final String ROADMAPTRANSLIST = "SELECT a.RoadMapTransId,c.EmpNo,c.EmpName,d.Designation,a.ActionDate,a.Remarks,b.RoadMapStatus,b.RoadMapStatusColor FROM pfms_road_map_trans a,pfms_road_map_status b,employee c,employee_desig d,pfms_road_map e WHERE e.RoadMapId = a.RoadMapId AND a.RoadMapStatusCode = b.RoadMapStatusCode AND a.ActionBy=c.EmpId AND c.DesigId = d.DesigId AND e.RoadMapId=:RoadMapId ORDER BY a.RoadMapTransId DESC";
+	private static final String ROADMAPTRANSLIST = "SELECT a.RoadMapTransId,c.emp_no,c.emp_name,d.designation,a.ActionDate,a.Remarks,b.RoadMapStatus,b.RoadMapStatusColor FROM pfms_road_map_trans a,pfms_road_map_status b,employee c,employee_desig d,pfms_road_map e WHERE e.RoadMapId = a.RoadMapId AND a.RoadMapStatusCode = b.RoadMapStatusCode AND a.ActionBy=c.emp_id AND c.desig_id = d.desig_id AND e.RoadMapId=:RoadMapId ORDER BY a.RoadMapTransId DESC";
 	@Override
 	public List<Object[]> roadMapTransList(String roadMapId) throws Exception {
 
@@ -238,7 +238,7 @@ public class RoadMapDaoImpl implements RoadMapDao{
 
 	}
 	
-	private static final String ROADMAPREMARKSHISTORY = "SELECT a.RoadMapId,a.Remarks,b.RoadMapStatusCode,e.emp_name,d.Designation FROM pfms_road_map_trans a,pfms_road_map_status b,pfms_road_map c,employee_desig d,employee e WHERE a.ActionBy = e.emp_id AND e.desig_id = d.desig_id AND b.RoadMapStatusCode = a.RoadMapStatusCode AND c.RoadMapId = a.RoadMapId AND TRIM(a.Remarks)<>'' AND c.RoadMapId=:RoadMapId ORDER BY a.ActionDate ASC";
+	private static final String ROADMAPREMARKSHISTORY = "SELECT a.RoadMapId,a.Remarks,b.RoadMapStatusCode,e.emp_name,d.designation FROM pfms_road_map_trans a,pfms_road_map_status b,pfms_road_map c,employee_desig d,employee e WHERE a.ActionBy = e.emp_id AND e.desig_id = d.desig_id AND b.RoadMapStatusCode = a.RoadMapStatusCode AND c.RoadMapId = a.RoadMapId AND TRIM(a.Remarks)<>'' AND c.RoadMapId=:RoadMapId ORDER BY a.ActionDate ASC";
 	@Override
 	public List<Object[]> roadMapRemarksHistory(String roadMapId) throws Exception
 	{

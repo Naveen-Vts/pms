@@ -25,12 +25,17 @@
   <%
   Object[] fileView = (Object[])request.getAttribute("fileViewList");
   List<Object[]> fileStage=(List<Object[]>)request.getAttribute("pftsStageList");
-  List<Object[]> OrderLists=(List<Object[]>)request.getAttribute("OrderLists");
+  Object[]PftsStageDates = (Object[])request.getAttribute("PftsStageDates");
   List<Object[]> pftsStageList1=fileStage.stream().filter(i->Integer.parseInt(i[0].toString())<=10).collect(Collectors.toList());
   List<Object[]> pftsStageList2=fileStage.stream().filter(i->Integer.parseInt(i[0].toString())>=10).collect(Collectors.toList());
   List<Object[]> pftsStageList3=fileStage.stream().filter(i->Integer.parseInt(i[0].toString())>10).collect(Collectors.toList());
   String projectid = fileView[11].toString();
+  List<Object[]> OrderLists=(List<Object[]>)request.getAttribute("OrderLists");
   int fileViewValue = Integer.parseInt(fileView[7].toString()); 
+  int count=0;
+  int tempcount=0;
+  String labCode = (String) session.getAttribute("labcode");
+  labCode = "DLRL";
   SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
  %>
 <% 
@@ -46,9 +51,10 @@
     <div align="center">
         <div class="alert alert-success" role="alert">
             <%=StringEscapeUtils.escapeHtml4(ses) %>
-        </div>
+        </div> 
     </div>
 <% } %>
+
 
 <div class="container-fluid">
 	<div class="card shadow-nohover style1">		
@@ -77,7 +83,10 @@
 									class="form-control selectdee"
 									id="procstatus" required="required" name="procstatus">
 									<option disabled="true"  selected value="">Select...</option>
-									<% if (fileViewValue < 10) {  %>
+									
+									<%if(!"DLRL".equalsIgnoreCase(labCode)){
+										if (fileViewValue < 10) {  %>
+									
 								       <% for (Object[] obj : pftsStageList1) {%>
 								          <% if(obj[0].toString().equalsIgnoreCase("10")){ %>
 								           <option value="<%=obj[0]%>"<%if(obj[0].toString().equalsIgnoreCase(fileView[7].toString())){ %> selected <%} %>><%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):"-"%></option>
@@ -93,7 +102,14 @@
 									   <% for (Object[] obj : pftsStageList3) {%>
 								       <option value="<%=obj[0]%>"<%if(obj[0].toString().equalsIgnoreCase(fileView[7].toString())){ %> selected <%} %>><%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):"-"%></option>
 									   <%} %>
+									<%}}else if("DLRL".equalsIgnoreCase(labCode)){ %>
+										<% for (Object[] obj : fileStage) {
+										  ++count;
+									   %>
+								       <option value="<%=obj[0]%>"<%if(obj[0].toString().equalsIgnoreCase(fileView[7].toString())){tempcount=count; %> selected <%} %>><%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):"-"%></option>
+									   <%} %>
 									<%} %>
+									
 								</select>
 								</div>
 								
@@ -219,7 +235,9 @@
 										break;
 								%>
 								<p class="pstatus" id="<%=obj1[0].toString()%>"><%=obj1[0]!=null?StringEscapeUtils.escapeHtml4(obj1[0].toString()):"-"%>. <%=obj1[2]!=null?StringEscapeUtils.escapeHtml4(obj1[2].toString()):"-"%>
-								</p>
+									<span style="font-size:10px;" id="date_<%=obj1[0].toString()%>"></span>
+								</p >
+					
 								<%
 								i++;
 								}
@@ -233,7 +251,9 @@
 										break;
 								%>
 								<p class="pstatus" id="<%=obj1[0].toString()%>"><%=obj1[0]!=null?StringEscapeUtils.escapeHtml4(obj1[0].toString()):"-"%>. <%=obj1[2]!=null?StringEscapeUtils.escapeHtml4(obj1[2].toString()):"-"%>
+									<span style="font-size:10px;" id="date_<%=obj1[0].toString()%>"></span>
 								</p>
+		
 								<%
 								j++;
 								}
@@ -247,7 +267,9 @@
 										break;
 								%>
 								<p class="pstatus" id="<%=obj1[0].toString()%>"><%=obj1[0]!=null?StringEscapeUtils.escapeHtml4(obj1[0].toString()):"-"%>. <%=obj1[2]!=null?StringEscapeUtils.escapeHtml4(obj1[2].toString()):"-" %>
+								<span style="font-size:10px;" id="date_<%=obj1[0].toString()%>"></span>
 								</p>
+								
 								<%
 		                        k++;
 		                        } %>
@@ -314,10 +336,10 @@
                 	</thead>
                 	<tbody>
                 		<% if(OrderLists != null && !OrderLists.isEmpty()){
-                			int count=1;
+                			int count1=1;
                 			for(Object[] obj: OrderLists){ %>
                 				<tr>
-                					<td class="text-center"><%= count++ %></td>
+                					<td class="text-center"><%= count1++ %></td>
                 					<td><%=obj[6]!=null ? StringEscapeUtils.escapeHtml4(obj[6].toString()) : " - " %></td>
                 					<td class="text-center"><%=obj[7]!=null ? sdf.format(obj[7]) : " - " %></td>
                 					<td class="text-right"><%=obj[10]!=null ? StringEscapeUtils.escapeHtml4(obj[10].toString()) : " - " %></td>
@@ -461,10 +483,21 @@
 </script>
 <script type="text/javascript">
 $(document).ready(function() {
-		$(".pstatus").removeClass("blinking-element"); // Remove blink class from all elements
-		var pstatusid = $("#pstatusid").val(); // Retrieve value of pstatusid
-		$("#" + pstatusid).addClass("blinking-element"); // Add blink class on specific id
-	});
+	$(".pstatus").removeClass("blinking-element"); // Remove blink class from all elements
+	var pstatusid = $("#pstatusid").val(); // Retrieve value of pstatusid
+	$("#" + pstatusid).addClass("blinking-element"); // Add blink class on specific id
+	<% if(PftsStageDates != null && PftsStageDates[tempcount-1] != null){ %>
+	    (function() {
+	        var rawDate = '<%= PftsStageDates[tempcount-1] %>';
+	        var parts = rawDate.split('-');
+	        // Rearrange from [YYYY, MM, DD] to "DD MM YYYY"
+	        var formattedDate = parts[2] + '-' + parts[1] + '-' + parts[0];
+	        
+	        $("#date_" + pstatusid).html(formattedDate);
+	    })();
+	<% } %>
+});
+
 	
 function modalOpen() {
 	var status=$('#procstatus').val();

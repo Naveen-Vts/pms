@@ -69,9 +69,6 @@ SimpleDateFormat sdfInput = new SimpleDateFormat("HH:mm:ss");
 							  	             </select>
 											</td>
 											<%if(labCode.equalsIgnoreCase("PGAD")){ %>
-											<!-- <td>
-												<label class="control-label fs-17px mb-0rem">Cover Letter: </label>
-											</td> -->
 											<td>
 												<input type="submit" formtarget="_blank" formaction="CoverLetter.htm" class="btn btn-sm view" value="Cover Letter" >
 					   							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> 
@@ -140,10 +137,9 @@ SimpleDateFormat sdfInput = new SimpleDateFormat("HH:mm:ss");
 														<input type="hidden" name="scheduleid" id=<%="scheduleid"+obj[0]%> value="<%=obj[0]%>">
 														<input type="hidden" name="membertype" value="<%="CC"%>"> --%>
 											            <%if(obj[6] != null && !"MMA".equalsIgnoreCase(obj[6].toString())){ %>
-											            <button class="btn btn-sm edit" formaction="CommitteeScheduleMinutes.htm" >
+											            <button class="btn btn-sm edit" formaction="CommitteeScheduleMinutes.htm"  value="<%=obj[0] %>" name="committeescheduleid" >
 											            	EDIT
 											            </button>
-											            <input type="hidden" name="committeescheduleid" value="<%=obj[0]%>">
 											            <input type="hidden" name="redirect" value="MOM">
 											            <%}else{ %>
 											            	<span style="
@@ -161,6 +157,7 @@ SimpleDateFormat sdfInput = new SimpleDateFormat("HH:mm:ss");
 															  	Minutes Approved
 															</span>
 											            <%} %>
+											            
 														</td>
 													  </tr>
  												<%}} %>

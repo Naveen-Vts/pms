@@ -485,5 +485,24 @@ public  class PFTSDaoImpl implements PFTSDao{
 		return result;
 	}
 	
+	private static final String PFTSDATES=
+			"""
+			SELECT DemandDate,SpcDate,EPCDate,TenderDate,QuotationsDate,TocDate,TecDate,TpcDate,SanctionDate,OrderDate,PDRDate,CriticalDate,
+			DDRDate,CDRDate,AcceptanceDate,RealizationDate,FATDate,ATPQTPDate,DeliveryDate,SATDate,InspectionDate,PaymentDate,PartialChequeDate,FinalChequeDate,IntegrationDate
+			FROM pfts_file WHERE PftsFileId =:PftsFileId AND isactive=1
+			"""
+			
+			;
+	
+	@Override
+	public Object[] getPftsStageDates(String PftsFileId) throws Exception {
+		
+		Query query=manager.createNativeQuery(PFTSDATES);	   
+		query.setParameter("PftsFileId",PftsFileId);
+		Object[] Project=(Object[])query.getSingleResult();	
+		
+		return Project;
+	}
+
 	
 }

@@ -292,90 +292,87 @@ String baseUrl = scheme + "://" + serverName
 								><%=projectattributes[5]%></td>
 						</tr>
 						<tr>
-							<td rowspan="2" class="bp-30">(h)</td>
-							<td rowspan="2"  class="bp-31"
-								"><b>PDC</b></td>
-
-							<td colspan="2" class="text-center"><!-- Original -->&nbsp;</td>
-							<%if (ProjectRevList.get(z).size() > 0) {%>
-							<td colspan="2" class="text-center" >Revised</td>
-							<%} else {%><td colspan="2"></td><%}%>
+						    <td rowspan="2" class="bp-30">(h)</td>
+						    <td rowspan="2" class="bp-31"><b>PDC</b></td>
+						
+						    <td colspan="2" class="text-center"> Original</td>
+						    <% if (ProjectRevList.get(z).size() > 0) { %>
+						        <td colspan="2" class="text-center">Revised</td>
+						    <% } %>
+						</tr>
+						
+						<tr>
+						    <% if (ProjectRevList.get(z).size() > 0) { %>
+						        <td colspan="2" class="prjattr text-center"><%= sdf.format(sdf1.parse(ProjectRevList.get(z).get(0)[12].toString())) %></td>
+						        <td colspan="2" class="prjattr text-center">
+						            <% if (LocalDate.parse(projectattributes[6].toString()).isEqual(LocalDate.parse(ProjectRevList.get(z).get(0)[12].toString()))) { %>
+						                -
+						            <% } else { %>
+						                <%= sdf.format(sdf1.parse(projectattributes[6].toString())) %>
+						            <% } %>
+						        </td>
+						    <% } else { %>
+						        <td colspan="2" class="prjattr text-center"><%= sdf.format(sdf1.parse(projectattributes[6].toString())) %></td>
+						    <% } %>
+						</tr>
+						
+						<tr>
+						    <td rowspan="3" class="bp-35">(i)</td>
+						    <td rowspan="3" class="pl-1"><b>Cost Breakup( In &#8377; <span class="currency">Lakhs</span>)</b></td>
+						
+						    <% if (ProjectRevList.get(z).size() > 0) { %>
+						        <td class="bp-36">RE Cost</td>
+						        <td class="prjattr text-center"><%= ProjectRevList.get(z).get(0)[17] %></td>
+						        <td colspan="2" class="prjattr text-center"><%= projectattributes[8] %></td>
 						</tr>
 						<tr>
-							<%
-							if (ProjectRevList.get(z).size() > 0) {
-							%>
-							<td colspan="2"  class="prjattr text-center"><%=sdf.format(sdf1.parse(ProjectRevList.get(z).get(0)[12].toString()))%>
-							</td>
-							<td colspan="2"  class="prjattr text-center">
-								<% if (LocalDate.parse(projectattributes[6].toString()) .isEqual(LocalDate.parse(ProjectRevList.get(z).get(0)[12].toString()))) { %>
-									- 
-								<% } else { %><%=sdf.format(sdf1.parse(projectattributes[6].toString()))%>
-								<% } %>
-							</td>
-							<%
-							} else {
-							%>
-							<td colspan="2"  class="prjattr text-center"><%=sdf.format(sdf1.parse(projectattributes[6].toString()))%></td>
-							<td colspan="2"></td>
-							<%
-							}
-							%>
+						        <td class="bp-36">FE Cost</td>
+						        <td class="prjattr text-center"><%= ProjectRevList.get(z).get(0)[16] %></td>
+						        <td colspan="2" class="prjattr text-center"><%= projectattributes[9] %></td>
 						</tr>
 						<tr>
-							<td rowspan="3"
-								class="bp-35">(i)</td>
-							<td rowspan="3" class="pl-1"><b>Cost
-									Breakup( In &#8377; <span class="currency">Lakhs</span>)
-							</b></td>
-
-							<%
-							if (ProjectRevList.get(z).size() > 0) {
-							%>
-							<td class="bp-36">RE Cost</td>
-							<td  class="prjattr text-center"><%=ProjectRevList.get(z).get(0)[17]%></td>
-							<td colspan="2" class="prjattr text-center" ><%=projectattributes[8]%></td>
+						        <td class="bp-36">Total Cost</td>
+						        <td class="prjattr text-center"><%= ProjectRevList.get(z).get(0)[11] %></td>
+						        <td colspan="2" class="prjattr text-center"><%= projectattributes[7] %></td>
+						</tr>
+						    <% } else { %>
+						        <td class="bp-36">RE Cost</td>
+						        <td class="prjattr"><%= projectattributes[8] %></td>
 						</tr>
 						<tr>
-							<td class="bp-36">FE Cost</td>
-							<td  class="prjattr text-center"><%=ProjectRevList.get(z).get(0)[16]%></td>
-							<td colspan="2"  class="prjattr text-center"><%=projectattributes[9]%></td>
+						        <td class="bp-36">FE Cost</td>
+						        <td class="prjattr"><%= projectattributes[9] %></td>
 						</tr>
 						<tr>
-							<td class="bp-36" >Total Cost</td>
-							<td  class="prjattr text-center"><%=ProjectRevList.get(z).get(0)[11]%></td>
-							<td colspan="2"  class="prjattr text-center"><%=projectattributes[7]%></td>
+						        <td class="bp-36">Total Cost</td>
+						        <td class="prjattr"><%= projectattributes[7] %></td>
 						</tr>
-						<%
-						} else {
-						%>
-						<td class="bp-36" >RE Cost</td>
-						<td class="prjattr "><%=projectattributes[8]%></td>
-						<td colspan="2" class="prjattr"></td>
-						</tr>
-						<tr>
-							<td class="bp-36"">FE Cost</td>
-							<td class="prjattr"><%=projectattributes[9]%></td>
-							<td colspan="2"></td>
-						</tr>
-						<tr>
-							<td class="bp-36">Total Cost</td>
-							<td class="prjattr"><%=projectattributes[7]%></td>
-							<td colspan="2"></td>
-						</tr>
-						<%
-						}
-						%>
+						    <% } %>
 						<tr>
 							<td class="bp-33">(j)</td>
 							<td class="bp-31"><b>No.of Meetings held</b></td>
 							<td colspan="4">
-								<% if(ebandpmrccount!=null && ebandpmrccount.size()>0){
-									List<Object[]> ebandpmrcsub = ebandpmrccount.get(z); 
-									for(Object[] ebandpmrc: ebandpmrcsub) { %>
-								 	<b><%=ebandpmrc[0] %> : </b>
-									<span><%=ebandpmrc[1] %></span> &emsp;&emsp;
-								<%} }%>
+								<%
+								    Map<String, Object> ebPmrcMap = new LinkedHashMap<String, Object>();
+								    ebPmrcMap.put("PMRB", 0);
+								    ebPmrcMap.put("EB", 0);
+								
+								    if (ebandpmrccount != null && z < ebandpmrccount.size()) {
+								        List<Object[]> ebandpmrcsub = ebandpmrccount.get(z);
+								        if (ebandpmrcsub != null) {
+								            for (Object[] row : ebandpmrcsub) {
+								                if (row != null && row.length > 1 && row[0] != null) {
+								                    ebPmrcMap.put(row[0].toString().trim(), row[1] != null ? row[1] : 0);
+								                }
+								            }
+								        }
+								    }
+								
+								    for (Map.Entry<String, Object> e : ebPmrcMap.entrySet()) {
+								%>
+								    <b><%= e.getKey() %> : </b>
+								    <span><%= e.getValue() %></span> &emsp;&emsp;
+								<%  } %>
 							</td>
 						</tr>
 						<tr>
@@ -3260,8 +3257,8 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 												for(Object[] obj :RecDecDetails){%>
 												<tr>
 													<td class="width-5 text-center"> <%=++i%></td>
-													<td class="width-5 text-center"> <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[2].toString()):""%></td>
-													<td class="width-85 bp-75">  <%=obj[2]!=null?StringEscapeUtils.escapeHtml4(obj[3].toString()):""%></td>
+													<td class="width-5 text-center"> <%=obj[2]!=null?obj[2].toString():""%></td>
+													<td class="width-85 bp-75">  <%=obj[2]!=null?obj[3].toString():""%></td>
 												</tr>
 												<%}}else{%><td colspan="3" class="text-center"> No Data Available!</td><%}%>
 											</tbody>

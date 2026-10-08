@@ -200,7 +200,7 @@
 																</form> 
 																<%}else if(obj[6]!=null && "C".equalsIgnoreCase(obj[6].toString())){%>
 																<span class="badge badge-pill badge-success p-2">Closed</span>
-																<%if("A".equalsIgnoreCase(Logintype)){ %>
+																<%if("A".equalsIgnoreCase(Logintype) || "P".equalsIgnoreCase(Logintype)){ %>
 																	<button type="button" onclick="openRemarksModal('<%= obj[10] %>', '<%= obj[12] != null ? obj[12].toString().replace("'", "\\'") : "" %>')">
 																	    <div class="cc-rockmenu">
 																	        <div class="rolling">

@@ -714,6 +714,7 @@
 										onclick="return confirm('Are You Sure To Submit ?')"
 										formaction="CloseSubmit.htm">Close Action</button>
 									<%}%>
+									<input type="hidden" name="isReview" value="Y">
 									<input type="hidden" name="ActionMainId"
 										value="<%=Assignee[0] %>" /> <input type="hidden"
 										name="ActionAssignId" value="<%=Assignee[18] %>" /> <input
@@ -894,6 +895,7 @@
 											<th class="width-30">Remarks</th>
 											<th class="width-10">Attachment</th>
 											<th class="width-20">Progress By</th>
+											<th>Action</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -922,6 +924,9 @@
 											<td><%=obj[7]!=null?StringEscapeUtils.escapeHtml4(obj[7].toString()):" - " %>
 											<%if(count==SubList.size()) {%>
 											<%} %>
+											</td>
+											<td>
+												<button class="btn btn-sm btn-bg" type="button" data-toggle="modal" data-target="#exampleModal" onclick="actionEditform('<%=sdf.format(obj[3])%>',<%=obj[2]%>,'<%=obj[4]%>',<%=Assignee[18] %>,<%=obj[0]%>,<%=Assignee[0] %>,<%=Assignee[20] %>,0)" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
 											</td>
 										</tr>
 										<% count++; } %>
@@ -992,6 +997,55 @@
   </div>
   </div>
 </div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content md-content" >
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+              <div class="modal-body">
+                 <form action="ActionRemarksEdit.htm" method="post">
+						<div class="row" >
+							<div class="col-md-3">
+								<label class="custom-label">Progress % :</label>
+								</div>
+								<div class="col-md-4 margin-leftN6" >
+								<input type="number" class="form-control item_name progressVal" max="100" min="0"
+									name="progressVal" id="progressVal" >
+								</div>
+						 </div>
+						<div class="row mt-4">
+						<div class="col-md-3" >
+								<label class="custom-label"> Remarks : </label> 
+								</div>
+								<div class="col-md-8 margin-leftN6" >
+								<textarea class="form-control progressVal" rows="5"  oninput="sanitizeInput(this)"
+									name="progressRemarks" id="progressRemarks">
+								</textarea>
+							</div>
+							</div>
+						<br>
+						<div align="center">
+							<button type="submit" class="btn btn-sm submit" onclick="">Submit</button>
+                            <input type="hidden" name="ActionAssignId" id="ActionAssignId" value="">
+                            <input type="hidden" name="ActionSubId" id="ActionSubId" value=""/>
+                            <input type="hidden" name="ActionMainId" id="ActionMainId" value=""/> 
+							<input type="hidden" name="projectid" id="projectid" value=""/> 
+                            <input type="hidden" name="flag" value="action">
+                            <input type="hidden" name="subaction" id="subaction" >
+                            <input type="hidden" name="ActionPath" value="<%=ActionPath%>" >
+                            <input type="hidden" name="redirect" value="C">
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+						</div>
+						</form>
+					</div>
+		</div>
+	</div>
+</div>
 	<!-- ------------------------------- tree script ------------------------------- -->
 	<script type="text/javascript">
 function close5(){
@@ -1031,6 +1085,19 @@ $(function () {
 });
 
 <!-- ------------------------------- tree script ------------------------------- -->
+
+	function actionEditform(pdate,progress,premarks,assignid,subid,mainid,project,subaction){
+		    $('#exampleModal .modal-title').html('<span class="sapn-color">Progress Date : ' + pdate);
+			$('#exampleModal').modal('show');
+			$('#progressVal').val(progress);
+			$('#progressRemarks').val(premarks);
+			$('#ActionAssignId').val(assignid);
+			$('#ActionSubId').val(subid);
+			$('#ActionMainId').val(mainid);
+			$('#projectid').val(project);
+			$('#subaction').val(subaction);
+		}
+
 
 	function ActionDetails(InAssignId,InActionItem,InActionNo,InProgress,InActionDate,InEndDate,InPDCOrg,
 							InAssignor,InAssignee, InActionType	)

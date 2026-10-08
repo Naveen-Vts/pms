@@ -2783,17 +2783,25 @@ public class ProjectController
 		try {
 			String IntiationId = req.getParameter("IntiationId");
 			String Option=req.getParameter("option");
-
+			
+			System.out.println("IntiationId ========================================"+ IntiationId);
+			
 			req.setAttribute("IntiationId", IntiationId);
 			req.setAttribute("ProjectDetailes", service.ProjectDetailes(Long.parseLong(IntiationId)).get(0));
 			req.setAttribute("EmployeeList", service.EmployeeList(LabCode));
 			req.setAttribute("filesize",file_size);
 
+			req.setAttribute("Option", Option);
 			if(Option.equalsIgnoreCase("edit")) {
-				req.setAttribute("ProjectAuthorityDetails", service.AuthorityAttachment(IntiationId).get(0));
+				try {
+					req.setAttribute("ProjectAuthorityDetails", service.AuthorityAttachment(IntiationId).get(0));	
+				}catch (Exception e) {
+					e.printStackTrace();
+					req.setAttribute("ProjectAuthorityDetails", null);
+				}
+				
 			}
 
-			req.setAttribute("Option", Option);
 
 		}catch (Exception e) {
 			logger.error(new Date() +" Inside ProjectAuthorityAdd.htm "+UserId, e);

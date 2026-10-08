@@ -1015,7 +1015,7 @@ private boolean isValidFileType(MultipartFile file) {
 				redir.addAttribute("isReview", req.getParameter("isReview"));
 				redir.addAttribute("isClosed",count > 0 ? "Y" :"N");
 				
-				return "redirect:/ForwardSub.htm";
+				return "redirect:/ActionForwardList.htm";
 			}
 			
 			if ("C".equalsIgnoreCase(req.getParameter("sub"))) {
@@ -4944,6 +4944,7 @@ private boolean isValidFileType(MultipartFile file) {
         			redir.addAttribute("ActionAssignId",req.getParameter("ActionAssignId"));
         			redir.addAttribute("projectid",req.getParameter("projectid"));
         			redir.addAttribute("flag",req.getParameter("flag"));
+        			redir.addAttribute("ActionPath",req.getParameter("ActionPath"));
         			
         			//DLRL changes
         			if(req.getParameter("redirect")!=null && req.getParameter("redirect").equalsIgnoreCase("C")) {

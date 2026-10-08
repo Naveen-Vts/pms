@@ -148,6 +148,11 @@ public class LoginController {
     private String ibasUri;
 	@Value("${interval}")
 	private String interval;
+	
+
+	@Value("${IsIbasConnected}")
+	private String isIbasConnected;
+	
 //	@Value("${ibasV3_uri}")
 //    private String ibasV3Uri;
 
@@ -1478,7 +1483,7 @@ public class LoginController {
 			redir.addAttribute("Overall","Overall");
 			redir.addAttribute("result", "Project HOA and CCM Details Updated Successfully ");
 		}
-    	else if(ibasserveron==1){
+    	else if(ibasserveron==1 || !"Y".equalsIgnoreCase(isIbasConnected)){
     		redir.addAttribute("resultfail","IBAS Server Not Responding");
     	}
 		else {
@@ -1487,7 +1492,7 @@ public class LoginController {
 		  }
     	
     	}catch(Exception e) {
-    		if(ibasserveron==1){
+    		if(ibasserveron==1 || !"Y".equalsIgnoreCase(isIbasConnected)){
         		redir.addAttribute("resultfail","IBAS Server Not Responding");
         	}else {
     		redir.addAttribute("resultfail","Project HOA and CCM Details Update Unsuccessful");

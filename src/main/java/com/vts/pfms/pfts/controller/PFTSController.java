@@ -783,6 +783,9 @@ public class PFTSController {
 	             req.setAttribute("fileViewList",service.getpftsFileViewList(fileId));
 	             req.setAttribute("OrderLists", service.getOrderDetailsAjax(fileId));
 	 		     req.setAttribute("pftsStageList", service.getpftsStageList());
+
+	 		     //DLRL Changes
+	 		     req.setAttribute("PftsStageDates", service.getPftsStageDates(fileId));
 				return  "pfts/UpdateManualDemand";
 			}
 			catch (Exception e) {
