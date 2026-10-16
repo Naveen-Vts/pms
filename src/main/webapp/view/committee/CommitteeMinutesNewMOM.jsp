@@ -524,24 +524,27 @@ for( Object[]obj:specialMembers){ %>
 	 </tr> -->
 	 <%
 	
-	 
+	 Set<String> empids = new LinkedHashSet<>();
 	 if(memPresent > 0){ %>
 	 
 	 <% 
 	 	for(int i=0;i<invitedlist.size();i++)
 		{
+	 	if(invitedlist.get(i)[0] != null && empids.add(invitedlist.get(i)[0].toString())) {
 	 	if(invitedlist.get(i)[4].toString().equals("P") && membertypes.contains( invitedlist.get(i)[3].toString()) )
 	 	{ j++;
 	 	if(invitedlist.get(i)[3].toString().equalsIgnoreCase("CS") ){ membersec=invitedlist.get(i);}
 	 	%>
 	 	
 	 	 <tr>
-	 	 <td style="border: 1px solid black; padding: 5px;text-align: center"><%=j%> </td>
+		 	 <td style="border: 1px solid black; padding: 5px;text-align: center">
+		 	 	<%=j%> 
+		 	 </td>
 	 	  	<td style="border: 1px solid black; padding: 5px;text-align: left">  
 	 			<%= invitedlist.get(i)[6]!=null?invitedlist.get(i)[6].toString(): " - "%> 
 		 	</td>
 		 	<td style="border: 1px solid black; padding: 5px;text-align: left;">  
-	 			<%=invitedlist.get(i)[7]!=null?invitedlist.get(i)[7].toString(): " - " %>  <%=invitedlist.get(i)[15]!=null ? ", "+invitedlist.get(i)[15].toString():(invitedlist.get(i)[14]!=null ?", "+invitedlist.get(i)[14].toString(): "")  %>
+	 			<%=invitedlist.get(i)[7]!=null?invitedlist.get(i)[7].toString(): " - " %>  <%=invitedlist.get(i)[15]!=null && !invitedlist.get(i)[15].toString().isBlank() ? ", "+invitedlist.get(i)[15].toString():(invitedlist.get(i)[14]!=null && !invitedlist.get(i)[14].toString().isBlank() ?", "+invitedlist.get(i)[14].toString(): "")  %>
 		 	</td>	
 		 	<td style="border: 1px solid black; padding: 5px;text-align: left;">  
 				<%= invitedlist.get(i)[11]!=null?invitedlist.get(i)[11].toString(): " - "%>  
@@ -567,7 +570,7 @@ for( Object[]obj:specialMembers){ %>
 	 		</td>	 --%>
 	 		</tr>
 	 <%}
-	 } %>
+	 }} %>
 	 
 	 <% } %>
 	
@@ -581,6 +584,7 @@ for( Object[]obj:specialMembers){ %>
 		
 	 for(int i=0;i<invitedlist.size();i++)
 		{
+		 if(invitedlist.get(i)[0] != null && empids.add(invitedlist.get(i)[0].toString())) {
 	 	if(invitedlist.get(i)[4].toString().equals("P") && !membertypes.contains( invitedlist.get(i)[3].toString()) )
 	 	{ j++;
 	 	addcount++;
@@ -593,7 +597,7 @@ for( Object[]obj:specialMembers){ %>
 	 			<%= invitedlist.get(i)[6]!=null?invitedlist.get(i)[6].toString(): " - "%> 
 		 	</td>
 		 	<td style="border: 1px solid black; padding: 5px;text-align: left;">  
-	 			<%=invitedlist.get(i)[7]!=null?invitedlist.get(i)[7].toString(): " - " %>  <%=invitedlist.get(i)[15]!=null ?", "+invitedlist.get(i)[15].toString():(invitedlist.get(i)[14]!=null ?", "+invitedlist.get(i)[14].toString(): "")  %>
+	 			<%=invitedlist.get(i)[7]!=null?invitedlist.get(i)[7].toString(): " - " %>  <%=invitedlist.get(i)[15]!=null && !invitedlist.get(i)[15].toString().isBlank() ?", "+invitedlist.get(i)[15].toString():(invitedlist.get(i)[14]!=null && !invitedlist.get(i)[14].toString().isBlank() ?", "+invitedlist.get(i)[14].toString(): "")  %>
 		 	</td>	
 		 	<td style="border: 1px solid black; padding: 5px;text-align: left;">  
 				<%= invitedlist.get(i)[11]!=null?invitedlist.get(i)[11].toString(): " - "%>  
@@ -619,7 +623,7 @@ for( Object[]obj:specialMembers){ %>
 	 		</td>	 --%>
 	 		</tr>
 	 <%}
-	 } %>
+	 } }%>
 	 
 	  <%if(addcount==0)
 	  {%>

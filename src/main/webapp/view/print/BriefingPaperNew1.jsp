@@ -94,6 +94,11 @@ NFormatConvertion nfc=new NFormatConvertion();
 Format format = com.ibm.icu.text.NumberFormat.getCurrencyInstance(new Locale("en", "in"));
 
 String projectid=(String)request.getAttribute("projectid");
+String projectCode=(String)request.getAttribute("projectCode");
+if(projectCode == null || projectCode.isBlank()){
+	projectCode = "";
+}
+
 List<Object[]> projectdatadetails = (List<Object[]> )request.getAttribute("projectdatadetails");
 List<List<Object[]>> lastpmrcminsactlist = (List<List<Object[]>>)request.getAttribute("lastpmrcminsactlist");
 List<List<Object[]>> lastpmrcactions = (List<List<Object[]>>)request.getAttribute("lastpmrcactions");
@@ -2126,7 +2131,7 @@ if(pftsStatusList == null){
 										 
 										 <%if(totalprocurementdetails!=null && totalprocurementdetails.size()>0){ 
 										 for(TotalDemand obj:totalprocurementdetails){
-											 if(obj.getProjectId().equalsIgnoreCase(projectid)){
+											 if(obj.getProjectCode().equalsIgnoreCase(projectid)){
 										 %>
 										   <tr>
 										      <td style="text-align: center;"><%=obj.getDemandCount()!=null?(obj.getDemandCount()): " - " %></td>
@@ -2350,7 +2355,7 @@ if(pftsStatusList == null){
 					<!-- ----------------------------------------------9. Overall financial Status------------------------------------------------- -->
 					<%if(wordFlag == null) {%> <h1 class="break"></h1> <%} else {%> <br class="break"> <%} %>	
 		 
-   					<div align="left" style="margin-left: 10px;"><b class="sub-title">9. <%if(projectidlist.size()>1) {%> (<%=(fch++) %>) <%} %>. Overall Financial Status </b> 			<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  </b></div><div align="right"><b><span class="currency" >(&#8377; <span>Crore</span>)</span></b></div>
+   					<div align="left" style="margin-left: 10px;"><b class="sub-title">9. <%if(projectidlist.size()>1) {%> (<%=(fch++) %>) <%} %>. Overall Financial Status </b> 			<b><%=ProjectDetail.get(z)[1]!=null?(ProjectDetail.get(z)[1].toString()): " - "%><% if (z > 0) { %>(SUB)<% } %>  </b></div><div align="right"><b><span class="currency" >(&#8377; <span><%if("DLRL".equalsIgnoreCase(labInfo.getLabCode())){ %>Lakhs<%}else {%>Crore<%} %></span>)</span></b></div>
 						 
 						  	<table  class="subtables" style="align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 25px;  border-collapse:collapse;" >
 						  	    <thead>

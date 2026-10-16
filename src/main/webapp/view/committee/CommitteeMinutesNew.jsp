@@ -485,7 +485,7 @@ for(Object[] temp : invitedlist){
 	}
 	else if(temp[4].toString().equals("N") &&  membertypes.contains( temp[3].toString()) )
 	{
-		memAbscent++;
+		// memAbscent++;
 	}
 	else if( temp [4].toString().equals("P") && !membertypes.contains( temp[3].toString()) )
 	{ 
@@ -493,7 +493,7 @@ for(Object[] temp : invitedlist){
 	}
 	else if( temp [4].toString().equals("N") && !membertypes.contains( temp[3].toString()) )
 	{ 
-		parAbscent++;
+		// parAbscent++;
 	}
 }
 %>
@@ -687,7 +687,7 @@ for( Object[]obj:specialMembers){ %>
 	  
 	  <%if(parAbscent > 0){ %>
 	  
-	 <tr >
+	 <tr>
 			<th colspan="4" style="text-align: left; font-weight: 700; width: 650px;border: 1px solid black; padding: 5px; padding-left: 15px">Other Invitees&nbsp;/&nbsp;Participants Absent</th>
 		</tr>
 	
@@ -697,7 +697,7 @@ for( Object[]obj:specialMembers){ %>
 	int count1=0;
 	for(int i=0;i<invitedlist.size();i++)	
 	 {
-	 	if(invitedlist.get(i)[4].toString().equals("N")&& !membertypes.contains( invitedlist.get(i)[3].toString()) )
+	 	if(invitedlist.get(i)[4].toString().equals("N") && !membertypes.contains( invitedlist.get(i)[3].toString()) )
 	 	{count1++; j++; %>
 	 	 <tr > 	
 	 	  <td style="border: 1px solid black; padding: 5px;text-align: center"> <%=j%> </td>
@@ -976,7 +976,7 @@ for( Object[]obj:specialMembers){ %>
 							</table>	
    				
 
-		<table style=" margin-left: 8px; width: 693px; margin-top:5px;font-size: 16px; border-collapse: collapse;border: 1px solid black" >
+						<table style=" margin-left: 8px; width: 693px; margin-top:5px;font-size: 16px; border-collapse: collapse;border: 1px solid black" >
 								<thead >
 									<tr>
 										<th class="std"  style="width: 30px;"  >SN</th>
@@ -994,22 +994,23 @@ for( Object[]obj:specialMembers){ %>
 								
 								
 								<tbody>
-											<%if(lastpmrcactions.size()==0){ %>
+								<%if(lastpmrcactions.size()==0){ %>
 								<tr><td colspan="<%= "ADE".equalsIgnoreCase(labcode) ? "8" : "7" %>"  style="text-align: center;" > Nil</td></tr>
 								<%}
 								else if(lastpmrcactions.size()>0){
+									
 								Map<String,List<Object[]>> list = lastpmrcactions!=null ? lastpmrcactions.stream()
 										.collect(Collectors.groupingBy(array -> array[0].toString(), LinkedHashMap::new,Collectors.toList())) : new HashMap<>();
 							int i = 1;String key="";
 							for(Map.Entry<String, List<Object[]>> map : list.entrySet()){
 								int j=1;
-								List<Object[]> values = map.getValue();
+								List<Object[]> values = map.getValue().stream().filter(obj -> obj[9] != null && !obj[9].toString().equalsIgnoreCase("C")).collect(Collectors.toList());
 								int rowSpan = values.size();
 								for (Object[] obj : values) {
 									
-									if(obj[9] != null && "C".equalsIgnoreCase(obj[9].toString())){
+									/* if(obj[9] != null && "C".equalsIgnoreCase(obj[9].toString())){
 										continue;
-									}
+									} */
 								%>
 								<tr>
 									<td  class="std"  align="center"><%=i %></td>
@@ -1047,8 +1048,12 @@ for( Object[]obj:specialMembers){ %>
 							<span style="font-size: 14px;">	<%=splCommitee %> <%=key%>/<%=obj[1]!=null?obj[1].toString().split("/")[4]:" - " %></span>
 								<%}%> 
 								</td>
-								<%if(j++==1){ %><td rowspan="<%=rowSpan%>" class="std" style="text-align: left;"> <%=obj[2].toString()%> </td> <%} %>
-													<td class="std" style="text-align: center;">
+								<%if(j++==1){ %>
+									<td rowspan="<%=rowSpan%>" class="std" style="text-align: left;"> 
+									<%=obj[2].toString()%> 
+									</td> 
+								<%} %>
+									<td class="std" style="text-align: center;">
 									<%	String actionstatus = obj[9].toString();
 										int progress = obj[15]!=null ? Integer.parseInt(obj[15].toString()) : 0;
 										LocalDate pdcorg = LocalDate.parse(obj[3].toString());

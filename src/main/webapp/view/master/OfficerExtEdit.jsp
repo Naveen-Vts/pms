@@ -86,10 +86,10 @@ String labCode = (String) session.getAttribute("labcode");
 								<option value="Lt."  <%if(OfficerEditData[11]!=null && OfficerEditData[11].toString().equalsIgnoreCase("Lt.")){%>  selected="selected" <%}%>>  Lt.</option>
 								<option value="Dr."   <%if(OfficerEditData[11]!=null && OfficerEditData[11].toString().equalsIgnoreCase("Dr.")){%>   selected="selected" <%}%>>  Dr.</option>
 								<%if("PGAD".equalsIgnoreCase(labCode)){ %>
-									<option value="Air Cmd"  <%if(OfficerEditData[10]!=null && OfficerEditData[10].toString().equalsIgnoreCase("Air Cmd")){%>   selected="selected" <%}%>>Air Cmd</option>
-									<option value="Gp Capt"  <%if(OfficerEditData[10]!=null && OfficerEditData[10].toString().equalsIgnoreCase("Gp Capt")){%>   selected="selected" <%}%>>Gp Capt</option>
-									<option value="Wg Cdr"  <%if(OfficerEditData[10]!=null && OfficerEditData[10].toString().equalsIgnoreCase("Wg Cdr")){%>   selected="selected" <%}%>>Wg Cdr</option>
-									<option value="Fqn Ldr"  <%if(OfficerEditData[10]!=null && OfficerEditData[10].toString().equalsIgnoreCase("Fqn Ldr")){%>   selected="selected" <%}%>>Fqn Ldr</option>
+									<option value="Air Cmd"  <%if(OfficerEditData[11]!=null && OfficerEditData[11].toString().equalsIgnoreCase("Air Cmd")){%>   selected="selected" <%}%>>Air Cmd</option>
+									<option value="Gp Capt"  <%if(OfficerEditData[11]!=null && OfficerEditData[11].toString().equalsIgnoreCase("Gp Capt")){%>   selected="selected" <%}%>>Gp Capt</option>
+									<option value="Wg Cdr"  <%if(OfficerEditData[11]!=null && OfficerEditData[11].toString().equalsIgnoreCase("Wg Cdr")){%>   selected="selected" <%}%>>Wg Cdr</option>
+									<option value="Fqn Ldr"  <%if(OfficerEditData[11]!=null && OfficerEditData[11].toString().equalsIgnoreCase("Fqn Ldr")){%>   selected="selected" <%}%>>Fqn Ldr</option>
 								<%} %>
 								
 							</select>
@@ -100,10 +100,10 @@ String labCode = (String) session.getAttribute("labcode");
 			                <label>Title</label><br>
 			                 <select class="form-control selectdee" id="salutaionExt" name="salutation" data-container="body" data-live-search="true"   >
 								<option value=""  selected="selected"	hidden="true">--Select--</option>
-								<option value="Mr."    <%if(OfficerEditData[12]!=null && OfficerEditData[12].toString().equalsIgnoreCase("Mr.")){%>    selected="selected" <%}%>> Mr.</option>
-								<option value="Ms."   <%if(OfficerEditData[12]!=null && OfficerEditData[12].toString().equalsIgnoreCase("Ms.")){%>   selected="selected" <%}%>> Ms.</option>
-								<option value="Shri"   <%if(OfficerEditData[11]!=null && OfficerEditData[12].toString().equalsIgnoreCase("Shri")){%>   selected="selected" <%}%>> Shri</option>
-								<option value="Smt"   <%if(OfficerEditData[11]!=null && OfficerEditData[12].toString().equalsIgnoreCase("Smt")){%>   selected="selected" <%}%>> Smt</option>
+								<option value="Mr."    <%if(OfficerEditData[10]!=null && OfficerEditData[10].toString().equalsIgnoreCase("Mr.")){%>    selected="selected" <%}%>> Mr.</option>
+								<option value="Ms."   <%if(OfficerEditData[10]!=null && OfficerEditData[10].toString().equalsIgnoreCase("Ms.")){%>   selected="selected" <%}%>> Ms.</option>
+								<option value="Shri"   <%if(OfficerEditData[10]!=null && OfficerEditData[10].toString().equalsIgnoreCase("Shri")){%>   selected="selected" <%}%>> Shri</option>
+								<option value="Smt"   <%if(OfficerEditData[10]!=null && OfficerEditData[10].toString().equalsIgnoreCase("Smt")){%>   selected="selected" <%}%>> Smt</option>
 							</select>
 					</div>
 </div>

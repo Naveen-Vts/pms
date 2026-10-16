@@ -2490,7 +2490,7 @@ function editcheck1(editfileid)
 		  
 		  var data =CKEDITOR.instances['summernote'].getData();
 		  $('textarea[name=NoteText]').val(data);
-		  if(labCode === "PGAD") return true;
+		  if(labCode === "PGAD" || labCode === "CAIR") return true;
 		  if($('#issue').is(':checked')) 
 		    {
 				var data =CKEDITOR.instances['summernote'].getData();

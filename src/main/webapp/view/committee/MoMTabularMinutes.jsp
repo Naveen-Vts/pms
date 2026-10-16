@@ -1,3 +1,5 @@
+<%@page import="java.util.Set"%>
+<%@page import="java.util.LinkedHashSet"%>
 <%@page import="java.util.regex.Matcher"%>
 <%@page import="java.util.regex.Pattern"%>
 <%@page import="lombok.val"%>
@@ -260,7 +262,9 @@
 	  			</tr>
 	  		</thead>
 	  		<tbody class="fs-11">	  		
-	  		 <%if(memPresent > 0){ %>
+	  		 <%
+	  		 Set<String> empids = new LinkedHashSet<>();
+	  		 if(memPresent > 0){ %>
 			 <% 
 			 	for(int i=0;i<invitedlist.size();i++)
 				{
@@ -274,6 +278,7 @@
 			 <% 
 			 	for(int i=0;i<invitedlist.size();i++)
 				{
+			 	if(invitedlist.get(i)[0] != null && empids.add(invitedlist.get(i)[0].toString())){
 			 	if(invitedlist.get(i)[4].toString().equals("P") && membertypes.contains( invitedlist.get(i)[3].toString()) )
 			 	{ j++;
 			 		String name = (invitedlist.get(i)[6]!=null?invitedlist.get(i)[6].toString():"")+", "+(invitedlist.get(i)[7]!=null?invitedlist.get(i)[7].toString():"");
@@ -293,7 +298,7 @@
 			 			 members.add(name);	
 			 		}
 			 		}
-			 	}} %>
+			 	}}} %>
 	  		<%if(memAbscent > 0){ %>
 			 <% 
 			 	for(int i=0;i<invitedlist.size();i++)
@@ -307,6 +312,7 @@
 			 <% 
 			 	for(int i=0;i<invitedlist.size();i++)
 				{
+			 	if(invitedlist.get(i)[0] != null && empids.add(invitedlist.get(i)[0].toString())){
 			 	if(invitedlist.get(i)[4].toString().equals("P") && !membertypes.contains( invitedlist.get(i)[3].toString()) )
 			 	{ j++;
 			 	//if(invitedlist.get(i)[6].toString()!=null && invitedlist.get(i)[7].toString()!=null) members.add(invitedlist.get(i)[12].toString()+". "+ invitedlist.get(i)[6].toString()+", "+invitedlist.get(i)[7].toString());
@@ -319,7 +325,7 @@
 			 		members.add(name);
 			 	}
 			 		
-			 	}}} %>
+			 	}}}} %>
 	  			<%if(parAbscent > 0){ %>
 			 <% 
 			 	for(int i=0;i<invitedlist.size();i++)

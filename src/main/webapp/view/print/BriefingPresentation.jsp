@@ -2220,7 +2220,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 
 							<% if (totalprocurementdetails != null && totalprocurementdetails.size() > 0) {
 								for (TotalDemand obj : totalprocurementdetails) {
-									if (obj.getProjectId().equalsIgnoreCase(projectidlist.get(z))) { %>
+									if (obj.getProjectCode().equalsIgnoreCase(String.valueOf(ProjectDetail.get(z)[1]))) { %>
 							<tr>
 								<td class="text-center"><%=obj.getDemandCount()%></td>
 								<td class="text-center"><%=obj.getEstimatedCost()%></td>
@@ -2508,7 +2508,7 @@ for (int z = 0; z < projectidlist.size(); z++){  %>
 						<thead>
 							<tr>
 								<td colspan="14" class="text-right border-0"><span
-									class="currency"><b>(In &#8377; Crore)</b></span></td>
+									class="currency"><b>(In &#8377; <%if("DLRL".equalsIgnoreCase(labInfo.getLabCode())){ %>Lakhs<%}else {%>Crore<%} %>)</b></span></td>
 							</tr>
 							<tr>
 								<th colspan="2" class="bp-71">Head </th>

@@ -3162,6 +3162,7 @@ public class PrintController {
 			
 			String projectid=req.getParameter("projectid");
 			String committeeid = req.getParameter("committeeid");
+			String projectCode = "";
 
 			List<Object[]> projectslist =service.LoginProjectDetailsList(EmpId,Logintype,LabCode);
 			List<Object[]> SpecialCommitteesList =  service.SpecialCommitteesList(LabCode);
@@ -3176,6 +3177,7 @@ public class PrintController {
 
 			if (projectid == null && !projectslist.isEmpty()) {
 			    projectid = projectslist.get(0)[0].toString();
+			    projectCode = projectslist.get(0)[4].toString();
 			}
 
 			if(committeeid==null || (committeeid!=null && Long.parseLong(committeeid)==0)) {
@@ -3185,6 +3187,9 @@ public class PrintController {
 			Committee committee = service.getCommitteeData(committeeid);
 			List<Object[]> projectDetails2 = service.ProjectDetails(projectid);
 			String projectLabCode = projectDetails2.get(0)[5].toString();
+			if(projectCode == null || projectCode.isBlank()) {
+				projectCode = projectDetails2.get(0)[4].toString();
+			}
 
 			
 	    	req.setAttribute("committeeData", committee);
@@ -3227,6 +3232,7 @@ public class PrintController {
 	    	req.setAttribute("Drdologo", LogoUtil.getDRDOLogoAsBase64String());
 	    	req.setAttribute("thankYouImg", LogoUtil.getThankYouImageAsBase64String());
     		req.setAttribute("projectid", projectid);
+    		req.setAttribute("projectCode", projectCode);
     		req.setAttribute("committeeid", committeeid);
     		req.setAttribute("ProjectCost",ProjectCost);
     		req.setAttribute("isCCS",projectDetails2.get(0)[6].toString());

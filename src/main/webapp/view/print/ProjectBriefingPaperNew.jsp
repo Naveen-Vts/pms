@@ -2114,7 +2114,7 @@ String labcode = (String) session.getAttribute("labcode");
 <!--  ---------------------------------------------------------------------------------------------------------------------------------------------  -->						
 				 	
 						<details>
-   						<summary role="button" tabindex="0"><b>9. Overall Financial Status  <i class="text-underline">(&#8377; Lakhs)</i> </b> </summary>
+   						<summary role="button" tabindex="0"><b>9. Overall Financial Status  <i class="text-underline">(&#8377; <%if("DLRL".equalsIgnoreCase(labcode)){ %>Lakhs<%}else {%>Crore<%} %>)</i> </b> </summary>
    						
 											  	<div class="content">
 						  	<%for(int z=0;z<projectidlist.size();z++){ 
